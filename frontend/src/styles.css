@@ -1,0 +1,533 @@
+@import "tailwindcss";
+
+/* CSS переменные для шрифтов */
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+  font-family: var(--font-sans) !important;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #f8fafc;
+  color: #1f2937;
+  line-height: 1.6;
+}
+
+/* Специальные шрифты для заголовков */
+h1, h2, h3, h4, h5, h6, .font-bold, .font-semibold, .font-medium, button {
+  font-family: var(--font-display) !important;
+}
+
+/* Принудительное применение шрифтов к Tailwind классам */
+.font-sans, input, textarea, select, p, span, div {
+  font-family: var(--font-sans) !important;
+}
+
+.font-display {
+  font-family: var(--font-display) !important;
+}
+
+/* Dark theme support */
+.dark body {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+.dark {
+  color: #f8fafc;
+}
+
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #f8fafc;
+}
+
+.dark p, .dark span, .dark div {
+  color: #e2e8f0;
+}
+
+#app {
+  min-height: 100vh;
+  font-family: var(--font-sans) !important;
+}
+
+/* Дополнительные правила для принудительного применения шрифтов */
+html {
+  font-family: var(--font-sans) !important;
+}
+
+/* Применяем шрифты к React компонентам */
+[class*="font-"], [class*="text-"] {
+  font-family: var(--font-sans) !important;
+}
+
+/* Специально для заголовков и кнопок */
+[class*="font-bold"], [class*="font-semibold"], [class*="font-medium"], 
+button, .btn-primary, .btn-secondary {
+  font-family: var(--font-display) !important;
+}
+
+/* Custom utilities */
+.gradient-primary {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, #d946ef 0%, #c026d3 100%);
+}
+
+.gradient-warm {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass-effect {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Button styles */
+.btn-primary {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.875rem 1.75rem;
+  font-weight: 600;
+  font-family: var(--font-display) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px 0 rgba(34, 197, 94, 0.25);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px 0 rgba(34, 197, 94, 0.35);
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: white;
+}
+
+.btn-secondary {
+  background: white;
+  color: #22c55e;
+  border: 2px solid #22c55e;
+  border-radius: 0.75rem;
+  padding: 0.875rem 1.75rem;
+  font-weight: 600;
+  font-family: var(--font-display) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover {
+  background: #22c55e;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px 0 rgba(34, 197, 94, 0.25);
+}
+
+/* Темная тема для кнопок */
+.dark .btn-secondary {
+  background: #1e293b;
+  color: #22c55e;
+  border-color: #22c55e;
+}
+
+.dark .btn-secondary:hover {
+  background: #22c55e;
+  color: white;
+}
+
+/* Card styles */
+.card {
+  background: white;
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #1f2937;
+}
+
+.dark .card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.3);
+  color: #f8fafc;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.dark .card:hover {
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+/* Улучшенная читаемость текста в карточках */
+.card h1, .card h2, .card h3, .card h4, .card h5, .card h6 {
+  color: #1f2937;
+}
+
+.dark .card h1, .dark .card h2, .dark .card h3, .dark .card h4, .dark .card h5, .dark .card h6 {
+  color: #f8fafc;
+}
+
+.card p, .card span {
+  color: #4b5563;
+}
+
+.dark .card p, .dark .card span {
+  color: #d1d5db;
+}
+
+/* Form styles */
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+/* Map container */
+.map-container {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+
+/* Search bar */
+.search-bar {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  right: 1.5rem;
+  z-index: 10;
+  background: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-icon {
+  width: 2rem;
+  height: 2rem;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px 0 rgba(34, 197, 94, 0.3);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1.125rem;
+  color: #1f2937;
+}
+
+.search-input::placeholder {
+  color: #6b7280;
+}
+
+.search-button {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px 0 rgba(34, 197, 94, 0.25);
+}
+
+.search-button:hover {
+  transform: scale(1.05);
+}
+
+/* Floating button */
+.floating-button {
+  position: absolute;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: white;
+  border-radius: 1rem;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.floating-button:hover {
+  transform: translateX(-50%) scale(1.05);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Bottom navigation */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-around;
+  padding: 0.75rem;
+}
+
+.nav-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: #6b7280;
+}
+
+.nav-button.active {
+  color: #22c55e;
+}
+
+.nav-button:hover {
+  background: #f3f4f6;
+}
+
+.nav-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.nav-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Seller card */
+.seller-card {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 1.5rem 1.5rem 0 0;
+  padding: 1.5rem;
+  box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.1);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.seller-header {
+  display: flex;
+  justify-content: between;
+  align-items: start;
+  margin-bottom: 1.5rem;
+}
+
+.seller-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.seller-address {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.seller-badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badge-green {
+  background: #f0fdf4;
+  color: #22c55e;
+  border: 1px solid #bbf7d0;
+}
+
+.badge-blue {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+/* Menu items */
+.menu-item {
+  background: linear-gradient(135deg, #f9fafb 0%, white 100%);
+  border-radius: 1rem;
+  padding: 1rem;
+  border: 1px solid #f3f4f6;
+  margin-bottom: 1rem;
+}
+
+.menu-item-name {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 1.125rem;
+  margin-bottom: 0.25rem;
+}
+
+.menu-item-description {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.menu-item-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #22c55e;
+  font-family: 'Poppins', sans-serif;
+}
+
+.menu-item-stock {
+  font-size: 0.75rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+}
+
+/* Action buttons */
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.favorite-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 1rem;
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.favorite-button:hover {
+  background: #f3f4f6;
+}
+
+.order-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  border: none;
+  border-radius: 1rem;
+  padding: 0.875rem 1.75rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 4px 14px 0 rgba(34, 197, 94, 0.25);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.order-button:hover {
+  box-shadow: 0 6px 20px -1px rgba(0, 0, 0, 0.2);
+}
+
+/* Loading */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #22c55e;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-bar {
+    left: 1rem;
+    right: 1rem;
+    top: 1rem;
+  }
+  
+  .floating-button {
+    bottom: 4rem;
+    left: 1rem;
+    right: 1rem;
+    transform: none;
+  }
+  
+  .seller-card {
+    border-radius: 1rem 1rem 0 0;
+  }
+}
