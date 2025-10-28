@@ -14,13 +14,13 @@ export default function InputWrapper({
         formState: { errors },
     } = useFormContext();
 
-    const error = errors[name] === undefined ? null : errors[name].message;
+    const error = errors[name]?.message;
 
     return (
         <div>
             <p className="mb-1">{title}</p>
             {children}
-            {error !== null && <p className="mt-1 text-red-600">{error}</p>}
+            {error && <p className="mt-1 text-red-600">{String(error)}</p>}
         </div>
     );
 }

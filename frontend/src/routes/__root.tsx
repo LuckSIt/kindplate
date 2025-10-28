@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Outlet, createRootRoute, Link } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanstackDevtools } from "@tanstack/react-devtools";
@@ -11,7 +11,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { Button } from "@/components/ui/button";
 import { authContext } from "@/lib/auth";
-import { ThemeProvider, useTheme } from "@/lib/theme";
+import { ThemeProvider } from "@/lib/theme";
 import { NotificationContainer } from "@/components/ui/notification";
 import { InstallPrompt, NetworkStatus } from "@/components/ui/install-prompt";
 
@@ -45,7 +45,7 @@ export const Route = createRootRoute({
     component: RootRoute,
 });
 
-function AuthProvider({ children }) {
+function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data, isLoading, isSuccess, isError } = useQuery({
         queryKey: ["auth"],
         queryFn: () => axiosInstance.get("/auth/me"),
@@ -78,10 +78,10 @@ function AuthStatus() {
                 <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors">
                     <div className="w-8 h-8 bg-gradient-to-r from-primary to-primary-light rounded-full flex items-center justify-center">
                         <span className="text-white font-medium text-sm">
-                            {user.name.charAt(0).toUpperCase()}
+                            {user?.name?.charAt(0).toUpperCase() || 'U'}
                         </span>
                     </div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{user.name}</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{user?.name || 'User'}</span>
                 </div>
             </Link>
         );
@@ -104,7 +104,7 @@ function Nav() {
     }
 
     // Админ панель для администраторов
-    if (user.role === 'admin') {
+    if (user?.role === 'admin') {
         return (
             <Link 
                 to="/admin" 
@@ -119,7 +119,7 @@ function Nav() {
     }
 
     // Панель управления для бизнесов
-    if (user.is_business || user.role === 'business') {
+    if (user?.is_business || user?.role === 'business') {
         return (
             <Link 
                 to="/panel" 
