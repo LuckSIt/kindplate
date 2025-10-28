@@ -8,8 +8,8 @@ const getBaseURL = () => {
     if (import.meta.env.VITE_BACKEND_BASE_URL) {
         return import.meta.env.VITE_BACKEND_BASE_URL;
     }
-    // Иначе используем Render URL по умолчанию
-    return "https://kindplate-backend.onrender.com";
+    // Иначе используем localhost для локальной разработки
+    return "http://localhost:5000";
 };
 
 console.log("Backend URL:", getBaseURL());
