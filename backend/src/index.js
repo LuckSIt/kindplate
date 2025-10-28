@@ -40,6 +40,15 @@ const profileRouter = require("./routes/profile");
 const adminRouter = require("./routes/admin");
 const { businessOnly } = require("./lib/auth");
 
+// Health check endpoint
+app.get("/health", (req, res) => {
+    res.status(200).json({ 
+        status: "OK", 
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
 // ============================================
 // БЕЗОПАСНОСТЬ: Helmet и защита заголовков
 // ============================================
@@ -62,7 +71,8 @@ app.use(
                 "http://localhost:3000",
                 "http://localhost:3001", 
                 "http://localhost:5173",
-                "http://172.20.10.2:5173"
+                "http://172.20.10.2:5173",
+                "https://kindplate-frontend.onrender.com"
             ];
             
             // Разрешаем запросы без origin (например, мобильные приложения)

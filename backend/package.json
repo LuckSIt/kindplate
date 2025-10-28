@@ -6,7 +6,8 @@
     "scripts": {
         "test": "vitest",
         "test:ui": "vitest --ui",
-        "dev": "nodemon ./src/index.js"
+        "dev": "nodemon ./src/index.js",
+        "start": "node ./src/index.js"
     },
     "keywords": [],
     "author": "",
