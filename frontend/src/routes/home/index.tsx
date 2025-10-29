@@ -214,16 +214,44 @@ function RouteComponent() {
             <HomePageSEO />
             <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
                 {/* Search Panel */}
-                <SearchPanel
-                    searchQuery={searchQuery}
-                    onSearchChange={setSearchQuery}
-                    viewMode={viewMode}
-                    onViewModeChange={setViewMode}
-                    onFilterClick={() => console.log('Filter clicked')}
-            />
+                <div className="flex-shrink-0">
+                    <SearchPanel
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        viewMode={viewMode}
+                        onViewModeChange={setViewMode}
+                        onFilterClick={() => console.log('Filter clicked')}
+                    />
+                </div>
 
-            {/* Main Content */}
-            <div className="flex-1 flex overflow-hidden">
+                {/* Mobile View Toggle */}
+                <div className="md:hidden flex justify-center p-2 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                    <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                        <button
+                            onClick={() => setViewMode('map')}
+                            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                                viewMode === 'map' 
+                                    ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' 
+                                    : 'text-gray-600 dark:text-gray-400'
+                            }`}
+                        >
+                            🗺️ Карта
+                        </button>
+                        <button
+                            onClick={() => setViewMode('list')}
+                            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                                viewMode === 'list' 
+                                    ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' 
+                                    : 'text-gray-600 dark:text-gray-400'
+                            }`}
+                        >
+                            📋 Список
+                        </button>
+                    </div>
+                </div>
+
+                {/* Main Content */}
+                <div className="flex-1 flex overflow-hidden">
                 {/* Map View */}
                 {viewMode === 'map' && (
                     <div className="flex-1 relative">
@@ -240,7 +268,7 @@ function RouteComponent() {
 
                 {/* List View */}
                 {viewMode === 'list' && (
-                    <div className="flex-1">
+                    <div className="flex-1 overflow-y-auto">
                         <OffersList
                             businesses={filteredBusinesses}
                             selectedBusiness={selectedBusiness}

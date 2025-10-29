@@ -36,6 +36,68 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-semibold, .font-medium, button {
   font-family: var(--font-display) !important;
 }
 
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* Уменьшаем отступы на мобильных */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Адаптивные заголовки */
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  
+  /* Кнопки на всю ширину на мобильных */
+  .mobile-full-width {
+    width: 100%;
+  }
+  
+  /* Адаптивные карточки */
+  .mobile-card {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+  
+  /* Скрываем элементы на мобильных */
+  .mobile-hidden {
+    display: none;
+  }
+  
+  /* Показываем элементы только на мобильных */
+  .mobile-only {
+    display: block;
+  }
+  
+  /* Адаптивная навигация */
+  .mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    z-index: 50;
+  }
+  
+  .dark .mobile-nav {
+    background: #1f2937;
+    border-top-color: #374151;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none;
+  }
+}
+
 /* Dark theme support */
 .dark body {
   background: #0f172a;

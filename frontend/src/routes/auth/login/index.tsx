@@ -65,20 +65,20 @@ function RouteComponent() {
             <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-primary-400/10 dark:bg-primary-600/10 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2"></div>
             
             <div className="relative z-10 h-full w-full flex items-center justify-center p-4">
-                <div className="w-full max-w-lg mx-auto px-6">
+                <div className="w-full max-w-lg mx-auto px-4 sm:px-6">
                     {/* Форма авторизации по центру */}
                     <div className="w-full">
-                        <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50 p-6">
+                        <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50 p-4 sm:p-6">
                             <div className="text-center mb-8">
                                 <div className="inline-flex items-center justify-center mb-6">
                                     <img src="/kandlate.png" alt="KindPlate" className="w-16 h-16" />
                                 </div>
-                                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                                     <span className="bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent">
                                         KindPlate
                                     </span>
                                 </h1>
-                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Вход в аккаунт</h2>
+                                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Вход в аккаунт</h2>
                                 <p className="text-gray-600 dark:text-gray-400">
                                     Нет аккаунта?{" "}
                                     <Link to="/auth/register/customer" className="text-primary-600 hover:text-primary-500 font-semibold transition-colors">
