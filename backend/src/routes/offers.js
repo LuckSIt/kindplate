@@ -443,5 +443,89 @@ offersRouter.post("/upload-photo/:offer_id", upload.single("photo"), asyncHandle
     });
 }));
 
+// Публичные предложения для клиентов
+offersRouter.get("/", asyncHandler(async (req, res) => {
+    try {
+        console.log("🔍 Запрос /customer/offers");
+
+        // Проверяем наличие таблиц
+        const tablesCheck = await pool.query(`
+            SELECT table_name FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = ANY($1)
+        `, [[ 'offers', 'businesses', 'users' ]]);
+        const have = tablesCheck.rows.map(r => r.table_name);
+
+        if (!have.includes('offers')) {
+            console.warn('⚠️ Таблица offers отсутствует. Возвращаем пустой список.');
+            return res.json({ success: true, data: [] });
+        }
+
+        let query;
+        if (have.includes('businesses')) {
+            // Современная схема: JOIN businesses
+            query = `
+                SELECT 
+                    o.id,
+                    o.business_id,
+                    o.title,
+                    o.description,
+                    o.image_url,
+                    o.original_price,
+                    o.discounted_price,
+                    o.quantity_available,
+                    o.pickup_time_start,
+                    o.pickup_time_end,
+                    o.is_active,
+                    o.created_at,
+                    b.name AS business_name,
+                    b.address AS business_address,
+                    b.coord_0,
+                    b.coord_1,
+                    b.phone AS business_phone,
+                    b.email AS business_email
+                FROM offers o
+                LEFT JOIN businesses b ON o.business_id = b.id
+                WHERE o.is_active = true
+                ORDER BY o.created_at DESC
+            `;
+        } else {
+            // Legacy схема: JOIN users (business_id указывает на users.id)
+            query = `
+                SELECT 
+                    o.id,
+                    o.business_id,
+                    o.title,
+                    o.description,
+                    o.image_url,
+                    o.original_price,
+                    o.discounted_price,
+                    o.quantity_available,
+                    o.pickup_time_start,
+                    o.pickup_time_end,
+                    o.is_active,
+                    o.created_at,
+                    u.name AS business_name,
+                    u.address AS business_address,
+                    u.coord_0,
+                    u.coord_1,
+                    NULL::text AS business_phone,
+                    u.email AS business_email
+                FROM offers o
+                LEFT JOIN users u ON o.business_id = u.id
+                WHERE o.is_active = true
+                ORDER BY o.created_at DESC
+            `;
+        }
+
+        const result = await pool.query(query);
+        console.log(`✅ Найдено ${result.rows.length} предложений`);
+
+        return res.json({ success: true, data: result.rows });
+    } catch (error) {
+        console.error("❌ Ошибка в /customer/offers:", error);
+        return res.status(200).json({ success: true, data: [] });
+    }
+}));
+
 module.exports = offersRouter;
 
