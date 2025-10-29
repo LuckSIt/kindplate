@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Outlet, createRootRoute, Link } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanstackDevtools } from "@tanstack/react-devtools";
@@ -11,7 +11,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { Button } from "@/components/ui/button";
 import { authContext } from "@/lib/auth";
-import { ThemeProvider } from "@/lib/theme";
+import { ThemeProvider, useTheme } from "@/lib/theme";
 import { NotificationContainer } from "@/components/ui/notification";
 import { InstallPrompt, NetworkStatus } from "@/components/ui/install-prompt";
 
@@ -45,7 +45,7 @@ export const Route = createRootRoute({
     component: RootRoute,
 });
 
-function AuthProvider({ children }: { children: React.ReactNode }) {
+function AuthProvider({ children }) {
     const { data, isLoading, isSuccess, isError } = useQuery({
         queryKey: ["auth"],
         queryFn: () => axiosInstance.get("/auth/me"),
@@ -78,10 +78,10 @@ function AuthStatus() {
                 <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors">
                     <div className="w-8 h-8 bg-gradient-to-r from-primary to-primary-light rounded-full flex items-center justify-center">
                         <span className="text-white font-medium text-sm">
-                            {user?.name?.charAt(0).toUpperCase() || 'U'}
+                            {user.name.charAt(0).toUpperCase()}
                         </span>
                     </div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{user?.name || 'User'}</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{user.name}</span>
                 </div>
             </Link>
         );
@@ -104,7 +104,7 @@ function Nav() {
     }
 
     // Админ панель для администраторов
-    if (user?.role === 'admin') {
+    if (user.role === 'admin') {
         return (
             <Link 
                 to="/admin" 
@@ -119,7 +119,7 @@ function Nav() {
     }
 
     // Панель управления для бизнесов
-    if (user?.is_business || user?.role === 'business') {
+    if (user.is_business || user.role === 'business') {
         return (
             <Link 
                 to="/panel" 
@@ -142,6 +142,7 @@ function RootRoute() {
             <QueryClientProvider client={queryClient}>
                 <ThemeProvider>
                     <AuthProvider>
+                    <MobileOnly>
                     <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900">
                     <header className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -161,40 +162,11 @@ function RootRoute() {
                             </div>
                         </div>
                     </header>
-                    <main className="flex-1 pb-16 md:pb-0">
+                    <main className="flex-1">
                         <Outlet />
                     </main>
-
-                    {/* Mobile Navigation */}
-                    <div className="mobile-nav md:hidden">
-                        <div className="flex justify-around py-2">
-                            <Link to="/home" className="flex flex-col items-center py-2 px-3 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
-                                <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                </svg>
-                                <span className="text-xs">Главная</span>
-                            </Link>
-                            <Link to="/favorites" className="flex flex-col items-center py-2 px-3 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
-                                <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
-                                <span className="text-xs">Избранное</span>
-                            </Link>
-                            <Link to="/cart" className="flex flex-col items-center py-2 px-3 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
-                                <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
-                                </svg>
-                                <span className="text-xs">Корзина</span>
-                            </Link>
-                            <Link to="/account" className="flex flex-col items-center py-2 px-3 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
-                                <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                                <span className="text-xs">Профиль</span>
-                            </Link>
-                        </div>
                     </div>
-                    </div>
+                    </MobileOnly>
 
                     <TanstackDevtools
                         config={{
@@ -215,4 +187,40 @@ function RootRoute() {
         </QueryClientProvider>
         </HelmetProvider>
     );
+}
+
+function MobileOnly({ children }: { children: React.ReactNode }) {
+    const [isMobile, setIsMobile] = useState(true);
+
+    useEffect(() => {
+        const check = () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const isPortrait = height >= width;
+            setIsMobile(width <= 430 && width >= 320 && isPortrait);
+        };
+        check();
+        window.addEventListener('resize', check);
+        window.addEventListener('orientationchange', check);
+        return () => {
+            window.removeEventListener('resize', check);
+            window.removeEventListener('orientationchange', check);
+        };
+    }, []);
+
+    if (!isMobile) {
+        return (
+            <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-6">
+                <div className="max-w-sm w-full text-center bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div className="text-5xl mb-4">📱</div>
+                    <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Доступно только на мобильных</h1>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                        Откройте приложение на смартфоне (ширина 360–430px, портретная ориентация).
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    return <>{children}</>;
 }

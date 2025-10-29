@@ -12,6 +12,35 @@ export default {
       'body': ['var(--font-sans)'],
     },
     extend: {
+      borderRadius: {
+        'sm': '8px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        '2xl': '28px',
+      },
+      spacing: {
+        '1': '4px',
+        '1.5': '6px',
+        '2': '8px',
+        '2.5': '10px',
+        '3': '12px',
+        '3.5': '14px',
+        '4': '16px',
+        '5': '20px',
+        '6': '24px',
+        '7': '28px',
+        '8': '32px',
+      },
+      fontSize: {
+        'xs': ['12px', { lineHeight: '18px' }],
+        'sm': ['14px', { lineHeight: '20px' }],
+        'base': ['16px', { lineHeight: '24px' }],
+        'lg': ['18px', { lineHeight: '26px' }],
+        'xl': ['20px', { lineHeight: '28px' }],
+        '2xl': ['24px', { lineHeight: '30px' }],
+        '3xl': ['28px', { lineHeight: '34px' }],
+      },
       colors: {
         // Современная цветовая схема в стиле ResQ Club
         'primary': {
