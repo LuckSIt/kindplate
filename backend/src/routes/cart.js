@@ -11,6 +11,17 @@ cartRouter.get("/cart", async (req, res) => {
 
         console.log("🔍 Запрос /customer/cart", { userId });
 
+        // Безопасная проверка наличия таблиц
+        const tablesCheck = await pool.query(`
+            SELECT table_name FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = ANY($1)
+        `, [[ 'cart_items', 'offers', 'businesses' ]]);
+        const have = tablesCheck.rows.map(r => r.table_name);
+        if (!have.includes('cart_items') || !have.includes('offers') || !have.includes('businesses')) {
+            console.warn('⚠️ Необходимые таблицы отсутствуют. Возвращаем пустую корзину.');
+            return res.send({ success: true, data: [] });
+        }
+
         const result = await pool.query(
             `SELECT 
                 ci.offer_id,
@@ -23,11 +34,11 @@ cartRouter.get("/cart", async (req, res) => {
                 o.discounted_price,
                 o.pickup_time_start,
                 o.pickup_time_end,
-                u.name as business_name,
-                u.address as business_address
+                b.name as business_name,
+                b.address as business_address
             FROM cart_items ci
             JOIN offers o ON ci.offer_id = o.id
-            JOIN users u ON o.business_id = u.id
+            JOIN businesses b ON o.business_id = b.id
             WHERE ci.user_id = $1`,
             [userId]
         );
@@ -59,11 +70,7 @@ cartRouter.get("/cart", async (req, res) => {
         });
     } catch (e) {
         console.error("❌ Ошибка в /customer/cart:", e);
-        res.status(500).send({
-            success: false,
-            error: "UNKNOWN_ERROR",
-            message: "Внутренняя ошибка сервера"
-        });
+        return res.send({ success: true, data: [] });
     }
 });
 

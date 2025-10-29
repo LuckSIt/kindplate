@@ -74,22 +74,13 @@ export function canInstallPWA(): boolean {
  */
 let deferredPrompt: any = null;
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
+// Allow the browser to handle the banner natively; do not call preventDefault
+window.addEventListener('beforeinstallprompt', () => {
+  deferredPrompt = null;
 });
 
 export async function promptPWAInstall(): Promise<boolean> {
-  if (!deferredPrompt) {
-    return false;
-  }
-
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
-  
-  deferredPrompt = null;
-  
-  return outcome === 'accepted';
+  return false;
 }
 
 /**

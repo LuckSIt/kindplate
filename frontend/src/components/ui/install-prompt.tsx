@@ -8,8 +8,8 @@ import { Button } from './button';
 import { promptPWAInstall, isPWA } from '@/lib/pwa';
 
 export function InstallPrompt() {
-  const [showPrompt, setShowPrompt] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showPrompt] = useState(false);
+  const [deferredPrompt] = useState<any>(null);
 
   useEffect(() => {
     // Не показываем если уже установлено
@@ -17,22 +17,8 @@ export function InstallPrompt() {
       return;
     }
 
-    // Слушаем событие beforeinstallprompt
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      
-      // Показываем промпт через 30 секунд после загрузки
-      setTimeout(() => {
-        setShowPrompt(true);
-      }, 30000);
-    };
-
-    window.addEventListener('beforeinstallprompt', handler);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handler);
-    };
+    // Разрешаем нативный баннер; кастомный промпт не показываем
+    return () => {};
   }, []);
 
   const handleInstall = async () => {
