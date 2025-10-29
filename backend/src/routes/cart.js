@@ -22,19 +22,43 @@ cartRouter.get("/cart", async (req, res) => {
             return res.send({ success: true, data: [] });
         }
 
+        // Проверяем доступные колонки в offers (прод и локальные схемы могут отличаться)
+        const offersColsRes = await pool.query(`
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_schema = 'public' AND table_name = 'offers'
+        `);
+        const offerCols = offersColsRes.rows.map(r => r.column_name);
+
+        const colOrNull = (name, fallbackNames = [], cast = 'text') => {
+            if (offerCols.includes(name)) return `o.${name}`;
+            for (const alt of fallbackNames) {
+                if (offerCols.includes(alt)) return `o.${alt}`;
+            }
+            return `NULL::${cast}`;
+        };
+
+        const titleSel = `${colOrNull('title', ['name'])} as title`;
+        const descSel = `${colOrNull('description', [])} as description`;
+        const imageSel = `${colOrNull('image_url', ['photo_url', 'image'])} as image_url`;
+        const origPriceSel = `${colOrNull('original_price', ['price_orig','price_original'], 'numeric')} as original_price`;
+        const discPriceSel = `${colOrNull('discounted_price', ['price_disc','price_discount'], 'numeric')} as discounted_price`;
+        const qtySel = `${colOrNull('quantity_available', ['quantity','stock'], 'int')} as quantity_available`;
+        const startSel = `${colOrNull('pickup_time_start', [])} as pickup_time_start`;
+        const endSel = `${colOrNull('pickup_time_end', [])} as pickup_time_end`;
+
         let query;
         if (have.includes('businesses')) {
             query = `SELECT 
                 ci.offer_id,
                 ci.quantity,
                 o.business_id,
-                o.title,
-                o.description,
-                o.image_url,
-                o.original_price,
-                o.discounted_price,
-                o.pickup_time_start,
-                o.pickup_time_end,
+                ${titleSel},
+                ${descSel},
+                ${imageSel},
+                ${origPriceSel},
+                ${discPriceSel},
+                ${startSel},
+                ${endSel},
                 b.name as business_name,
                 b.address as business_address
             FROM cart_items ci
@@ -47,13 +71,13 @@ cartRouter.get("/cart", async (req, res) => {
                 ci.offer_id,
                 ci.quantity,
                 o.business_id,
-                o.title,
-                o.description,
-                o.image_url,
-                o.original_price,
-                o.discounted_price,
-                o.pickup_time_start,
-                o.pickup_time_end,
+                ${titleSel},
+                ${descSel},
+                ${imageSel},
+                ${origPriceSel},
+                ${discPriceSel},
+                ${startSel},
+                ${endSel},
                 u.name as business_name,
                 u.address as business_address
             FROM cart_items ci

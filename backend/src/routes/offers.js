@@ -460,6 +460,25 @@ offersRouter.get("/", asyncHandler(async (req, res) => {
             return res.json({ success: true, data: [] });
         }
 
+        // Выясняем доступные колонки и строим SELECT динамически
+        const offersColsRes = await pool.query(`
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_schema = 'public' AND table_name = 'offers'
+        `);
+        const offerCols = offersColsRes.rows.map(r => r.column_name);
+        const has = (c) => offerCols.includes(c);
+
+        const titleSel = has('title') ? 'o.title' : (has('name') ? 'o.name' : 'NULL::text');
+        const descSel = has('description') ? 'o.description' : 'NULL::text';
+        const imageSel = has('image_url') ? 'o.image_url' : (has('photo_url') ? 'o.photo_url' : 'NULL::text');
+        const origPriceSel = has('original_price') ? 'o.original_price' : (has('price_orig') ? 'o.price_orig' : 'NULL::numeric');
+        const discPriceSel = has('discounted_price') ? 'o.discounted_price' : (has('price_disc') ? 'o.price_disc' : 'NULL::numeric');
+        const qtySel = has('quantity_available') ? 'o.quantity_available' : (has('quantity') ? 'o.quantity' : 'NULL::int');
+        const startSel = has('pickup_time_start') ? 'o.pickup_time_start' : 'NULL::time';
+        const endSel = has('pickup_time_end') ? 'o.pickup_time_end' : 'NULL::time';
+        const createdSel = has('created_at') ? 'o.created_at' : 'NOW()';
+        const activeCond = has('is_active') ? 'o.is_active = true' : '1=1';
+
         let query;
         if (have.includes('businesses')) {
             // Современная схема: JOIN businesses
@@ -467,16 +486,15 @@ offersRouter.get("/", asyncHandler(async (req, res) => {
                 SELECT 
                     o.id,
                     o.business_id,
-                    o.title,
-                    o.description,
-                    o.image_url,
-                    o.original_price,
-                    o.discounted_price,
-                    o.quantity_available,
-                    o.pickup_time_start,
-                    o.pickup_time_end,
-                    o.is_active,
-                    o.created_at,
+                    ${titleSel} as title,
+                    ${descSel} as description,
+                    ${imageSel} as image_url,
+                    ${origPriceSel} as original_price,
+                    ${discPriceSel} as discounted_price,
+                    ${qtySel} as quantity_available,
+                    ${startSel} as pickup_time_start,
+                    ${endSel} as pickup_time_end,
+                    ${createdSel} as created_at,
                     b.name AS business_name,
                     b.address AS business_address,
                     b.coord_0,
@@ -485,8 +503,8 @@ offersRouter.get("/", asyncHandler(async (req, res) => {
                     b.email AS business_email
                 FROM offers o
                 LEFT JOIN businesses b ON o.business_id = b.id
-                WHERE o.is_active = true
-                ORDER BY o.created_at DESC
+                WHERE ${activeCond}
+                ORDER BY ${createdSel} DESC
             `;
         } else {
             // Legacy схема: JOIN users (business_id указывает на users.id)
@@ -494,16 +512,15 @@ offersRouter.get("/", asyncHandler(async (req, res) => {
                 SELECT 
                     o.id,
                     o.business_id,
-                    o.title,
-                    o.description,
-                    o.image_url,
-                    o.original_price,
-                    o.discounted_price,
-                    o.quantity_available,
-                    o.pickup_time_start,
-                    o.pickup_time_end,
-                    o.is_active,
-                    o.created_at,
+                    ${titleSel} as title,
+                    ${descSel} as description,
+                    ${imageSel} as image_url,
+                    ${origPriceSel} as original_price,
+                    ${discPriceSel} as discounted_price,
+                    ${qtySel} as quantity_available,
+                    ${startSel} as pickup_time_start,
+                    ${endSel} as pickup_time_end,
+                    ${createdSel} as created_at,
                     u.name AS business_name,
                     u.address AS business_address,
                     u.coord_0,
@@ -512,8 +529,8 @@ offersRouter.get("/", asyncHandler(async (req, res) => {
                     u.email AS business_email
                 FROM offers o
                 LEFT JOIN users u ON o.business_id = u.id
-                WHERE o.is_active = true
-                ORDER BY o.created_at DESC
+                WHERE ${activeCond}
+                ORDER BY ${createdSel} DESC
             `;
         }
 
