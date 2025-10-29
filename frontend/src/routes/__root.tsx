@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Outlet, createRootRoute, Link } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanstackDevtools } from "@tanstack/react-devtools";
@@ -142,6 +142,7 @@ function RootRoute() {
             <QueryClientProvider client={queryClient}>
                 <ThemeProvider>
                     <AuthProvider>
+                    <MobileOnly>
                     <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900">
                     <header className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -165,6 +166,7 @@ function RootRoute() {
                         <Outlet />
                     </main>
                     </div>
+                    </MobileOnly>
 
                     <TanstackDevtools
                         config={{
@@ -185,4 +187,40 @@ function RootRoute() {
         </QueryClientProvider>
         </HelmetProvider>
     );
+}
+
+function MobileOnly({ children }: { children: React.ReactNode }) {
+    const [isMobile, setIsMobile] = useState(true);
+
+    useEffect(() => {
+        const check = () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const isPortrait = height >= width;
+            setIsMobile(width <= 430 && width >= 320 && isPortrait);
+        };
+        check();
+        window.addEventListener('resize', check);
+        window.addEventListener('orientationchange', check);
+        return () => {
+            window.removeEventListener('resize', check);
+            window.removeEventListener('orientationchange', check);
+        };
+    }, []);
+
+    if (!isMobile) {
+        return (
+            <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-6">
+                <div className="max-w-sm w-full text-center bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div className="text-5xl mb-4">📱</div>
+                    <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Доступно только на мобильных</h1>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                        Откройте приложение на смартфоне (ширина 360–430px, портретная ориентация).
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    return <>{children}</>;
 }
