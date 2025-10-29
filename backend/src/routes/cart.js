@@ -22,8 +22,9 @@ cartRouter.get("/cart", async (req, res) => {
             return res.send({ success: true, data: [] });
         }
 
-        const result = await pool.query(
-            `SELECT 
+        let query;
+        if (have.includes('businesses')) {
+            query = `SELECT 
                 ci.offer_id,
                 ci.quantity,
                 o.business_id,
@@ -39,9 +40,29 @@ cartRouter.get("/cart", async (req, res) => {
             FROM cart_items ci
             JOIN offers o ON ci.offer_id = o.id
             JOIN businesses b ON o.business_id = b.id
-            WHERE ci.user_id = $1`,
-            [userId]
-        );
+            WHERE ci.user_id = $1`;
+        } else {
+            // fallback legacy schema
+            query = `SELECT 
+                ci.offer_id,
+                ci.quantity,
+                o.business_id,
+                o.title,
+                o.description,
+                o.image_url,
+                o.original_price,
+                o.discounted_price,
+                o.pickup_time_start,
+                o.pickup_time_end,
+                u.name as business_name,
+                u.address as business_address
+            FROM cart_items ci
+            JOIN offers o ON ci.offer_id = o.id
+            JOIN users u ON o.business_id = u.id
+            WHERE ci.user_id = $1`;
+        }
+
+        const result = await pool.query(query, [userId]);
 
         const cartItems = result.rows.map(row => ({
             offer_id: row.offer_id,
