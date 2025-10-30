@@ -7,6 +7,7 @@ import { useState, useContext } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { authContext } from "@/lib/auth";
 import { notify } from "@/lib/notifications";
+import { CartSheet } from "@/components/ui/cart-sheet";
 
 export const Route = createFileRoute("/account/")({
     component: RouteComponent,
@@ -18,6 +19,7 @@ function RouteComponent() {
     const [showOrders, setShowOrders] = useState(false);
     const [showStats, setShowStats] = useState(false);
     const [showFavorites, setShowFavorites] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false);
     const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
     const [selectedOrderForReview, setSelectedOrderForReview] = useState<any>(null);
     const [reviewRating, setReviewRating] = useState(5);
@@ -597,6 +599,24 @@ function RouteComponent() {
 
             {/* Menu Options */}
             <div className="bg-gray-50 py-4">
+                {/* Cart */}
+                <button 
+                    onClick={() => setIsCartOpen(true)}
+                    className="w-full bg-white dark:bg-gray-800 px-4 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-100 dark:border-gray-700"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <span className="text-2xl">🛒</span>
+                        </div>
+                        <div className="text-left">
+                            <div className="text-base font-bold text-gray-900 dark:text-white">Корзина</div>
+                            <div className="text-xs text-gray-500">Просмотреть и оформить</div>
+                        </div>
+                    </div>
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
                 {/* Orders */}
                 <button 
                     onClick={() => setShowOrders(true)}
@@ -780,6 +800,13 @@ function RouteComponent() {
                     </div>
                 </DialogContent>
             </Dialog>
+            {/* Cart Sheet */}
+            <CartSheet
+                isOpen={isCartOpen}
+                onClose={() => setIsCartOpen(false)}
+                onGoToOffers={() => { setIsCartOpen(false); navigate({ to: "/home" }); }}
+                onCheckout={() => { setIsCartOpen(false); navigate({ to: "/checkout" }); }}
+            />
         </div>
     );
 }

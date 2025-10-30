@@ -136,7 +136,7 @@ export function CartSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby="cart-title"
-        className={`fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col ${className}`}
+        className={`fixed bottom-0 left-0 right-0 z-60 bg-white dark:bg-gray-900 rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col ${className}`}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
       >
