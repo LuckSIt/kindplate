@@ -216,7 +216,7 @@ function RootRoute() {
                         ]}
                     />
                     <NotificationContainer />
-                    <InstallPrompt />
+                    {/* InstallPrompt removed per request to hide floating icon */}
                     <NetworkStatus />
                     <PushOnboarding />
                 </AuthProvider>

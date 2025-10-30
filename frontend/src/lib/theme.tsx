@@ -9,12 +9,13 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState(() => {
-    // Проверяем сохраненную тему или системную
+    // По умолчанию включаем темную тему (мобильное приложение),
+    // если явно не сохранена светлая
     const saved = localStorage.getItem('theme');
     if (saved) {
       return saved === 'dark';
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return true; // default dark for consistent mobile look (iOS 12/13 etc.)
   });
 
   useEffect(() => {
