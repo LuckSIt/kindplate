@@ -8,9 +8,9 @@ const getBaseURL = () => {
     if (import.meta.env.VITE_BACKEND_BASE_URL) {
         return import.meta.env.VITE_BACKEND_BASE_URL;
     }
-    // Рендер по умолчанию в проде, локально — 5000
+    // Прод по умолчанию — api.kindplate.ru; локально — 5000
     const isLocal = typeof window !== 'undefined' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
-    return isLocal ? "http://localhost:5000" : "https://kindplate-backend.onrender.com";
+    return isLocal ? "http://localhost:5000" : "https://api.kindplate.ru";
 };
 
 console.log("Backend URL:", getBaseURL());
