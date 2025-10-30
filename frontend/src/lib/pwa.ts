@@ -38,6 +38,22 @@ export function registerServiceWorker() {
   }
 }
 
+// If we don't have VAPID key configured, ensure we aren't subscribed to push to avoid browser warnings
+export async function ensureNoPushWithoutVapid() {
+  const vapid = (import.meta as any).env?.VITE_VAPID_PUBLIC_KEY as string | undefined;
+  if (!('serviceWorker' in navigator)) return;
+  if (vapid) return;
+  try {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    for (const registration of regs) {
+      try {
+        const sub = await registration.pushManager.getSubscription();
+        if (sub) await sub.unsubscribe();
+      } catch {}
+    }
+  } catch {}
+}
+
 /**
  * Unregister Service Worker (для разработки)
  */

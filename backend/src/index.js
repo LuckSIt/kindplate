@@ -20,6 +20,9 @@ const {
 
 const app = express();
 
+// Behind Render's proxy to get correct protocol and set secure cookies
+app.set('trust proxy', 1);
+
 // Создаем папку для логов если не существует
 if (!fs.existsSync('logs')) {
     fs.mkdirSync('logs');
@@ -129,6 +132,11 @@ app.use(
     cookieSession({
         name: "session",
         keys: [process.env.SECRET_KEY],
+        // Cross-site cookies for frontend <-> backend on different domains (Render)
+        sameSite: 'none',
+        secure: true,
+        httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 );
 app.use("/auth", authRouter);
