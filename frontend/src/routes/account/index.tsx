@@ -695,6 +695,26 @@ function RouteComponent() {
                 </div>
             )}
 
+            {/* Admin Panel Link (if admin) */}
+            {user?.role === 'admin' && (
+                <div className="bg-gray-50 py-4 mt-4">
+                    <button 
+                        onClick={() => navigate({ to: "/admin" })}
+                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-4 flex items-center justify-between hover:from-purple-700 hover:to-indigo-700 transition-colors shadow-lg mx-4 rounded-xl"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                <span className="text-2xl">🛠️</span>
+                            </div>
+                            <span className="text-base font-bold">Администрирование</span>
+                        </div>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            )}
+
             {/* Logout Button */}
             <div className="px-4 py-6">
                 <Button 
