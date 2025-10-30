@@ -281,3 +281,39 @@ npm test
 ---
 
 **Made with ❤️ for fighting food waste**
+
+## Deploy (Амвера / Docker + Caddy)
+
+1. Подготовка сервера
+
+```
+sudo apt update && sudo apt install -y docker.io docker-compose-plugin
+sudo usermod -aG docker $USER && newgrp docker
+```
+
+2. Клонируйте репозиторий и создайте `.env` (рядом с `docker-compose.yml`):
+
+```
+DATABASE_URL=postgres://kind:plate@postgres:5432/kindplate?sslmode=disable
+SECRET_KEY=<random_string>
+FRONTEND_ORIGIN=https://app.kindplate.ru
+VITE_BACKEND_BASE_URL=https://api.kindplate.ru
+# VITE_VAPID_PUBLIC_KEY=<если используете web-push>
+```
+
+3. Отредактируйте `Caddyfile` — укажите реальные домены и почту в секции `{ email ... }`.
+
+4. Запуск:
+
+```
+docker compose build
+docker compose up -d
+```
+
+5. (опц.) Инициализация БД:
+
+```
+docker compose exec -T postgres psql -U kind -d kindplate < backend/init.sql
+```
+
+Логи: `docker compose logs -f backend|frontend|caddy`.
