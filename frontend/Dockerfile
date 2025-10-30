@@ -5,7 +5,16 @@ COPY package*.json ./
 RUN npm install
 
 COPY . ./
+
+# Build args для Vite переменных окружения
+ARG VITE_BACKEND_BASE_URL=https://api-kindplate.tw1.ru
+ARG VITE_VAPID_PUBLIC_KEY=
+
+# Передаём в ENV для использования в npm run build
 ENV NODE_ENV=production
+ENV VITE_BACKEND_BASE_URL=${VITE_BACKEND_BASE_URL}
+ENV VITE_VAPID_PUBLIC_KEY=${VITE_VAPID_PUBLIC_KEY}
+
 RUN npm run build
 
 FROM nginx:alpine

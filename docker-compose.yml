@@ -31,10 +31,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    environment:
-      NODE_ENV: production
-      VITE_BACKEND_BASE_URL: ${VITE_BACKEND_BASE_URL}
-      VITE_VAPID_PUBLIC_KEY: ${VITE_VAPID_PUBLIC_KEY}
+      args:
+        VITE_BACKEND_BASE_URL: ${VITE_BACKEND_BASE_URL:-https://api-kindplate.tw1.ru}
+        VITE_VAPID_PUBLIC_KEY: ${VITE_VAPID_PUBLIC_KEY:-}
     depends_on:
       - backend
     ports:
