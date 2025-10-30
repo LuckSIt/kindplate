@@ -5,8 +5,7 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
 
-// Import PWA registration
-import { registerServiceWorker } from "./lib/pwa";
+// PWA SW отключен
 
 import "./styles.css";
 
@@ -34,7 +33,4 @@ if (rootElement && !rootElement.innerHTML) {
     root.render(<RouterProvider router={router} />);
 }
 
-// Register Service Worker for PWA
-if (import.meta.env.PROD) {
-    registerServiceWorker();
-}
+// Service Worker registration removed to avoid stale caches in production

@@ -3,40 +3,8 @@
  * Регистрация Service Worker для офлайн-режима
  */
 
-export function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .then((registration) => {
-          console.log('✅ Service Worker registered:', registration);
-
-          // Проверка обновлений каждые 60 секунд
-          setInterval(() => {
-            registration.update();
-          }, 60000);
-
-          // Слушаем обновления
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // Новая версия доступна
-                  if (confirm('Доступно обновление приложения. Обновить сейчас?')) {
-                    window.location.reload();
-                  }
-                }
-              });
-            }
-          });
-        })
-        .catch((error) => {
-          console.error('❌ Service Worker registration failed:', error);
-        });
-    });
-  }
-}
+// SW регистрация отключена, чтобы исключить проблемы со старыми кэшами
+export function registerServiceWorker() { /* no-op */ }
 
 // If we don't have VAPID key configured, ensure we aren't subscribed to push to avoid browser warnings
 export async function ensureNoPushWithoutVapid() {
@@ -64,6 +32,11 @@ export async function unregisterServiceWorker() {
       await registration.unregister();
     }
     console.log('✅ Service Worker unregistered');
+    // Очистка всех кэшей
+    try {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((k) => caches.delete(k)));
+    } catch {}
   }
 }
 

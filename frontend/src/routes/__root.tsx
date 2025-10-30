@@ -14,7 +14,7 @@ import { authContext } from "@/lib/auth";
 import { ThemeProvider, useTheme } from "@/lib/theme";
 import { NotificationContainer } from "@/components/ui/notification";
 import { InstallPrompt, NetworkStatus } from "@/components/ui/install-prompt";
-import { ensureNoPushWithoutVapid } from "@/lib/pwa";
+import { ensureNoPushWithoutVapid, unregisterServiceWorker } from "@/lib/pwa";
 import { PushOnboarding } from "@/components/ui/push-onboarding";
 import { CartSheet } from "@/components/ui/cart-sheet";
 import { useRouter } from "@tanstack/react-router";
@@ -159,7 +159,7 @@ function RootRoute() {
                     <MobileOnly>
                     <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900">
                     {/* Ensure no push subscription without VAPID on mount */}
-                    {(() => { ensureNoPushWithoutVapid(); return null; })()}
+                    {(() => { ensureNoPushWithoutVapid(); unregisterServiceWorker(); return null; })()}
                     <header className={`sticky top-0 z-50 bg-white dark:bg-gray-900 pt-safe ${hasShadow ? 'shadow-md' : 'shadow-none'} transition-shadow`}>
                         <div className="px-4">
                             <div className="flex items-center justify-between h-14">
