@@ -1,31 +1,3 @@
-import { Button } from './button';
-
-interface EmptyStateProps {
-  title: string;
-  description?: string;
-  icon?: React.ReactNode;
-  actionLabel?: string;
-  onAction?: () => void;
-  className?: string;
-}
-
-export function EmptyState({ title, description, icon, actionLabel, onAction, className = '' }: EmptyStateProps) {
-  return (
-    <div className={`flex flex-col items-center justify-center text-center py-12 ${className}`}>
-      <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
-        {icon ?? <span className="text-3xl">🗂️</span>}
-      </div>
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{title}</h3>
-      {description && (
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 max-w-sm">{description}</p>
-      )}
-      {actionLabel && onAction && (
-        <Button onClick={onAction}>{actionLabel}</Button>
-      )}
-    </div>
-  );
-}
-
 import React from 'react';
 import { Button } from './button';
 
@@ -40,13 +12,7 @@ interface EmptyStateProps {
   className?: string;
 }
 
-export function EmptyState({ 
-  icon, 
-  title, 
-  description, 
-  action, 
-  className = '' 
-}: EmptyStateProps) {
+export function EmptyState({ icon, title, description, action, className = '' }: EmptyStateProps) {
   return (
     <div className={`text-center py-12 ${className}`}>
       {icon && (
