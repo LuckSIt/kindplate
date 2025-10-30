@@ -58,17 +58,23 @@ app.use(contentSecurityPolicy);
 app.use(
     cors({
         origin: function(origin, callback) {
+            const envOrigin = process.env.FRONTEND_ORIGIN;
             const allowedOrigins = [
                 "http://localhost:3000",
                 "http://localhost:3001", 
                 "http://localhost:5173",
-                "http://172.20.10.2:5173"
-            ];
-            
-            // Разрешаем запросы без origin (например, мобильные приложения)
+                "http://172.20.10.2:5173",
+                envOrigin
+            ].filter(Boolean);
+
+            // Разрешаем запросы без origin (например, мобильные приложения, curl)
             if (!origin) return callback(null, true);
-            
-            if (allowedOrigins.indexOf(origin) !== -1) {
+
+            // Разрешаем домены Render *.onrender.com по https
+            const isRender = /^https?:\/\/[^.]+\.onrender\.com$/i.test(origin);
+            if (isRender) return callback(null, true);
+
+            if (allowedOrigins.includes(origin)) {
                 callback(null, true);
             } else {
                 logger.warn(`❌ CORS блокировка от источника: ${origin}`);
