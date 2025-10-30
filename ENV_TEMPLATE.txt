@@ -1,0 +1,12 @@
+# Production environment variables for TimeWeb VPS deployment
+# Create .env file on your server with these values:
+
+DATABASE_URL=postgresql://kind:plate@postgres:5432/kindplate
+SECRET_KEY=your-secret-key-here-change-this-in-production
+FRONTEND_ORIGIN=https://app-kindplate.tw1.ru
+VITE_BACKEND_BASE_URL=https://api-kindplate.tw1.ru
+VITE_VAPID_PUBLIC_KEY=
+
+# Note: Change SECRET_KEY to a random string in production!
+# You can generate one with: openssl rand -base64 32
+
