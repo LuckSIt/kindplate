@@ -8,12 +8,12 @@ const getBaseURL = () => {
     if (import.meta.env.VITE_BACKEND_BASE_URL) {
         return import.meta.env.VITE_BACKEND_BASE_URL;
     }
-    // Прод по умолчанию — api-kindplate.tw1.ru; локально — 5000
+    // Прод по умолчанию — явный IP+порт; локально — 5000
     const isLocal = typeof window !== 'undefined' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
-    return isLocal ? "http://localhost:5000" : "https://api-kindplate.tw1.ru";
+    return isLocal ? "http://localhost:5000" : "http://45.132.50.45:5000";
 };
 
-console.log("Backend URL:", getBaseURL());
+// console.log("Backend URL:", getBaseURL());
 
 export const getBackendURL = getBaseURL;
 export const getImageURL = (path?: string) => {
