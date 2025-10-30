@@ -25,6 +25,7 @@
         "xss-clean": "^0.1.4",
         "express-mongo-sanitize": "^2.2.0",
         "jsdom": "^26.0.0",
+        "zod": "^3.23.8",
         "jose": "^6.0.13",
         "multer": "^2.0.2",
         "pg": "^8.16.3",
