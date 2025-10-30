@@ -46,15 +46,13 @@ export async function registerPush(): Promise<boolean> {
   let sub: PushSubscription | null = null;
   try {
     const vapidKey = (import.meta as any).env?.VITE_VAPID_PUBLIC_KEY as string | undefined;
-    if (vapidKey) {
-      const converted = urlBase64ToUint8Array(vapidKey);
-      sub = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: converted });
-    } else {
-      // Try without key; Chrome accepts when manifest has gcm_sender_id
-      sub = await registration.pushManager.subscribe({ userVisibleOnly: true } as any);
+    if (!vapidKey) {
+      // Не подписываемся без VAPID-ключа, чтобы избежать предупреждений браузера
+      return true;
     }
+    const converted = urlBase64ToUint8Array(vapidKey);
+    sub = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: converted });
   } catch (e) {
-    // Swallow subscription error for visual onboarding stage
     return true;
   }
   try {

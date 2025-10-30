@@ -220,6 +220,10 @@ function RouteComponent() {
         if (lock) {
             const prev = document.body.style.overflow;
             document.body.style.overflow = 'hidden';
+            // Сбрасываем фокус с элементов, которые могут оказаться под aria-hidden
+            if (document.activeElement instanceof HTMLElement) {
+                document.activeElement.blur();
+            }
             return () => { document.body.style.overflow = prev; };
         }
     }, [activeSnap]);
