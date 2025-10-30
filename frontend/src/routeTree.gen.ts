@@ -14,19 +14,25 @@ import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SearchIndexRouteImport } from './routes/search/index'
 import { Route as PanelIndexRouteImport } from './routes/panel/index'
 import { Route as HomeIndexRouteImport } from './routes/home/index'
+import { Route as CheckoutIndexRouteImport } from './routes/checkout/index'
+import { Route as CartIndexRouteImport } from './routes/cart/index'
 import { Route as BizIndexRouteImport } from './routes/biz/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as VVendorIdRouteImport } from './routes/v/$vendorId'
 import { Route as PaymentOrderIdRouteImport } from './routes/payment/$orderId'
+import { Route as OfferOfferIdRouteImport } from './routes/offer/$offerId'
 import { Route as OOfferIdRouteImport } from './routes/o/$offerId'
 import { Route as MeSettingsRouteImport } from './routes/me/settings'
 import { Route as LegalTermsRouteImport } from './routes/legal/terms'
 import { Route as LegalRefundPolicyRouteImport } from './routes/legal/refund-policy'
 import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
 import { Route as LegalFaqRouteImport } from './routes/legal/faq'
+import { Route as CheckoutSuccessRouteImport } from './routes/checkout/success'
+import { Route as BusinessBusinessIdRouteImport } from './routes/business/$businessId'
 import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
 import { Route as PaymentOrderIdSuccessRouteImport } from './routes/payment/$orderId/success'
 import { Route as PaymentOrderIdCancelRouteImport } from './routes/payment/$orderId/cancel'
@@ -60,6 +66,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SearchIndexRoute = SearchIndexRouteImport.update({
+  id: '/search/',
+  path: '/search/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PanelIndexRoute = PanelIndexRouteImport.update({
   id: '/panel/',
   path: '/panel/',
@@ -69,6 +80,16 @@ const HomeIndexRoute = HomeIndexRouteImport.update({
   id: '/home/',
   path: '/home/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutIndexRoute = CheckoutIndexRouteImport.update({
+  id: '/checkout/',
+  path: '/checkout/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartIndexRoute = CartIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CartRoute,
 } as any)
 const BizIndexRoute = BizIndexRouteImport.update({
   id: '/biz/',
@@ -93,6 +114,11 @@ const VVendorIdRoute = VVendorIdRouteImport.update({
 const PaymentOrderIdRoute = PaymentOrderIdRouteImport.update({
   id: '/payment/$orderId',
   path: '/payment/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfferOfferIdRoute = OfferOfferIdRouteImport.update({
+  id: '/offer/$offerId',
+  path: '/offer/$offerId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OOfferIdRoute = OOfferIdRouteImport.update({
@@ -123,6 +149,16 @@ const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
 const LegalFaqRoute = LegalFaqRouteImport.update({
   id: '/legal/faq',
   path: '/legal/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutSuccessRoute = CheckoutSuccessRouteImport.update({
+  id: '/checkout/success',
+  path: '/checkout/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BusinessBusinessIdRoute = BusinessBusinessIdRouteImport.update({
+  id: '/business/$businessId',
+  path: '/business/$businessId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
@@ -166,22 +202,28 @@ const BizOffersOfferIdEditRoute = BizOffersOfferIdEditRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/cart': typeof CartRoute
+  '/cart': typeof CartRouteWithChildren
   '/favorites': typeof FavoritesRoute
   '/profile': typeof ProfileRoute
+  '/business/$businessId': typeof BusinessBusinessIdRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/legal/faq': typeof LegalFaqRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund-policy': typeof LegalRefundPolicyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/me/settings': typeof MeSettingsRoute
   '/o/$offerId': typeof OOfferIdRoute
+  '/offer/$offerId': typeof OfferOfferIdRoute
   '/payment/$orderId': typeof PaymentOrderIdRouteWithChildren
   '/v/$vendorId': typeof VVendorIdRoute
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/biz': typeof BizIndexRoute
+  '/cart/': typeof CartIndexRoute
+  '/checkout': typeof CheckoutIndexRoute
   '/home': typeof HomeIndexRoute
   '/panel': typeof PanelIndexRoute
+  '/search': typeof SearchIndexRoute
   '/biz/offers/create': typeof BizOffersCreateRoute
   '/payment/$orderId/cancel': typeof PaymentOrderIdCancelRoute
   '/payment/$orderId/success': typeof PaymentOrderIdSuccessRoute
@@ -193,22 +235,27 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/cart': typeof CartRoute
   '/favorites': typeof FavoritesRoute
   '/profile': typeof ProfileRoute
+  '/business/$businessId': typeof BusinessBusinessIdRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/legal/faq': typeof LegalFaqRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund-policy': typeof LegalRefundPolicyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/me/settings': typeof MeSettingsRoute
   '/o/$offerId': typeof OOfferIdRoute
+  '/offer/$offerId': typeof OfferOfferIdRoute
   '/payment/$orderId': typeof PaymentOrderIdRouteWithChildren
   '/v/$vendorId': typeof VVendorIdRoute
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/biz': typeof BizIndexRoute
+  '/cart': typeof CartIndexRoute
+  '/checkout': typeof CheckoutIndexRoute
   '/home': typeof HomeIndexRoute
   '/panel': typeof PanelIndexRoute
+  '/search': typeof SearchIndexRoute
   '/biz/offers/create': typeof BizOffersCreateRoute
   '/payment/$orderId/cancel': typeof PaymentOrderIdCancelRoute
   '/payment/$orderId/success': typeof PaymentOrderIdSuccessRoute
@@ -221,22 +268,28 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/cart': typeof CartRoute
+  '/cart': typeof CartRouteWithChildren
   '/favorites': typeof FavoritesRoute
   '/profile': typeof ProfileRoute
+  '/business/$businessId': typeof BusinessBusinessIdRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
   '/legal/faq': typeof LegalFaqRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund-policy': typeof LegalRefundPolicyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/me/settings': typeof MeSettingsRoute
   '/o/$offerId': typeof OOfferIdRoute
+  '/offer/$offerId': typeof OfferOfferIdRoute
   '/payment/$orderId': typeof PaymentOrderIdRouteWithChildren
   '/v/$vendorId': typeof VVendorIdRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/biz/': typeof BizIndexRoute
+  '/cart/': typeof CartIndexRoute
+  '/checkout/': typeof CheckoutIndexRoute
   '/home/': typeof HomeIndexRoute
   '/panel/': typeof PanelIndexRoute
+  '/search/': typeof SearchIndexRoute
   '/biz/offers/create': typeof BizOffersCreateRoute
   '/payment/$orderId/cancel': typeof PaymentOrderIdCancelRoute
   '/payment/$orderId/success': typeof PaymentOrderIdSuccessRoute
@@ -253,19 +306,25 @@ export interface FileRouteTypes {
     | '/cart'
     | '/favorites'
     | '/profile'
+    | '/business/$businessId'
+    | '/checkout/success'
     | '/legal/faq'
     | '/legal/privacy'
     | '/legal/refund-policy'
     | '/legal/terms'
     | '/me/settings'
     | '/o/$offerId'
+    | '/offer/$offerId'
     | '/payment/$orderId'
     | '/v/$vendorId'
     | '/account'
     | '/admin'
     | '/biz'
+    | '/cart/'
+    | '/checkout'
     | '/home'
     | '/panel'
+    | '/search'
     | '/biz/offers/create'
     | '/payment/$orderId/cancel'
     | '/payment/$orderId/success'
@@ -277,22 +336,27 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/cart'
     | '/favorites'
     | '/profile'
+    | '/business/$businessId'
+    | '/checkout/success'
     | '/legal/faq'
     | '/legal/privacy'
     | '/legal/refund-policy'
     | '/legal/terms'
     | '/me/settings'
     | '/o/$offerId'
+    | '/offer/$offerId'
     | '/payment/$orderId'
     | '/v/$vendorId'
     | '/account'
     | '/admin'
     | '/biz'
+    | '/cart'
+    | '/checkout'
     | '/home'
     | '/panel'
+    | '/search'
     | '/biz/offers/create'
     | '/payment/$orderId/cancel'
     | '/payment/$orderId/success'
@@ -307,19 +371,25 @@ export interface FileRouteTypes {
     | '/cart'
     | '/favorites'
     | '/profile'
+    | '/business/$businessId'
+    | '/checkout/success'
     | '/legal/faq'
     | '/legal/privacy'
     | '/legal/refund-policy'
     | '/legal/terms'
     | '/me/settings'
     | '/o/$offerId'
+    | '/offer/$offerId'
     | '/payment/$orderId'
     | '/v/$vendorId'
     | '/account/'
     | '/admin/'
     | '/biz/'
+    | '/cart/'
+    | '/checkout/'
     | '/home/'
     | '/panel/'
+    | '/search/'
     | '/biz/offers/create'
     | '/payment/$orderId/cancel'
     | '/payment/$orderId/success'
@@ -332,22 +402,27 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
-  CartRoute: typeof CartRoute
+  CartRoute: typeof CartRouteWithChildren
   FavoritesRoute: typeof FavoritesRoute
   ProfileRoute: typeof ProfileRoute
+  BusinessBusinessIdRoute: typeof BusinessBusinessIdRoute
+  CheckoutSuccessRoute: typeof CheckoutSuccessRoute
   LegalFaqRoute: typeof LegalFaqRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalRefundPolicyRoute: typeof LegalRefundPolicyRoute
   LegalTermsRoute: typeof LegalTermsRoute
   MeSettingsRoute: typeof MeSettingsRoute
   OOfferIdRoute: typeof OOfferIdRoute
+  OfferOfferIdRoute: typeof OfferOfferIdRoute
   PaymentOrderIdRoute: typeof PaymentOrderIdRouteWithChildren
   VVendorIdRoute: typeof VVendorIdRoute
   AccountIndexRoute: typeof AccountIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BizIndexRoute: typeof BizIndexRoute
+  CheckoutIndexRoute: typeof CheckoutIndexRoute
   HomeIndexRoute: typeof HomeIndexRoute
   PanelIndexRoute: typeof PanelIndexRoute
+  SearchIndexRoute: typeof SearchIndexRoute
   BizOffersCreateRoute: typeof BizOffersCreateRoute
   BizOffersOfferIdEditRoute: typeof BizOffersOfferIdEditRoute
 }
@@ -389,6 +464,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/search/': {
+      id: '/search/'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/panel/': {
       id: '/panel/'
       path: '/panel'
@@ -402,6 +484,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/home'
       preLoaderRoute: typeof HomeIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/checkout/': {
+      id: '/checkout/'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart/': {
+      id: '/cart/'
+      path: '/'
+      fullPath: '/cart/'
+      preLoaderRoute: typeof CartIndexRouteImport
+      parentRoute: typeof CartRoute
     }
     '/biz/': {
       id: '/biz/'
@@ -436,6 +532,13 @@ declare module '@tanstack/react-router' {
       path: '/payment/$orderId'
       fullPath: '/payment/$orderId'
       preLoaderRoute: typeof PaymentOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/$offerId': {
+      id: '/offer/$offerId'
+      path: '/offer/$offerId'
+      fullPath: '/offer/$offerId'
+      preLoaderRoute: typeof OfferOfferIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/o/$offerId': {
@@ -478,6 +581,20 @@ declare module '@tanstack/react-router' {
       path: '/legal/faq'
       fullPath: '/legal/faq'
       preLoaderRoute: typeof LegalFaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/success': {
+      id: '/checkout/success'
+      path: '/checkout/success'
+      fullPath: '/checkout/success'
+      preLoaderRoute: typeof CheckoutSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business/$businessId': {
+      id: '/business/$businessId'
+      path: '/business/$businessId'
+      fullPath: '/business/$businessId'
+      preLoaderRoute: typeof BusinessBusinessIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/login/': {
@@ -546,6 +663,16 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface CartRouteChildren {
+  CartIndexRoute: typeof CartIndexRoute
+}
+
+const CartRouteChildren: CartRouteChildren = {
+  CartIndexRoute: CartIndexRoute,
+}
+
+const CartRouteWithChildren = CartRoute._addFileChildren(CartRouteChildren)
+
 interface PaymentOrderIdRouteChildren {
   PaymentOrderIdCancelRoute: typeof PaymentOrderIdCancelRoute
   PaymentOrderIdSuccessRoute: typeof PaymentOrderIdSuccessRoute
@@ -563,22 +690,27 @@ const PaymentOrderIdRouteWithChildren = PaymentOrderIdRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
-  CartRoute: CartRoute,
+  CartRoute: CartRouteWithChildren,
   FavoritesRoute: FavoritesRoute,
   ProfileRoute: ProfileRoute,
+  BusinessBusinessIdRoute: BusinessBusinessIdRoute,
+  CheckoutSuccessRoute: CheckoutSuccessRoute,
   LegalFaqRoute: LegalFaqRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalRefundPolicyRoute: LegalRefundPolicyRoute,
   LegalTermsRoute: LegalTermsRoute,
   MeSettingsRoute: MeSettingsRoute,
   OOfferIdRoute: OOfferIdRoute,
+  OfferOfferIdRoute: OfferOfferIdRoute,
   PaymentOrderIdRoute: PaymentOrderIdRouteWithChildren,
   VVendorIdRoute: VVendorIdRoute,
   AccountIndexRoute: AccountIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
   BizIndexRoute: BizIndexRoute,
+  CheckoutIndexRoute: CheckoutIndexRoute,
   HomeIndexRoute: HomeIndexRoute,
   PanelIndexRoute: PanelIndexRoute,
+  SearchIndexRoute: SearchIndexRoute,
   BizOffersCreateRoute: BizOffersCreateRoute,
   BizOffersOfferIdEditRoute: BizOffersOfferIdEditRoute,
 }

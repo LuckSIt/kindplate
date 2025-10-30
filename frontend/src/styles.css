@@ -4,6 +4,19 @@
 :root {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  /* Radii tokens (4px grid) */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-2xl: 28px;
+  /* Shadows */
+  --shadow-soft: 0 4px 14px rgba(0,0,0,0.08);
+  --shadow-strong: 0 12px 40px rgba(0,0,0,0.15);
+  /* Motion */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 150ms;
+  --dur-normal: 300ms;
 }
 
 /* Reset and base styles */
@@ -19,7 +32,47 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background: #f8fafc;
   color: #1f2937;
-  line-height: 1.6;
+  line-height: 1.5;
+}
+
+/* Mobile typography */
+h1 { font-size: 24px; line-height: 30px; font-weight: 700; }
+h2 { font-size: 20px; line-height: 28px; font-weight: 700; }
+h3 { font-size: 18px; line-height: 26px; font-weight: 600; }
+p, span, li { font-size: 14px; line-height: 20px; }
+small, .caption { font-size: 12px; line-height: 18px; color: #6b7280; }
+
+/* iOS input zoom prevention */
+input, select, textarea { font-size: 16px; }
+
+/* Components layer sample */
+@layer components {
+  .kp-card { border-radius: var(--r-xl); box-shadow: var(--shadow-soft); background: #fff; }
+  .kp-chip { border-radius: 9999px; padding: 4px 8px; font-size: 12px; line-height: 18px; }
+  .kp-tabbar { height: 56px; border-top: 1px solid #e5e7eb; backdrop-filter: saturate(120%) blur(8px); }
+  .kp-sheet { 
+    border-top-left-radius: var(--r-xl);
+    border-top-right-radius: var(--r-xl);
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.12);
+    transition: transform var(--dur-normal) var(--ease-smooth), box-shadow var(--dur-fast) var(--ease-smooth);
+    will-change: transform;
+  }
+  .kp-fab {
+    border-radius: 9999px;
+    padding: 10px 14px;
+    background: rgba(17, 24, 39, 0.75);
+    color: #fff;
+    backdrop-filter: blur(12px) saturate(140%);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  }
+  .dark .kp-fab { background: rgba(2,6,23,0.8); }
+  .kp-fab .label { font-weight: 600; font-size: 14px; }
+  .kp-cluster {
+    width: 44px; height: 44px; border-radius: 22px; 
+    display:flex; align-items:center; justify-content:center;
+    background: #22c55e; color:#fff; font-weight:600; font-size:14px;
+    box-shadow: 0 6px 16px rgba(34,197,94,0.35);
+  }
 }
 
 /* Специальные шрифты для заголовков */
@@ -34,68 +87,6 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-semibold, .font-medium, button {
 
 .font-display {
   font-family: var(--font-display) !important;
-}
-
-/* Mobile-first responsive design */
-@media (max-width: 768px) {
-  body {
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  
-  /* Уменьшаем отступы на мобильных */
-  .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  /* Адаптивные заголовки */
-  h1 { font-size: 1.75rem; }
-  h2 { font-size: 1.5rem; }
-  h3 { font-size: 1.25rem; }
-  
-  /* Кнопки на всю ширину на мобильных */
-  .mobile-full-width {
-    width: 100%;
-  }
-  
-  /* Адаптивные карточки */
-  .mobile-card {
-    margin: 0.5rem;
-    padding: 1rem;
-  }
-  
-  /* Скрываем элементы на мобильных */
-  .mobile-hidden {
-    display: none;
-  }
-  
-  /* Показываем элементы только на мобильных */
-  .mobile-only {
-    display: block;
-  }
-  
-  /* Адаптивная навигация */
-  .mobile-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    border-top: 1px solid #e5e7eb;
-    z-index: 50;
-  }
-  
-  .dark .mobile-nav {
-    background: #1f2937;
-    border-top-color: #374151;
-  }
-}
-
-@media (min-width: 769px) {
-  .mobile-only {
-    display: none;
-  }
 }
 
 /* Dark theme support */
@@ -120,6 +111,10 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-semibold, .font-medium, button {
   min-height: 100vh;
   font-family: var(--font-sans) !important;
 }
+
+/* Safe-area helpers */
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 8px); }
 
 /* Дополнительные правила для принудительного применения шрифтов */
 html {
@@ -169,6 +164,18 @@ button, .btn-primary, .btn-secondary {
 
 .animate-fade-in {
   animation: fadeIn 0.5s ease-out;
+}
+
+/* Micro-interactions (60fps-friendly, short) */
+.motion-fade-in { animation: fadeIn var(--dur-fast) var(--ease-smooth); will-change: transform, opacity; }
+.motion-scale-pop { transform: scale(1); transition: transform var(--dur-fast) var(--ease-smooth); }
+.motion-scale-pop:active { transform: scale(0.98); }
+.motion-tap { transition: transform var(--dur-fast) var(--ease-smooth); }
+.motion-tap:active { transform: scale(0.96); }
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-fade-in, .animate-fade-in { animation: none !important; }
+  .motion-scale-pop, .motion-tap { transition: none !important; }
 }
 
 /* Button styles */

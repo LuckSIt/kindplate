@@ -86,6 +86,78 @@ CREATE TABLE reviews (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Вставка тестовых данных
+INSERT INTO users (name, email, address, coord_0, coord_1, password_hash, is_business, role)
+VALUES ('Администратор KindPlate', 'admin@kindplate.ru', 'Санкт-Петербург, Россия', 59.9311, 30.3609, '$2b$10$l3mE4KN9iGuNJMVEi0gHgOOKdB7Y38rlzBB/SmtLdeZ8HGPqhrlfe', false, 'admin')
+ON CONFLICT (email) DO NOTHING;
+
+INSERT INTO users (name, email, address, coord_0, coord_1, password_hash, is_business, role)
+VALUES ('Тестовый Бизнес', 'business@kindplate.ru', 'Санкт-Петербург, Невский пр., 1', 59.935, 30.32, '$2b$10$l3mE4KN9iGuNJMVEi0gHgOOKdB7Y38rlzBB/SmtLdeZ8HGPqhrlfe', true, 'business')
+ON CONFLICT (email) DO NOTHING;
+
+INSERT INTO users (name, email, address, coord_0, coord_1, password_hash, is_business, role)
+VALUES ('Тестовый Пользователь', 'user@kindplate.ru', 'Санкт-Петербург, ул. Пушкина, 10', 59.94, 30.35, '$2b$10$l3mE4KN9iGuNJMVEi0gHgOOKdB7Y38rlzBB/SmtLdeZ8HGPqhrlfe', false, 'customer')
+ON CONFLICT (email) DO NOTHING;
+
+INSERT INTO businesses (user_id, name, description, address, coord_0, coord_1, phone, email, website, opening_hours)
+VALUES (
+    (SELECT id FROM users WHERE email = 'business@kindplate.ru'),
+    'Кафе "Уют"',
+    'Уютное кафе с домашней кухней',
+    'Санкт-Петербург, Невский пр., 1',
+    59.935, 30.32,
+    '+79111234567',
+    'cafe@uyut.ru',
+    'http://uyut-cafe.ru',
+    '{"Mon": "9:00-21:00", "Tue": "9:00-21:00", "Wed": "9:00-21:00", "Thu": "9:00-21:00", "Fri": "9:00-22:00", "Sat": "10:00-22:00", "Sun": "10:00-21:00"}'::jsonb
+)
+ON CONFLICT (user_id) DO NOTHING;
+
+INSERT INTO offers (business_id, title, description, original_price, discounted_price, quantity_available, pickup_time_start, pickup_time_end, image_url, is_active)
+VALUES (
+    (SELECT id FROM businesses WHERE name = 'Кафе "Уют"'),
+    'Комплексный обед',
+    'Вкусный и сытный обед из трех блюд',
+    500.00,
+    250.00,
+    10,
+    '18:00:00',
+    '20:00:00',
+    '/uploads/offers/1761334761092-911158504.jpg',
+    TRUE
+)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO offers (business_id, title, description, original_price, discounted_price, quantity_available, pickup_time_start, pickup_time_end, image_url, is_active)
+VALUES (
+    (SELECT id FROM businesses WHERE name = 'Кафе "Уют"'),
+    'Выпечка дня',
+    'Свежая выпечка со скидкой',
+    200.00,
+    100.00,
+    5,
+    '19:00:00',
+    '21:00:00',
+    '/uploads/offers/1761334778332-98632195.jpg',
+    TRUE
+)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO offers (business_id, title, description, original_price, discounted_price, quantity_available, pickup_time_start, pickup_time_end, image_url, is_active)
+VALUES (
+    (SELECT id FROM businesses WHERE name = 'Кафе "Уют"'),
+    'Салат Цезарь',
+    'Классический салат с курицей и пармезаном',
+    300.00,
+    150.00,
+    8,
+    '17:00:00',
+    '22:00:00',
+    '/uploads/offers/1761334761092-911158504.jpg',
+    TRUE
+)
+ON CONFLICT DO NOTHING;
+
 -- Индексы для оптимизации
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_is_business ON users(is_business);

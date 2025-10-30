@@ -8,6 +8,7 @@ interface MapViewProps {
   selectedBusiness?: Business | null;
   userLocation?: [number, number] | null;
   className?: string;
+  onMapClick?: () => void;
 }
 
 
@@ -17,7 +18,8 @@ export const MapView: React.FC<MapViewProps> = ({
   onBoundsChange,
   selectedBusiness,
   userLocation,
-  className = ''
+  className = '',
+  onMapClick
 }) => {
   const mapRef = useRef<any>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -63,16 +65,29 @@ export const MapView: React.FC<MapViewProps> = ({
         setMap(yandexMap);
         setIsInitialized(true);
 
-        // Handle bounds change
-        yandexMap.events.add('boundschange', () => {
-          const bounds = yandexMap.getBounds();
-          onBoundsChange({
-            north: bounds[1][0],
-            south: bounds[0][0],
-            east: bounds[1][1],
-            west: bounds[0][1]
+        // Handle bounds change with rAF throttle
+        let pending = false;
+        const onBounds = () => {
+          if (pending) return;
+          pending = true;
+          requestAnimationFrame(() => {
+            try {
+              const bounds = yandexMap.getBounds();
+              onBoundsChange({
+                north: bounds[1][0],
+                south: bounds[0][0],
+                east: bounds[1][1],
+                west: bounds[0][1]
+              });
+            } finally {
+              pending = false;
+            }
           });
-        });
+        };
+        yandexMap.events.add('boundschange', onBounds);
+        if (onMapClick) {
+          yandexMap.events.add('click', () => onMapClick());
+        }
 
         // Track user interaction
         yandexMap.events.add('actionend', () => {
@@ -106,24 +121,50 @@ export const MapView: React.FC<MapViewProps> = ({
     };
   }, [mapLoaded, userLocation, onBoundsChange, isInitialized]);
 
-  // Add business markers
+  // Add business markers with clusterer
   useEffect(() => {
     if (!map || !window.ymaps) return;
 
-    // Clear existing markers (but keep user location marker)
-    const geoObjects = map.geoObjects;
-    const objectsToRemove = [];
-    geoObjects.each((obj: any) => {
-      if (obj.properties.get('isUserLocation') !== true) {
-        objectsToRemove.push(obj);
-      }
+    // Clear existing markers/clusterers (but keep user location marker)
+    const toRemove: any[] = [];
+    map.geoObjects.each((obj: any) => {
+      if (obj.properties && obj.properties.get('isUserLocation') === true) return;
+      toRemove.push(obj);
     });
-    objectsToRemove.forEach((obj: any) => geoObjects.remove(obj));
+    toRemove.forEach((obj) => map.geoObjects.remove(obj));
+
+    const clusterIconContentLayout = window.ymaps.templateLayoutFactory.createClass(
+      '<div style="width:44px;height:44px;border-radius:22px;background:#22c55e;box-shadow:0 6px 16px rgba(34,197,94,0.35);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-family:Inter,Arial,sans-serif;font-size:14px;">{{ properties.geoObjects.length }}</div>'
+    );
+
+    const clusterer = new window.ymaps.Clusterer({
+      groupByCoordinates: false,
+      clusterDisableClickZoom: false,
+      clusterOpenBalloonOnClick: true,
+      clusterBalloonContentLayoutWidth: 280,
+      clusterBalloonContentLayoutHeight: 180,
+      gridSize: 64,
+      clusterIcons: [ { href: 'about:blank', size: [44,44], offset: [-22,-22] } ],
+      clusterIconContentLayout
+    });
 
     businesses.forEach((business) => {
       const hasActiveOffers = business.offers && business.offers.some(offer => offer.quantity_available > 0);
       const coords = [parseFloat(business.coords[0]), parseFloat(business.coords[1])];
       
+      const isSelected = selectedBusiness && selectedBusiness.id === business.id;
+
+      // Build inline SVG pin
+      const color = hasActiveOffers ? '#22c55e' : '#9ca3af';
+      const r = isSelected ? 10 : 8;
+      const shadow = isSelected ? 'filter="url(#s)"' : '';
+      const svg = `<?xml version="1.0" encoding="UTF-8"?>
+        <svg xmlns="http://www.w3.org/2000/svg" width="${r*2+4}" height="${r*2+4}" viewBox="0 0 ${r*2+4} ${r*2+4}">
+          <defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="${color}" flood-opacity="0.45"/></filter></defs>
+          <circle cx="${r+2}" cy="${r+2}" r="${r}" fill="${color}" ${shadow}/>
+        </svg>`;
+      const dataUrl = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+
       const placemark = new window.ymaps.Placemark(
         coords,
         {
@@ -140,8 +181,10 @@ export const MapView: React.FC<MapViewProps> = ({
           `
         },
         {
-          preset: 'islands#circleIcon',
-          iconColor: hasActiveOffers ? '#22c55e' : '#9ca3af',
+          iconLayout: 'default#image',
+          iconImageHref: dataUrl,
+          iconImageSize: [r*2+4, r*2+4],
+          iconImageOffset: [-(r+2), -(r+2)],
           balloonCloseButton: true,
           hideIconOnBalloonOpen: false,
         }
@@ -150,10 +193,11 @@ export const MapView: React.FC<MapViewProps> = ({
       placemark.events.add('click', () => {
         onBusinessClick(business);
       });
-
-      map.geoObjects.add(placemark);
+      clusterer.add(placemark);
     });
-  }, [map, businesses, onBusinessClick]);
+
+    map.geoObjects.add(clusterer);
+  }, [map, businesses, onBusinessClick, selectedBusiness?.id]);
 
   // Initial centering on businesses (only once and if user hasn't interacted)
   useEffect(() => {

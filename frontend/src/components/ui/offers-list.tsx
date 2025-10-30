@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Star, Clock, MapPin } from 'lucide-react';
 import { useNavigate } from '@tanstack/react-router';
 import { Button } from './button';
@@ -186,6 +186,57 @@ export const OffersList: React.FC<OffersListProps> = ({
   searchQuery = '',
   className = ''
 }) => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const cardRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const [visibleId, setVisibleId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      // pick the most visible entry
+      let best: { id: number; ratio: number } | null = null;
+      for (const e of entries) {
+        const idAttr = (e.target as HTMLElement).getAttribute('data-bid');
+        const id = idAttr ? Number(idAttr) : NaN;
+        if (!isNaN(id)) {
+          const ratio = e.intersectionRatio;
+          if (!best || ratio > best.ratio) best = { id, ratio };
+        }
+      }
+      if (best && best.ratio > 0.6) {
+        setVisibleId(best.id);
+      }
+    }, { root: container, threshold: [0.25, 0.5, 0.6, 0.75, 1] });
+
+    // observe current cards
+    cardRefs.current.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [businesses.length]);
+
+  // Sync selected business to map when visible card changes
+  useEffect(() => {
+    if (visibleId && (!selectedBusiness || selectedBusiness.id !== visibleId)) {
+      const b = businesses.find(x => x.id === visibleId);
+      if (b) onBusinessClick(b);
+    }
+  }, [visibleId]);
+
+  // Scroll to selected business when it changes (pin -> list sync)
+  useEffect(() => {
+    if (!selectedBusiness) return;
+    const el = cardRefs.current.get(selectedBusiness.id);
+    const container = containerRef.current;
+    if (el && container) {
+      const rect = el.getBoundingClientRect();
+      const crect = container.getBoundingClientRect();
+      const isInView = rect.top >= crect.top && rect.bottom <= crect.bottom;
+      if (!isInView) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [selectedBusiness?.id]);
   const sortOptions = [
     { value: 'favorites', label: 'Избранные' },
     { value: 'distance', label: 'Ближайшие' },
@@ -227,7 +278,7 @@ export const OffersList: React.FC<OffersListProps> = ({
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      <div ref={containerRef} className="flex-1 overflow-y-auto p-4 space-y-3">
         {businesses.length === 0 ? (
           <div className="text-center py-8">
             <div className="text-4xl mb-3">🍽️</div>
@@ -240,13 +291,18 @@ export const OffersList: React.FC<OffersListProps> = ({
           </div>
         ) : (
           businesses.map((business) => (
-            <BusinessCard
+            <div
               key={business.id}
-              business={business}
-              isSelected={selectedBusiness?.id === business.id}
-              searchQuery={searchQuery}
-              onClick={() => onBusinessClick(business)}
-            />
+              data-bid={business.id}
+              ref={(el) => { if (el) cardRefs.current.set(business.id, el); else cardRefs.current.delete(business.id); }}
+            >
+              <BusinessCard
+                business={business}
+                isSelected={selectedBusiness?.id === business.id}
+                searchQuery={searchQuery}
+                onClick={() => onBusinessClick(business)}
+              />
+            </div>
           ))
         )}
       </div>

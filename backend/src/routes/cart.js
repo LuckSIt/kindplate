@@ -15,10 +15,25 @@ cartRouter.get("/cart", async (req, res) => {
         const tablesCheck = await pool.query(`
             SELECT table_name FROM information_schema.tables 
             WHERE table_schema = 'public' AND table_name = ANY($1)
-        `, [[ 'cart_items', 'offers', 'businesses' ]]);
+        `, [[ 'cart_items', 'offers', 'businesses', 'users' ]]);
         const have = tablesCheck.rows.map(r => r.table_name);
-        if (!have.includes('cart_items') || !have.includes('offers') || !have.includes('businesses')) {
-            console.warn('⚠️ Необходимые таблицы отсутствуют. Возвращаем пустую корзину.');
+        // Создаем cart_items если отсутствует
+        if (!have.includes('cart_items')) {
+            await pool.query(`
+                CREATE TABLE IF NOT EXISTS cart_items (
+                    user_id INTEGER NOT NULL,
+                    offer_id INTEGER NOT NULL,
+                    quantity INTEGER NOT NULL DEFAULT 1,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(user_id, offer_id)
+                )
+            `);
+            have.push('cart_items');
+        }
+
+        // Если нет offers — вернуть пусто; при отсутствии businesses используем legacy users
+        if (!have.includes('offers')) {
+            console.warn('⚠️ Таблица offers отсутствует. Возвращаем пустую корзину.');
             return res.send({ success: true, data: [] });
         }
 
@@ -47,8 +62,7 @@ cartRouter.get("/cart", async (req, res) => {
         const endSel = `${colOrNull('pickup_time_end', [])} as pickup_time_end`;
 
         let query;
-        if (have.includes('businesses')) {
-            query = `SELECT 
+        const queryWithBusinesses = `SELECT 
                 ci.offer_id,
                 ci.quantity,
                 o.business_id,
@@ -65,9 +79,7 @@ cartRouter.get("/cart", async (req, res) => {
             JOIN offers o ON ci.offer_id = o.id
             JOIN businesses b ON o.business_id = b.id
             WHERE ci.user_id = $1`;
-        } else {
-            // fallback legacy schema
-            query = `SELECT 
+        const queryWithUsers = `SELECT 
                 ci.offer_id,
                 ci.quantity,
                 o.business_id,
@@ -84,9 +96,22 @@ cartRouter.get("/cart", async (req, res) => {
             JOIN offers o ON ci.offer_id = o.id
             JOIN users u ON o.business_id = u.id
             WHERE ci.user_id = $1`;
+
+        if (have.includes('businesses')) {
+            query = queryWithBusinesses;
+        } else {
+            // fallback legacy schema
+            query = queryWithUsers;
         }
 
-        const result = await pool.query(query, [userId]);
+        let result = await pool.query(query, [userId]);
+        // Если попытались джойниться к businesses, но нет соответствий (миграции не совпадают), пробуем legacy users
+        if (result.rows.length === 0 && have.includes('businesses') && have.includes('users')) {
+            const legacyResult = await pool.query(queryWithUsers, [userId]);
+            if (legacyResult.rows.length > 0) {
+                result = legacyResult;
+            }
+        }
 
         const cartItems = result.rows.map(row => ({
             offer_id: row.offer_id,
@@ -128,11 +153,20 @@ cartRouter.post("/cart", async (req, res) => {
 
         console.log("🔍 Запрос POST /customer/cart", { offer_id, quantity, userId });
 
-        // Проверяем, существует ли предложение
+        // Проверяем доступные колонки в offers
+        const offersColsRes = await pool.query(`
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_schema = 'public' AND table_name = 'offers'
+        `);
+        const offerCols = offersColsRes.rows.map(r => r.column_name);
+        const hasIsActive = offerCols.includes('is_active');
+
+        // Проверяем, существует ли предложение (учитывая возможное отсутствие is_active)
         const offerResult = await pool.query(
-            `SELECT o.id, o.business_id, o.quantity_available, o.is_active
+            `SELECT o.id, o.business_id, 
+                    ${offerCols.includes('quantity_available') ? 'o.quantity_available' : 'COALESCE(o.quantity, 0)'} AS quantity_available
              FROM offers o
-             WHERE o.id = $1 AND o.is_active = true`,
+             WHERE o.id = $1 ${hasIsActive ? 'AND o.is_active = true' : ''}`,
             [offer_id]
         );
 
@@ -145,13 +179,24 @@ cartRouter.post("/cart", async (req, res) => {
         }
 
         const offer = offerResult.rows[0];
-        if (offer.quantity_available < quantity) {
+        if (Number(offer.quantity_available) < Number(quantity)) {
             return res.status(400).send({
                 success: false,
                 error: "INSUFFICIENT_QUANTITY",
                 message: "Недостаточно товара в наличии"
             });
         }
+
+        // Убедимся, что есть таблица cart_items
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS cart_items (
+                user_id INTEGER NOT NULL,
+                offer_id INTEGER NOT NULL,
+                quantity INTEGER NOT NULL DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_id, offer_id)
+            )
+        `);
 
         // Проверяем, есть ли в корзине товары от другого продавца
         const existingCartResult = await pool.query(

@@ -6,8 +6,7 @@
     "scripts": {
         "test": "vitest",
         "test:ui": "vitest --ui",
-        "dev": "nodemon ./src/index.js",
-        "start": "node ./src/index.js"
+        "dev": "nodemon ./src/index.js"
     },
     "keywords": [],
     "author": "",
@@ -17,21 +16,13 @@
         "bcrypt": "^6.0.0",
         "cookie-session": "^2.1.1",
         "cors": "^2.8.5",
-        "dompurify": "^3.3.0",
         "dotenv": "^17.2.1",
         "express": "^5.1.0",
-        "express-mongo-sanitize": "^2.2.0",
         "express-rate-limit": "^8.1.0",
-        "express-validator": "^7.3.0",
-        "helmet": "^8.1.0",
         "jose": "^6.0.13",
-        "jsdom": "^27.0.1",
         "multer": "^2.0.2",
         "pg": "^8.16.3",
-        "sharp": "^0.34.4",
-        "winston": "^3.18.3",
-        "xss-clean": "^0.1.4",
-        "zod": "^4.1.12"
+        "winston": "^3.18.3"
     },
     "devDependencies": {
         "nodemon": "^3.1.10",

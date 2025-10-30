@@ -8,13 +8,21 @@ const getBaseURL = () => {
     if (import.meta.env.VITE_BACKEND_BASE_URL) {
         return import.meta.env.VITE_BACKEND_BASE_URL;
     }
-    // Иначе используем localhost для локальной разработки
-    return "http://localhost:5000";
+    // Рендер по умолчанию в проде, локально — 5000
+    const isLocal = typeof window !== 'undefined' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+    return isLocal ? "http://localhost:5000" : "https://kindplate-backend.onrender.com";
 };
 
 console.log("Backend URL:", getBaseURL());
 
 export const getBackendURL = getBaseURL;
+export const getImageURL = (path?: string) => {
+    if (!path) return '';
+    if (/^https?:\/\//i.test(path)) return path;
+    const base = getBaseURL().replace(/\/$/, '');
+    const rel = path.startsWith('/') ? path : `/${path}`;
+    return `${base}${rel}`;
+};
 
 const axiosInstance = axios.create({
     baseURL: getBaseURL(),

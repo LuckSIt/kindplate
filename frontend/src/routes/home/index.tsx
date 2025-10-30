@@ -3,12 +3,13 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { notify } from "@/lib/notifications";
-import { SearchPanel } from "@/components/ui/search-panel";
 import { MapView } from "@/components/ui/map-view";
 import { OffersList } from "@/components/ui/offers-list";
 import { BusinessDrawer } from "@/components/ui/business-drawer";
+import { FavoriteButton } from "@/components/ui/favorite-button";
+import { OffersFeed } from "@/components/ui/offers-feed";
+import { Drawer } from "vaul";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Footer } from "@/components/ui/footer";
 import { HomePageSEO } from "@/components/ui/seo";
 import { useMapQuery } from "@/lib/hooks/use-optimized-query";
 import type { Business, Offer } from "@/lib/types";
@@ -43,6 +44,8 @@ function RouteComponent() {
         console.log('🔍 Main component: searchQuery changed to:', searchQuery);
     }, [searchQuery]);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [activeSnap, setActiveSnap] = useState<number>(0.2);
+    const [snippetDragStart, setSnippetDragStart] = useState<number | null>(null);
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
     const [mapBounds, setMapBounds] = useState<any>({
         north: 60.0,
@@ -163,8 +166,10 @@ function RouteComponent() {
 
     // Event handlers
     const handleBusinessClick = useCallback((business: Business) => {
+        // Этап 4: при тапе по пину показываем сниппет (20%), а не сразу список
         setSelectedBusiness(business);
         setDrawerOpen(true);
+        setActiveSnap(0.2);
     }, []);
 
     const handleBoundsChange = useCallback((bounds: any) => {
@@ -209,92 +214,107 @@ function RouteComponent() {
         }
     };
 
+    // Lock body scroll when sheet opened above 20%
+    useEffect(() => {
+        const lock = activeSnap > 0.2;
+        if (lock) {
+            const prev = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+            return () => { document.body.style.overflow = prev; };
+        }
+    }, [activeSnap]);
+
     return (
         <>
             <HomePageSEO />
             <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-                {/* Search Panel */}
-                <div className="flex-shrink-0">
-                    <SearchPanel
-                        searchQuery={searchQuery}
-                        onSearchChange={setSearchQuery}
-                        viewMode={viewMode}
-                        onViewModeChange={setViewMode}
-                        onFilterClick={() => console.log('Filter clicked')}
+
+            {/* Main Content: map full-screen with bottom sheet list */}
+            <div className="flex-1 relative overflow-hidden">
+                {/* Map View */}
+                <div className="absolute inset-0">
+                    <MapView
+                        businesses={filteredBusinesses}
+                        onBusinessClick={handleBusinessClick}
+                        onBoundsChange={handleBoundsChange}
+                        selectedBusiness={selectedBusiness}
+                        userLocation={userLocation}
+                        onMapClick={() => { setSelectedBusiness(null); setActiveSnap(0.2); }}
+                        className="h-full"
                     />
                 </div>
 
-                {/* Mobile View Toggle */}
-                <div className="md:hidden flex justify-center p-2 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                    <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-                        <button
-                            onClick={() => setViewMode('map')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                                viewMode === 'map' 
-                                    ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' 
-                                    : 'text-gray-600 dark:text-gray-400'
-                            }`}
-                        >
-                            🗺️ Карта
-                        </button>
-                        <button
-                            onClick={() => setViewMode('list')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                                viewMode === 'list' 
-                                    ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' 
-                                    : 'text-gray-600 dark:text-gray-400'
-                            }`}
-                        >
-                            📋 Список
-                        </button>
-                    </div>
-                </div>
+                {/* Bottom Sheet List (Vaul) */}
+                <Drawer.Root 
+                    open={true}
+                    onOpenChange={() => {}}
+                    shouldScaleBackground={false}
+                    modal={false}
+                    snapPoints={[0.2, 0.6, 1]}
+                    activeSnapPoint={activeSnap}
+                    onSnapPointChange={(v:number) => setActiveSnap(v)}
+                >
+                    <Drawer.Portal>
+                        <Drawer.Content className="kp-sheet fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700" style={{ touchAction: 'none' }}>
+                            <Drawer.Title className="sr-only">Список предложений</Drawer.Title>
+                            <Drawer.Description className="sr-only">Проведите вверх, чтобы развернуть список предложений</Drawer.Description>
+                            <div className="mx-auto h-1.5 w-10 rounded-full bg-gray-300 dark:bg-gray-700 my-3" />
+                            <div className="max-h-[70vh] px-3 pb-safe overflow-y-auto will-change-transform">
+                                <OffersFeed
+                                    businesses={filteredBusinesses}
+                                    selectedBusiness={selectedBusiness}
+                                    onOfferClick={handleOpenOrder}
+                                />
+                            </div>
+                        </Drawer.Content>
+                    </Drawer.Portal>
+                </Drawer.Root>
 
-                {/* Main Content */}
-                <div className="flex-1 flex overflow-hidden">
-                {/* Map View */}
-                {viewMode === 'map' && (
-                    <div className="flex-1 relative">
-                        <MapView
-                            businesses={filteredBusinesses}
-                            onBusinessClick={handleBusinessClick}
-                            onBoundsChange={handleBoundsChange}
-                            selectedBusiness={selectedBusiness}
-                            userLocation={userLocation}
-                            className="h-full"
-                        />
+                {/* Floating button to open list like ResQ */}
+                {activeSnap <= 0.2 && (
+                  <div className="fixed bottom-20 inset-x-0 z-40 flex justify-center pointer-events-none">
+                      <button
+                          className="pointer-events-auto kp-fab motion-fade-in active:scale-95 flex items-center gap-2"
+                          onClick={() => setActiveSnap(0.6)}
+                          aria-label="Открыть список предложений"
+                      >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h18M3 12h18M3 17h18"/></svg>
+                          <span className="label">К предложениям</span>
+                      </button>
+                  </div>
+                )}
+
+                {/* Snippet Card (low snack) */}
+                {selectedBusiness && activeSnap <= 0.2 && (
+                    <div
+                        className="fixed left-0 right-0 bottom-16 px-4 pb-safe z-40 pointer-events-auto"
+                        onTouchStart={(e) => setSnippetDragStart(e.touches[0].clientY)}
+                        onTouchMove={(e) => {
+                            if (snippetDragStart !== null) {
+                                const dy = e.touches[0].clientY - snippetDragStart;
+                                if (dy > 30) { setSelectedBusiness(null); setSnippetDragStart(null); }
+                            }
+                        }}
+                        onTouchEnd={() => setSnippetDragStart(null)}
+                    >
+                        <div className="kp-card border border-gray-200 dark:border-gray-700 p-3 flex items-center gap-3 shadow-lg bg-white dark:bg-gray-900 rounded-2xl">
+                            <div className="w-12 h-12 rounded-lg bg-primary-100 dark:bg-primary-900/20 flex items-center justify-center">🏪</div>
+                            <div className="flex-1 min-w-0">
+                                <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">{selectedBusiness.name}</div>
+                                <div className="text-xs text-gray-600 dark:text-gray-300 truncate">{selectedBusiness.address}</div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    className="px-3 py-1.5 text-xs rounded-lg bg-primary-500 text-white"
+                                    onClick={() => setActiveSnap(0.6)}
+                                >К офферам</button>
+                                <FavoriteButton businessId={selectedBusiness.id} size="sm" />
+                            </div>
+                        </div>
                     </div>
                 )}
 
-                {/* List View */}
-                {viewMode === 'list' && (
-                    <div className="flex-1 overflow-y-auto">
-                        <OffersList
-                            businesses={filteredBusinesses}
-                            selectedBusiness={selectedBusiness}
-                            onBusinessClick={handleBusinessClick}
-                            sortBy={sortBy}
-                            onSortChange={setSortBy}
-                            searchQuery={searchQuery}
-                            className="h-full"
-                        />
-                    </div>
-                )}
-
-                {/* Desktop: Side Panel */}
-                {viewMode === 'map' && (
-                    <div className="hidden lg:block w-96 border-l border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-                        <OffersList
-                            businesses={filteredBusinesses}
-                            selectedBusiness={selectedBusiness}
-                            onBusinessClick={handleBusinessClick}
-                            sortBy={sortBy}
-                            onSortChange={setSortBy}
-                            searchQuery={searchQuery}
-                            className="h-full"
-                        />
-                    </div>
-                )}
+            {/* Desktop side panel убран: мобильный only */}
             </div>
 
             {/* Business Drawer */}
@@ -365,8 +385,7 @@ function RouteComponent() {
                 </DialogContent>
             </Dialog>
 
-            {/* Footer */}
-            <Footer />
+            {/* Footer info removed */}
             </div>
         </>
     );

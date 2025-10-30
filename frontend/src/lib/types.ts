@@ -1,3 +1,23 @@
+export interface Business {
+  id: number;
+  name: string;
+  address?: string;
+  coord_0?: number;
+  coord_1?: number;
+}
+
+export interface Offer {
+  id: number;
+  title: string;
+  description?: string;
+  image_url?: string;
+  original_price: number;
+  discounted_price: number;
+  quantity_available: number;
+  pickup_time_start?: string;
+  pickup_time_end?: string;
+}
+
 // Базовые типы API
 export type ApiResponse<T = any> = {
   success: boolean;

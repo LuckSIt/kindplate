@@ -14,6 +14,9 @@ import { authContext } from "@/lib/auth";
 import { ThemeProvider, useTheme } from "@/lib/theme";
 import { NotificationContainer } from "@/components/ui/notification";
 import { InstallPrompt, NetworkStatus } from "@/components/ui/install-prompt";
+import { PushOnboarding } from "@/components/ui/push-onboarding";
+import { CartSheet } from "@/components/ui/cart-sheet";
+import { useRouter } from "@tanstack/react-router";
 
 // Оптимизированная конфигурация QueryClient для лучшей производительности
 const queryClient = new QueryClient({
@@ -137,6 +140,16 @@ function Nav() {
 }
 
 function RootRoute() {
+    const [hasShadow, setHasShadow] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false);
+
+    useEffect(() => {
+        const onScroll = () => setHasShadow(window.scrollY > 2);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
+
     return (
         <HelmetProvider>
             <QueryClientProvider client={queryClient}>
@@ -144,28 +157,51 @@ function RootRoute() {
                     <AuthProvider>
                     <MobileOnly>
                     <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900">
-                    <header className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="flex items-center justify-between h-16">
-                                <Link to="/home" className="flex items-center space-x-2">
-                                    <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-                                        <img src="/kandlate.png" alt="Kandlate Logo" className="w-full h-full object-contain rounded-lg" />
+                    <header className={`sticky top-0 z-50 bg-white dark:bg-gray-900 pt-safe ${hasShadow ? 'shadow-md' : 'shadow-none'} transition-shadow`}>
+                        <div className="px-4">
+                            <div className="flex items-center justify-between h-14">
+                                <Link to="/home" className="flex items-center gap-2">
+                                    <div className="w-7 h-7 rounded-lg overflow-hidden">
+                                        <img src="/kandlate.png" alt="Kandlate" className="w-full h-full object-contain" />
                                     </div>
-                                    <span className="text-2xl font-bold bg-gradient-to-r from-primary-500 to-primary-400 bg-clip-text text-transparent">
-                                        KindPlate
-                                    </span>
+                                    <span className="text-lg font-bold">KindPlate</span>
                                 </Link>
-                                <div className="flex items-center space-x-4">
-                                    <Nav />
-                                    <AuthStatus />
-                                </div>
+                                <div />
                             </div>
                         </div>
                     </header>
-                    <main className="flex-1">
+                    {/* Inline search under header */}
+                    <div className="bg-white dark:bg-gray-900 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                        <Link to="/search" className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-300">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
+                            <span className="text-sm">Поиск по заведениям и предложениям</span>
+                        </Link>
+                    </div>
+                    <main className="flex-1 pb-16">
                         <Outlet />
                     </main>
+                    {/* Bottom Tab Bar */}
+                    <nav className="fixed bottom-0 inset-x-0 z-50 bg-white/95 dark:bg-gray-900/95 border-t border-gray-200 dark:border-gray-700 backdrop-blur pt-2 pb-safe">
+                        <div className="mx-auto px-6 grid grid-cols-2 gap-2">
+                            <TabLink to="/home" label="Карта" icon={(active) => (
+                                <svg className={`w-6 h-6 ${active ? 'text-primary-600' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7" />
+                                </svg>
+                            )} />
+                            <TabLink to="/account" label="Профиль" icon={(active) => (
+                                <svg className={`w-6 h-6 ${active ? 'text-primary-600' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            )} />
+                        </div>
+                    </nav>
                     </div>
+                    <CartSheet
+                        isOpen={isCartOpen}
+                        onClose={() => setIsCartOpen(false)}
+                        onGoToOffers={() => setIsCartOpen(false)}
+                        onCheckout={() => setIsCartOpen(false)}
+                    />
                     </MobileOnly>
 
                     <TanstackDevtools
@@ -182,6 +218,7 @@ function RootRoute() {
                     <NotificationContainer />
                     <InstallPrompt />
                     <NetworkStatus />
+                    <PushOnboarding />
                 </AuthProvider>
             </ThemeProvider>
         </QueryClientProvider>
@@ -197,7 +234,8 @@ function MobileOnly({ children }: { children: React.ReactNode }) {
             const width = window.innerWidth;
             const height = window.innerHeight;
             const isPortrait = height >= width;
-            setIsMobile(width <= 430 && width >= 320 && isPortrait);
+            // Mobile-only: allow phones; show guard on width >= 768px
+            setIsMobile(width < 768 && isPortrait);
         };
         check();
         window.addEventListener('resize', check);
@@ -223,4 +261,22 @@ function MobileOnly({ children }: { children: React.ReactNode }) {
     }
 
     return <>{children}</>;
+}
+
+function TabLink({ to, label, icon }: { to: string; label: string; icon: (active: boolean) => React.ReactNode }) {
+    return (
+        <Link
+            to={to}
+            activeOptions={{ exact: to === '/' }}
+            inactiveProps={{ className: "flex flex-col items-center justify-center py-2 text-gray-500 transition-transform duration-150 motion-tap" }}
+            activeProps={{ className: "flex flex-col items-center justify-center py-2 text-primary-600 transition-transform duration-150 motion-tap" }}
+        >
+            {({ isActive }) => (
+                <div className="flex flex-col items-center gap-1">
+                    {icon(isActive)}
+                    <span className="text-[11px] leading-4 font-medium">{label}</span>
+                </div>
+            )}
+        </Link>
+    );
 }

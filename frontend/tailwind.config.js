@@ -12,6 +12,13 @@ export default {
       'body': ['var(--font-sans)'],
     },
     extend: {
+      container: {
+        center: true,
+        padding: {
+          DEFAULT: '16px',
+          sm: '16px',
+        },
+      },
       borderRadius: {
         'sm': '8px',
         'md': '12px',
@@ -31,6 +38,8 @@ export default {
         '6': '24px',
         '7': '28px',
         '8': '32px',
+        '9': '36px',
+        '10': '40px',
       },
       fontSize: {
         'xs': ['12px', { lineHeight: '18px' }],
