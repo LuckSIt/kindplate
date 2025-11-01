@@ -13,7 +13,7 @@ const getBaseURL = () => {
     return isLocal ? "http://localhost:5000" : "https://api-kindplate.ru";
 };
 
-// console.log("Backend URL:", getBaseURL());
+console.log("🔍 Backend URL:", getBaseURL(), "Env:", import.meta.env.VITE_BACKEND_BASE_URL);
 
 export const getBackendURL = getBaseURL;
 export const getImageURL = (path?: string) => {
