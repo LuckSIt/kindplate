@@ -2,7 +2,7 @@
   email vldmrelizarov@yandex.ru
 }
 
-app-kindplate.tw1.ru {
+app-kindplate.ru {
   reverse_proxy frontend:80
   encode gzip zstd
   header {
@@ -13,7 +13,7 @@ app-kindplate.tw1.ru {
   }
 }
 
-api-kindplate.tw1.ru {
+api-kindplate.ru {
   reverse_proxy backend:5000
   encode gzip zstd
   header {

@@ -7,7 +7,7 @@ RUN npm install
 COPY . ./
 
 # Build args для Vite переменных окружения
-ARG VITE_BACKEND_BASE_URL=https://api-kindplate.tw1.ru
+ARG VITE_BACKEND_BASE_URL=https://api-kindplate.ru
 ARG VITE_VAPID_PUBLIC_KEY=
 
 # Передаём в ENV для использования в npm run build
