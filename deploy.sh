@@ -1,7 +1,27 @@
 #!/bin/bash
+set -e
 cd /root/kindplate
-git pull
+
+echo "📥 Обновляю код из Git..."
+git pull origin main
+
+echo "🛑 Останавливаю контейнеры..."
 docker compose down
-docker compose up -d --build
-echo "✅ Готово! Проверьте http://45.132.50.45"
+
+echo "🔨 Пересобираю образы (без кэша)..."
+docker compose build --no-cache
+
+echo "🚀 Запускаю контейнеры..."
+docker compose up -d
+
+echo "⏳ Жду 5 секунд..."
+sleep 5
+
+echo "📊 Статус контейнеров:"
+docker compose ps
+
+echo ""
+echo "✅ Готово!"
+echo "🌐 Откройте: https://app-kindplate.tw1.ru"
+echo "📝 Логи Caddy: docker compose logs -f caddy"
 
