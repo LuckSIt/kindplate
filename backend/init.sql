@@ -16,6 +16,7 @@ CREATE TABLE users (
     coord_1 DECIMAL(10, 6) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     is_business BOOLEAN NOT NULL DEFAULT FALSE,
+    role VARCHAR(20) DEFAULT 'customer' CHECK (role IN ('admin', 'business', 'customer')),
     logo_url VARCHAR(500),
     rating DECIMAL(3, 2) DEFAULT 0.00,
     total_reviews INTEGER DEFAULT 0,
@@ -99,23 +100,10 @@ INSERT INTO users (name, email, address, coord_0, coord_1, password_hash, is_bus
 VALUES ('Тестовый Пользователь', 'user@kindplate.ru', 'Санкт-Петербург, ул. Пушкина, 10', 59.94, 30.35, '$2b$10$l3mE4KN9iGuNJMVEi0gHgOOKdB7Y38rlzBB/SmtLdeZ8HGPqhrlfe', false, 'customer')
 ON CONFLICT (email) DO NOTHING;
 
-INSERT INTO businesses (user_id, name, description, address, coord_0, coord_1, phone, email, website, opening_hours)
-VALUES (
-    (SELECT id FROM users WHERE email = 'business@kindplate.ru'),
-    'Кафе "Уют"',
-    'Уютное кафе с домашней кухней',
-    'Санкт-Петербург, Невский пр., 1',
-    59.935, 30.32,
-    '+79111234567',
-    'cafe@uyut.ru',
-    'http://uyut-cafe.ru',
-    '{"Mon": "9:00-21:00", "Tue": "9:00-21:00", "Wed": "9:00-21:00", "Thu": "9:00-21:00", "Fri": "9:00-22:00", "Sat": "10:00-22:00", "Sun": "10:00-21:00"}'::jsonb
-)
-ON CONFLICT (user_id) DO NOTHING;
-
+-- Вставляем предложения для тестового бизнеса
 INSERT INTO offers (business_id, title, description, original_price, discounted_price, quantity_available, pickup_time_start, pickup_time_end, image_url, is_active)
 VALUES (
-    (SELECT id FROM businesses WHERE name = 'Кафе "Уют"'),
+    (SELECT id FROM users WHERE email = 'business@kindplate.ru'),
     'Комплексный обед',
     'Вкусный и сытный обед из трех блюд',
     500.00,
@@ -130,7 +118,7 @@ ON CONFLICT DO NOTHING;
 
 INSERT INTO offers (business_id, title, description, original_price, discounted_price, quantity_available, pickup_time_start, pickup_time_end, image_url, is_active)
 VALUES (
-    (SELECT id FROM businesses WHERE name = 'Кафе "Уют"'),
+    (SELECT id FROM users WHERE email = 'business@kindplate.ru'),
     'Выпечка дня',
     'Свежая выпечка со скидкой',
     200.00,
@@ -145,7 +133,7 @@ ON CONFLICT DO NOTHING;
 
 INSERT INTO offers (business_id, title, description, original_price, discounted_price, quantity_available, pickup_time_start, pickup_time_end, image_url, is_active)
 VALUES (
-    (SELECT id FROM businesses WHERE name = 'Кафе "Уют"'),
+    (SELECT id FROM users WHERE email = 'business@kindplate.ru'),
     'Салат Цезарь',
     'Классический салат с курицей и пармезаном',
     300.00,
