@@ -4,16 +4,20 @@ import type { ApiResponse, ApiError } from "./types";
 
 // Получаем базовый URL для API
 const getBaseURL = () => {
-    // Если есть переменная окружения, используем её
-    if (import.meta.env.VITE_BACKEND_BASE_URL) {
-        return import.meta.env.VITE_BACKEND_BASE_URL;
+    // Принудительно используем HTTPS домен для продакшена
+    const envUrl = import.meta.env.VITE_BACKEND_BASE_URL;
+    if (envUrl && envUrl.trim() !== '') {
+        console.log("✅ Using env URL:", envUrl);
+        return envUrl;
     }
     // Прод по умолчанию — HTTPS домен; локально — 5000
     const isLocal = typeof window !== 'undefined' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
-    return isLocal ? "http://localhost:5000" : "https://api-kindplate.ru";
+    const fallback = isLocal ? "http://localhost:5000" : "https://api-kindplate.ru";
+    console.log("⚠️ Using fallback URL:", fallback, "Env was:", envUrl);
+    return fallback;
 };
 
-console.log("🔍 Backend URL:", getBaseURL(), "Env:", import.meta.env.VITE_BACKEND_BASE_URL);
+console.log("🔍 Backend URL:", getBaseURL(), "Location:", typeof window !== 'undefined' ? location.hostname : 'server');
 
 export const getBackendURL = getBaseURL;
 export const getImageURL = (path?: string) => {
