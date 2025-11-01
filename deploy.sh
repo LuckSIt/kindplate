@@ -3,7 +3,11 @@ set -e
 cd /root/kindplate
 
 echo "📥 Обновляю код из Git..."
-git pull origin main
+# Сохраняем локальные изменения (если есть)
+git stash
+# Принудительно обновляем из репозитория
+git fetch origin main
+git reset --hard origin/main
 
 echo "🛑 Останавливаю контейнеры..."
 docker compose down
