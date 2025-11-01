@@ -153,7 +153,7 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
   // Loading state
   if (vendorLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-300">Загрузка заведения...</p>
@@ -165,7 +165,7 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
   // Error state
   if (vendorError || !business) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="text-4xl mb-4">😞</div>
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -259,14 +259,14 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setOrderQuantity(Math.max(1, orderQuantity - 1))}
-                    className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                    className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center hover:bg-gray-800"
                   >
                     -
                   </button>
                   <span className="w-8 text-center">{orderQuantity}</span>
                   <button
                     onClick={() => setOrderQuantity(Math.min(selectedOffer.quantity_available, orderQuantity + 1))}
-                    className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                    className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center hover:bg-gray-800"
                   >
                     +
                   </button>

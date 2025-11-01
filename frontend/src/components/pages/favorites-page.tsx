@@ -58,7 +58,7 @@ export function FavoritesPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gray-900">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center gap-4 mb-8">
             <Button
@@ -90,7 +90,7 @@ export function FavoritesPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gray-900">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center gap-4 mb-8">
             <Button
@@ -114,7 +114,7 @@ export function FavoritesPage() {
 
   if (!favorites || favorites.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gray-900">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center gap-4 mb-8">
             <Button
@@ -182,7 +182,7 @@ export function FavoritesPage() {
             <div
               key={favorite.id}
               className={cn(
-                "relative bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 cursor-pointer transition-all duration-150 will-change-transform motion-fade-in",
+                "relative bg-gray-800 rounded-xl border border-gray-700 p-4 cursor-pointer transition-all duration-150 will-change-transform motion-fade-in",
                 editMode ? 'ring-0' : 'hover:shadow-lg'
               )}
               onClick={() => handleBusinessClick(favorite.id)}
@@ -196,7 +196,7 @@ export function FavoritesPage() {
               {/* Selection overlay */}
               {editMode && (
                 <div className="absolute top-3 right-3 z-10 motion-scale-pop">
-                  <div className={cn("w-6 h-6 rounded-md border flex items-center justify-center transition-transform", selected.has(favorite.id) ? 'bg-primary-500 text-white scale-105' : 'bg-white/80 dark:bg-gray-900/60 border-gray-300 text-transparent')}>✓</div>
+                  <div className={cn("w-6 h-6 rounded-md border flex items-center justify-center transition-transform", selected.has(favorite.id) ? 'bg-primary-500 text-white scale-105' : 'bg-gray-900/60 border-gray-600 text-transparent')}>✓</div>
                 </div>
               )}
               {/* Header */}
