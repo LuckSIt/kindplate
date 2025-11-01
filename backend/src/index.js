@@ -79,9 +79,12 @@ app.use(
             if (isRender) return callback(null, true);
 
             if (allowedOrigins.includes(origin)) {
+                logger.info(`✅ CORS разрешён для: ${origin}`);
                 callback(null, true);
             } else {
                 logger.warn(`❌ CORS блокировка от источника: ${origin}`);
+                logger.warn(`   Разрешённые источники: ${allowedOrigins.join(', ')}`);
+                logger.warn(`   FRONTEND_ORIGIN из env: ${envOrigin || 'не задан'}`);
                 callback(new Error('Доступ запрещен политикой CORS'));
             }
         },
