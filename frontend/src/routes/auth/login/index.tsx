@@ -64,7 +64,7 @@ function RouteComponent() {
             <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary-300/20 dark:bg-primary-700/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
             <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-primary-400/10 dark:bg-primary-600/10 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2"></div>
             
-            <div className="relative z-10 h-full w-full flex items-center justify-center p-4">
+            <div className="relative z-10 h-full w-full flex items-center justify-center p-4 pb-24">
                 <div className="w-full max-w-lg mx-auto px-6">
                     {/* Форма авторизации по центру */}
                     <div className="w-full">
