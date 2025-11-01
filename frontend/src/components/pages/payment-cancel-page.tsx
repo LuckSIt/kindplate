@@ -31,7 +31,7 @@ export const PaymentCancelPage: React.FC<PaymentCancelPageProps> = ({ orderId })
           Оплата отменена
         </h1>
         
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
+        <p className="text-gray-400 mb-6">
           Вы отменили оплату заказа №{orderId}. Заказ сохранен в корзине.
         </p>
 
