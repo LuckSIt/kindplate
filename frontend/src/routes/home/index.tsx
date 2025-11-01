@@ -231,7 +231,7 @@ function RouteComponent() {
     return (
         <>
             <HomePageSEO />
-            <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+            <div className="h-screen flex flex-col bg-gray-900">
 
             {/* Main Content: map full-screen with bottom sheet list */}
             <div className="flex-1 relative overflow-hidden">
@@ -259,10 +259,10 @@ function RouteComponent() {
                     onSnapPointChange={(v:number) => setActiveSnap(v)}
                 >
                     <Drawer.Portal>
-                        <Drawer.Content className="kp-sheet fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700" style={{ touchAction: 'none' }}>
+                        <Drawer.Content className="kp-sheet fixed bottom-0 left-0 right-0 z-40 bg-gray-900 border-t border-gray-700" style={{ touchAction: 'none' }}>
                             <Drawer.Title className="sr-only">Список предложений</Drawer.Title>
                             <Drawer.Description className="sr-only">Проведите вверх, чтобы развернуть список предложений</Drawer.Description>
-                            <div className="mx-auto h-1.5 w-10 rounded-full bg-gray-300 dark:bg-gray-700 my-3" />
+                            <div className="mx-auto h-1.5 w-10 rounded-full bg-gray-700 my-3" />
                             <div className="max-h-[70vh] px-3 pb-safe overflow-y-auto will-change-transform">
                                 <OffersFeed
                                     businesses={filteredBusinesses}
@@ -301,11 +301,11 @@ function RouteComponent() {
                         }}
                         onTouchEnd={() => setSnippetDragStart(null)}
                     >
-                        <div className="kp-card border border-gray-200 dark:border-gray-700 p-3 flex items-center gap-3 shadow-lg bg-white dark:bg-gray-900 rounded-2xl">
-                            <div className="w-12 h-12 rounded-lg bg-primary-100 dark:bg-primary-900/20 flex items-center justify-center">🏪</div>
+                        <div className="kp-card border border-gray-700 p-3 flex items-center gap-3 shadow-lg bg-gray-900 rounded-2xl">
+                            <div className="w-12 h-12 rounded-lg bg-primary-900/20 flex items-center justify-center">🏪</div>
                             <div className="flex-1 min-w-0">
-                                <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">{selectedBusiness.name}</div>
-                                <div className="text-xs text-gray-600 dark:text-gray-300 truncate">{selectedBusiness.address}</div>
+                                <div className="text-sm font-semibold text-white truncate">{selectedBusiness.name}</div>
+                                <div className="text-xs text-gray-300 truncate">{selectedBusiness.address}</div>
                             </div>
                             <div className="flex items-center gap-2">
                                 <button
@@ -342,18 +342,18 @@ function RouteComponent() {
                     {selectedOffer && (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600">Количество:</span>
+                                <span className="text-sm text-gray-300">Количество:</span>
                                 <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => setOrderQuantity(Math.max(1, orderQuantity - 1))}
-                                        className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                                        className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center hover:bg-gray-800"
                                     >
                                         -
                                     </button>
                                     <span className="w-8 text-center">{orderQuantity}</span>
                                     <button
                                         onClick={() => setOrderQuantity(Math.min(selectedOffer.quantity_available, orderQuantity + 1))}
-                                        className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                                        className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center hover:bg-gray-800"
                                     >
                                         +
                                     </button>

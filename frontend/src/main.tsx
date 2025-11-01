@@ -26,6 +26,10 @@ declare module "@tanstack/react-router" {
     }
 }
 
+// Принудительно применяем темную тему
+document.documentElement.classList.add('dark');
+localStorage.setItem('theme', 'dark');
+
 // Render the app
 const rootElement = document.getElementById("app");
 if (rootElement && !rootElement.innerHTML) {

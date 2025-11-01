@@ -157,10 +157,10 @@ function RootRoute() {
                 <ThemeProvider>
                     <AuthProvider>
                     <MobileOnly>
-                    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900">
+                    <div className="min-h-screen w-full bg-gray-900">
                     {/* Ensure no push subscription without VAPID on mount */}
                     {(() => { ensureNoPushWithoutVapid(); unregisterServiceWorker(); return null; })()}
-                    <header className={`sticky top-0 z-50 bg-white dark:bg-gray-900 pt-safe ${hasShadow ? 'shadow-md' : 'shadow-none'} transition-shadow`}>
+                    <header className={`sticky top-0 z-50 bg-gray-900 pt-safe ${hasShadow ? 'shadow-md' : 'shadow-none'} transition-shadow`}>
                         <div className="px-4">
                             <div className="flex items-center justify-between h-14">
                                 <Link to="/home" className="flex items-center gap-2">
@@ -174,8 +174,8 @@ function RootRoute() {
                         </div>
                     </header>
                     {/* Inline search under header */}
-                    <div className="bg-white dark:bg-gray-900 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-                        <Link to="/search" className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-300">
+                    <div className="bg-gray-900 px-4 py-2 border-b border-gray-700">
+                        <Link to="/search" className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-800 text-gray-300">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
                             <span className="text-sm">Поиск по заведениям и предложениям</span>
                         </Link>
@@ -184,7 +184,7 @@ function RootRoute() {
                         <Outlet />
                     </main>
                     {/* Bottom Tab Bar */}
-                    <nav className="fixed bottom-0 inset-x-0 z-50 bg-white/95 dark:bg-gray-900/95 border-t border-gray-200 dark:border-gray-700 backdrop-blur pt-2 pb-safe">
+                    <nav className="fixed bottom-0 inset-x-0 z-50 bg-gray-900/95 border-t border-gray-700 backdrop-blur pt-2 pb-safe">
                         <div className="mx-auto px-6 grid grid-cols-2 gap-2">
                             <TabLink to="/home" label="Карта" icon={(active) => (
                                 <svg className={`w-6 h-6 ${active ? 'text-primary-600' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -251,11 +251,11 @@ function MobileOnly({ children }: { children: React.ReactNode }) {
 
     if (!isMobile) {
         return (
-            <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-6">
-                <div className="max-w-sm w-full text-center bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+            <div className="min-h-screen w-full flex items-center justify-center bg-gray-900 p-6">
+                <div className="max-w-sm w-full text-center bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-700">
                     <div className="text-5xl mb-4">📱</div>
-                    <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Доступно только на мобильных</h1>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                    <h1 className="text-xl font-semibold text-white mb-2">Доступно только на мобильных</h1>
+                    <p className="text-sm text-gray-300">
                         Откройте приложение на смартфоне (ширина 360–430px, портретная ориентация).
                     </p>
                 </div>

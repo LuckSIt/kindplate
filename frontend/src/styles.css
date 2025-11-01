@@ -25,35 +25,40 @@
   font-family: var(--font-sans) !important;
 }
 
-body {
+html {
+  background: #0f172a !important;
+}
+
+html, body {
   margin: 0;
   font-family: var(--font-sans) !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f8fafc;
-  color: #1f2937;
+  background: #0f172a !important;
+  color: #f8fafc !important;
   line-height: 1.5;
 }
 
 /* Mobile typography */
-h1 { font-size: 24px; line-height: 30px; font-weight: 700; }
-h2 { font-size: 20px; line-height: 28px; font-weight: 700; }
-h3 { font-size: 18px; line-height: 26px; font-weight: 600; }
-p, span, li { font-size: 14px; line-height: 20px; }
-small, .caption { font-size: 12px; line-height: 18px; color: #6b7280; }
+h1 { font-size: 24px; line-height: 30px; font-weight: 700; color: #f8fafc; }
+h2 { font-size: 20px; line-height: 28px; font-weight: 700; color: #f8fafc; }
+h3 { font-size: 18px; line-height: 26px; font-weight: 600; color: #f8fafc; }
+p, span, li { font-size: 14px; line-height: 20px; color: #e2e8f0; }
+small, .caption { font-size: 12px; line-height: 18px; color: #94a3b8; }
 
 /* iOS input zoom prevention */
 input, select, textarea { font-size: 16px; }
 
 /* Components layer sample */
 @layer components {
-  .kp-card { border-radius: var(--r-xl); box-shadow: var(--shadow-soft); background: #fff; }
+  .kp-card { border-radius: var(--r-xl); box-shadow: var(--shadow-soft); background: #1e293b; }
   .kp-chip { border-radius: 9999px; padding: 4px 8px; font-size: 12px; line-height: 18px; }
-  .kp-tabbar { height: 56px; border-top: 1px solid #e5e7eb; backdrop-filter: saturate(120%) blur(8px); }
+  .kp-tabbar { height: 56px; border-top: 1px solid #334155; backdrop-filter: saturate(120%) blur(8px); }
   .kp-sheet { 
     border-top-left-radius: var(--r-xl);
     border-top-right-radius: var(--r-xl);
-    box-shadow: 0 -10px 30px rgba(0,0,0,0.12);
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+    background: #1e293b;
     transition: transform var(--dur-normal) var(--ease-smooth), box-shadow var(--dur-fast) var(--ease-smooth);
     will-change: transform;
   }
@@ -110,6 +115,60 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-semibold, .font-medium, button {
 #app {
   min-height: 100vh;
   font-family: var(--font-sans) !important;
+  background: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+/* Принудительная темная тема - переопределяем все светлые цвета */
+html.dark,
+html.dark * {
+  color-scheme: dark !important;
+}
+
+/* Переопределяем Tailwind классы для темной темы */
+html.dark .bg-white,
+html.dark [class*="bg-white"] {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+html.dark .bg-gray-50,
+html.dark .bg-gray-100,
+html.dark [class*="bg-gray-50"],
+html.dark [class*="bg-gray-100"] {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+html.dark .bg-slate-50,
+html.dark .bg-slate-100,
+html.dark [class*="bg-slate-50"],
+html.dark [class*="bg-slate-100"] {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-gray-700,
+html.dark [class*="text-gray-900"],
+html.dark [class*="text-gray-800"],
+html.dark [class*="text-gray-700"] {
+  color: #f8fafc !important;
+}
+
+html.dark .text-gray-500,
+html.dark .text-gray-600,
+html.dark [class*="text-gray-500"],
+html.dark [class*="text-gray-600"] {
+  color: #94a3b8 !important;
+}
+
+html.dark .border-gray-200,
+html.dark .border-gray-300,
+html.dark [class*="border-gray-200"],
+html.dark [class*="border-gray-300"] {
+  border-color: #334155 !important;
 }
 
 /* Safe-area helpers */
@@ -199,7 +258,7 @@ button, .btn-primary, .btn-secondary {
 }
 
 .btn-secondary {
-  background: white;
+  background: #1e293b;
   color: #22c55e;
   border: 2px solid #22c55e;
   border-radius: 0.75rem;
@@ -207,7 +266,7 @@ button, .btn-primary, .btn-secondary {
   font-weight: 600;
   font-family: var(--font-display) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.3);
 }
 
 .btn-secondary:hover {
@@ -217,61 +276,36 @@ button, .btn-primary, .btn-secondary {
   box-shadow: 0 4px 14px 0 rgba(34, 197, 94, 0.25);
 }
 
-/* Темная тема для кнопок */
-.dark .btn-secondary {
-  background: #1e293b;
-  color: #22c55e;
-  border-color: #22c55e;
-}
-
-.dark .btn-secondary:hover {
+/* Темная тема для кнопок (всегда активна) */
+.btn-secondary:hover {
   background: #22c55e;
   color: white;
 }
 
 /* Card styles */
 .card {
-  background: white;
+  background: #1e293b;
   border-radius: 1.25rem;
   padding: 1.75rem;
-  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  color: #1f2937;
-}
-
-.dark .card {
-  background: #1e293b;
-  border: 1px solid #334155;
   box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.3);
+  border: 1px solid #334155;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   color: #f8fafc;
 }
 
+
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
-  border-color: rgba(34, 197, 94, 0.2);
-}
-
-.dark .card:hover {
   box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
   border-color: rgba(34, 197, 94, 0.3);
 }
 
 /* Улучшенная читаемость текста в карточках */
 .card h1, .card h2, .card h3, .card h4, .card h5, .card h6 {
-  color: #1f2937;
-}
-
-.dark .card h1, .dark .card h2, .dark .card h3, .dark .card h4, .dark .card h5, .dark .card h6 {
   color: #f8fafc;
 }
 
 .card p, .card span {
-  color: #4b5563;
-}
-
-.dark .card p, .dark .card span {
   color: #d1d5db;
 }
 
@@ -279,16 +313,22 @@ button, .btn-primary, .btn-secondary {
 .form-input {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid #334155;
   border-radius: 0.5rem;
   font-size: 1rem;
+  background: #1e293b;
+  color: #f8fafc;
   transition: border-color 0.2s ease;
 }
 
 .form-input:focus {
   outline: none;
   border-color: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+.form-input::placeholder {
+  color: #64748b;
 }
 
 /* Map container */
@@ -305,13 +345,14 @@ button, .btn-primary, .btn-secondary {
   left: 1.5rem;
   right: 1.5rem;
   z-index: 10;
-  background: white;
+  background: #1e293b;
   border-radius: 1rem;
   padding: 1rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   gap: 1rem;
+  border: 1px solid #334155;
 }
 
 .search-icon {
@@ -331,11 +372,12 @@ button, .btn-primary, .btn-secondary {
   border: none;
   outline: none;
   font-size: 1.125rem;
-  color: #1f2937;
+  color: #f8fafc;
+  background: transparent;
 }
 
 .search-input::placeholder {
-  color: #6b7280;
+  color: #64748b;
 }
 
 .search-button {
@@ -361,14 +403,15 @@ button, .btn-primary, .btn-secondary {
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
-  background: white;
+  background: #1e293b;
   border-radius: 1rem;
   padding: 1rem 1.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   gap: 1rem;
   transition: all 0.3s ease;
+  border: 1px solid #334155;
 }
 
 .floating-button:hover {
@@ -382,8 +425,8 @@ button, .btn-primary, .btn-secondary {
   bottom: 0;
   left: 0;
   right: 0;
-  background: white;
-  border-top: 1px solid #e5e7eb;
+  background: #1e293b;
+  border-top: 1px solid #334155;
   display: flex;
   justify-content: space-around;
   padding: 0.75rem;
@@ -397,7 +440,7 @@ button, .btn-primary, .btn-secondary {
   border-radius: 1rem;
   transition: all 0.2s ease;
   text-decoration: none;
-  color: #6b7280;
+  color: #64748b;
 }
 
 .nav-button.active {
@@ -405,7 +448,7 @@ button, .btn-primary, .btn-secondary {
 }
 
 .nav-button:hover {
-  background: #f3f4f6;
+  background: #334155;
 }
 
 .nav-icon {
@@ -425,12 +468,13 @@ button, .btn-primary, .btn-secondary {
   bottom: 0;
   left: 0;
   right: 0;
-  background: white;
+  background: #1e293b;
   border-radius: 1.5rem 1.5rem 0 0;
   padding: 1.5rem;
-  box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.5);
   max-height: 60vh;
   overflow-y: auto;
+  border-top: 1px solid #334155;
 }
 
 .seller-header {
@@ -443,12 +487,12 @@ button, .btn-primary, .btn-secondary {
 .seller-name {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #1f2937;
+  color: #f8fafc;
   margin-bottom: 0.5rem;
 }
 
 .seller-address {
-  color: #6b7280;
+  color: #94a3b8;
   font-size: 1rem;
 }
 
@@ -466,34 +510,35 @@ button, .btn-primary, .btn-secondary {
 }
 
 .badge-green {
-  background: #f0fdf4;
+  background: rgba(34, 197, 94, 0.2);
   color: #22c55e;
-  border: 1px solid #bbf7d0;
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .badge-blue {
-  background: #dbeafe;
-  color: #1e40af;
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 /* Menu items */
 .menu-item {
-  background: linear-gradient(135deg, #f9fafb 0%, white 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   border-radius: 1rem;
   padding: 1rem;
-  border: 1px solid #f3f4f6;
+  border: 1px solid #334155;
   margin-bottom: 1rem;
 }
 
 .menu-item-name {
   font-weight: 600;
-  color: #1f2937;
+  color: #f8fafc;
   font-size: 1.125rem;
   margin-bottom: 0.25rem;
 }
 
 .menu-item-description {
-  color: #6b7280;
+  color: #94a3b8;
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
 }
@@ -507,8 +552,8 @@ button, .btn-primary, .btn-secondary {
 
 .menu-item-stock {
   font-size: 0.75rem;
-  color: #6b7280;
-  background: #f3f4f6;
+  color: #94a3b8;
+  background: #334155;
   padding: 0.25rem 0.5rem;
   border-radius: 0.375rem;
 }
@@ -520,7 +565,7 @@ button, .btn-primary, .btn-secondary {
   align-items: center;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid #334155;
 }
 
 .favorite-button {
@@ -531,13 +576,13 @@ button, .btn-primary, .btn-secondary {
   border-radius: 1rem;
   background: transparent;
   border: none;
-  color: #6b7280;
+  color: #94a3b8;
   font-weight: 500;
   transition: all 0.2s ease;
 }
 
 .favorite-button:hover {
-  background: #f3f4f6;
+  background: #334155;
 }
 
 .order-button {
@@ -570,7 +615,7 @@ button, .btn-primary, .btn-secondary {
 .spinner {
   width: 3rem;
   height: 3rem;
-  border: 4px solid #f3f4f6;
+  border: 4px solid #334155;
   border-top: 4px solid #22c55e;
   border-radius: 50%;
   animation: spin 1s linear infinite;

@@ -8,32 +8,22 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(() => {
-    // По умолчанию включаем темную тему (мобильное приложение),
-    // если явно не сохранена светлая
-    const saved = localStorage.getItem('theme');
-    if (saved) {
-      return saved === 'dark';
-    }
-    return true; // default dark for consistent mobile look (iOS 12/13 etc.)
-  });
+  // ПРИНУДИТЕЛЬНО всегда темная тема
+  const [isDark] = useState(true);
 
   useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDark]);
+    // Всегда применяем темную тему
+    document.documentElement.classList.add('dark');
+    localStorage.setItem('theme', 'dark');
+  }, []);
 
   const toggleTheme = () => {
-    setIsDark(!isDark);
+    // Отключено - всегда темная тема
+    // setIsDark(!isDark);
   };
 
   return (
-    <ThemeContext.Provider value={{ isDark, toggleTheme }}>
+    <ThemeContext.Provider value={{ isDark: true, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
