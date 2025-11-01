@@ -73,7 +73,7 @@ export const useUpdateProfile = () => {
     mutationFn: profileApi.updateProfile,
     onSuccess: (data) => {
       queryClient.setQueryData(['profile'], data);
-      queryClient.invalidateQueries({ queryKey: ['user'] });
+      queryClient.invalidateQueries({ queryKey: ['auth'] });
       notify.success('Профиль успешно обновлен');
     },
     onError: (error: any) => {
