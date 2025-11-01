@@ -81,35 +81,50 @@ authRouter.post("/login", authLimiter, validateLogin, asyncHandler(async (req, r
 
     logger.info("Login attempt", { email });
 
-    const result = await pool.query(
-        "SELECT id, password_hash, name, is_business, role FROM users WHERE email=$1",
-        [email]
-    );
+    try {
+        // Пробуем получить role, если колонка существует, иначе NULL
+        const result = await pool.query(
+            "SELECT id, password_hash, name, is_business, COALESCE(role, NULL) as role FROM users WHERE email=$1",
+            [email]
+        );
 
-    if (result.rowCount === 0) {
-        logger.warn("Login failed - user not found", { email });
-        throw new AppError("Неверные учетные данные", 401, "INVALID_CREDENTIALS");
+        if (result.rowCount === 0) {
+            logger.warn("Login failed - user not found", { email });
+            throw new AppError("Неверные учетные данные", 401, "INVALID_CREDENTIALS");
+        }
+
+        const { id, password_hash: passwordHash, name, is_business, role } = result.rows[0];
+
+        const isPasswordValid = await bcrypt.compare(password, passwordHash);
+        if (!isPasswordValid) {
+            logger.warn("Login failed - invalid password", { email });
+            throw new AppError("Неверные учетные данные", 401, "INVALID_CREDENTIALS");
+        }
+
+        // Определяем роль с fallback
+        const userRole = role || (is_business ? 'business' : 'customer');
+
+        req.session.userId = id;
+        req.session.isBusiness = is_business;
+        req.session.role = userRole;
+
+        logger.info("User logged in successfully", { userId: id, email, is_business, role: userRole });
+
+        res.json({
+            success: true,
+            message: "Вход выполнен успешно",
+            user: { id, name, email, is_business }
+        });
+    } catch (error) {
+        // Логируем полную ошибку для отладки
+        logger.error("Login error:", { 
+            error: error.message, 
+            stack: error.stack, 
+            email,
+            errorCode: error.code 
+        });
+        throw error;
     }
-
-    const { id, password_hash: passwordHash, name, is_business, role } = result.rows[0];
-
-    const isPasswordValid = await bcrypt.compare(password, passwordHash);
-    if (!isPasswordValid) {
-        logger.warn("Login failed - invalid password", { email });
-        throw new AppError("Неверные учетные данные", 401, "INVALID_CREDENTIALS");
-    }
-
-    req.session.userId = id;
-    req.session.isBusiness = is_business;
-    req.session.role = role || (is_business ? 'business' : 'customer'); // fallback для старых записей
-
-    logger.info("User logged in successfully", { userId: id, email, is_business, role });
-
-    res.json({
-        success: true,
-        message: "Вход выполнен успешно",
-        user: { id, name, email, is_business }
-    });
 }));
 
 authRouter.get("/logout", (req, res) => {
