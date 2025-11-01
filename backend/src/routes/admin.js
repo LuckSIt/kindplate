@@ -4,6 +4,7 @@ const { requireAdmin } = require('../lib/guards');
 const { asyncHandler } = require('../lib/errorHandler');
 const { AppError } = require('../lib/errorHandler');
 const pool = require('../lib/db');
+const logger = require('../lib/logger');
 const { z } = require('zod');
 
 const adminRouter = express.Router();
@@ -73,19 +74,29 @@ adminRouter.post('/register-business', requireAdmin, asyncHandler(async (req, re
 
 // Получить список всех бизнесов (только для админа)
 adminRouter.get('/businesses', requireAdmin, asyncHandler(async (req, res) => {
-    const result = await pool.query(
-        `SELECT 
-            id, email, name, address, coord_0, coord_1, 
-            is_business, role, created_at, is_top, quality_score
-        FROM users 
-        WHERE is_business = true 
-        ORDER BY created_at DESC`
-    );
+    try {
+        const result = await pool.query(
+            `SELECT 
+                id, email, name, address, coord_0, coord_1, 
+                is_business, role, created_at, 
+                COALESCE(is_top, false) as is_top, 
+                COALESCE(quality_score, 0) as quality_score
+            FROM users 
+            WHERE is_business = true 
+            ORDER BY created_at DESC`
+        );
 
-    res.json({
-        success: true,
-        businesses: result.rows
-    });
+        res.json({
+            success: true,
+            businesses: result.rows
+        });
+    } catch (error) {
+        logger.error("Error in /admin/businesses:", { 
+            error: error.message, 
+            stack: error.stack 
+        });
+        throw error;
+    }
 }));
 
 // Получить статистику по платформе (только для админа)
