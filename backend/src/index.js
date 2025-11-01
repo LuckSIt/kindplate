@@ -67,6 +67,7 @@ app.use(
                 "http://localhost:3001", 
                 "http://localhost:5173",
                 "http://172.20.10.2:5173",
+                "https://app-kindplate.ru", // Явно добавляем продакшен домен
                 envOrigin
             ].filter(Boolean);
 
