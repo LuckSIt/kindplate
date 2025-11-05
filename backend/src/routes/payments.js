@@ -301,9 +301,27 @@ paymentsRouter.post("/webhook", async (req, res) => {
 
         // Если платеж успешен, обновляем статус заказа
         if (status === 'succeeded') {
+            // Генерируем pickup_code для QR-выдачи, если его еще нет
+            const crypto = require('crypto');
+            let pickupCode;
+            if (crypto.randomUUID) {
+                pickupCode = crypto.randomUUID();
+            } else {
+                // Fallback для старых версий Node.js
+                pickupCode = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    const r = Math.random() * 16 | 0;
+                    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+            
             await pool.query(
-                `UPDATE orders SET status = 'paid', paid_at = NOW() WHERE id = $1`,
-                [payment.order_id]
+                `UPDATE orders 
+                 SET status = 'paid', 
+                     paid_at = NOW(),
+                     pickup_code = COALESCE(pickup_code, $1)
+                 WHERE id = $2`,
+                [pickupCode, payment.order_id]
             );
 
             // TODO: Отправить уведомление пользователю

@@ -19,6 +19,7 @@ import { axiosInstance, getBackendURL } from "@/lib/axiosInstance";
 import { AxiosError } from "axios";
 import { notify } from "@/lib/notifications";
 import type { Offer, Order } from "@/lib/types";
+import { QRScanner } from "@/components/ui/qr-scanner";
 
 export const Route = createFileRoute("/panel/")({
     component: RouteComponent,
@@ -411,6 +412,43 @@ interface EditOfferDialogProps {
     onCancel: () => void;
 }
 
+// QR Scanner Button Component
+function QRScannerButton({ onScanSuccess }: { onScanSuccess?: () => void }) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <>
+            <div className="mb-4 flex justify-center">
+                <Button
+                    onClick={() => setIsOpen(true)}
+                    className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold px-6 py-3 text-lg"
+                >
+                    📱 Сканировать QR-код для выдачи
+                </Button>
+            </div>
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Сканирование QR-кода</DialogTitle>
+                        <DialogDescription>
+                            Отсканируйте QR-код клиента или введите код вручную
+                        </DialogDescription>
+                    </DialogHeader>
+                    <QRScanner
+                        onScanSuccess={(orderId) => {
+                            if (onScanSuccess) {
+                                onScanSuccess();
+                            }
+                            setIsOpen(false);
+                        }}
+                        onClose={() => setIsOpen(false)}
+                    />
+                </DialogContent>
+            </Dialog>
+        </>
+    );
+}
+
 function EditOfferDialog({ open, currentOffer, onSave, onDelete, onCancel }: EditOfferDialogProps) {
     return (
         <Dialog
@@ -708,6 +746,8 @@ function RouteComponent() {
                 {/* Orders Tab */}
                 {activeTab === 'orders' && (
                     <div className="mt-2">
+                        {/* QR Scanner Button */}
+                        <QRScannerButton onScanSuccess={() => refetchOrders()} />
                         {areOrdersLoading && (
                             <div className="text-center py-12">
                                 <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>

@@ -1,7 +1,51 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const pool = require('../lib/db');
+const { createAccessToken, verifyToken } = require('../lib/jwt');
+const QRCode = require('qrcode');
+const crypto = require('crypto');
 
 const ordersRouter = express.Router();
+
+// Rate limiting для сканирования QR
+const scanRateLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 минута
+    max: 10, // максимум 10 попыток сканирования в минуту
+    message: {
+        success: false,
+        error: "TOO_MANY_REQUESTS",
+        message: "Слишком много попыток сканирования. Попробуйте позже."
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+// Функция для логирования событий заказа
+async function logOrderEvent(orderId, eventType, actorId = null, actorType = 'system', metadata = null) {
+    try {
+        await pool.query(
+            `INSERT INTO order_events (order_id, event_type, actor_id, actor_type, metadata)
+             VALUES ($1, $2, $3, $4, $5)`,
+            [orderId, eventType, actorId, actorType, metadata ? JSON.stringify(metadata) : null]
+        );
+    } catch (error) {
+        console.error('❌ Ошибка при логировании события заказа:', error);
+        // Не прерываем выполнение, если логирование не удалось
+    }
+}
+
+// Функция для генерации UUID v4
+function generateUUID() {
+    if (crypto.randomUUID) {
+        return crypto.randomUUID();
+    }
+    // Fallback для старых версий Node.js
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
 
 // Получить конфигурацию сервисного сбора
 ordersRouter.get("/config", async (req, res) => {
@@ -650,6 +694,278 @@ ordersRouter.get("/business", async (req, res) => {
         });
     } catch (e) {
         console.error("❌ Ошибка в /orders/business:", e);
+        res.status(500).send({
+            success: false,
+            error: "UNKNOWN_ERROR",
+            message: "Внутренняя ошибка сервера"
+        });
+    }
+});
+
+// ============================================
+// QR-КОД ДЛЯ ВЫДАЧИ ЗАКАЗА
+// ============================================
+
+// Получить QR-код для заказа (клиент видит QR для сканирования продавцом)
+ordersRouter.get("/:id/qr", async (req, res) => {
+    try {
+        const { id } = req.params;
+        // TODO: Получить user_id из JWT токена/сессии
+        const userId = req.session?.userId || 1;
+
+        console.log("🔍 Запрос GET /orders/:id/qr", { id, userId });
+
+        // Проверяем, что заказ принадлежит пользователю
+        const orderResult = await pool.query(
+            `SELECT id, status, pickup_code, business_id, pickup_time_end
+             FROM orders 
+             WHERE id = $1 AND user_id = $2`,
+            [id, userId]
+        );
+
+        if (orderResult.rows.length === 0) {
+            return res.status(404).send({
+                success: false,
+                error: "ORDER_NOT_FOUND",
+                message: "Заказ не найден"
+            });
+        }
+
+        const order = orderResult.rows[0];
+
+        // Проверяем, что заказ оплачен или готов к выдаче
+        if (!['paid', 'ready_for_pickup'].includes(order.status)) {
+            return res.status(400).send({
+                success: false,
+                error: "ORDER_NOT_READY",
+                message: "Заказ еще не готов к выдаче"
+            });
+        }
+
+        // Проверяем, что заказ не просрочен
+        const now = new Date();
+        const pickupEnd = new Date(order.pickup_time_end);
+        if (now > pickupEnd) {
+            return res.status(400).send({
+                success: false,
+                error: "ORDER_EXPIRED",
+                message: "Время выдачи заказа истекло"
+            });
+        }
+
+        // Генерируем pickup_code, если его нет
+        let pickupCode = order.pickup_code;
+        if (!pickupCode) {
+            pickupCode = generateUUID();
+            await pool.query(
+                `UPDATE orders SET pickup_code = $1 WHERE id = $2`,
+                [pickupCode, id]
+            );
+            await logOrderEvent(id, 'qr_generated', userId, 'user');
+        }
+
+        // Создаем JWT токен с данными для QR (подписанный)
+        const qrPayload = {
+            order_id: parseInt(id),
+            pickup_code: pickupCode,
+            business_id: order.business_id
+        };
+
+        const qrToken = await createAccessToken({
+            userId: order.business_id, // Используем business_id для валидации
+            email: 'qr', // Заглушка
+            isBusiness: true
+        });
+
+        // Подписываем данные QR кодом (добавляем JWT в payload)
+        const qrData = JSON.stringify({
+            ...qrPayload,
+            token: qrToken, // JWT токен для проверки на сервере
+            expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString() // TTL 5 минут
+        });
+
+        // Генерируем QR код как base64 PNG
+        const qrImageBase64 = await QRCode.toDataURL(qrData, {
+            errorCorrectionLevel: 'M',
+            type: 'image/png',
+            width: 300,
+            margin: 2
+        });
+
+        // Логируем генерацию QR
+        await logOrderEvent(id, 'qr_requested', userId, 'user', {
+            ip: req.ip
+        });
+
+        res.send({
+            success: true,
+            data: {
+                qr_code: qrImageBase64, // base64 PNG
+                pickup_code: pickupCode,
+                expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString()
+            }
+        });
+    } catch (e) {
+        console.error("❌ Ошибка в GET /orders/:id/qr:", e);
+        res.status(500).send({
+            success: false,
+            error: "UNKNOWN_ERROR",
+            message: "Внутренняя ошибка сервера"
+        });
+    }
+});
+
+// Сканировать QR-код (продавец сканирует код клиента)
+ordersRouter.post("/scan", scanRateLimiter, async (req, res) => {
+    try {
+        const { code } = req.body;
+        // TODO: Получить business_id из JWT токена/сессии
+        const businessId = req.session?.userId || 1;
+
+        console.log("🔍 Запрос POST /orders/scan", { code, businessId });
+
+        if (!code) {
+            return res.status(400).send({
+                success: false,
+                error: "INVALID_REQUEST",
+                message: "Необходимо указать код"
+            });
+        }
+
+        // Парсим данные из QR кода
+        let qrData;
+        try {
+            qrData = JSON.parse(code);
+        } catch (e) {
+            // Если не JSON, возможно это просто pickup_code
+            qrData = { pickup_code: code };
+        }
+
+        const { pickup_code, order_id, token } = qrData;
+
+        // Если есть JWT токен, проверяем его
+        if (token) {
+            try {
+                const payload = await verifyToken(token);
+                // Проверяем, что токен не истек (expires_at)
+                if (qrData.expires_at && new Date(qrData.expires_at) < new Date()) {
+                    return res.status(400).send({
+                        success: false,
+                        error: "QR_EXPIRED",
+                        message: "QR-код истек. Попросите клиента обновить код."
+                    });
+                }
+            } catch (e) {
+                return res.status(400).send({
+                    success: false,
+                    error: "INVALID_QR_TOKEN",
+                    message: "Недействительный QR-код"
+                });
+            }
+        }
+
+        // Находим заказ по pickup_code
+        const orderResult = await pool.query(
+            `SELECT id, status, business_id, user_id, pickup_verified_at, pickup_time_end
+             FROM orders 
+             WHERE pickup_code = $1`,
+            [pickup_code || code]
+        );
+
+        if (orderResult.rows.length === 0) {
+            await logOrderEvent(null, 'qr_scan_failed', businessId, 'business', {
+                code: pickup_code || code,
+                reason: 'code_not_found'
+            });
+            return res.status(404).send({
+                success: false,
+                error: "CODE_NOT_FOUND",
+                message: "Код не найден"
+            });
+        }
+
+        const order = orderResult.rows[0];
+
+        // Проверяем, что заказ принадлежит этому бизнесу
+        if (order.business_id !== businessId) {
+            await logOrderEvent(order.id, 'qr_scan_failed', businessId, 'business', {
+                reason: 'wrong_business'
+            });
+            return res.status(403).send({
+                success: false,
+                error: "WRONG_BUSINESS",
+                message: "Этот заказ не принадлежит вашему заведению"
+            });
+        }
+
+        // Проверяем статус заказа
+        if (!['paid', 'ready_for_pickup'].includes(order.status)) {
+            await logOrderEvent(order.id, 'qr_scan_failed', businessId, 'business', {
+                reason: 'invalid_status',
+                current_status: order.status
+            });
+            return res.status(400).send({
+                success: false,
+                error: "ORDER_NOT_READY",
+                message: `Заказ не готов к выдаче. Текущий статус: ${order.status}`
+            });
+        }
+
+        // Проверяем, что заказ не просрочен
+        const now = new Date();
+        const pickupEnd = new Date(order.pickup_time_end);
+        if (now > pickupEnd) {
+            await logOrderEvent(order.id, 'qr_scan_failed', businessId, 'business', {
+                reason: 'expired'
+            });
+            return res.status(400).send({
+                success: false,
+                error: "ORDER_EXPIRED",
+                message: "Время выдачи заказа истекло"
+            });
+        }
+
+        // Проверяем идемпотентность - если уже выдан, возвращаем 409
+        if (order.pickup_verified_at) {
+            await logOrderEvent(order.id, 'qr_scan_duplicate', businessId, 'business', {
+                previous_verified_at: order.pickup_verified_at
+            });
+            return res.status(409).send({
+                success: false,
+                error: "ALREADY_PICKED_UP",
+                message: "Заказ уже был выдан",
+                data: {
+                    order_id: order.id,
+                    verified_at: order.pickup_verified_at
+                }
+            });
+        }
+
+        // Обновляем заказ - помечаем как выданный
+        await pool.query(
+            `UPDATE orders 
+             SET status = 'picked_up', 
+                 pickup_verified_at = NOW() 
+             WHERE id = $1`,
+            [order.id]
+        );
+
+        // Логируем успешное сканирование
+        await logOrderEvent(order.id, 'qr_scanned', businessId, 'business', {
+            verified_at: new Date().toISOString()
+        });
+
+        res.send({
+            success: true,
+            message: "Заказ успешно выдан",
+            data: {
+                order_id: order.id,
+                customer_id: order.user_id,
+                verified_at: new Date().toISOString()
+            }
+        });
+    } catch (e) {
+        console.error("❌ Ошибка в POST /orders/scan:", e);
         res.status(500).send({
             success: false,
             error: "UNKNOWN_ERROR",

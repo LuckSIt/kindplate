@@ -8,6 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { authContext } from "@/lib/auth";
 import { notify } from "@/lib/notifications";
 import { CartSheet } from "@/components/ui/cart-sheet";
+import { QRCodeDisplay } from "@/components/ui/qr-code-display";
 
 export const Route = createFileRoute("/account/")({
     component: RouteComponent,
@@ -266,6 +267,16 @@ function RouteComponent() {
                                     <div className="text-xs text-gray-500">
                                         Создан: {new Date(order.created_at).toLocaleString('ru-RU')}
                                     </div>
+
+                                    {/* QR Code Display */}
+                                    {['paid', 'ready_for_pickup'].includes(order.status) && (
+                                        <div className="mt-4">
+                                            <QRCodeDisplay 
+                                                orderId={order.id} 
+                                                orderStatus={order.status}
+                                            />
+                                        </div>
+                                    )}
 
                                     {/* Actions */}
                                     <div className="flex gap-2">
