@@ -7,6 +7,7 @@ import { PhotoCarousel } from '@/components/ui/photo-carousel';
 import { QuantitySelector } from '@/components/ui/quantity-selector';
 import { CartReplacementDialog } from '@/components/ui/cart-replacement-dialog';
 import { Button } from '@/components/ui/button';
+import { WaitlistSubscribeButton } from '@/components/ui/waitlist-subscribe-button';
 import { useCart } from '@/lib/hooks/use-cart';
 import type { Offer, Business } from '@/lib/types';
 
@@ -256,6 +257,15 @@ export const OfferPage: React.FC<OfferPageProps> = ({ offerId }) => {
                 <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
                   Остался последний экземпляр!
                 </p>
+              )}
+
+              {/* Waitlist Subscribe Button - показываем если нет в наличии */}
+              {!isAvailable && (
+                <WaitlistSubscribeButton
+                  scopeType="offer"
+                  scopeId={offerData.id}
+                  className="w-full"
+                />
               )}
             </div>
 

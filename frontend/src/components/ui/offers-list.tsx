@@ -4,7 +4,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { Button } from './button';
 import { HighlightText } from './highlight-text';
 import { FavoriteButton } from './favorite-button';
-import { QualityBadgeCompact } from './quality-badge';
+import { QualityBadgesList } from './quality-badge';
 import { RouteButtonCompact } from './route-button';
 import { OptimizedImage } from './optimized-image';
 import type { Business } from '@/lib/types';
@@ -100,7 +100,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
                 />
               </h3>
               
-              <div className="flex items-center gap-3 mt-1">
+              <div className="flex items-center gap-3 mt-1 flex-wrap">
                 <div className="flex items-center gap-1">
                   <Star className="w-4 h-4 text-yellow-400 fill-current" />
                   <span className="text-sm text-gray-600 dark:text-gray-300">
@@ -117,6 +117,13 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
                   </div>
                 )}
               </div>
+              
+              {/* Quality Badges */}
+              {business.badges && business.badges.length > 0 && (
+                <div className="mt-2">
+                  <QualityBadgesList badges={business.badges} size="sm" showTooltip />
+                </div>
+              )}
             </div>
           </div>
           

@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapPin, ExternalLink, Star, Clock, Heart } from 'lucide-react';
 import { Button } from './button';
-import { QualityBadge } from './quality-badge';
+import { QualityBadgesList } from './quality-badge';
 import type { Business } from '@/lib/types';
 
 interface VendorHeaderProps {
@@ -47,11 +47,13 @@ export const VendorHeader: React.FC<VendorHeaderProps> = ({
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-3 mb-2 flex-wrap">
                   <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                     {business.name}
                   </h1>
-                  <QualityBadge business={business} size="md" />
+                  {business.badges && business.badges.length > 0 && (
+                    <QualityBadgesList badges={business.badges} size="md" showTooltip />
+                  )}
                 </div>
                 
                 <div className="flex items-center gap-4 mb-3">

@@ -8,6 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { authContext } from "@/lib/auth";
 import { notify } from "@/lib/notifications";
 import { CartSheet } from "@/components/ui/cart-sheet";
+import { WaitlistSubscriptionsManager } from "@/components/ui/waitlist-subscriptions-manager";
 import { QRCodeDisplay } from "@/components/ui/qr-code-display";
 
 export const Route = createFileRoute("/account/")({
@@ -20,6 +21,7 @@ function RouteComponent() {
     const [showOrders, setShowOrders] = useState(false);
     const [showStats, setShowStats] = useState(false);
     const [showFavorites, setShowFavorites] = useState(false);
+    const [showSubscriptions, setShowSubscriptions] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
     const [selectedOrderForReview, setSelectedOrderForReview] = useState<any>(null);
@@ -592,6 +594,15 @@ function RouteComponent() {
         );
     }
 
+    // Если показываем подписки
+    if (showSubscriptions) {
+        return (
+            <>
+                <WaitlistSubscriptionsManager onClose={() => setShowSubscriptions(false)} />
+            </>
+        );
+    }
+
     // Основной экран аккаунта
     return (
         <div className="min-h-screen bg-white dark:bg-gray-900 pb-20">
@@ -678,6 +689,25 @@ function RouteComponent() {
                         <div className="text-left">
                             <div className="text-base font-bold text-gray-900 dark:text-white">Моя статистика</div>
                             <div className="text-xs text-gray-500">Сэкономлено и спасено</div>
+                        </div>
+                    </div>
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+                {/* Subscriptions */}
+                <button 
+                    onClick={() => setShowSubscriptions(true)}
+                    className="w-full bg-white dark:bg-gray-800 px-4 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-100 dark:border-gray-700"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <span className="text-2xl">🔔</span>
+                        </div>
+                        <div className="text-left">
+                            <div className="text-base font-bold text-gray-900 dark:text-white">Уведомления</div>
+                            <div className="text-xs text-gray-500">Подписки на новые предложения</div>
                         </div>
                     </div>
                     <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

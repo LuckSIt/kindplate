@@ -121,31 +121,38 @@ export const MapView: React.FC<MapViewProps> = ({
     };
   }, [mapLoaded, userLocation, onBoundsChange, isInitialized]);
 
-  // Add business markers with clusterer
+  // Add business markers with optimized clusterer
   useEffect(() => {
     if (!map || !window.ymaps) return;
 
-    // Clear existing markers/clusterers (but keep user location marker)
-    const toRemove: any[] = [];
-    map.geoObjects.each((obj: any) => {
-      if (obj.properties && obj.properties.get('isUserLocation') === true) return;
-      toRemove.push(obj);
-    });
-    toRemove.forEach((obj) => map.geoObjects.remove(obj));
+    // Debounce обновления маркеров для производительности
+    const timeoutId = setTimeout(() => {
+      // Clear existing markers/clusterers (but keep user location marker)
+      const toRemove: any[] = [];
+      map.geoObjects.each((obj: any) => {
+        if (obj.properties && obj.properties.get('isUserLocation') === true) return;
+        toRemove.push(obj);
+      });
+      toRemove.forEach((obj) => map.geoObjects.remove(obj));
 
     const clusterIconContentLayout = window.ymaps.templateLayoutFactory.createClass(
       '<div style="width:44px;height:44px;border-radius:22px;background:#22c55e;box-shadow:0 6px 16px rgba(34,197,94,0.35);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-family:Inter,Arial,sans-serif;font-size:14px;">{{ properties.geoObjects.length }}</div>'
     );
 
+    // Оптимизированные настройки кластеризации для больших кластеров
     const clusterer = new window.ymaps.Clusterer({
       groupByCoordinates: false,
       clusterDisableClickZoom: false,
       clusterOpenBalloonOnClick: true,
       clusterBalloonContentLayoutWidth: 280,
       clusterBalloonContentLayoutHeight: 180,
-      gridSize: 64,
+      gridSize: 64, // Размер сетки для кластеризации
       clusterIcons: [ { href: 'about:blank', size: [44,44], offset: [-22,-22] } ],
-      clusterIconContentLayout
+      clusterIconContentLayout,
+      // Оптимизация производительности
+      hasBalloon: true,
+      hasHint: false, // Отключаем подсказки для производительности
+      zoomMargin: 10, // Отступ при зуме к кластеру
     });
 
     businesses.forEach((business) => {
@@ -197,6 +204,9 @@ export const MapView: React.FC<MapViewProps> = ({
     });
 
     map.geoObjects.add(clusterer);
+    }, 100); // Debounce 100ms для оптимизации
+    
+    return () => clearTimeout(timeoutId);
   }, [map, businesses, onBusinessClick, selectedBusiness?.id]);
 
   // Initial centering on businesses (only once and if user hasn't interacted)

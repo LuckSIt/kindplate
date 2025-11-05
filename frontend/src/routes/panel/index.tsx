@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { Minus, Plus, Edit, Clock, Power } from "lucide-react";
+import { Minus, Plus, Edit, Clock, Power, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,6 +20,8 @@ import { AxiosError } from "axios";
 import { notify } from "@/lib/notifications";
 import type { Offer, Order } from "@/lib/types";
 import { QRScanner } from "@/components/ui/qr-scanner";
+import { OfferScheduleDialog } from "@/components/ui/offer-schedule-dialog";
+import { BusinessLocationsManager } from "@/components/ui/business-locations-manager";
 
 export const Route = createFileRoute("/panel/")({
     component: RouteComponent,
@@ -85,7 +87,19 @@ function OfferPropertiesForm({ offer, onSave, children }: OfferPropertiesFormPro
         resolver: zodResolver(offerSchema),
         defaultValues: offer,
     });
-    const { register, handleSubmit } = methods;
+    const { register, handleSubmit, watch, setValue } = methods;
+
+    // Получаем список локаций для выбора
+    const { data: locationsData } = useQuery({
+        queryKey: ['business_locations'],
+        queryFn: async () => {
+            const response = await axiosInstance.get('/business/locations');
+            return response.data.locations;
+        },
+    });
+
+    const locations = locationsData || [];
+    const selectedLocationId = watch('location_id');
 
     const onSubmit = (data: OfferFormData) => {
         // Валидация: цена со скидкой должна быть меньше обычной
@@ -141,6 +155,27 @@ function OfferPropertiesForm({ offer, onSave, children }: OfferPropertiesFormPro
 
                 <div className="border-t pt-3 mt-2">
                     <div className="flex items-center gap-2 mb-3">
+                        <MapPin className="w-4 h-4 text-green-600" />
+                        <span className="font-semibold text-sm text-gray-700">Локация</span>
+                    </div>
+                    <select
+                        {...register("location_id", { valueAsNumber: true })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                        <option value="">Основная локация (координаты бизнеса)</option>
+                        {locations.map((loc: any) => (
+                            <option key={loc.id} value={loc.id}>
+                                {loc.name} - {loc.address}
+                            </option>
+                        ))}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">
+                        Выберите локацию для этого оффера. Если не выбрано, будет использована основная локация бизнеса.
+                    </p>
+                </div>
+
+                <div className="border-t pt-3 mt-2">
+                    <div className="flex items-center gap-2 mb-3">
                         <Clock className="w-4 h-4 text-blue-600" />
                         <span className="font-semibold text-sm text-gray-700">Время самовывоза</span>
                     </div>
@@ -182,6 +217,7 @@ interface OfferSummaryProps {
     onEdit: () => void;
     onToggleActive: () => void;
     onPhotoUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onSchedule?: () => void;
 }
 
 function OfferSummary({
@@ -200,6 +236,7 @@ function OfferSummary({
     onEdit,
     onToggleActive,
     onPhotoUpload,
+    onSchedule,
 }: OfferSummaryProps) {
     const discount = original_price && discounted_price 
         ? Math.round((1 - discounted_price / original_price) * 100) 
@@ -316,9 +353,21 @@ function OfferSummary({
                         size="sm"
                         variant="ghost"
                         className="ml-2 hover:bg-blue-50 hover:text-blue-600"
+                        title="Редактировать"
                     >
                         <Edit className="w-4 h-4" />
                     </Button>
+                    {onSchedule && (
+                        <Button 
+                            onClick={onSchedule}
+                            size="sm"
+                            variant="ghost"
+                            className="hover:bg-purple-50 hover:text-purple-600"
+                            title="Расписание публикации"
+                        >
+                            📅
+                        </Button>
+                    )}
                 </div>
             </div>
         </div>
@@ -332,9 +381,10 @@ interface OfferListProps {
     onEdit: (i: number) => void;
     onToggleActive: (i: number) => void;
     onPhotoUpload: (offerId: number, event: React.ChangeEvent<HTMLInputElement>) => void;
+    onSchedule?: (offerId: number) => void;
 }
 
-function OfferList({ offers, onIncrement, onDecrement, onEdit, onToggleActive, onPhotoUpload }: OfferListProps) {
+function OfferList({ offers, onIncrement, onDecrement, onEdit, onToggleActive, onPhotoUpload, onSchedule }: OfferListProps) {
     return (
         <>
             <div className="max-w-4xl mx-auto">
@@ -348,6 +398,7 @@ function OfferList({ offers, onIncrement, onDecrement, onEdit, onToggleActive, o
                             onEdit={() => onEdit(i)}
                             onToggleActive={() => onToggleActive(i)}
                             onPhotoUpload={(event) => onPhotoUpload(offer.id, event)}
+                            onSchedule={onSchedule ? () => onSchedule(offer.id) : undefined}
                         />
                     ))}
                 </div>
@@ -605,6 +656,9 @@ function RouteComponent() {
         edit: 0,
         create: defaultOffer,
     });
+    const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+    const [selectedOfferIdForSchedule, setSelectedOfferIdForSchedule] = useState<number | null>(null);
+    const [selectedLocationId, setSelectedLocationId] = useState<number | null>(null);
 
     const getOffer = (i: number): Offer => (offersData?.data?.offers ?? [])[i];
 
@@ -634,7 +688,7 @@ function RouteComponent() {
                 </div>
                 
                 {/* Tabs */}
-                <div className="grid grid-cols-3 gap-2 mb-6">
+                <div className="grid grid-cols-4 gap-2 mb-6">
                     <button
                         onClick={() => setActiveTab('offers')}
                         className={`py-3 px-4 rounded-xl font-bold transition-all ${
@@ -654,6 +708,16 @@ function RouteComponent() {
                         }`}
                     >
                         📋 Заказы
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('locations')}
+                        className={`py-3 px-4 rounded-xl font-bold transition-all ${
+                            activeTab === 'locations'
+                                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                    >
+                        📍 Локации
                     </button>
                     <button
                         onClick={() => setActiveTab('stats')}
@@ -721,6 +785,10 @@ function RouteComponent() {
                                     });
                                 }}
                                 onPhotoUpload={handlePhotoUpload}
+                                onSchedule={(offerId) => {
+                                    setSelectedOfferIdForSchedule(offerId);
+                                    setScheduleDialogOpen(true);
+                                }}
                             />
                             <div className="flex justify-center mt-8">
                                 <Button
@@ -864,6 +932,16 @@ function RouteComponent() {
                 )}
 
                 {/* Stats Tab */}
+                {/* Locations Tab */}
+                {activeTab === 'locations' && (
+                    <div className="mt-2">
+                        <BusinessLocationsManager
+                            onLocationSelect={setSelectedLocationId}
+                            selectedLocationId={selectedLocationId}
+                        />
+                    </div>
+                )}
+
                 {activeTab === 'stats' && (
                     <div className="mt-2">
                         {areStatsLoading && (
@@ -1010,7 +1088,11 @@ function RouteComponent() {
                 }}
                 onCreate={(data: OfferFormData) => {
                     setDialogMode(DialogMode.NONE);
-                    mutateOffer({ type: OfferMutationType.CREATE, offer: data as Offer });
+                    const offerData = {
+                        ...data,
+                        location_id: data.location_id || null,
+                    };
+                    mutateOffer({ type: OfferMutationType.CREATE, offer: offerData as Offer });
                 }}
             />
             <EditOfferDialog
@@ -1034,6 +1116,18 @@ function RouteComponent() {
                     setDialogMode(DialogMode.NONE);
                 }}
             />
+
+            {/* Диалог расписания оффера */}
+            {selectedOfferIdForSchedule && (
+                <OfferScheduleDialog
+                    offerId={selectedOfferIdForSchedule}
+                    open={scheduleDialogOpen}
+                    onClose={() => {
+                        setScheduleDialogOpen(false);
+                        setSelectedOfferIdForSchedule(null);
+                    }}
+                />
+            )}
         </>
     );
 }

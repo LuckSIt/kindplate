@@ -30,15 +30,18 @@ if (!fs.existsSync('logs')) {
 
 const authRouter = require("./routes/auth");
 const businessRouter = require("./routes/business");
+const businessLocationsRouter = require("./routes/business-locations");
 const offersRouter = require("./routes/offers");
 const ordersRouter = require("./routes/orders");
 const paymentsRouter = require("./routes/payments");
 const customerRouter = require("./routes/customer");
+const customerLocationsRouter = require("./routes/customer-locations");
 const cartRouter = require("./routes/cart");
 const statsRouter = require("./routes/stats");
 const favoritesRouter = require("./routes/favorites");
 const reviewsRouter = require("./routes/reviews");
 const notificationsRouter = require("./routes/notifications");
+const subscriptionsRouter = require("./routes/subscriptions");
 const profileRouter = require("./routes/profile");
 const adminRouter = require("./routes/admin");
 const { businessOnly } = require("./lib/auth");
@@ -147,15 +150,19 @@ app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
 app.use("/admin", adminRouter);
 app.use("/business", businessOnly, businessRouter);
+app.use("/business/locations", businessOnly, businessLocationsRouter);
 app.use("/business/offers", businessOnly, offersRouter);
+app.use("/offers", offersRouter); // Публичный эндпоинт для поиска
 app.use("/orders", ordersRouter);
 app.use("/payments", paymentsRouter);
 app.use("/customer", customerRouter);
+app.use("/customer", customerLocationsRouter);
 app.use("/customer", cartRouter);
 app.use("/stats", statsRouter);
 app.use("/favorites", favoritesRouter);
 app.use("/reviews", reviewsRouter);
 app.use("/notifications", notificationsRouter);
+app.use("/subscriptions", subscriptionsRouter);
 
 // Базовый маршрут API
 app.get("/", (req, res) => {
@@ -181,6 +188,19 @@ app.use(notFound);
 
 // Централизованный обработчик ошибок
 app.use(errorHandler);
+
+// Запускаем планировщик офферов
+const { startScheduler } = require('./jobs/offer-scheduler');
+const { startQualityBadgesJob } = require('./jobs/quality-badges');
+if (process.env.ENABLE_OFFER_SCHEDULER !== 'false') {
+    startScheduler();
+}
+
+// Запускаем джоб обновления бейджей качества (если включен)
+if (process.env.ENABLE_QUALITY_BADGES_JOB !== 'false') {
+    startQualityBadgesJob();
+    logger.info('✅ Джоб обновления бейджей качества запущен');
+}
 
 app.listen(process.env.PORT, "0.0.0.0", () => {
     logger.info(`🚀 Сервер запущен на порту ${process.env.PORT}`);

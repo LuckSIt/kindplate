@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance } from '@/lib/axiosInstance';
 import { notify } from '@/lib/notifications';
 import { VendorHeader } from '@/components/ui/vendor-header';
+import { QualityBadgesList } from '@/components/ui/quality-badge';
 import { OfferCardVendor } from '@/components/ui/offer-card-vendor';
 import { EmptyOffersState } from '@/components/ui/empty-offers-state';
 import { ReviewsList } from '@/components/ui/reviews-list';
@@ -50,6 +51,21 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     select: (res) => res.data.data as ReviewsStats
   });
 
+  // Fetch vendor locations
+  const { data: locationsData } = useQuery({
+    queryKey: ['vendor-locations', vendorId],
+    queryFn: () => axiosInstance.get(`/customer/vendors/${vendorId}/locations`),
+    enabled: !!vendorId,
+    select: (res) => res.data.data.locations as Array<{
+      id: number;
+      name: string;
+      address: string;
+      coords: [number, number];
+      phone?: string;
+      offers_count: number;
+    }>
+  });
+
   // Create order mutation
   const createOrderMutation = useMutation({
     mutationFn: (orderData: any) => {
@@ -69,11 +85,20 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
 
   // Create review mutation
   const createReviewMutation = useMutation({
-    mutationFn: (reviewData: ReviewFormData) => {
+    mutationFn: (reviewData: FormData | ReviewFormData) => {
+      // Если это FormData (с фото), используем его напрямую
+      if (reviewData instanceof FormData) {
+        return axiosInstance.post('/reviews', reviewData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      }
+      // Иначе обычный JSON запрос
       return axiosInstance.post('/reviews', reviewData);
     },
     onSuccess: () => {
-      notify.success("Отзыв отправлен", "Спасибо за ваш отзыв!");
+      notify.success("Отзыв отправлен", "Ваш отзыв отправлен на модерацию. После проверки он появится на странице заведения.");
       setReviewDialogOpen(false);
       queryClient.invalidateQueries({ queryKey: ['vendor-reviews', vendorId] });
       queryClient.invalidateQueries({ queryKey: ['vendor', vendorId] });
@@ -95,6 +120,7 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     is_top: vendorData.is_top,
     quality_score: vendorData.quality_score,
     quality_metrics: vendorData.quality_metrics,
+    badges: vendorData.badges || [],
     offers: offersData || []
   } : null;
 
@@ -187,6 +213,22 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
         isFavorite={favorites.has(business.id)}
         onFavoriteToggle={handleFavoriteToggle}
       />
+      
+      {/* Quality Badges Section */}
+      {business.badges && business.badges.length > 0 && (
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-4">
+          <div className="max-w-7xl mx-auto">
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              Награды качества
+            </h3>
+            <QualityBadgesList 
+              badges={business.badges} 
+              size="md" 
+              showDescriptions 
+            />
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-6">
@@ -217,6 +259,48 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
           <EmptyOffersState
             onEnableNotifications={handleEnableNotifications}
           />
+        )}
+
+        {/* Locations Section */}
+        {locationsData && locationsData.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+              <MapPin className="w-6 h-6" />
+              Локации
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {locationsData.map((location) => (
+                <div
+                  key={location.id}
+                  className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 shadow-sm"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                        {location.name}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                        {location.address}
+                      </p>
+                      {location.phone && (
+                        <p className="text-xs text-gray-500 dark:text-gray-500">
+                          📞 {location.phone}
+                        </p>
+                      )}
+                      {location.offers_count > 0 && (
+                        <p className="text-xs text-primary-600 dark:text-primary-400 mt-2">
+                          {location.offers_count} {location.offers_count === 1 ? 'предложение' : 'предложений'}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Reviews Section */}

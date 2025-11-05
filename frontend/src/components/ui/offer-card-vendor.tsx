@@ -3,6 +3,7 @@ import { Heart, Star, Clock, Eye } from 'lucide-react';
 import { useNavigate } from '@tanstack/react-router';
 import { Button } from './button';
 import { CountdownTimer } from './countdown-timer';
+import { WaitlistSubscribeButton } from './waitlist-subscribe-button';
 import { getBackendURL } from '@/lib/axiosInstance';
 import type { Offer } from '@/lib/types';
 
@@ -136,13 +137,22 @@ export const OfferCardVendor: React.FC<OfferCardVendorProps> = ({
               Подробнее
             </Button>
             
-            <Button
-              onClick={() => onOrder?.(offer)}
-              className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2"
-              disabled={offer.quantity_available <= 0}
-            >
-              {offer.quantity_available > 0 ? 'Заказать' : 'Нет в наличии'}
-            </Button>
+            {offer.quantity_available > 0 ? (
+              <Button
+                onClick={() => onOrder?.(offer)}
+                className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2"
+              >
+                Заказать
+              </Button>
+            ) : (
+              <>
+                <WaitlistSubscribeButton
+                  scopeType="offer"
+                  scopeId={offer.id}
+                  className="px-4 py-2 text-sm"
+                />
+              </>
+            )}
           </div>
         </div>
       </div>

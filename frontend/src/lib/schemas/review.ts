@@ -26,6 +26,9 @@ export type Review = {
   order_id?: number | null;
   rating: number;
   comment?: string | null;
+  photos?: string[];
+  status?: 'pending' | 'published' | 'rejected';
+  is_verified_purchase?: boolean;
   created_at: string;
   updated_at?: string;
 };

@@ -1,79 +1,232 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { axiosInstance } from "@/lib/axiosInstance";
-import { useQuery } from "@tanstack/react-query";
-import type { Business, Offer } from "@/lib/types";
-import { OffersFeed } from "@/components/ui/offers-feed";
+import { createFileRoute } from '@tanstack/react-router';
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { axiosInstance } from '@/lib/axiosInstance';
+import { SearchFiltersPanel, type SearchFilters } from '@/components/ui/search-filters';
+import { ActiveFiltersChips } from '@/components/ui/active-filters-chips';
+import { OfferCardVendor } from '@/components/ui/offer-card-vendor';
+import { Button } from '@/components/ui/button';
+import { Loader2, Search, Filter } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
-export const Route = createFileRoute("/search/")({
-  component: SearchPage,
+export const Route = createFileRoute('/search/')({
+    component: RouteComponent,
 });
 
-function SearchPage() {
-  const [query, setQuery] = useState("");
+function RouteComponent() {
+    const [filters, setFilters] = useState<SearchFilters>({ sort: 'distance' });
+    const [showFilters, setShowFilters] = useState(false);
+    const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+    const [page, setPage] = useState(1);
 
-  const { data } = useQuery({
-    queryKey: ["sellers", "all"],
-    queryFn: async () => {
-      const res = await axiosInstance.get('/customer/sellers');
-      return res.data.sellers || [];
-    },
-    staleTime: 30_000,
-  });
+    // Получаем геолокацию пользователя
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const loc: [number, number] = [position.coords.latitude, position.coords.longitude];
+                    setUserLocation(loc);
+                    setFilters(prev => ({
+                        ...prev,
+                        lat: loc[0],
+                        lon: loc[1],
+                        radius_km: prev.radius_km || 10
+                    }));
+                },
+                (error) => {
+                    console.warn('Ошибка получения геолокации:', error);
+                }
+            );
+        }
+    }, []);
 
-  const businesses: Business[] = useMemo(() => {
-    const sellers = data || [];
-    return sellers.map((s: any) => ({
-      id: s.id,
-      name: s.name,
-      address: s.address,
-      coords: s.coords,
-      rating: s.rating,
-      logo_url: s.logo_url,
-      phone: s.phone,
-      offers: (s.offers || []) as Offer[],
-    }));
-  }, [data]);
+    // Поиск офферов
+    const { data: searchData, isLoading } = useQuery({
+        queryKey: ['offers_search', filters, page],
+        queryFn: async () => {
+            const params = new URLSearchParams();
+            
+            if (filters.q) params.append('q', filters.q);
+            if (filters.lat) params.append('lat', filters.lat.toString());
+            if (filters.lon) params.append('lon', filters.lon.toString());
+            if (filters.radius_km) params.append('radius_km', filters.radius_km.toString());
+            if (filters.pickup_from) params.append('pickup_from', filters.pickup_from);
+            if (filters.pickup_to) params.append('pickup_to', filters.pickup_to);
+            if (filters.price_min) params.append('price_min', filters.price_min.toString());
+            if (filters.price_max) params.append('price_max', filters.price_max.toString());
+            if (filters.cuisines) {
+                filters.cuisines.forEach(c => params.append('cuisines[]', c));
+            }
+            if (filters.diets) {
+                filters.diets.forEach(d => params.append('diets[]', d));
+            }
+            if (filters.allergens) {
+                filters.allergens.forEach(a => params.append('allergens[]', a));
+            }
+            if (filters.sort) params.append('sort', filters.sort);
+            params.append('page', page.toString());
+            params.append('limit', '20');
 
-  const filteredBusinesses = useMemo(() => {
-    if (!query) return businesses;
-    const q = query.toLowerCase();
-    return businesses
-      .map(b => ({
-        ...b,
-        offers: (b.offers || []).filter(o =>
-          (o.title || '').toLowerCase().includes(q) || (o.description || '').toLowerCase().includes(q)
-        )
-      }))
-      .filter(b => (b.offers || []).length > 0 || b.name.toLowerCase().includes(q) || (b.address || '').toLowerCase().includes(q));
-  }, [businesses, query]);
+            const response = await axiosInstance.get(`/offers/search?${params.toString()}`);
+            return response.data.data;
+        },
+        staleTime: 60000, // 60 секунд кэш
+    });
 
-  useEffect(() => {
-    // autofocus when route opens
-    const el = document.getElementById('kp-search-input') as HTMLInputElement | null;
-    el?.focus();
-  }, []);
+    const offers = searchData?.offers || [];
+    const meta = searchData?.meta;
 
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-        <div className="relative">
-          <input
-            id="kp-search-input"
-            type="search"
-            placeholder="Поиск по заведениям и предложениям"
-            className="w-full px-3 py-2 pl-9 rounded-xl bg-gray-100 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
+    const handleFilterChange = (newFilters: SearchFilters) => {
+        setFilters(newFilters);
+        setPage(1); // Сбрасываем на первую страницу при изменении фильтров
+    };
+
+    const handleRemoveFilter = (key: keyof SearchFilters, value?: string) => {
+        const newFilters = { ...filters };
+        
+        if (key === 'cuisines' || key === 'diets' || key === 'allergens') {
+            // Удаляем конкретное значение из массива
+            const current = newFilters[key] as string[] || [];
+            if (value) {
+                const newArray = current.filter(v => v !== value);
+                if (newArray.length === 0) {
+                    delete newFilters[key];
+                } else {
+                    newFilters[key] = newArray as any;
+                }
+            } else {
+                delete newFilters[key];
+            }
+        } else {
+            delete newFilters[key];
+        }
+        
+        setFilters(newFilters);
+        setPage(1);
+    };
+
+    const handleClearAllFilters = () => {
+        const cleared: SearchFilters = { sort: 'distance' };
+        if (userLocation) {
+            cleared.lat = userLocation[0];
+            cleared.lon = userLocation[1];
+            cleared.radius_km = 10;
+        }
+        setFilters(cleared);
+        setPage(1);
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+            {/* Header */}
+            <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
+                <div className="max-w-7xl mx-auto px-4 py-4">
+                    <div className="flex items-center gap-3 mb-3">
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <Search className="w-6 h-6" />
+                            Поиск предложений
+                        </h1>
+                        <Button
+                            onClick={() => setShowFilters(true)}
+                            variant="outline"
+                            size="sm"
+                            className="ml-auto"
+                        >
+                            <Filter className="w-4 h-4 mr-2" />
+                            Фильтры
+                        </Button>
+                    </div>
+
+                    {/* Активные фильтры */}
+                    <ActiveFiltersChips
+                        filters={filters}
+                        onRemove={handleRemoveFilter}
+                        onClearAll={handleClearAllFilters}
+                    />
+                </div>
+            </div>
+
+            {/* Results */}
+            <div className="max-w-7xl mx-auto px-4 py-6">
+                {isLoading ? (
+                    <div className="flex flex-col items-center justify-center py-12">
+                        <Loader2 className="w-8 h-8 animate-spin text-primary-600 mb-4" />
+                        <p className="text-gray-600 dark:text-gray-300">Поиск предложений...</p>
+                    </div>
+                ) : offers.length === 0 ? (
+                    <div className="text-center py-12">
+                        <Search className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                            Ничего не найдено
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400 mb-4">
+                            Попробуйте изменить фильтры или поисковый запрос
+                        </p>
+                        <Button onClick={() => setShowFilters(true)} variant="outline">
+                            Изменить фильтры
+                        </Button>
+                    </div>
+                ) : (
+                    <>
+                        {/* Результаты */}
+                        <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+                            Найдено {meta?.total || 0} предложений
+                        </div>
+
+                        {/* Список офферов */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                            {offers.map((offer: any) => (
+                                <OfferCardVendor
+                                    key={offer.id}
+                                    offer={offer}
+                                    onOrder={(offer) => {
+                                        // TODO: обработка заказа
+                                        console.log('Order:', offer);
+                                    }}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Пагинация */}
+                        {meta && meta.total_pages > 1 && (
+                            <div className="flex items-center justify-center gap-2">
+                                <Button
+                                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                                    disabled={page === 1}
+                                    variant="outline"
+                                >
+                                    Назад
+                                </Button>
+                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                    Страница {meta.page} из {meta.total_pages}
+                                </span>
+                                <Button
+                                    onClick={() => setPage(p => Math.min(meta.total_pages, p + 1))}
+                                    disabled={page >= meta.total_pages}
+                                    variant="outline"
+                                >
+                                    Вперед
+                                </Button>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+
+            {/* Dialog с фильтрами */}
+            <Dialog open={showFilters} onOpenChange={setShowFilters}>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Фильтры поиска</DialogTitle>
+                    </DialogHeader>
+                    <SearchFiltersPanel
+                        filters={filters}
+                        onFiltersChange={handleFilterChange}
+                        onClose={() => setShowFilters(false)}
+                        userLocation={userLocation}
+                    />
+                </DialogContent>
+            </Dialog>
         </div>
-      </div>
-
-      <div className="p-3">
-        <OffersFeed businesses={filteredBusinesses} onOfferClick={() => {}} />
-      </div>
-    </div>
-  );
+    );
 }
-

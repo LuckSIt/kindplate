@@ -75,6 +75,12 @@ export type Business = {
   is_top?: boolean; // Флаг "Лучшие у нас"
   quality_score?: number; // Балл качества (0-100)
   quality_metrics?: QualityMetrics; // Детальные метрики
+  badges?: Array<{
+    key: string;
+    awarded_at?: string;
+    expires_at?: string | null;
+    metadata?: Record<string, any>;
+  }>; // Бейджи качества
 }
 
 // Предложение

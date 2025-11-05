@@ -1,5 +1,5 @@
-import React from 'react';
-import { Star, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { Star, User, CheckCircle, Clock, X, Image as ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Review, ReviewsStats } from '@/lib/schemas/review';
 import dayjs from 'dayjs';
@@ -178,15 +178,103 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
             </div>
           </div>
 
+          {/* Verified Purchase Badge */}
+          {review.is_verified_purchase && (
+            <div className="flex items-center gap-1 mb-2">
+              <CheckCircle className="w-4 h-4 text-green-600" />
+              <span className="text-xs text-green-600 font-medium">Проверенная покупка</span>
+            </div>
+          )}
+
+          {/* Status Badge (for user's own reviews) */}
+          {review.status === 'pending' && (
+            <div className="flex items-center gap-1 mb-2">
+              <Clock className="w-4 h-4 text-yellow-600" />
+              <span className="text-xs text-yellow-600 font-medium">Ожидает модерации</span>
+            </div>
+          )}
+
+          {review.status === 'rejected' && (
+            <div className="flex items-center gap-1 mb-2">
+              <X className="w-4 h-4 text-red-600" />
+              <span className="text-xs text-red-600 font-medium">Отклонен</span>
+            </div>
+          )}
+
           {/* Comment */}
           {review.comment && (
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
               {review.comment}
             </p>
+          )}
+
+          {/* Photos */}
+          {review.photos && review.photos.length > 0 && (
+            <div className="mt-3">
+              <PhotoGallery photos={review.photos} />
+            </div>
           )}
         </div>
       </div>
     </div>
+  );
+};
+
+interface PhotoGalleryProps {
+  photos: string[];
+}
+
+const PhotoGallery: React.FC<PhotoGalleryProps> = ({ photos }) => {
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+
+  if (photos.length === 0) return null;
+
+  return (
+    <>
+      <div className="grid grid-cols-3 gap-2">
+        {photos.slice(0, 3).map((photo, index) => (
+          <button
+            key={index}
+            onClick={() => setSelectedPhoto(photo)}
+            className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 hover:opacity-90 transition-opacity"
+          >
+            <img
+              src={photo}
+              alt={`Фото отзыва ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+            {index === 2 && photos.length > 3 && (
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <span className="text-white font-semibold text-sm">+{photos.length - 3}</span>
+              </div>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Full Screen Photo Modal */}
+      {selectedPhoto && (
+        <div
+          className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
+          onClick={() => setSelectedPhoto(null)}
+        >
+          <div className="relative max-w-4xl max-h-full">
+            <button
+              onClick={() => setSelectedPhoto(null)}
+              className="absolute top-4 right-4 text-white p-2 bg-black bg-opacity-50 rounded-full hover:bg-opacity-75"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <img
+              src={selectedPhoto}
+              alt="Фото отзыва"
+              className="max-w-full max-h-[90vh] object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

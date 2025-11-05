@@ -134,6 +134,43 @@ customerRouter.get("/sellers", async (req, res) => {
             seller => seller.offers.length > 0
         );
 
+        // Получаем бейджи для всех бизнесов
+        if (sellersWithOffers.length > 0) {
+            const businessIds = sellersWithOffers.map(s => s.id);
+            const badgesResult = await pool.query(
+                `SELECT 
+                    business_id,
+                    badge_key,
+                    awarded_at,
+                    expires_at,
+                    metadata
+                FROM quality_badges
+                WHERE business_id = ANY($1)
+                AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)
+                ORDER BY awarded_at DESC`,
+                [businessIds]
+            );
+            
+            // Группируем бейджи по business_id
+            const badgesByBusiness = {};
+            badgesResult.rows.forEach(row => {
+                if (!badgesByBusiness[row.business_id]) {
+                    badgesByBusiness[row.business_id] = [];
+                }
+                badgesByBusiness[row.business_id].push({
+                    key: row.badge_key,
+                    awarded_at: row.awarded_at,
+                    expires_at: row.expires_at,
+                    metadata: row.metadata
+                });
+            });
+            
+            // Добавляем бейджи к продавцам
+            sellersWithOffers.forEach(seller => {
+                seller.badges = badgesByBusiness[seller.id] || [];
+            });
+        }
+
         console.log("✅ Заведения с предложениями:", sellersWithOffers.length);
 
         res.send({
@@ -211,6 +248,27 @@ customerRouter.get("/vendors/:id", async (req, res) => {
 
         const vendor = vendorResult.rows[0];
         
+        // Получаем бейджи качества
+        const badgesResult = await pool.query(
+            `SELECT 
+                badge_key,
+                awarded_at,
+                expires_at,
+                metadata
+            FROM quality_badges
+            WHERE business_id = $1
+            AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)
+            ORDER BY awarded_at DESC`,
+            [vendorId]
+        );
+        
+        const badges = badgesResult.rows.map(row => ({
+            key: row.badge_key,
+            awarded_at: row.awarded_at,
+            expires_at: row.expires_at,
+            metadata: row.metadata
+        }));
+        
         res.send({
             success: true,
             data: {
@@ -224,6 +282,7 @@ customerRouter.get("/vendors/:id", async (req, res) => {
                     repeat_customers: vendor.repeat_customers || 0,
                     avg_rating: parseFloat(vendor.avg_rating) || 0
                 },
+                badges: badges,
                 address: vendor.address,
                 coords: [vendor.coord_0, vendor.coord_1],
                 logo_url: vendor.logo_url,

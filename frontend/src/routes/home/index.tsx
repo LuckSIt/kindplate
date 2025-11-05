@@ -8,6 +8,7 @@ import { OffersList } from "@/components/ui/offers-list";
 import { BusinessDrawer } from "@/components/ui/business-drawer";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 import { OffersFeed } from "@/components/ui/offers-feed";
+import { MapSortControls, type MapSortType } from "@/components/ui/map-sort-controls";
 import { Drawer } from "vaul";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { HomePageSEO } from "@/components/ui/seo";
@@ -53,16 +54,56 @@ function RouteComponent() {
         east: 30.6,
         west: 30.0
     });
-    const [sortBy, setSortBy] = useState<'distance' | 'rating' | 'newest' | 'favorites'>('distance');
+    const [sortBy, setSortBy] = useState<MapSortType>('distance');
     
     // Order states
     const [orderDialogOpen, setOrderDialogOpen] = useState(false);
     const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
     const [orderQuantity, setOrderQuantity] = useState(1);
 
-    // Fetch businesses data with optimized map query
-    const { data } = useMapQuery(
-        ["businesses", mapBounds, searchQuery],
+    // Fetch offers data with optimized map query using new search endpoint
+    const { data: offersData, isLoading: isLoadingOffers } = useMapQuery(
+        ["offers_search", mapBounds, searchQuery, sortBy, userLocation],
+        () => {
+            const params = new URLSearchParams();
+            
+            // Геолокация
+            if (userLocation) {
+                params.append('lat', userLocation[0].toString());
+                params.append('lon', userLocation[1].toString());
+                params.append('radius_km', '50'); // Большой радиус для предзагрузки
+            } else if (mapBounds) {
+                // Если нет геолокации, используем центр карты
+                const centerLat = (mapBounds.north + mapBounds.south) / 2;
+                const centerLon = (mapBounds.east + mapBounds.west) / 2;
+                params.append('lat', centerLat.toString());
+                params.append('lon', centerLon.toString());
+                params.append('radius_km', '50');
+            }
+            
+            // Поиск
+            if (searchQuery) {
+                params.append('q', searchQuery);
+            }
+            
+            // Сортировка
+            params.append('sort', sortBy);
+            
+            // Пагинация
+            params.append('page', '1');
+            params.append('limit', '100'); // Больше для предзагрузки
+            
+            return axiosInstance.get(`/offers/search?${params.toString()}`);
+        },
+        {
+            enabled: !!mapBounds, // Загружаем только когда есть границы карты
+            staleTime: 30000, // 30 секунд кэш
+        }
+    );
+    
+    // Fallback: если новый эндпоинт не работает, используем старый
+    const { data: fallbackData } = useMapQuery(
+        ["businesses_fallback", mapBounds, searchQuery],
         () => {
             const params = new URLSearchParams();
             if (mapBounds) {
@@ -75,8 +116,13 @@ function RouteComponent() {
                 params.append('search', searchQuery);
             }
             return axiosInstance.get(`/customer/sellers?${params.toString()}`);
+        },
+        {
+            enabled: !offersData && !!mapBounds, // Используем только если новый эндпоинт не вернул данные
         }
     );
+    
+    const data = offersData || fallbackData;
 
     // Get user location
     useEffect(() => {
@@ -109,60 +155,71 @@ function RouteComponent() {
         },
     });
 
-    // Process businesses data
+    // Process businesses data - адаптируем данные из нового эндпоинта
     const businesses: Business[] = useMemo(() => {
-        if (!data?.data?.sellers) return [];
-        return data.data.sellers.map((seller: any) => ({
-            id: seller.id,
-            name: seller.name,
-            address: seller.address,
-            coords: seller.coords,
-            rating: seller.rating,
-            logo_url: seller.logo_url,
-            phone: seller.phone,
-            offers: seller.offers || []
-        }));
-    }, [data?.data?.sellers]);
-
-    // Filter and sort businesses
-    const filteredBusinesses = useMemo(() => {
-        let filtered = businesses;
-
-        // Search filter
-        if (searchQuery) {
-            console.log('🔍 Filtering with search query:', searchQuery);
-            filtered = filtered.filter(business =>
-                business.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                business.address.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-            console.log('🔍 Filtered results:', filtered.length);
-        }
-
-        // Sort
-        switch (sortBy) {
-            case 'favorites':
-                // Сортировка по избранному теперь не нужна, так как избранное управляется через API
-                break;
-            case 'rating':
-                filtered = filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-                break;
-            case 'newest':
-                filtered = filtered.sort((a, b) => new Date(b.offers[0]?.created_at || 0).getTime() - new Date(a.offers[0]?.created_at || 0).getTime());
-                break;
-            case 'distance':
-            default:
-                if (userLocation) {
-                    filtered = filtered.sort((a, b) => {
-                        const distanceA = calculateDistance(userLocation, [parseFloat(a.coords[0]), parseFloat(a.coords[1])]);
-                        const distanceB = calculateDistance(userLocation, [parseFloat(b.coords[0]), parseFloat(b.coords[1])]);
-                        return distanceA - distanceB;
+        // Новый формат из /offers/search
+        if (offersData?.data?.offers) {
+            // Группируем офферы по бизнесам
+            const businessMap = new Map<number, Business>();
+            
+            offersData.data.offers.forEach((offer: any) => {
+                const businessId = offer.business.id;
+                if (!businessMap.has(businessId)) {
+                    businessMap.set(businessId, {
+                        id: businessId,
+                        name: offer.business.name,
+                        address: offer.business.address,
+                        coords: offer.business.coords,
+                        rating: offer.business.rating,
+                        logo_url: offer.business.logo_url,
+                        phone: null,
+                        offers: []
                     });
                 }
-                break;
+                const business = businessMap.get(businessId)!;
+                business.offers.push({
+                    id: offer.id,
+                    title: offer.title,
+                    description: offer.description,
+                    image_url: offer.image_url,
+                    original_price: offer.original_price,
+                    discounted_price: offer.discounted_price,
+                    quantity_available: offer.quantity_available,
+                    pickup_time_start: offer.pickup_time_start,
+                    pickup_time_end: offer.pickup_time_end,
+                    is_active: offer.is_active,
+                    business_id: businessId,
+                    created_at: offer.created_at
+                });
+            });
+            
+            return Array.from(businessMap.values());
         }
+        
+        // Старый формат из /customer/sellers
+        if (data?.data?.sellers) {
+            return data.data.sellers.map((seller: any) => ({
+                id: seller.id,
+                name: seller.name,
+                address: seller.address,
+                coords: seller.coords,
+                rating: seller.rating,
+                logo_url: seller.logo_url,
+                phone: seller.phone,
+                offers: seller.offers || []
+            }));
+        }
+        
+        return [];
+    }, [data?.data?.sellers, offersData?.data?.offers]);
 
-        return filtered;
-    }, [businesses, searchQuery, sortBy, userLocation]);
+    // Filter businesses (сортировка уже сделана на бэкенде)
+    const filteredBusinesses = useMemo(() => {
+        // Если используем новый эндпоинт, сортировка уже применена на бэкенде
+        // Остается только фильтрация по поисковому запросу (если нужно на клиенте)
+        // Но лучше это делать на бэкенде через параметр q
+        return businesses;
+    }, [businesses]);
 
     // Event handlers
     const handleBusinessClick = useCallback((business: Business) => {
@@ -172,9 +229,46 @@ function RouteComponent() {
         setActiveSnap(0.2);
     }, []);
 
+    // Throttled bounds change для оптимизации запросов
     const handleBoundsChange = useCallback((bounds: any) => {
-        setMapBounds(bounds);
+        // Используем requestAnimationFrame для throttling
+        requestAnimationFrame(() => {
+            setMapBounds(bounds);
+        });
     }, []);
+    
+    // Предзагрузка соседних областей для плавной прокрутки
+    useEffect(() => {
+        if (!mapBounds || !userLocation) return;
+        
+        // Предзагружаем данные для соседних областей (север, юг, восток, запад)
+        const preloadBounds = [
+            { north: mapBounds.north + 0.1, south: mapBounds.south + 0.1, east: mapBounds.east, west: mapBounds.west }, // Север
+            { north: mapBounds.north - 0.1, south: mapBounds.south - 0.1, east: mapBounds.east, west: mapBounds.west }, // Юг
+            { north: mapBounds.north, south: mapBounds.south, east: mapBounds.east + 0.1, west: mapBounds.west + 0.1 }, // Восток
+            { north: mapBounds.north, south: mapBounds.south, east: mapBounds.east - 0.1, west: mapBounds.west - 0.1 }, // Запад
+        ];
+        
+        // Предзагружаем в фоне (не блокируем UI)
+        preloadBounds.forEach((bounds, index) => {
+            setTimeout(() => {
+                const centerLat = (bounds.north + bounds.south) / 2;
+                const centerLon = (bounds.east + bounds.west) / 2;
+                const params = new URLSearchParams();
+                params.append('lat', centerLat.toString());
+                params.append('lon', centerLon.toString());
+                params.append('radius_km', '30');
+                params.append('sort', sortBy);
+                params.append('page', '1');
+                params.append('limit', '50');
+                
+                // Предзагрузка в фоне (не показываем в UI)
+                axiosInstance.get(`/offers/search?${params.toString()}`).catch(() => {
+                    // Игнорируем ошибки предзагрузки
+                });
+            }, index * 200); // Задержка между запросами
+        });
+    }, [mapBounds, userLocation, sortBy]);
 
 
     const handleOpenOrder = (offer: Offer) => {
@@ -245,6 +339,13 @@ function RouteComponent() {
                         userLocation={userLocation}
                         onMapClick={() => { setSelectedBusiness(null); setActiveSnap(0.2); }}
                         className="h-full"
+                    />
+                    
+                    {/* Sort Controls */}
+                    <MapSortControls
+                        sortBy={sortBy}
+                        onSortChange={setSortBy}
+                        userLocation={userLocation}
                     />
                 </div>
 

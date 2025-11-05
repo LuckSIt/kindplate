@@ -223,6 +223,162 @@ notificationsRouter.post("/send", requireAuth, async (req, res) => {
     }
 });
 
+// ============================================
+// ПОДПИСКИ НА УВЕДОМЛЕНИЯ О НОВЫХ ОФФЕРАХ
+// ============================================
+
+// Подписаться на уведомления о новых офферах
+notificationsRouter.post("/waitlist/subscribe", requireAuth, async (req, res) => {
+    try {
+        const { scope_type, scope_id, latitude, longitude, radius_km, area_geojson } = req.body;
+        const userId = req.session.userId;
+
+        if (!scope_type || !['offer', 'category', 'area', 'business'].includes(scope_type)) {
+            return res.status(400).send({
+                success: false,
+                error: "INVALID_REQUEST",
+                message: "Необходимо указать тип подписки: offer, category, area или business"
+            });
+        }
+
+        // Валидация scope_id для типов, где он обязателен
+        if (['offer', 'category', 'business'].includes(scope_type) && !scope_id) {
+            return res.status(400).send({
+                success: false,
+                error: "INVALID_REQUEST",
+                message: `Необходимо указать scope_id для типа подписки ${scope_type}`
+            });
+        }
+
+        // Валидация геолокации для типа 'area'
+        if (scope_type === 'area' && (!latitude || !longitude)) {
+            return res.status(400).send({
+                success: false,
+                error: "INVALID_REQUEST",
+                message: "Для подписки по области необходимо указать latitude и longitude"
+            });
+        }
+
+        // Проверяем существующую подписку
+        const existingCheck = await pool.query(
+            `SELECT id FROM waitlist_subscriptions 
+             WHERE user_id = $1 AND scope_type = $2 
+             AND (($3 IS NULL AND scope_id IS NULL) OR scope_id = $3)`,
+            [userId, scope_type, scope_id || null]
+        );
+
+        let result;
+        if (existingCheck.rows.length > 0) {
+            // Обновляем существующую подписку
+            result = await pool.query(
+                `UPDATE waitlist_subscriptions 
+                 SET is_active = true,
+                     latitude = COALESCE($4, latitude),
+                     longitude = COALESCE($5, longitude),
+                     radius_km = COALESCE($6, radius_km),
+                     area_geojson = COALESCE($7, area_geojson),
+                     updated_at = CURRENT_TIMESTAMP
+                 WHERE id = $8
+                 RETURNING id, user_id, scope_type, scope_id, created_at`,
+                [latitude || null, longitude || null, radius_km || 5, area_geojson ? JSON.stringify(area_geojson) : null, existingCheck.rows[0].id]
+            );
+        } else {
+            // Создаем новую подписку
+            result = await pool.query(
+                `INSERT INTO waitlist_subscriptions 
+                 (user_id, scope_type, scope_id, latitude, longitude, radius_km, area_geojson)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7)
+                 RETURNING id, user_id, scope_type, scope_id, created_at`,
+                [userId, scope_type, scope_id || null, latitude || null, longitude || null, radius_km || 5, area_geojson ? JSON.stringify(area_geojson) : null]
+            );
+        }
+
+        res.send({
+            success: true,
+            data: result.rows[0],
+            message: "Подписка создана"
+        });
+    } catch (e) {
+        console.error("❌ Ошибка в /notifications/waitlist/subscribe:", e);
+        res.status(500).send({
+            success: false,
+            error: "UNKNOWN_ERROR",
+            message: "Внутренняя ошибка сервера"
+        });
+    }
+});
+
+// Отписаться от уведомлений
+notificationsRouter.post("/waitlist/unsubscribe", requireAuth, async (req, res) => {
+    try {
+        const { subscription_id, scope_type, scope_id } = req.body;
+        const userId = req.session.userId;
+
+        if (subscription_id) {
+            // Удаляем конкретную подписку
+            await pool.query(
+                `UPDATE waitlist_subscriptions 
+                 SET is_active = false, updated_at = CURRENT_TIMESTAMP
+                 WHERE id = $1 AND user_id = $2`,
+                [subscription_id, userId]
+            );
+        } else if (scope_type && scope_id) {
+            // Удаляем подписку по типу и ID
+            await pool.query(
+                `UPDATE waitlist_subscriptions 
+                 SET is_active = false, updated_at = CURRENT_TIMESTAMP
+                 WHERE user_id = $1 AND scope_type = $2 AND scope_id = $3`,
+                [userId, scope_type, scope_id]
+            );
+        } else {
+            return res.status(400).send({
+                success: false,
+                error: "INVALID_REQUEST",
+                message: "Необходимо указать subscription_id или scope_type + scope_id"
+            });
+        }
+
+        res.send({
+            success: true,
+            message: "Подписка отменена"
+        });
+    } catch (e) {
+        console.error("❌ Ошибка в /notifications/waitlist/unsubscribe:", e);
+        res.status(500).send({
+            success: false,
+            error: "UNKNOWN_ERROR",
+            message: "Внутренняя ошибка сервера"
+        });
+    }
+});
+
+// Получить мои подписки
+notificationsRouter.get("/waitlist/mine", requireAuth, async (req, res) => {
+    try {
+        const userId = req.session.userId;
+
+        const result = await pool.query(
+            `SELECT id, scope_type, scope_id, latitude, longitude, radius_km, is_active, created_at
+             FROM waitlist_subscriptions
+             WHERE user_id = $1 AND is_active = true
+             ORDER BY created_at DESC`,
+            [userId]
+        );
+
+        res.send({
+            success: true,
+            data: result.rows
+        });
+    } catch (e) {
+        console.error("❌ Ошибка в /notifications/waitlist/mine:", e);
+        res.status(500).send({
+            success: false,
+            error: "UNKNOWN_ERROR",
+            message: "Внутренняя ошибка сервера"
+        });
+    }
+});
+
 // GET /notifications/history - Получить историю уведомлений
 notificationsRouter.get("/history", requireAuth, async (req, res) => {
     try {

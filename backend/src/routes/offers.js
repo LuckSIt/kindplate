@@ -87,15 +87,34 @@ offersRouter.post("/create", upload.single('image'), sanitizePlainTextFields(['t
         quantity_available,
         pickup_time_start,
         pickup_time_end,
-        is_active
+        is_active,
+        location_id
     } = req.body;
 
     // URL загруженного изображения
     const image_url = req.file ? `/uploads/offers/${req.file.filename}` : null;
 
+    // Валидация location_id (если указан, проверяем что локация принадлежит бизнесу)
+    if (location_id) {
+        const locationCheck = await pool.query(
+            `SELECT id FROM business_locations 
+             WHERE id = $1 AND business_id = $2 AND is_active = true`,
+            [location_id, req.session.userId]
+        );
+
+        if (locationCheck.rows.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: "INVALID_LOCATION",
+                message: "Указанная локация не найдена или не принадлежит вашему бизнесу"
+            });
+        }
+    }
+
     const result = await pool.query(
         `INSERT INTO offers(
             business_id, 
+            location_id,
             title, 
             description, 
             image_url,
@@ -105,9 +124,10 @@ offersRouter.post("/create", upload.single('image'), sanitizePlainTextFields(['t
             pickup_time_start,
             pickup_time_end,
             is_active
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
         RETURNING 
             id, 
+            location_id,
             title, 
             description,
             image_url, 
@@ -120,6 +140,7 @@ offersRouter.post("/create", upload.single('image'), sanitizePlainTextFields(['t
             created_at`,
         [
             req.session.userId,
+            location_id || null,
             title,
             description || null,
             image_url,
@@ -157,7 +178,8 @@ offersRouter.post("/edit", upload.single('image'), sanitizePlainTextFields(['tit
         quantity_available,
         pickup_time_start,
         pickup_time_end,
-        is_active
+        is_active,
+        location_id
     } = req.body;
 
     // Базовая валидация
@@ -183,37 +205,63 @@ offersRouter.post("/edit", upload.single('image'), sanitizePlainTextFields(['tit
         throw new AppError("Нет прав для редактирования", 403, "NO_AUTHORITY");
     }
 
+    // Валидация location_id (если указан, проверяем что локация принадлежит бизнесу)
+    if (location_id !== undefined) {
+        if (location_id) {
+            const locationCheck = await pool.query(
+                `SELECT id FROM business_locations 
+                 WHERE id = $1 AND business_id = $2 AND is_active = true`,
+                [location_id, req.session.userId]
+            );
+
+            if (locationCheck.rows.length === 0) {
+                throw new AppError("Указанная локация не найдена или не принадлежит вашему бизнесу", 400, "INVALID_LOCATION");
+            }
+        }
+    }
+
     // URL загруженного изображения (если есть новое)
     const image_url = req.file 
         ? `/uploads/offers/${req.file.filename}` 
         : checkResult.rows[0].image_url; // Оставляем старое
 
+    // Строим запрос динамически для location_id
+    const updates = [
+        'title = $1',
+        'description = $2',
+        'image_url = $3',
+        'original_price = $4',
+        'discounted_price = $5',
+        'quantity_available = $6',
+        'pickup_time_start = $7',
+        'pickup_time_end = $8',
+        'is_active = $9',
+        'updated_at = CURRENT_TIMESTAMP'
+    ];
+    const values = [
+        title, 
+        description, 
+        image_url,
+        original_price, 
+        discounted_price, 
+        quantity_available,
+        pickup_time_start,
+        pickup_time_end,
+        is_active !== undefined ? is_active : true
+    ];
+
+    if (location_id !== undefined) {
+        updates.push('location_id = $' + (values.length + 1));
+        values.push(location_id || null);
+    }
+
+    values.push(id);
+
     await pool.query(
         `UPDATE offers 
-        SET 
-            title = $1, 
-            description = $2,
-            image_url = $3, 
-            original_price = $4, 
-            discounted_price = $5, 
-            quantity_available = $6,
-            pickup_time_start = $7,
-            pickup_time_end = $8,
-            is_active = $9,
-            updated_at = CURRENT_TIMESTAMP
-        WHERE id = $10`,
-        [
-            title, 
-            description, 
-            image_url,
-            original_price, 
-            discounted_price, 
-            quantity_available,
-            pickup_time_start,
-            pickup_time_end,
-            is_active !== undefined ? is_active : true,
-            id
-        ]
+        SET ${updates.join(', ')}
+        WHERE id = $${values.length}`,
+        values
     );
 
     logger.info("Offer updated", { 
@@ -541,6 +589,447 @@ offersRouter.get("/", asyncHandler(async (req, res) => {
     } catch (error) {
         console.error("❌ Ошибка в /customer/offers:", error);
         return res.status(200).json({ success: true, data: [] });
+    }
+}));
+
+// ============================================
+// РАСПИСАНИЕ ПУБЛИКАЦИИ ОФФЕРОВ
+// ============================================
+
+// Получить расписания для оффера
+offersRouter.get("/:id/schedule", asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const businessId = req.session.userId;
+
+    // Проверяем, что оффер принадлежит бизнесу
+    const offerCheck = await pool.query(
+        `SELECT id, business_id FROM offers WHERE id = $1 AND business_id = $2`,
+        [id, businessId]
+    );
+
+    if (offerCheck.rows.length === 0) {
+        return res.status(404).json({
+            success: false,
+            error: "OFFER_NOT_FOUND",
+            message: "Оффер не найден"
+        });
+    }
+
+    const schedules = await pool.query(
+        `SELECT id, offer_id, publish_at, unpublish_at, qty_planned, is_active, created_at
+         FROM offer_schedules
+         WHERE offer_id = $1
+         ORDER BY publish_at ASC`,
+        [id]
+    );
+
+    res.json({
+        success: true,
+        data: schedules.rows
+    });
+}));
+
+// Создать/обновить расписание для оффера
+offersRouter.post("/:id/schedule", asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { publish_at, unpublish_at, qty_planned } = req.body;
+    const businessId = req.session.userId;
+
+    // Валидация
+    if (!publish_at) {
+        return res.status(400).json({
+            success: false,
+            error: "INVALID_REQUEST",
+            message: "Необходимо указать время публикации"
+        });
+    }
+
+    const publishDate = new Date(publish_at);
+    if (isNaN(publishDate.getTime())) {
+        return res.status(400).json({
+            success: false,
+            error: "INVALID_DATE",
+            message: "Неверный формат даты публикации"
+        });
+    }
+
+    if (publishDate < new Date()) {
+        return res.status(400).json({
+            success: false,
+            error: "INVALID_DATE",
+            message: "Время публикации не может быть в прошлом"
+        });
+    }
+
+    // Проверяем, что оффер принадлежит бизнесу
+    const offerCheck = await pool.query(
+        `SELECT id, business_id FROM offers WHERE id = $1 AND business_id = $2`,
+        [id, businessId]
+    );
+
+    if (offerCheck.rows.length === 0) {
+        return res.status(404).json({
+            success: false,
+            error: "OFFER_NOT_FOUND",
+            message: "Оффер не найден"
+        });
+    }
+
+    // Создаем расписание
+    const result = await pool.query(
+        `INSERT INTO offer_schedules (offer_id, business_id, publish_at, unpublish_at, qty_planned)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING id, offer_id, publish_at, unpublish_at, qty_planned, is_active, created_at`,
+        [id, businessId, publishDate, unpublish_at ? new Date(unpublish_at) : null, qty_planned || null]
+    );
+
+    logger.info(`📅 Создано расписание для оффера ${id}: ${publishDate.toISOString()}`);
+
+    res.json({
+        success: true,
+        data: result.rows[0],
+        message: "Расписание создано"
+    });
+}));
+
+// Удалить расписание
+offersRouter.delete("/:id/schedule/:scheduleId", asyncHandler(async (req, res) => {
+    const { id, scheduleId } = req.params;
+    const businessId = req.session.userId;
+
+    // Проверяем, что расписание принадлежит бизнесу
+    const scheduleCheck = await pool.query(
+        `SELECT s.id FROM offer_schedules s
+         JOIN offers o ON s.offer_id = o.id
+         WHERE s.id = $1 AND o.business_id = $2`,
+        [scheduleId, businessId]
+    );
+
+    if (scheduleCheck.rows.length === 0) {
+        return res.status(404).json({
+            success: false,
+            error: "SCHEDULE_NOT_FOUND",
+            message: "Расписание не найдено"
+        });
+    }
+
+    await pool.query(
+        `DELETE FROM offer_schedules WHERE id = $1`,
+        [scheduleId]
+    );
+
+    logger.info(`🗑️ Удалено расписание ${scheduleId} для оффера ${id}`);
+
+    res.json({
+        success: true,
+        message: "Расписание удалено"
+    });
+}));
+
+// ============================================
+// РАСШИРЕННЫЙ ПОИСК ОФФЕРОВ
+// ============================================
+
+// Простой in-memory кэш (можно заменить на Redis)
+const searchCache = new Map();
+const CACHE_TTL = 60000; // 60 секунд
+
+// GET /offers/search - Расширенный поиск офферов
+offersRouter.get("/search", asyncHandler(async (req, res) => {
+    try {
+        // Параметры поиска
+        const {
+            q, // Поисковый запрос
+            lat, // Широта
+            lon, // Долгота
+            radius_km = 10, // Радиус поиска в км
+            pickup_from, // Время начала самовывоза
+            pickup_to, // Время окончания самовывоза
+            price_min, // Минимальная цена
+            price_max, // Максимальная цена
+            cuisines, // Массив тегов кухни (строка с запятыми или массив)
+            diets, // Массив тегов диет
+            allergens, // Массив тегов аллергенов (исключить офферы с этими аллергенами)
+            sort = 'distance', // Сортировка: distance, price, rating
+            page = 1, // Номер страницы
+            limit = 20 // Лимит на страницу
+        } = req.query;
+
+        // Валидация
+        const pageNum = Math.max(1, parseInt(page) || 1);
+        const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 20));
+        const offset = (pageNum - 1) * limitNum;
+
+        // Проверка кэша
+        const cacheKey = JSON.stringify(req.query);
+        const cached = searchCache.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+            logger.info(`📦 Возвращаем из кэша: ${cacheKey.substring(0, 50)}...`);
+            return res.json({
+                success: true,
+                data: cached.data,
+                meta: cached.meta
+            });
+        }
+
+        // Формируем SQL запрос
+        let query = `
+            SELECT 
+                o.id,
+                o.title,
+                o.description,
+                o.image_url,
+                o.original_price,
+                o.discounted_price,
+                o.quantity_available,
+                o.pickup_time_start,
+                o.pickup_time_end,
+                o.is_active,
+                o.cuisine_tags,
+                o.diet_tags,
+                o.allergen_tags,
+                o.rating_avg,
+                o.rating_count,
+                o.created_at,
+                u.id as business_id,
+                u.name as business_name,
+                u.address as business_address,
+                u.coord_0 as business_lat,
+                u.coord_1 as business_lon,
+                u.logo_url as business_logo_url,
+                u.rating as business_rating,
+                u.total_reviews as business_total_reviews,
+                bl.id as location_id,
+                bl.name as location_name,
+                bl.address as location_address,
+                bl.lat as location_lat,
+                bl.lon as location_lon
+        `;
+
+        // Добавляем расчет расстояния, если есть координаты
+        // Используем координаты локации, если есть, иначе координаты бизнеса
+        if (lat && lon) {
+            query += `,
+                (
+                    6371 * acos(
+                        cos(radians($1)) * cos(radians(COALESCE(bl.lat, u.coord_0))) *
+                        cos(radians(COALESCE(bl.lon, u.coord_1)) - radians($2)) +
+                        sin(radians($1)) * sin(radians(COALESCE(bl.lat, u.coord_0)))
+                    )
+                ) as distance_km
+            `;
+        } else {
+            query += `, NULL as distance_km`;
+        }
+
+        const params = [];
+        let paramIndex = 1;
+        let whereConditions = `
+            FROM offers o
+            JOIN users u ON o.business_id = u.id
+            LEFT JOIN business_locations bl ON o.location_id = bl.id
+            WHERE u.is_business = true
+            AND o.is_active = true
+            AND o.quantity_available > 0
+        `;
+
+        // Фильтр по геолокации (радиус) - используем координаты локации, если есть
+        if (lat && lon) {
+            const latVal = parseFloat(lat);
+            const lonVal = parseFloat(lon);
+            const radius = parseFloat(radius_km) || 10;
+            params.push(latVal, lonVal, radius);
+            whereConditions += ` AND (
+                6371 * acos(
+                    cos(radians($${paramIndex})) * cos(radians(COALESCE(bl.lat, u.coord_0))) *
+                    cos(radians(COALESCE(bl.lon, u.coord_1)) - radians($${paramIndex + 1})) +
+                    sin(radians($${paramIndex})) * sin(radians(COALESCE(bl.lat, u.coord_0)))
+                ) <= $${paramIndex + 2}
+            )`;
+            paramIndex += 3;
+        }
+
+        // Поиск по тексту
+        if (q) {
+            whereConditions += ` AND (
+                o.title ILIKE $${paramIndex}
+                OR o.description ILIKE $${paramIndex}
+                OR u.name ILIKE $${paramIndex}
+            )`;
+            params.push(`%${q}%`);
+            paramIndex++;
+        }
+
+        // Фильтр по цене
+        if (price_min) {
+            whereConditions += ` AND o.discounted_price >= $${paramIndex}`;
+            params.push(parseFloat(price_min));
+            paramIndex++;
+        }
+        if (price_max) {
+            whereConditions += ` AND o.discounted_price <= $${paramIndex}`;
+            params.push(parseFloat(price_max));
+            paramIndex++;
+        }
+
+        // Фильтр по времени самовывоза
+        if (pickup_from) {
+            whereConditions += ` AND o.pickup_time_start >= $${paramIndex}::time`;
+            params.push(pickup_from);
+            paramIndex++;
+        }
+        if (pickup_to) {
+            whereConditions += ` AND o.pickup_time_end <= $${paramIndex}::time`;
+            params.push(pickup_to);
+            paramIndex++;
+        }
+
+        // Фильтр по кухне
+        if (cuisines) {
+            const cuisineArray = Array.isArray(cuisines) ? cuisines : cuisines.split(',').map(c => c.trim());
+            if (cuisineArray.length > 0) {
+                whereConditions += ` AND (
+                    o.cuisine_tags && $${paramIndex}::text[]
+                    OR u.cuisine_tags && $${paramIndex}::text[]
+                )`;
+                params.push(cuisineArray);
+                paramIndex++;
+            }
+        }
+
+        // Фильтр по диетам
+        if (diets) {
+            const dietArray = Array.isArray(diets) ? diets : diets.split(',').map(d => d.trim());
+            if (dietArray.length > 0) {
+                whereConditions += ` AND o.diet_tags && $${paramIndex}::text[]`;
+                params.push(dietArray);
+                paramIndex++;
+            }
+        }
+
+        // Исключение аллергенов
+        if (allergens) {
+            const allergenArray = Array.isArray(allergens) ? allergens : allergens.split(',').map(a => a.trim());
+            if (allergenArray.length > 0) {
+                whereConditions += ` AND NOT (o.allergen_tags && $${paramIndex}::text[])`;
+                params.push(allergenArray);
+                paramIndex++;
+            }
+        }
+
+        // Сортировка
+        let orderBy = '';
+        switch (sort) {
+            case 'price':
+                orderBy = ` ORDER BY o.discounted_price ASC`;
+                break;
+            case 'rating':
+                orderBy = ` ORDER BY COALESCE(o.rating_avg, 0) DESC, o.rating_count DESC`;
+                break;
+            case 'distance':
+            default:
+                if (lat && lon) {
+                    orderBy = ` ORDER BY distance_km ASC`;
+                } else {
+                    orderBy = ` ORDER BY o.created_at DESC`;
+                }
+                break;
+        }
+
+        // Формируем финальный запрос
+        query += whereConditions + orderBy;
+
+        // Подсчет общего количества (для пагинации) - делаем ДО добавления LIMIT/OFFSET
+        const countQuery = query
+            .replace(/SELECT[\s\S]*?FROM/, 'SELECT COUNT(DISTINCT o.id) as count FROM')
+            .replace(/ORDER BY[\s\S]*$/, '');
+        
+        const countResult = await pool.query(countQuery, params);
+        const totalCount = parseInt(countResult.rows[0]?.count || 0);
+
+        // Добавляем лимит и оффсет
+        query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+        params.push(limitNum, offset);
+
+        // Выполняем запрос
+        const result = await pool.query(query, params);
+
+        // Форматируем результат
+        const offers = result.rows.map(row => ({
+            id: row.id,
+            title: row.title,
+            description: row.description,
+            image_url: row.image_url,
+            original_price: parseFloat(row.original_price),
+            discounted_price: parseFloat(row.discounted_price),
+            quantity_available: row.quantity_available,
+            pickup_time_start: row.pickup_time_start,
+            pickup_time_end: row.pickup_time_end,
+            is_active: row.is_active,
+            cuisine_tags: row.cuisine_tags || [],
+            diet_tags: row.diet_tags || [],
+            allergen_tags: row.allergen_tags || [],
+            rating_avg: parseFloat(row.rating_avg) || 0,
+            rating_count: row.rating_count || 0,
+            created_at: row.created_at,
+            distance_km: row.distance_km ? parseFloat(row.distance_km) : null,
+            business: {
+                id: row.business_id,
+                name: row.business_name,
+                address: row.business_address,
+                coords: [row.business_lat, row.business_lon],
+                logo_url: row.business_logo_url,
+                rating: parseFloat(row.business_rating) || 0,
+                total_reviews: row.business_total_reviews || 0
+            },
+            location: row.location_id ? {
+                id: row.location_id,
+                name: row.location_name,
+                address: row.location_address,
+                coords: [row.location_lat, row.location_lon]
+            } : null
+        }));
+
+        const responseData = {
+            offers,
+            meta: {
+                total: totalCount,
+                page: pageNum,
+                limit: limitNum,
+                total_pages: Math.ceil(totalCount / limitNum)
+            }
+        };
+
+        // Сохраняем в кэш
+        searchCache.set(cacheKey, {
+            timestamp: Date.now(),
+            data: responseData,
+            meta: responseData.meta
+        });
+
+        // Очистка старых записей из кэша (раз в 100 запросов)
+        if (searchCache.size > 1000) {
+            const now = Date.now();
+            for (const [key, value] of searchCache.entries()) {
+                if (now - value.timestamp > CACHE_TTL) {
+                    searchCache.delete(key);
+                }
+            }
+        }
+
+        logger.info(`🔍 Поиск завершен: найдено ${offers.length} офферов из ${totalCount}`);
+
+        res.json({
+            success: true,
+            data: responseData
+        });
+    } catch (error) {
+        logger.error('❌ Ошибка в /offers/search:', error);
+        res.status(500).json({
+            success: false,
+            error: 'SEARCH_ERROR',
+            message: 'Ошибка при выполнении поиска'
+        });
     }
 }));
 

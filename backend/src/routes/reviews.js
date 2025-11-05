@@ -3,8 +3,9 @@ const reviewsRouter = express.Router();
 const pool = require('../lib/db');
 const logger = require('../lib/logger');
 const { AppError, asyncHandler } = require('../lib/errorHandler');
-const { requireAuth } = require('../lib/guards');
+const { requireAuth, requireAdmin } = require('../lib/guards');
 const { sanitizePlainTextFields } = require('../middleware/sanitization');
+const { upload, processReviewPhotos } = require('../middleware/review-photos-upload');
 
 /**
  * Создать отзыв
@@ -17,9 +18,10 @@ const { sanitizePlainTextFields } = require('../middleware/sanitization');
  *   comment?: string
  * }
  */
-reviewsRouter.post('/', requireAuth, sanitizePlainTextFields(['comment']), asyncHandler(async (req, res) => {
-    const { business_id, order_id, rating, comment } = req.body;
+reviewsRouter.post('/', requireAuth, upload, processReviewPhotos, sanitizePlainTextFields(['comment']), asyncHandler(async (req, res) => {
+    const { business_id, order_id, rating, comment, is_verified_purchase } = req.body;
     const user_id = req.session.userId;
+    const photos = req.body.photos || [];
 
     logger.info('Creating review', { user_id, business_id, order_id, rating });
 
@@ -54,8 +56,19 @@ reviewsRouter.post('/', requireAuth, sanitizePlainTextFields(['comment']), async
         `);
 
         if (tableCheck.rows[0].exists) {
+            // Проверяем структуру таблицы (customer_id или user_id)
+            const columnCheck = await pool.query(`
+                SELECT column_name 
+                FROM information_schema.columns 
+                WHERE table_name = 'orders' 
+                AND column_name IN ('user_id', 'customer_id')
+            `);
+            
+            const hasUserId = columnCheck.rows.some(row => row.column_name === 'user_id');
+            const customerField = hasUserId ? 'user_id' : 'customer_id';
+            
             const orderCheck = await pool.query(
-                `SELECT id, status, business_id 
+                `SELECT id, status, business_id, ${customerField} as customer_user_id
                  FROM orders 
                  WHERE id = $1`,
                 [order_id]
@@ -67,13 +80,18 @@ reviewsRouter.post('/', requireAuth, sanitizePlainTextFields(['comment']), async
 
             const order = orderCheck.rows[0];
 
+            // Проверяем, что заказ принадлежит пользователю
+            if (order.customer_user_id !== user_id) {
+                throw new AppError('Заказ не принадлежит вам', 403, 'ORDER_OWNER_MISMATCH');
+            }
+
             // Проверяем, что заказ принадлежит этому заведению
             if (order.business_id !== business_id) {
                 throw new AppError('Заказ не принадлежит этому заведению', 400, 'ORDER_BUSINESS_MISMATCH');
             }
 
-            // Проверяем, что заказ завершен
-            if (order.status !== 'completed') {
+            // Проверяем, что заказ завершен (статус completed или picked_up)
+            if (order.status !== 'completed' && order.status !== 'picked_up') {
                 throw new AppError('Отзыв можно оставить только на завершенный заказ', 400, 'ORDER_NOT_COMPLETED');
             }
 
@@ -91,12 +109,15 @@ reviewsRouter.post('/', requireAuth, sanitizePlainTextFields(['comment']), async
         }
     }
 
-    // Создаем отзыв
+    // Определяем is_verified_purchase: true если есть order_id, иначе из body
+    const verifiedPurchase = order_id ? true : (is_verified_purchase === true || is_verified_purchase === 'true');
+
+    // Создаем отзыв со статусом pending (требует модерации)
     const result = await pool.query(
-        `INSERT INTO reviews (user_id, business_id, order_id, rating, comment)
-             VALUES ($1, $2, $3, $4, $5)
-         RETURNING id, user_id, business_id, order_id, rating, comment, created_at`,
-        [user_id, business_id, order_id || null, rating, comment || null]
+        `INSERT INTO reviews (user_id, business_id, order_id, rating, comment, photos, status, is_verified_purchase)
+             VALUES ($1, $2, $3, $4, $5, $6, 'pending', $7)
+         RETURNING id, user_id, business_id, order_id, rating, comment, photos, status, is_verified_purchase, created_at`,
+        [user_id, business_id, order_id || null, rating, comment || null, photos, verifiedPurchase]
     );
 
     const review = result.rows[0];
@@ -148,7 +169,7 @@ reviewsRouter.get('/business/:businessId', asyncHandler(async (req, res) => {
         });
     }
 
-    // Строим запрос с фильтрацией
+    // Строим запрос с фильтрацией - показываем только опубликованные отзывы
     let query = `
         SELECT 
             r.id,
@@ -157,11 +178,14 @@ reviewsRouter.get('/business/:businessId', asyncHandler(async (req, res) => {
             r.order_id,
             r.rating,
             r.comment,
+            r.photos,
+            r.status,
+            r.is_verified_purchase,
             r.created_at,
             u.name as user_name
         FROM reviews r
         JOIN users u ON r.user_id = u.id
-        WHERE r.business_id = $1
+        WHERE r.business_id = $1 AND r.status = 'published'
     `;
     const params = [businessId];
 
@@ -175,8 +199,9 @@ reviewsRouter.get('/business/:businessId', asyncHandler(async (req, res) => {
 
     const result = await pool.query(query, params);
 
-    // Получаем общее количество отзывов и среднюю оценку
-    let statsQuery = 'SELECT COUNT(*) as total, COALESCE(AVG(rating), 0) as avg_rating FROM reviews WHERE business_id = $1';
+    // Получаем общее количество отзывов и среднюю оценку (только опубликованные)
+    let statsQuery = `SELECT COUNT(*) as total, COALESCE(AVG(rating), 0) as avg_rating 
+                      FROM reviews WHERE business_id = $1 AND status = 'published'`;
     const statsParams = [businessId];
 
     if (ratingFilter) {
@@ -187,11 +212,11 @@ reviewsRouter.get('/business/:businessId', asyncHandler(async (req, res) => {
     const statsResult = await pool.query(statsQuery, statsParams);
     const { total, avg_rating } = statsResult.rows[0];
 
-    // Получаем распределение по рейтингу
+    // Получаем распределение по рейтингу (только опубликованные)
     const distributionResult = await pool.query(
         `SELECT rating, COUNT(*) as count
          FROM reviews
-         WHERE business_id = $1
+         WHERE business_id = $1 AND status = 'published'
          GROUP BY rating
          ORDER BY rating DESC`,
         [businessId]
@@ -227,6 +252,8 @@ reviewsRouter.get('/business/:businessId', asyncHandler(async (req, res) => {
                 order_id: review.order_id,
                 rating: review.rating,
                 comment: review.comment,
+                photos: review.photos || [],
+                is_verified_purchase: review.is_verified_purchase || false,
                 created_at: review.created_at
             })),
             total: parseInt(total),
@@ -272,19 +299,22 @@ reviewsRouter.get('/mine', requireAuth, asyncHandler(async (req, res) => {
         const result = await pool.query(
             `SELECT 
                 r.id,
-            r.user_id,
-            r.business_id,
-            r.order_id,
+                r.user_id,
+                r.business_id,
+                r.order_id,
                 r.rating,
                 r.comment,
+                r.photos,
+                r.status,
+                r.is_verified_purchase,
                 r.created_at,
-            b.name as business_name,
-            b.logo_url as business_logo
+                b.name as business_name,
+                b.logo_url as business_logo
              FROM reviews r
-        JOIN users b ON r.business_id = b.id
-        WHERE r.user_id = $1
-        ORDER BY r.created_at DESC
-        LIMIT $2 OFFSET $3`,
+             JOIN users b ON r.business_id = b.id
+             WHERE r.user_id = $1
+             ORDER BY r.created_at DESC
+             LIMIT $2 OFFSET $3`,
         [user_id, limit, offset]
     );
 
@@ -310,6 +340,9 @@ reviewsRouter.get('/mine', requireAuth, asyncHandler(async (req, res) => {
                 order_id: review.order_id,
                 rating: review.rating,
                 comment: review.comment,
+                photos: review.photos || [],
+                status: review.status,
+                is_verified_purchase: review.is_verified_purchase || false,
                 created_at: review.created_at
             })),
             total: parseInt(countResult.rows[0].total),
@@ -451,9 +484,20 @@ reviewsRouter.get('/can-review/:orderId', requireAuth, asyncHandler(async (req, 
         });
     }
 
+    // Проверяем структуру таблицы (customer_id или user_id)
+    const columnCheck = await pool.query(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'orders' 
+        AND column_name IN ('user_id', 'customer_id')
+    `);
+    
+    const hasUserId = columnCheck.rows.some(row => row.column_name === 'user_id');
+    const customerField = hasUserId ? 'user_id' : 'customer_id';
+
     // Проверяем заказ
     const orderCheck = await pool.query(
-        'SELECT id, status, business_id FROM orders WHERE id = $1',
+        `SELECT id, status, business_id, ${customerField} as customer_user_id FROM orders WHERE id = $1`,
         [orderId]
     );
 
@@ -469,8 +513,19 @@ reviewsRouter.get('/can-review/:orderId', requireAuth, asyncHandler(async (req, 
 
     const order = orderCheck.rows[0];
 
-    // Проверяем статус заказа
-    if (order.status !== 'completed') {
+    // Проверяем, что заказ принадлежит пользователю
+    if (order.customer_user_id !== user_id) {
+        return res.json({
+            success: true,
+            data: {
+                can_review: false,
+                reason: 'ORDER_NOT_OWNED'
+            }
+        });
+    }
+
+    // Проверяем статус заказа (completed или picked_up)
+    if (order.status !== 'completed' && order.status !== 'picked_up') {
         return res.json({
             success: true,
             data: {
@@ -505,6 +560,128 @@ reviewsRouter.get('/can-review/:orderId', requireAuth, asyncHandler(async (req, 
             can_review: true,
             business_id: order.business_id
         }
+    });
+}));
+
+/**
+ * Админ: Получить отзывы на модерации
+ * GET /reviews/admin/pending
+ */
+reviewsRouter.get('/admin/pending', requireAdmin, asyncHandler(async (req, res) => {
+    const limit = parseInt(req.query.limit) || 20;
+    const offset = parseInt(req.query.offset) || 0;
+
+    logger.info('Fetching pending reviews for moderation', { limit, offset });
+
+    const result = await pool.query(
+        `SELECT 
+            r.id,
+            r.user_id,
+            r.business_id,
+            r.order_id,
+            r.rating,
+            r.comment,
+            r.photos,
+            r.status,
+            r.is_verified_purchase,
+            r.created_at,
+            u.name as user_name,
+            b.name as business_name
+         FROM reviews r
+         JOIN users u ON r.user_id = u.id
+         JOIN users b ON r.business_id = b.id
+         WHERE r.status = 'pending'
+         ORDER BY r.created_at ASC
+         LIMIT $1 OFFSET $2`,
+        [limit, offset]
+    );
+
+    const countResult = await pool.query(
+        'SELECT COUNT(*) as total FROM reviews WHERE status = $1',
+        ['pending']
+    );
+
+    res.json({
+        success: true,
+        data: {
+            reviews: result.rows.map(review => ({
+                id: review.id,
+                user_id: review.user_id,
+                user_name: review.user_name,
+                business_id: review.business_id,
+                business_name: review.business_name,
+                order_id: review.order_id,
+                rating: review.rating,
+                comment: review.comment,
+                photos: review.photos || [],
+                is_verified_purchase: review.is_verified_purchase || false,
+                created_at: review.created_at
+            })),
+            total: parseInt(countResult.rows[0].total),
+            limit,
+            offset
+        }
+    });
+}));
+
+/**
+ * Админ: Модерировать отзыв
+ * POST /reviews/admin/moderate/:id
+ * 
+ * Body: {
+ *   action: 'publish' | 'reject',
+ *   reason?: string (для reject)
+ * }
+ */
+reviewsRouter.post('/admin/moderate/:id', requireAdmin, asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { action, reason } = req.body;
+    const moderator_id = req.session.userId;
+
+    logger.info('Moderating review', { review_id: id, action, moderator_id });
+
+    if (!action || !['publish', 'reject'].includes(action)) {
+        throw new AppError('action должен быть "publish" или "reject"', 400, 'INVALID_ACTION');
+    }
+
+    // Проверяем, что отзыв существует и на модерации
+    const reviewCheck = await pool.query(
+        'SELECT id, status FROM reviews WHERE id = $1',
+        [id]
+    );
+
+    if (reviewCheck.rowCount === 0) {
+        throw new AppError('Отзыв не найден', 404, 'REVIEW_NOT_FOUND');
+    }
+
+    if (reviewCheck.rows[0].status !== 'pending') {
+        throw new AppError('Отзыв уже прошел модерацию', 400, 'REVIEW_ALREADY_MODERATED');
+    }
+
+    const newStatus = action === 'publish' ? 'published' : 'rejected';
+
+    // Обновляем статус отзыва
+    const result = await pool.query(
+        `UPDATE reviews 
+         SET status = $1, 
+             moderated_at = CURRENT_TIMESTAMP,
+             moderated_by = $2
+         WHERE id = $3
+         RETURNING id, status, moderated_at, moderated_by`,
+        [newStatus, moderator_id, id]
+    );
+
+    logger.info('Review moderated successfully', { 
+        review_id: id, 
+        action, 
+        new_status: newStatus,
+        moderator_id 
+    });
+
+    res.json({
+        success: true,
+        data: result.rows[0],
+        message: action === 'publish' ? 'Отзыв опубликован' : 'Отзыв отклонен'
     });
 }));
 
