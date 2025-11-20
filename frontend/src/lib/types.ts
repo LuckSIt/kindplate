@@ -1,23 +1,3 @@
-export interface Business {
-  id: number;
-  name: string;
-  address?: string;
-  coord_0?: number;
-  coord_1?: number;
-}
-
-export interface Offer {
-  id: number;
-  title: string;
-  description?: string;
-  image_url?: string;
-  original_price: number;
-  discounted_price: number;
-  quantity_available: number;
-  pickup_time_start?: string;
-  pickup_time_end?: string;
-}
-
 // Базовые типы API
 export type ApiResponse<T = any> = {
   success: boolean;
@@ -65,13 +45,13 @@ export type QualityMetrics = {
 export type Business = {
   id: number;
   name: string;
-  address: string;
-  coords: [string, string]; // [lat, lon] as strings from API
+  address?: string;
+  coords?: [string, string]; // [lat, lon] as strings from API
   rating?: number;
   total_reviews?: number;
   logo_url?: string;
   phone?: string;
-  offers: Offer[];
+  offers?: Offer[];
   is_top?: boolean; // Флаг "Лучшие у нас"
   quality_score?: number; // Балл качества (0-100)
   quality_metrics?: QualityMetrics; // Детальные метрики

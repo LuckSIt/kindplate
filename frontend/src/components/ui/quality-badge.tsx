@@ -174,3 +174,49 @@ export const QualityBadgesList: React.FC<QualityBadgesListProps> = ({
     </div>
   );
 };
+
+// Компактная версия бейджа для использования в списках
+interface QualityBadgeCompactProps {
+  business: {
+    badges?: QualityBadge[];
+    is_top?: boolean;
+  };
+  className?: string;
+}
+
+export const QualityBadgeCompact: React.FC<QualityBadgeCompactProps> = ({
+  business,
+  className = ''
+}) => {
+  // Показываем первый бейдж или используем is_top как индикатор
+  const firstBadge = business.badges && business.badges.length > 0 
+    ? business.badges[0] 
+    : business.is_top 
+      ? { key: 'top_rated' as const } 
+      : null;
+
+  if (!firstBadge) {
+    return null;
+  }
+
+  const config = BADGE_CONFIG[firstBadge.key];
+  if (!config) {
+    return null;
+  }
+
+  const Icon = config.icon;
+
+  return (
+    <div
+      className={cn(
+        'inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] gap-0.5',
+        config.bgColor,
+        config.color,
+        className
+      )}
+      title={config.label}
+    >
+      <Icon className="w-2.5 h-2.5" />
+    </div>
+  );
+};

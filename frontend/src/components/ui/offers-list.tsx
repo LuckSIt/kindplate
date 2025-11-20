@@ -1,13 +1,13 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Star, Clock, MapPin } from 'lucide-react';
 import { useNavigate } from '@tanstack/react-router';
 import { Button } from './button';
 import { HighlightText } from './highlight-text';
 import { FavoriteButton } from './favorite-button';
-import { QualityBadgesList } from './quality-badge';
+import { QualityBadgesList, QualityBadgeCompact } from './quality-badge';
 import { RouteButtonCompact } from './route-button';
 import { OptimizedImage } from './optimized-image';
-import type { Business } from '@/lib/types';
+import type { Business, Offer } from '@/lib/types';
 
 interface OffersListProps {
   businesses: Business[];
@@ -35,8 +35,8 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
   console.log('🔍 BusinessCard:', { businessName: business.name, searchQuery });
   const navigate = useNavigate();
   
-  const hasActiveOffers = business.offers && business.offers.some(offer => offer.quantity_available > 0);
-  const activeOffersCount = business.offers?.filter(offer => offer.quantity_available > 0).length || 0;
+  const hasActiveOffers = business.offers && business.offers.some((offer: Offer) => offer.quantity_available > 0);
+  const activeOffersCount = business.offers?.filter((offer: Offer) => offer.quantity_available > 0).length || 0;
 
   const handleCardClick = () => {
     // Call parent onClick if provided, otherwise navigate
@@ -139,7 +139,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
           <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
           <p className="text-sm text-gray-600 dark:text-gray-300 truncate">
             <HighlightText 
-              text={business.address} 
+              text={business.address || ''} 
               highlight={searchQuery}
               highlightClassName="bg-yellow-200 dark:bg-yellow-800 font-semibold"
             />
