@@ -772,6 +772,13 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
             });
         }
 
+        // Проверяем существование таблицы business_locations
+        const tablesCheck = await pool.query(`
+            SELECT table_name FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = 'business_locations'
+        `);
+        const hasBusinessLocations = tablesCheck.rows.length > 0;
+
         // Формируем SQL запрос
         let query = `
             SELECT 
@@ -798,26 +805,57 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
                 u.coord_1 as business_lon,
                 u.logo_url as business_logo_url,
                 u.rating as business_rating,
-                u.total_reviews as business_total_reviews,
+                u.total_reviews as business_total_reviews
+        `;
+        
+        // Добавляем поля локации только если таблица существует
+        if (hasBusinessLocations) {
+            query += `,
                 bl.id as location_id,
                 bl.name as location_name,
                 bl.address as location_address,
                 bl.lat as location_lat,
                 bl.lon as location_lon
-        `;
+            `;
+        } else {
+            query += `,
+                NULL::integer as location_id,
+                NULL::text as location_name,
+                NULL::text as location_address,
+                NULL::numeric as location_lat,
+                NULL::numeric as location_lon
+            `;
+        }
 
         // Добавляем расчет расстояния, если есть координаты
         // Используем координаты локации, если есть, иначе координаты бизнеса
+        // Используем LEAST/GREATEST для защиты от ошибок округления в acos
         if (lat && lon) {
-            query += `,
-                (
-                    6371 * acos(
-                        cos(radians($1)) * cos(radians(COALESCE(bl.lat, u.coord_0))) *
-                        cos(radians(COALESCE(bl.lon, u.coord_1)) - radians($2)) +
-                        sin(radians($1)) * sin(radians(COALESCE(bl.lat, u.coord_0)))
-                    )
-                ) as distance_km
-            `;
+            if (hasBusinessLocations) {
+                query += `,
+                    (
+                        6371 * acos(
+                            LEAST(1, GREATEST(-1,
+                                cos(radians($1)) * cos(radians(COALESCE(bl.lat, u.coord_0))) *
+                                cos(radians(COALESCE(bl.lon, u.coord_1)) - radians($2)) +
+                                sin(radians($1)) * sin(radians(COALESCE(bl.lat, u.coord_0)))
+                            ))
+                        )
+                    ) as distance_km
+                `;
+            } else {
+                query += `,
+                    (
+                        6371 * acos(
+                            LEAST(1, GREATEST(-1,
+                                cos(radians($1)) * cos(radians(u.coord_0)) *
+                                cos(radians(u.coord_1) - radians($2)) +
+                                sin(radians($1)) * sin(radians(u.coord_0))
+                            ))
+                        )
+                    ) as distance_km
+                `;
+            }
         } else {
             query += `, NULL as distance_km`;
         }
@@ -827,10 +865,12 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
         let whereConditions = `
             FROM offers o
             JOIN users u ON o.business_id = u.id
-            LEFT JOIN business_locations bl ON o.location_id = bl.id
+            ${hasBusinessLocations ? 'LEFT JOIN business_locations bl ON o.location_id = bl.id' : ''}
             WHERE u.is_business = true
             AND o.is_active = true
             AND o.quantity_available > 0
+            AND u.coord_0 IS NOT NULL
+            AND u.coord_1 IS NOT NULL
         `;
 
         // Фильтр по геолокации (радиус) - используем координаты локации, если есть
@@ -838,14 +878,42 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
             const latVal = parseFloat(lat);
             const lonVal = parseFloat(lon);
             const radius = parseFloat(radius_km) || 10;
+            
+            // Валидация координат
+            if (isNaN(latVal) || isNaN(lonVal) || latVal < -90 || latVal > 90 || lonVal < -180 || lonVal > 180) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'INVALID_COORDINATES',
+                    message: 'Некорректные координаты'
+                });
+            }
+            
             params.push(latVal, lonVal, radius);
-            whereConditions += ` AND (
-                6371 * acos(
-                    cos(radians($${paramIndex})) * cos(radians(COALESCE(bl.lat, u.coord_0))) *
-                    cos(radians(COALESCE(bl.lon, u.coord_1)) - radians($${paramIndex + 1})) +
-                    sin(radians($${paramIndex})) * sin(radians(COALESCE(bl.lat, u.coord_0)))
-                ) <= $${paramIndex + 2}
-            )`;
+            if (hasBusinessLocations) {
+                whereConditions += ` AND (
+                    COALESCE(bl.lat, u.coord_0) IS NOT NULL
+                    AND COALESCE(bl.lon, u.coord_1) IS NOT NULL
+                    AND (
+                        6371 * acos(
+                            LEAST(1, GREATEST(-1,
+                                cos(radians($${paramIndex})) * cos(radians(COALESCE(bl.lat, u.coord_0))) *
+                                cos(radians(COALESCE(bl.lon, u.coord_1)) - radians($${paramIndex + 1})) +
+                                sin(radians($${paramIndex})) * sin(radians(COALESCE(bl.lat, u.coord_0)))
+                            ))
+                        ) <= $${paramIndex + 2}
+                    )
+                )`;
+            } else {
+                whereConditions += ` AND (
+                    6371 * acos(
+                        LEAST(1, GREATEST(-1,
+                            cos(radians($${paramIndex})) * cos(radians(u.coord_0)) *
+                            cos(radians(u.coord_1) - radians($${paramIndex + 1})) +
+                            sin(radians($${paramIndex})) * sin(radians(u.coord_0))
+                        ))
+                    ) <= $${paramIndex + 2}
+                )`;
+            }
             paramIndex += 3;
         }
 
@@ -955,40 +1023,57 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
         const result = await pool.query(query, params);
 
         // Форматируем результат
-        const offers = result.rows.map(row => ({
-            id: row.id,
-            title: row.title,
-            description: row.description,
-            image_url: row.image_url,
-            original_price: parseFloat(row.original_price),
-            discounted_price: parseFloat(row.discounted_price),
-            quantity_available: row.quantity_available,
-            pickup_time_start: row.pickup_time_start,
-            pickup_time_end: row.pickup_time_end,
-            is_active: row.is_active,
-            cuisine_tags: row.cuisine_tags || [],
-            diet_tags: row.diet_tags || [],
-            allergen_tags: row.allergen_tags || [],
-            rating_avg: parseFloat(row.rating_avg) || 0,
-            rating_count: row.rating_count || 0,
-            created_at: row.created_at,
-            distance_km: row.distance_km ? parseFloat(row.distance_km) : null,
-            business: {
-                id: row.business_id,
-                name: row.business_name,
-                address: row.business_address,
-                coords: [row.business_lat, row.business_lon],
-                logo_url: row.business_logo_url,
-                rating: parseFloat(row.business_rating) || 0,
-                total_reviews: row.business_total_reviews || 0
-            },
-            location: row.location_id ? {
-                id: row.location_id,
-                name: row.location_name,
-                address: row.location_address,
-                coords: [row.location_lat, row.location_lon]
-            } : null
-        }));
+        const offers = result.rows.map(row => {
+            // Безопасное преобразование координат бизнеса
+            const businessLat = row.business_lat != null ? parseFloat(row.business_lat) : null;
+            const businessLon = row.business_lon != null ? parseFloat(row.business_lon) : null;
+            const businessCoords = (businessLat != null && businessLon != null) ? [businessLat, businessLon] : null;
+            
+            // Безопасное преобразование координат локации
+            let locationCoords = null;
+            if (row.location_id && row.location_lat != null && row.location_lon != null) {
+                const locLat = parseFloat(row.location_lat);
+                const locLon = parseFloat(row.location_lon);
+                if (!isNaN(locLat) && !isNaN(locLon)) {
+                    locationCoords = [locLat, locLon];
+                }
+            }
+            
+            return {
+                id: row.id,
+                title: row.title,
+                description: row.description,
+                image_url: row.image_url,
+                original_price: parseFloat(row.original_price) || 0,
+                discounted_price: parseFloat(row.discounted_price) || 0,
+                quantity_available: row.quantity_available || 0,
+                pickup_time_start: row.pickup_time_start,
+                pickup_time_end: row.pickup_time_end,
+                is_active: row.is_active,
+                cuisine_tags: row.cuisine_tags || [],
+                diet_tags: row.diet_tags || [],
+                allergen_tags: row.allergen_tags || [],
+                rating_avg: parseFloat(row.rating_avg) || 0,
+                rating_count: row.rating_count || 0,
+                created_at: row.created_at,
+                distance_km: row.distance_km ? parseFloat(row.distance_km) : null,
+                business: {
+                    id: row.business_id,
+                    name: row.business_name || '',
+                    address: row.business_address || '',
+                    coords: businessCoords,
+                    logo_url: row.business_logo_url || null,
+                    rating: parseFloat(row.business_rating) || 0,
+                    total_reviews: row.business_total_reviews || 0
+                },
+                location: row.location_id ? {
+                    id: row.location_id,
+                    name: row.location_name || '',
+                    address: row.location_address || '',
+                    coords: locationCoords
+                } : null
+            };
+        });
 
         const responseData = {
             offers,
@@ -1025,10 +1110,13 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
         });
     } catch (error) {
         logger.error('❌ Ошибка в /offers/search:', error);
+        logger.error('❌ Stack trace:', error.stack);
+        logger.error('❌ Query params:', req.query);
         res.status(500).json({
             success: false,
             error: 'SEARCH_ERROR',
-            message: 'Ошибка при выполнении поиска'
+            message: 'Ошибка при выполнении поиска',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 }));
