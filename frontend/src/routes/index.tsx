@@ -1,144 +1,274 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { Menu, Leaf, Check, TrendingUp, Heart, MessageCircle, Instagram, Facebook, Send, Vk } from "lucide-react";
 
 export const Route = createFileRoute("/")({
     component: App,
 });
 
 function App() {
-    const [isVisible, setIsVisible] = useState(false);
-
-    useEffect(() => {
-        setIsVisible(true);
-    }, []);
-
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            {/* Hero Section with Animation */}
-            <div className={`text-center mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                <div className="mb-6">
-                    <span className="text-6xl animate-bounce inline-block">🍽️</span>
+        <div className="min-h-screen bg-black flex">
+            {/* Left Sidebar - Dark Blue */}
+            <div className="w-full lg:w-1/3 xl:w-1/4 bg-slate-900 flex flex-col">
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 border-b border-slate-800">
+                    <div className="flex items-center gap-2">
+                        <Leaf className="w-6 h-6 text-primary-500" />
+                        <span className="text-xl font-bold text-white">KindPlate</span>
+                        <span className="text-xs text-gray-400 ml-2">FOOD WITH LOVE</span>
+                    </div>
+                    <Menu className="w-6 h-6 text-white cursor-pointer" />
                 </div>
-                <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6">
-                    Добро пожаловать в{" "}
-                    <span className="bg-gradient-to-r from-primary-500 to-primary-400 bg-clip-text text-transparent animate-pulse">
-                        KindPlate
-                    </span>
-                </h1>
-                <p className="text-xl text-gray-700 dark:text-gray-200 mb-8 max-w-3xl mx-auto leading-relaxed">
-                    Спасайте еду и экономьте деньги! 💰 Находите скидки до 60% на вкусную еду от местных кафе и ресторанов 🎯
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link to="/home">
-                        <Button size="lg" className="bg-gradient-to-r from-primary-500 to-primary-400 hover:from-primary-600 hover:to-primary-500 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 px-8 py-3 text-lg font-semibold hover:scale-105 transform">
-                            🗺️ Найти предложения рядом
-                        </Button>
-                    </Link>
-                    <Link to="/auth/register/business">
-                        <Button size="lg" variant="outline" className="border-2 border-primary-500 text-primary-600 dark:text-primary-400 dark:border-primary-400 hover:bg-primary-500 hover:text-white dark:hover:bg-primary-500 transition-all duration-200 px-8 py-3 text-lg font-semibold hover:scale-105 transform">
-                            💼 Для бизнеса
-                        </Button>
-                    </Link>
+
+                <div className="flex-1 overflow-y-auto">
+                    {/* Hero Section */}
+                    <div className="p-6 space-y-6">
+                        <h1 className="text-3xl lg:text-4xl font-bold text-primary-500 leading-tight">
+                            Выгодно для тебя, полезно для планеты
+                        </h1>
+                        <p className="text-white/80 text-sm lg:text-base">
+                            Соединяем людей с кафе и ресторанами для выгодной и осознанной покупки еды
+                        </p>
+                        <div className="flex flex-col gap-3">
+                            <Link to="/home">
+                                <Button className="w-full bg-primary-500 hover:bg-primary-600 text-white rounded-xl py-3 font-semibold">
+                                    начать спасать
+                                </Button>
+                            </Link>
+                            <Link to="/auth/register/business">
+                                <Button variant="outline" className="w-full border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white rounded-xl py-3 font-semibold">
+                                    начать продавать
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* Featured Food Item */}
+                    <div className="px-6 mb-6">
+                        <div className="bg-slate-800 rounded-2xl p-4">
+                            <div className="relative mb-4 bg-slate-700 rounded-xl p-4 flex items-center justify-center min-h-[200px]">
+                                <div className="text-center">
+                                    <div className="text-6xl mb-2">🥐</div>
+                                    <p className="text-white text-sm">Булочка с корицей</p>
+                                </div>
+                            </div>
+                            <p className="text-white font-medium mb-3">Булочка с корицей 79₽</p>
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2 bg-slate-700 rounded-lg px-3 py-2">
+                                    <button className="text-white text-lg">-</button>
+                                    <span className="text-white font-semibold mx-2">1</span>
+                                    <button className="text-white text-lg">+</button>
+                                </div>
+                                <Button className="flex-1 bg-primary-500 hover:bg-primary-600 text-white rounded-lg py-2">
+                                    добавить в 🛒
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Statistics */}
+                    <div className="px-6 mb-6">
+                        <p className="text-primary-500 text-sm mb-2">Вместе мы спасли</p>
+                        <p className="text-white text-3xl font-bold">532 блюд от выброса</p>
+                    </div>
+
+                    {/* User Benefits Section - White Card */}
+                    <div className="px-6 mb-6">
+                        <div className="bg-white rounded-2xl p-6">
+                            <h3 className="text-lg font-bold text-gray-900 mb-2">Для пользователей</h3>
+                            <h4 className="text-2xl font-bold text-primary-500 mb-4">
+                                Экономьте и спасайте еду из любимых заведений
+                            </h4>
+                            <p className="text-gray-700 text-sm mb-6">
+                                Получайте вкусные блюда по отличным ценам и помогайте сокращать пищевые отходы. 
+                                Смотрите актуальные предложения рядом с вами и бронируйте прямо в KindPlate. 
+                                Каждый заказ — шаг к более ответственному потреблению и поддержке экологической устойчивости.
+                            </p>
+                            <div className="space-y-4 mb-6">
+                                <div className="flex items-start gap-3">
+                                    <span className="text-primary-500 font-bold text-lg">01</span>
+                                    <p className="text-gray-700 text-sm">Смотри предложения рядом с тобой</p>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <span className="text-primary-500 font-bold text-lg">02</span>
+                                    <p className="text-gray-700 text-sm">Выбирай и оплачивай прямо в приложении</p>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <span className="text-primary-500 font-bold text-lg">03</span>
+                                    <p className="text-gray-700 text-sm">Забери в заведении и наслаждайся</p>
+                                </div>
+                            </div>
+                            <Link to="/home">
+                                <Button className="w-full bg-primary-500 hover:bg-primary-600 text-white rounded-xl py-3 font-semibold">
+                                    смотреть предложения
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* Why KindPlate Section */}
+                    <div className="px-6 mb-6">
+                        <h3 className="text-xl font-bold text-white mb-4">Почему KindPlate?</h3>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-primary-500/20 rounded-xl p-4 border border-primary-500/30">
+                                <Check className="w-6 h-6 text-primary-500 mb-2" />
+                                <p className="text-white text-xs font-medium">Экономьте до 70% на качественной еде</p>
+                            </div>
+                            <div className="bg-primary-500/20 rounded-xl p-4 border border-primary-500/30">
+                                <TrendingUp className="w-6 h-6 text-primary-500 mb-2" />
+                                <p className="text-white text-xs font-medium">Уменьшайте пищевые отходы и СО2</p>
+                            </div>
+                            <div className="bg-primary-500/20 rounded-xl p-4 border border-primary-500/30">
+                                <Heart className="w-6 h-6 text-primary-500 mb-2" />
+                                <p className="text-white text-xs font-medium">Поддерживайте местные бизнесы</p>
+                            </div>
+                            <div className="bg-primary-500/20 rounded-xl p-4 border border-primary-500/30">
+                                <MessageCircle className="w-6 h-6 text-primary-500 mb-2" />
+                                <p className="text-white text-xs font-medium">Создавайте позитивное влияние</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="px-6 pb-6 border-t border-slate-800 pt-6">
+                        <div className="flex items-center gap-2 mb-6">
+                            <Leaf className="w-5 h-5 text-primary-500" />
+                            <span className="text-lg font-bold text-white">KindPlate</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+                            <div>
+                                <p className="text-white font-semibold mb-2">KindPlate</p>
+                                <ul className="space-y-1 text-gray-400">
+                                    <li><Link to="/auth/register/business" className="hover:text-white">Для партнеров</Link></li>
+                                    <li><Link to="/home" className="hover:text-white">Для пользователей</Link></li>
+                                    <li><Link to="#" className="hover:text-white">Документы</Link></li>
+                                    <li><Link to="#" className="hover:text-white">Блог</Link></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p className="text-white font-semibold mb-2">Нужна помощь?</p>
+                                <ul className="space-y-1 text-gray-400">
+                                    <li><Link to="#" className="hover:text-white">Ответы на вопросы</Link></li>
+                                    <li><Link to="#" className="hover:text-white">Контакты</Link></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="mb-4">
+                            <p className="text-white font-semibold mb-2 text-sm">Социальные сети</p>
+                            <div className="flex gap-3">
+                                <a href="#" className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary-500 transition-colors">
+                                    <Vk className="w-4 h-4 text-white" />
+                                </a>
+                                <a href="#" className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary-500 transition-colors">
+                                    <Send className="w-4 h-4 text-white" />
+                                </a>
+                                <a href="#" className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary-500 transition-colors">
+                                    <Instagram className="w-4 h-4 text-white" />
+                                </a>
+                            </div>
+                        </div>
+                        <p className="text-gray-500 text-xs">©KindPlate 2025. Все права защищены</p>
+                    </div>
                 </div>
             </div>
 
-            {/* Features Grid with Icons */}
-            <div className="grid md:grid-cols-3 gap-8 mb-16">
-                <div className={`bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 transform border border-gray-200 dark:border-gray-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`} style={{transitionDelay: '200ms'}}>
-                    <div className="text-5xl mb-4">📍</div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Рядом с вами</h3>
-                    <p className="text-gray-700 dark:text-gray-200">
-                        Находите кафе и рестораны с выгодными предложениями в вашем районе на интерактивной карте
+            {/* Main Content Area - Black Background */}
+            <div className="flex-1 bg-black overflow-y-auto">
+                {/* Header */}
+                <div className="sticky top-0 bg-black/95 backdrop-blur-sm z-10 border-b border-slate-800 p-6">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-2xl font-bold text-white">Выгодно для тебя, полезно для планеты</h2>
+                        <Menu className="w-6 h-6 text-white cursor-pointer" />
+                    </div>
+                    <p className="text-white/70 mt-2 text-sm">
+                        Забирай вкусную еду со скидкой до 70% и спасай планету от пищевых отходов
                     </p>
+                    <div className="flex items-center gap-4 mt-4">
+                        <Link to="/home">
+                            <Button className="bg-white text-black hover:bg-gray-100 rounded-xl px-6 py-2 font-semibold">
+                                Найти предложения
+                            </Button>
+                        </Link>
+                        <Link to="#" className="text-primary-500 hover:text-primary-400 text-sm">
+                            Как это работает?
+                        </Link>
+                    </div>
                 </div>
 
-                <div className={`bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 transform border border-gray-200 dark:border-gray-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`} style={{transitionDelay: '400ms'}}>
-                    <div className="text-5xl mb-4">💸</div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Экономьте до 60%</h3>
-                    <p className="text-gray-700 dark:text-gray-200">
-                        Покупайте качественную еду со скидкой и помогайте бизнесам сократить пищевые отходы
-                    </p>
-                </div>
-
-                <div className={`bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 transform border border-gray-200 dark:border-gray-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`} style={{transitionDelay: '600ms'}}>
-                    <div className="text-5xl mb-4">🌱</div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Забота об экологии</h3>
-                    <p className="text-gray-700 dark:text-gray-200">
-                        Вместе мы спасаем тонны еды от выбрасывания и заботимся о планете
-                    </p>
-                </div>
-            </div>
-
-            {/* How it Works Section */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl p-10 mb-16 shadow-lg border border-gray-200 dark:border-gray-700">
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Как это работает? 🤔</h2>
-                <div className="grid md:grid-cols-4 gap-6">
-                    <div className="text-center">
-                        <div className="bg-white dark:bg-gray-800 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-md">
-                            <span className="text-2xl font-bold text-primary-600">1</span>
+                {/* Food Items Showcase */}
+                <div className="p-6">
+                    <div className="flex gap-4 overflow-x-auto pb-4">
+                        <div className="flex-shrink-0 w-48">
+                            <div className="w-full h-48 bg-slate-800 rounded-xl mb-2 flex items-center justify-center">
+                                <span className="text-4xl">🥗</span>
+                            </div>
+                            <p className="text-white text-sm font-medium">Салат с авокадо 159₽</p>
                         </div>
-                        <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">Откройте карту</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">Найдите предложения рядом с вами</p>
-                    </div>
-                    <div className="text-center">
-                        <div className="bg-white dark:bg-gray-800 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-md">
-                            <span className="text-2xl font-bold text-primary-600">2</span>
+                        <div className="flex-shrink-0 w-48">
+                            <div className="w-full h-48 bg-slate-800 rounded-xl mb-2 flex items-center justify-center">
+                                <span className="text-4xl">🥐</span>
+                            </div>
+                            <p className="text-white text-sm font-medium">Круассан с беконом 139₽</p>
                         </div>
-                        <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">Выберите блюдо</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">Закажите понравившееся предложение</p>
-                    </div>
-                    <div className="text-center">
-                        <div className="bg-white dark:bg-gray-800 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-md">
-                            <span className="text-2xl font-bold text-primary-600">3</span>
+                        <div className="flex-shrink-0 w-48">
+                            <div className="w-full h-48 bg-slate-800 rounded-xl mb-2 flex items-center justify-center">
+                                <span className="text-4xl">🥖</span>
+                            </div>
+                            <p className="text-white text-sm font-medium">Чиабатта 3шт. 99₽</p>
                         </div>
-                        <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">Заберите заказ</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">Придите в указанное время</p>
-                    </div>
-                    <div className="text-center">
-                        <div className="bg-white dark:bg-gray-800 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-md">
-                            <span className="text-2xl font-bold text-primary-600">4</span>
+                        <div className="flex-shrink-0 w-48">
+                            <div className="w-full h-48 bg-slate-800 rounded-xl mb-2 flex items-center justify-center">
+                                <span className="text-4xl">🍕</span>
+                            </div>
+                            <p className="text-white text-sm font-medium">Пепперони пицца 279₽</p>
                         </div>
-                        <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">Наслаждайтесь!</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">И спасибо за спасение еды! 💚</p>
+                        <div className="flex-shrink-0 w-48">
+                            <div className="w-full h-48 bg-slate-800 rounded-xl mb-2 flex items-center justify-center">
+                                <span className="text-4xl">🍪</span>
+                            </div>
+                            <p className="text-white text-sm font-medium">Печенье с шоколадом 99₽</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Trust Indicators */}
-            <div className="text-center mb-16">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Нам доверяют</h3>
-                <div className="flex justify-center items-center gap-8 flex-wrap">
-                    <div className="text-center">
-                        <div className="text-3xl font-bold text-primary-600">1000+</div>
-                        <div className="text-gray-700 dark:text-gray-200">Спасенных блюд</div>
-                    </div>
-                    <div className="text-center">
-                        <div className="text-3xl font-bold text-primary-600">50+</div>
-                        <div className="text-gray-700 dark:text-gray-200">Партнеров</div>
-                    </div>
-                    <div className="text-center">
-                        <div className="text-3xl font-bold text-primary-600">4.8⭐</div>
-                        <div className="text-gray-700 dark:text-gray-200">Рейтинг</div>
-                    </div>
+                {/* Impact Section */}
+                <div className="px-6 py-8 border-t border-slate-800">
+                    <p className="text-white/70 text-sm mb-2">Вместе мы спасли</p>
+                    <p className="text-primary-500 text-4xl font-bold">532 блюд от выброса</p>
                 </div>
-            </div>
 
-            {/* CTA Section */}
-            <div className="bg-gradient-to-r from-primary-500 to-primary-400 rounded-3xl p-10 text-white text-center shadow-xl">
-                <h2 className="text-3xl font-bold mb-4">Готовы начать экономить? 🚀</h2>
-                <p className="text-xl mb-6 text-white/90">Присоединяйтесь к тысячам пользователей, которые уже спасают еду!</p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link to="/auth/register/customer">
-                        <Button size="lg" className="bg-white text-primary-600 hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all duration-200 px-8 py-3 text-lg font-semibold">
-                            Создать аккаунт бесплатно
-                        </Button>
-                    </Link>
-                    <Link to="/auth/login">
-                        <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-primary-600 transition-all duration-200 px-8 py-3 text-lg font-semibold">
-                            У меня есть аккаунт
-                        </Button>
-                    </Link>
+                {/* Second User Benefits Section - Dark Card */}
+                <div className="px-6 pb-6">
+                    <div className="bg-slate-900 rounded-2xl p-6 border border-slate-800">
+                        <h3 className="text-lg font-bold text-white mb-2">Для пользователей</h3>
+                        <h4 className="text-2xl font-bold text-primary-500 mb-4">
+                            Экономьте и спасайте еду из любимых заведений
+                        </h4>
+                        <p className="text-white/70 text-sm mb-6">
+                            Получайте вкусные блюда по отличным ценам и помогайте сокращать пищевые отходы. 
+                            Смотрите актуальные предложения рядом с вами и бронируйте прямо в KindPlate.
+                        </p>
+                        <div className="space-y-4 mb-6">
+                            <div className="flex items-start gap-3">
+                                <span className="text-primary-500 font-bold text-lg">01</span>
+                                <p className="text-white/80 text-sm">Смотри предложения рядом с тобой</p>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <span className="text-primary-500 font-bold text-lg">02</span>
+                                <p className="text-white/80 text-sm">Выбирай и оплачивай прямо в приложении</p>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <span className="text-primary-500 font-bold text-lg">03</span>
+                                <p className="text-white/80 text-sm">Забери в заведении и наслаждайся</p>
+                            </div>
+                        </div>
+                        <Link to="/auth/register/business">
+                            <Button variant="outline" className="w-full border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white rounded-xl py-3 font-semibold">
+                                Написать о сотрудничестве
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>
