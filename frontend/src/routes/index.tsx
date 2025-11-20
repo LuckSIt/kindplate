@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Menu, Leaf, Check, TrendingUp, Heart, MessageCircle, Instagram, Facebook, Send } from "lucide-react";
+import { Menu, Leaf, Check, TrendingUp, Heart, MapPin, Instagram, Facebook, Send } from "lucide-react";
 
 export const Route = createFileRoute("/")({
     component: App,
@@ -107,6 +107,39 @@ function App() {
                         </div>
                     </div>
 
+                    {/* Second User Benefits Section - Dark Card (moved here from right column) */}
+                    <div className="px-6 mb-6">
+                        <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+                            <h3 className="text-lg font-bold text-white mb-2">Для пользователей</h3>
+                            <h4 className="text-2xl font-bold text-primary-500 mb-4">
+                                Экономьте и спасайте еду из любимых заведений
+                            </h4>
+                            <p className="text-white/70 text-sm mb-6">
+                                Получайте вкусные блюда по отличным ценам и помогайте сокращать пищевые отходы. 
+                                Смотрите актуальные предложения рядом с вами и бронируйте прямо в KindPlate.
+                            </p>
+                            <div className="space-y-4 mb-6">
+                                <div className="flex items-start gap-3">
+                                    <span className="text-primary-500 font-bold text-lg">01</span>
+                                    <p className="text-white/80 text-sm">Смотри предложения рядом с тобой</p>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <span className="text-primary-500 font-bold text-lg">02</span>
+                                    <p className="text-white/80 text-sm">Выбирай и оплачивай прямо в приложении</p>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <span className="text-primary-500 font-bold text-lg">03</span>
+                                    <p className="text-white/80 text-sm">Забери в заведении и наслаждайся</p>
+                                </div>
+                            </div>
+                            <Link to="/auth/register/business">
+                                <Button variant="outline" className="w-full border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white rounded-xl py-3 font-semibold">
+                                    Написать о сотрудничестве
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+
                     {/* Why KindPlate Section */}
                     <div className="px-6 mb-6">
                         <h3 className="text-xl font-bold text-white mb-4">Почему KindPlate?</h3>
@@ -117,15 +150,15 @@ function App() {
                             </div>
                             <div className="bg-primary-500/20 rounded-xl p-4 border border-primary-500/30">
                                 <TrendingUp className="w-6 h-6 text-primary-500 mb-2" />
-                                <p className="text-white text-xs font-medium">Уменьшайте пищевые отходы и СО2</p>
+                                <p className="text-white text-xs font-medium">Уменьшайте выбросы и CO2</p>
+                            </div>
+                            <div className="bg-primary-500/20 rounded-xl p-4 border border-primary-500/30">
+                                <MapPin className="w-6 h-6 text-primary-500 mb-2" />
+                                <p className="text-white text-xs font-medium">Покупайте рядом с домом</p>
                             </div>
                             <div className="bg-primary-500/20 rounded-xl p-4 border border-primary-500/30">
                                 <Heart className="w-6 h-6 text-primary-500 mb-2" />
-                                <p className="text-white text-xs font-medium">Поддерживайте местные бизнесы</p>
-                            </div>
-                            <div className="bg-primary-500/20 rounded-xl p-4 border border-primary-500/30">
-                                <MessageCircle className="w-6 h-6 text-primary-500 mb-2" />
-                                <p className="text-white text-xs font-medium">Создавайте позитивное влияние</p>
+                                <p className="text-white text-xs font-medium">Делайте позитивное влияние</p>
                             </div>
                         </div>
                     </div>
@@ -236,39 +269,6 @@ function App() {
                 <div className="px-6 py-8 border-t border-slate-800">
                     <p className="text-white/70 text-sm mb-2">Вместе мы спасли</p>
                     <p className="text-primary-500 text-4xl font-bold">532 блюд от выброса</p>
-                </div>
-
-                {/* Second User Benefits Section - Dark Card */}
-                <div className="px-6 pb-6">
-                    <div className="bg-slate-900 rounded-2xl p-6 border border-slate-800">
-                        <h3 className="text-lg font-bold text-white mb-2">Для пользователей</h3>
-                        <h4 className="text-2xl font-bold text-primary-500 mb-4">
-                            Экономьте и спасайте еду из любимых заведений
-                        </h4>
-                        <p className="text-white/70 text-sm mb-6">
-                            Получайте вкусные блюда по отличным ценам и помогайте сокращать пищевые отходы. 
-                            Смотрите актуальные предложения рядом с вами и бронируйте прямо в KindPlate.
-                        </p>
-                        <div className="space-y-4 mb-6">
-                            <div className="flex items-start gap-3">
-                                <span className="text-primary-500 font-bold text-lg">01</span>
-                                <p className="text-white/80 text-sm">Смотри предложения рядом с тобой</p>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <span className="text-primary-500 font-bold text-lg">02</span>
-                                <p className="text-white/80 text-sm">Выбирай и оплачивай прямо в приложении</p>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <span className="text-primary-500 font-bold text-lg">03</span>
-                                <p className="text-white/80 text-sm">Забери в заведении и наслаждайся</p>
-                            </div>
-                        </div>
-                        <Link to="/auth/register/business">
-                            <Button variant="outline" className="w-full border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white rounded-xl py-3 font-semibold">
-                                Написать о сотрудничестве
-                            </Button>
-                        </Link>
-                    </div>
                 </div>
             </div>
         </div>
