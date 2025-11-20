@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Menu, Leaf, Check, TrendingUp, Heart, MessageCircle, Instagram, Facebook, Send, Vk } from "lucide-react";
+import { Menu, Leaf, Check, TrendingUp, Heart, MessageCircle, Instagram, Facebook, Send } from "lucide-react";
 
 export const Route = createFileRoute("/")({
     component: App,
@@ -157,8 +157,8 @@ function App() {
                         <div className="mb-4">
                             <p className="text-white font-semibold mb-2 text-sm">Социальные сети</p>
                             <div className="flex gap-3">
-                                <a href="#" className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary-500 transition-colors">
-                                    <Vk className="w-4 h-4 text-white" />
+                                <a href="#" className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary-500 transition-colors text-white text-xs font-bold">
+                                    VK
                                 </a>
                                 <a href="#" className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary-500 transition-colors">
                                     <Send className="w-4 h-4 text-white" />
