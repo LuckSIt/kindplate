@@ -57,6 +57,8 @@ export function useMapQuery(
         gcTime: 10 * 60 * 1000, // 10 минут (кэшируем разные области)
         placeholderData: (previousData: any) => previousData,
         refetchOnMount: false,
+        refetchOnWindowFocus: false, // По умолчанию отключаем рефетч при фокусе
+        retry: false, // По умолчанию отключаем повторные попытки (можно переопределить в options)
         ...options,
     });
 }

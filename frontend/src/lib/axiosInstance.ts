@@ -66,13 +66,25 @@ axiosInstance.interceptors.response.use(
             console.error(`❌ ${error.config?.method?.toUpperCase()} ${error.config?.url}`, error.response?.data);
         }
 
+        // Проверяем флаг для пропуска уведомлений (для предзагрузки и т.д.)
+        const skipNotification = (error.config as any)?.skipErrorNotification;
+
         // Обрабатываем различные типы ошибок
         if (error.code === 'ECONNABORTED') {
-            notify.error('Ошибка соединения', 'Превышено время ожидания ответа от сервера');
+            if (!skipNotification) {
+                notify.error('Ошибка соединения', 'Превышено время ожидания ответа от сервера');
+            }
         } else if (error.code === 'NETWORK_ERROR' || !error.response) {
-            notify.error('Ошибка сети', 'Не удалось подключиться к серверу. Проверьте интернет-соединение');
+            if (!skipNotification) {
+                notify.error('Ошибка сети', 'Не удалось подключиться к серверу. Проверьте интернет-соединение');
+            }
         } else if (error.response) {
             const { status, data } = error.response;
+            
+            // Пропускаем уведомления если установлен флаг
+            if (skipNotification) {
+                return Promise.reject(error);
+            }
             
             switch (status) {
                 case 400:
@@ -93,7 +105,18 @@ axiosInstance.interceptors.response.use(
                     notify.warning('Слишком много запросов', 'Попробуйте позже');
                     break;
                 case 500:
-                    notify.error('Ошибка сервера', 'Внутренняя ошибка сервера. Попробуйте позже');
+                case 502:
+                case 503:
+                case 504:
+                    // Для ошибок сервера показываем уведомление только один раз за 30 секунд
+                    // Дедупликация: показываем уведомление только если последнее было более 30 секунд назад
+                    const lastServerErrorKey = 'last_server_error_time';
+                    const lastErrorTime = sessionStorage.getItem(lastServerErrorKey);
+                    const now = Date.now();
+                    if (!lastErrorTime || (now - parseInt(lastErrorTime)) > 30000) {
+                        sessionStorage.setItem(lastServerErrorKey, now.toString());
+                        notify.error('Ошибка сервера', 'Внутренняя ошибка сервера. Попробуйте позже');
+                    }
                     break;
                 default:
                     notify.error('Ошибка', data.message || `Ошибка ${status}`);

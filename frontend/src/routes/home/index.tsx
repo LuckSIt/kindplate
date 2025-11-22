@@ -62,7 +62,7 @@ function RouteComponent() {
     const [orderQuantity, setOrderQuantity] = useState(1);
 
     // Fetch offers data with optimized map query using new search endpoint
-    const { data: offersData, isLoading: isLoadingOffers } = useMapQuery(
+    const { data: offersData, isLoading: isLoadingOffers, isError: isOffersError, error: offersError } = useMapQuery(
         ["offers_search", mapBounds, searchQuery, sortBy, userLocation],
         () => {
             const params = new URLSearchParams();
@@ -98,6 +98,9 @@ function RouteComponent() {
         {
             enabled: !!mapBounds, // Загружаем только когда есть границы карты
             staleTime: 30000, // 30 секунд кэш
+            retry: false, // Отключаем автоматические повторные попытки при ошибках
+            retryOnMount: false, // Не повторяем при монтировании
+            refetchOnWindowFocus: false, // Не обновляем при фокусе окна
         }
     );
     
@@ -238,37 +241,57 @@ function RouteComponent() {
     }, []);
     
     // Предзагрузка соседних областей для плавной прокрутки
+    // Отключаем предзагрузку если основной запрос падает с ошибкой
     useEffect(() => {
-        if (!mapBounds || !userLocation) return;
+        // Не делаем предзагрузку если:
+        // 1. Нет границ карты или геолокации
+        // 2. Основной запрос падает с ошибкой (500, 503 и т.д.)
+        // 3. Запрос еще загружается (чтобы не создавать лишние запросы)
+        if (!mapBounds || !userLocation || isOffersError || isLoadingOffers) {
+            return;
+        }
         
-        // Предзагружаем данные для соседних областей (север, юг, восток, запад)
-        const preloadBounds = [
-            { north: mapBounds.north + 0.1, south: mapBounds.south + 0.1, east: mapBounds.east, west: mapBounds.west }, // Север
-            { north: mapBounds.north - 0.1, south: mapBounds.south - 0.1, east: mapBounds.east, west: mapBounds.west }, // Юг
-            { north: mapBounds.north, south: mapBounds.south, east: mapBounds.east + 0.1, west: mapBounds.west + 0.1 }, // Восток
-            { north: mapBounds.north, south: mapBounds.south, east: mapBounds.east - 0.1, west: mapBounds.west - 0.1 }, // Запад
-        ];
+        // Debounce для предзагрузки - делаем запросы только через 1 секунду после изменения границ
+        const timeoutId = setTimeout(() => {
+            // Предзагружаем данные для соседних областей (север, юг, восток, запад)
+            const preloadBounds = [
+                { north: mapBounds.north + 0.1, south: mapBounds.south + 0.1, east: mapBounds.east, west: mapBounds.west }, // Север
+                { north: mapBounds.north - 0.1, south: mapBounds.south - 0.1, east: mapBounds.east, west: mapBounds.west }, // Юг
+                { north: mapBounds.north, south: mapBounds.south, east: mapBounds.east + 0.1, west: mapBounds.west + 0.1 }, // Восток
+                { north: mapBounds.north, south: mapBounds.south, east: mapBounds.east - 0.1, west: mapBounds.west - 0.1 }, // Запад
+            ];
+            
+            // Предзагружаем в фоне (не блокируем UI)
+            preloadBounds.forEach((bounds, index) => {
+                setTimeout(() => {
+                    const centerLat = (bounds.north + bounds.south) / 2;
+                    const centerLon = (bounds.east + bounds.west) / 2;
+                    const params = new URLSearchParams();
+                    params.append('lat', centerLat.toString());
+                    params.append('lon', centerLon.toString());
+                    params.append('radius_km', '30');
+                    params.append('sort', sortBy);
+                    params.append('page', '1');
+                    params.append('limit', '50');
+                    
+                    // Предзагрузка в фоне (не показываем в UI)
+                    // Только если основной запрос успешен
+                    // Добавляем специальный заголовок чтобы axios interceptor не показывал уведомления
+                    if (!isOffersError) {
+                        axiosInstance.get(`/offers/search?${params.toString()}`, {
+                            skipErrorNotification: true // Флаг для пропуска уведомлений
+                        }).catch(() => {
+                            // Игнорируем ошибки предзагрузки
+                        });
+                    }
+                }, index * 500); // Увеличиваем задержку между запросами
+            });
+        }, 1000); // Дебаунс 1 секунда
         
-        // Предзагружаем в фоне (не блокируем UI)
-        preloadBounds.forEach((bounds, index) => {
-            setTimeout(() => {
-                const centerLat = (bounds.north + bounds.south) / 2;
-                const centerLon = (bounds.east + bounds.west) / 2;
-                const params = new URLSearchParams();
-                params.append('lat', centerLat.toString());
-                params.append('lon', centerLon.toString());
-                params.append('radius_km', '30');
-                params.append('sort', sortBy);
-                params.append('page', '1');
-                params.append('limit', '50');
-                
-                // Предзагрузка в фоне (не показываем в UI)
-                axiosInstance.get(`/offers/search?${params.toString()}`).catch(() => {
-                    // Игнорируем ошибки предзагрузки
-                });
-            }, index * 200); // Задержка между запросами
-        });
-    }, [mapBounds, userLocation, sortBy]);
+        return () => {
+            clearTimeout(timeoutId);
+        };
+    }, [mapBounds, userLocation, sortBy, isOffersError, isLoadingOffers]);
 
 
     const handleOpenOrder = (offer: Offer) => {
