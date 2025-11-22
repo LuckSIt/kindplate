@@ -29,9 +29,20 @@ function ListPageComponent() {
         }
     }, []);
 
+    // Debounced search query для уменьшения количества запросов
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
+    
+    // Debounce для searchQuery - обновляем только через 500ms после последнего изменения
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchQuery(searchQuery);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
     // Fetch offers data
-    const { data: offersData, isLoading } = useMapQuery(
-        ["offers_search_list", searchQuery, userLocation],
+    const { data: offersData, isLoading, isError } = useMapQuery(
+        ["offers_search_list", debouncedSearchQuery, userLocation],
         () => {
             const params = new URLSearchParams();
             
@@ -41,20 +52,26 @@ function ListPageComponent() {
                 params.append('radius_km', '50');
             }
             
-            if (searchQuery) {
-                params.append('q', searchQuery);
+            if (debouncedSearchQuery) {
+                params.append('q', debouncedSearchQuery);
             }
             
             params.append('sort', 'distance');
             params.append('page', '1');
             params.append('limit', '100');
             
-            return axiosInstance.get(`/offers/search?${params.toString()}`);
+            return axiosInstance.get(`/offers/search?${params.toString()}`, {
+                skipErrorNotification: true // Пропускаем уведомления - они обрабатываются отдельно
+            } as any);
         },
         {
-            enabled: true,
-            staleTime: 30000,
-            retry: false,
+            enabled: !!userLocation || true, // Включаем только когда есть геолокация или принудительно
+            staleTime: 60000, // 60 секунд кэш (увеличено для уменьшения запросов)
+            retry: false, // Отключаем автоматические повторные попытки при ошибках
+            retryOnMount: false, // Не повторяем при монтировании
+            refetchOnWindowFocus: false, // Не обновляем при фокусе окна
+            refetchOnMount: false, // Не обновляем при монтировании
+            refetchOnReconnect: false, // Не обновляем при восстановлении соединения
         }
     );
 

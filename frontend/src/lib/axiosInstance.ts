@@ -37,8 +37,9 @@ const axiosInstance = axios.create({
 // Интерцептор запросов
 axiosInstance.interceptors.request.use(
     (config) => {
-        // Добавляем timestamp для предотвращения кеширования
-        if (config.method === 'get') {
+        // Добавляем timestamp только если его еще нет (не перезаписываем существующий)
+        // Это предотвращает множественные уникальные запросы из-за timestamp
+        if (config.method === 'get' && !config.params?._t) {
             config.params = {
                 ...config.params,
                 _t: Date.now()

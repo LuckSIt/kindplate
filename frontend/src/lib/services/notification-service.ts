@@ -25,7 +25,39 @@ class NotificationService {
     }
 
     try {
+      // Ждем, пока Service Worker станет активным, перед claim clients
       this.registration = await navigator.serviceWorker.register('/sw.js');
+      
+      // Ждем, пока Service Worker активируется
+      if (this.registration.installing) {
+        await new Promise<void>((resolve) => {
+          this.registration!.installing!.addEventListener('statechange', function() {
+            if (this.state === 'activated') {
+              resolve();
+            }
+          });
+        });
+      } else if (this.registration.waiting) {
+        await new Promise<void>((resolve) => {
+          this.registration!.waiting!.addEventListener('statechange', function() {
+            if (this.state === 'activated') {
+              resolve();
+            }
+          });
+        });
+      }
+      
+      // Ждем, пока Service Worker станет ready, но с таймаутом
+      try {
+        await Promise.race([
+          navigator.serviceWorker.ready,
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+        ]);
+      } catch (error) {
+        // Игнорируем таймаут - Service Worker может быть не готов
+        console.warn('⚠️ Service Worker not ready yet, continuing anyway');
+      }
+      
       console.log('✅ Service Worker registered:', this.registration);
       return this.registration;
     } catch (error) {

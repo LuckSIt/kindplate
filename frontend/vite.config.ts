@@ -15,7 +15,7 @@ export default defineConfig({
     viteReact(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt', // Используем prompt вместо autoUpdate для избежания ошибок
       includeAssets: ['favicon.ico', 'kandlate.png', 'logo192.png', 'logo512.png'],
       
       manifest: {
@@ -95,9 +95,10 @@ export default defineConfig({
       },
 
       devOptions: {
-        enabled: true,
+        enabled: false, // Отключаем Service Worker в dev режиме для избежания ошибок
         type: 'module'
-      }
+      },
+      registerType: 'prompt' // Вместо autoUpdate используем prompt для контроля обновлений
     })
   ],
   server: {

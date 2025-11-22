@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
 import { CheckCircle, Download, MapPin, Clock, Mail, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ReceiptGenerator } from '@/components/ui/receipt-generator';
-import { usePayments, useOrders } from '@/lib/hooks/use-orders';
+import { axiosInstance } from '@/lib/axiosInstance';
 import { notify } from '@/lib/notifications';
 
 interface PaymentSuccessPageProps {
@@ -25,51 +26,24 @@ interface OrderDetails {
 
 export const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = ({ orderId }) => {
   const navigate = useNavigate();
-  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
-  const [loading, setLoading] = useState(true);
   const [receiptUrl, setReceiptUrl] = useState<string>('');
 
-  const { payments } = usePayments();
-  const { orders } = useOrders();
+  // Fetch order details from API
+  const { data: orderDetails, isLoading: loading, error } = useQuery({
+    queryKey: ['order', orderId],
+    queryFn: () => axiosInstance.get(`/orders/${orderId}`),
+    enabled: !!orderId,
+    retry: false,
+    select: (res) => res.data.data as OrderDetails,
+  });
 
   useEffect(() => {
-    const fetchOrderDetails = async () => {
-      try {
-        // Ищем заказ в списке заказов
-        const order = orders.find(o => o.id === parseInt(orderId));
-        
-        if (order) {
-          setOrderDetails(order);
-          notify.success('Оплата успешна!', 'Ваш заказ подтвержден');
-          
-          // Генерируем чек (в реальном приложении это будет API)
-          setReceiptUrl(`/api/receipts/${orderId}.pdf`);
-        } else {
-          // Если заказ не найден, создаем заглушку
-          setOrderDetails({
-            id: parseInt(orderId),
-            business_name: 'Заведение',
-            business_address: 'Адрес заведения',
-            pickup_time_start: '18:00',
-            pickup_time_end: '20:00',
-            subtotal: 0,
-            service_fee: 0,
-            total: 0,
-            status: 'confirmed',
-            created_at: new Date().toISOString(),
-          });
-          notify.success('Оплата успешна!', 'Ваш заказ подтвержден');
-        }
-      } catch (error) {
-        console.error('Ошибка получения деталей заказа:', error);
-        notify.error('Ошибка', 'Не удалось загрузить детали заказа');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrderDetails();
-  }, [orderId, orders]);
+    if (orderDetails) {
+      notify.success('Оплата успешна!', 'Ваш заказ подтвержден');
+      // Генерируем чек (в реальном приложении это будет API)
+      setReceiptUrl(`/api/receipts/${orderId}.pdf`);
+    }
+  }, [orderDetails, orderId]);
 
   const handleOpenRoute = () => {
     if (orderDetails?.business_address) {
@@ -102,13 +76,16 @@ export const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = ({ orderId 
     );
   }
 
-  if (!orderDetails) {
+  if (error || (!loading && !orderDetails)) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
             Заказ не найден
           </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            Не удалось загрузить детали заказа
+          </p>
           <Button onClick={() => navigate({ to: '/' })}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             На главную
@@ -116,6 +93,10 @@ export const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = ({ orderId 
         </div>
       </div>
     );
+  }
+
+  if (!orderDetails) {
+    return null;
   }
 
   return (
@@ -226,9 +207,15 @@ export const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = ({ orderId 
           </p>
         </div>
 
-        {/* Кнопка возврата */}
-        <div className="text-center">
-          <Button variant="outline" onClick={() => navigate({ to: '/' })}>
+        {/* Кнопки действий */}
+        <div className="space-y-3">
+          <Button 
+            onClick={() => navigate({ to: `/pickup-code/${orderId}` })}
+            className="w-full"
+          >
+            Посмотреть код выдачи
+          </Button>
+          <Button variant="outline" onClick={() => navigate({ to: '/' })} className="w-full">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Вернуться на главную
           </Button>

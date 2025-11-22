@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate, Link } from '@tanstack/react-router';
 import { useCart } from '@/lib/hooks/use-cart';
 import { useOrders } from '@/lib/hooks/use-orders';
 import { notify } from '@/lib/notifications';
+import { axiosInstance } from '@/lib/axiosInstance';
 import type { OrderDraft } from '@/lib/schemas/order';
 import arrowBackIcon from "@/figma/arrow-back.svg";
 
 export const CartPage: React.FC = () => {
   const navigate = useNavigate();
   const { cartItems, updateCartItem, removeFromCart, getTotalPrice } = useCart();
-  const { createDraft, isCreatingDraft, config } = useOrders();
+  const { config } = useOrders();
+  const [isCreatingDraft, setIsCreatingDraft] = useState(false);
 
   const currentBusiness = cartItems[0]?.offer.business;
   const subtotal = getTotalPrice();
@@ -28,44 +30,56 @@ export const CartPage: React.FC = () => {
   };
 
   // Handle checkout
-  const handleCheckout = () => {
-    if (!currentBusiness || cartItems.length === 0) return;
+  const handleCheckout = useCallback(async () => {
+    if (!currentBusiness || cartItems.length === 0 || isCreatingDraft) return;
 
-    // Get the latest pickup time from items
-    const latestPickupTime = cartItems.reduce((latest, item) => {
-      const itemEndTime = item.offer.pickup_time_end || item.offer.pickup_time_start || '19:00';
-      return itemEndTime > latest ? itemEndTime : latest;
-    }, '19:00');
+    setIsCreatingDraft(true);
 
-    const orderDraft: OrderDraft = {
-      items: cartItems.map(item => ({
-        offer_id: item.offer_id,
-        quantity: item.quantity,
-        business_id: item.business_id,
-        title: item.offer.title,
-        discounted_price: item.offer.discounted_price,
-        pickup_time_start: item.offer.pickup_time_start || '00:00',
-        pickup_time_end: item.offer.pickup_time_end || latestPickupTime,
-      })),
-      pickup_time_start: cartItems[0]?.offer.pickup_time_start || '00:00',
-      pickup_time_end: latestPickupTime,
-      business_id: currentBusiness.id,
-      business_name: currentBusiness.name,
-      business_address: currentBusiness.address,
-      subtotal,
-      service_fee: config?.service_fee || 0,
-      promocode_discount: 0,
-      total: subtotal + (config?.service_fee || 0),
-      notes: ""
-    };
+    try {
+      // Get the latest pickup time from items
+      const latestPickupTime = cartItems.reduce((latest, item) => {
+        const itemEndTime = item.offer.pickup_time_end || item.offer.pickup_time_start || '19:00';
+        return itemEndTime > latest ? itemEndTime : latest;
+      }, '19:00');
 
-    createDraft(orderDraft);
-    
-    // Navigate to payment page (in real app, orderId comes from API response)
-    setTimeout(() => {
-      navigate({ to: '/payment/1' });
-    }, 500);
-  };
+      const orderDraft: OrderDraft = {
+        items: cartItems.map(item => ({
+          offer_id: item.offer_id,
+          quantity: item.quantity,
+          business_id: item.business_id,
+          title: item.offer.title,
+          discounted_price: item.offer.discounted_price,
+          pickup_time_start: item.offer.pickup_time_start || '00:00',
+          pickup_time_end: item.offer.pickup_time_end || latestPickupTime,
+        })),
+        pickup_time_start: cartItems[0]?.offer.pickup_time_start || '00:00',
+        pickup_time_end: latestPickupTime,
+        business_id: currentBusiness.id,
+        business_name: currentBusiness.name,
+        business_address: currentBusiness.address,
+        subtotal,
+        service_fee: config?.service_fee || 0,
+        promocode_discount: 0,
+        total: subtotal + (config?.service_fee || 0),
+        notes: ""
+      };
+
+      const response = await axiosInstance.post('/orders/draft', orderDraft);
+      const orderId = response.data?.data?.id || response.data?.id;
+      
+      if (orderId) {
+        notify.success('Заказ создан', 'Переходим к оплате...');
+        navigate({ to: `/payment/${orderId}` });
+      } else {
+        notify.error('Ошибка', 'Не удалось получить ID заказа');
+        setIsCreatingDraft(false);
+      }
+    } catch (error: any) {
+      console.error('Ошибка создания заказа:', error);
+      notify.error('Ошибка', error.response?.data?.error || 'Не удалось создать заказ');
+      setIsCreatingDraft(false);
+    }
+  }, [currentBusiness, cartItems, subtotal, config, navigate, isCreatingDraft]);
 
   // Format time for display (e.g., "19:00")
   const formatPickupTime = (time?: string) => {

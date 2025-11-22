@@ -43,10 +43,13 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     },
     onSuccess: (response) => {
       console.log("✅ Заказ создан:", response.data);
-      notify.success("Заказ создан", "Ваш заказ успешно оформлен!");
+      notify.success("Заказ создан", "Переходим к оплате...");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
-      if (response.data?.data?.id) {
-        navigate({ to: `/pickup-code/${response.data.data.id}` });
+      const orderId = response.data?.data?.id || response.data?.id;
+      if (orderId) {
+        navigate({ to: `/payment/${orderId}` });
+      } else {
+        notify.error("Ошибка", "Не удалось получить ID заказа");
       }
     },
     onError: (error: any) => {

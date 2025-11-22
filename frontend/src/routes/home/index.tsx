@@ -61,9 +61,29 @@ function RouteComponent() {
     const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
     const [orderQuantity, setOrderQuantity] = useState(1);
 
+    // Debounced map bounds для уменьшения количества запросов
+    const [debouncedMapBounds, setDebouncedMapBounds] = useState(mapBounds);
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
+    
+    // Debounce для mapBounds - обновляем только через 500ms после последнего изменения
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedMapBounds(mapBounds);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [mapBounds]);
+    
+    // Debounce для searchQuery - обновляем только через 500ms после последнего изменения
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchQuery(searchQuery);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
     // Fetch offers data with optimized map query using new search endpoint
     const { data: offersData, isLoading: isLoadingOffers, isError: isOffersError, error: offersError } = useMapQuery(
-        ["offers_search", mapBounds, searchQuery, sortBy, userLocation],
+        ["offers_search", debouncedMapBounds, debouncedSearchQuery, sortBy, userLocation],
         () => {
             const params = new URLSearchParams();
             
@@ -71,19 +91,19 @@ function RouteComponent() {
             if (userLocation) {
                 params.append('lat', userLocation[0].toString());
                 params.append('lon', userLocation[1].toString());
-                params.append('radius_km', '50'); // Большой радиус для предзагрузки
-            } else if (mapBounds) {
+                params.append('radius_km', '50');
+            } else if (debouncedMapBounds) {
                 // Если нет геолокации, используем центр карты
-                const centerLat = (mapBounds.north + mapBounds.south) / 2;
-                const centerLon = (mapBounds.east + mapBounds.west) / 2;
+                const centerLat = (debouncedMapBounds.north + debouncedMapBounds.south) / 2;
+                const centerLon = (debouncedMapBounds.east + debouncedMapBounds.west) / 2;
                 params.append('lat', centerLat.toString());
                 params.append('lon', centerLon.toString());
                 params.append('radius_km', '50');
             }
             
             // Поиск
-            if (searchQuery) {
-                params.append('q', searchQuery);
+            if (debouncedSearchQuery) {
+                params.append('q', debouncedSearchQuery);
             }
             
             // Сортировка
@@ -91,16 +111,20 @@ function RouteComponent() {
             
             // Пагинация
             params.append('page', '1');
-            params.append('limit', '100'); // Больше для предзагрузки
+            params.append('limit', '100');
             
-            return axiosInstance.get(`/offers/search?${params.toString()}`);
+            return axiosInstance.get(`/offers/search?${params.toString()}`, {
+                skipErrorNotification: true // Пропускаем уведомления - они обрабатываются в компоненте
+            } as any);
         },
         {
-            enabled: !!mapBounds, // Загружаем только когда есть границы карты
-            staleTime: 30000, // 30 секунд кэш
+            enabled: !!debouncedMapBounds, // Загружаем только когда есть границы карты
+            staleTime: 60000, // 60 секунд кэш (увеличено для уменьшения запросов)
             retry: false, // Отключаем автоматические повторные попытки при ошибках
             retryOnMount: false, // Не повторяем при монтировании
             refetchOnWindowFocus: false, // Не обновляем при фокусе окна
+            refetchOnMount: false, // Не обновляем при монтировании
+            refetchOnReconnect: false, // Не обновляем при восстановлении соединения
         }
     );
     
@@ -234,64 +258,25 @@ function RouteComponent() {
 
     // Throttled bounds change для оптимизации запросов
     const handleBoundsChange = useCallback((bounds: any) => {
-        // Используем requestAnimationFrame для throttling
+        // Используем requestAnimationFrame для throttling и проверяем, что границы действительно изменились
         requestAnimationFrame(() => {
+            // Проверяем, что границы изменились хотя бы на 0.01 градуса
+            if (mapBounds) {
+                const latDiff = Math.abs((bounds.north + bounds.south) / 2 - (mapBounds.north + mapBounds.south) / 2);
+                const lonDiff = Math.abs((bounds.east + bounds.west) / 2 - (mapBounds.east + mapBounds.west) / 2);
+                if (latDiff < 0.01 && lonDiff < 0.01) {
+                    return; // Границы не изменились значительно, не обновляем
+                }
+            }
             setMapBounds(bounds);
         });
-    }, []);
+    }, [mapBounds]);
     
-    // Предзагрузка соседних областей для плавной прокрутки
-    // Отключаем предзагрузку если основной запрос падает с ошибкой
-    useEffect(() => {
-        // Не делаем предзагрузку если:
-        // 1. Нет границ карты или геолокации
-        // 2. Основной запрос падает с ошибкой (500, 503 и т.д.)
-        // 3. Запрос еще загружается (чтобы не создавать лишние запросы)
-        if (!mapBounds || !userLocation || isOffersError || isLoadingOffers) {
-            return;
-        }
-        
-        // Debounce для предзагрузки - делаем запросы только через 1 секунду после изменения границ
-        const timeoutId = setTimeout(() => {
-        // Предзагружаем данные для соседних областей (север, юг, восток, запад)
-        const preloadBounds = [
-            { north: mapBounds.north + 0.1, south: mapBounds.south + 0.1, east: mapBounds.east, west: mapBounds.west }, // Север
-            { north: mapBounds.north - 0.1, south: mapBounds.south - 0.1, east: mapBounds.east, west: mapBounds.west }, // Юг
-            { north: mapBounds.north, south: mapBounds.south, east: mapBounds.east + 0.1, west: mapBounds.west + 0.1 }, // Восток
-            { north: mapBounds.north, south: mapBounds.south, east: mapBounds.east - 0.1, west: mapBounds.west - 0.1 }, // Запад
-        ];
-        
-        // Предзагружаем в фоне (не блокируем UI)
-        preloadBounds.forEach((bounds, index) => {
-            setTimeout(() => {
-                const centerLat = (bounds.north + bounds.south) / 2;
-                const centerLon = (bounds.east + bounds.west) / 2;
-                const params = new URLSearchParams();
-                params.append('lat', centerLat.toString());
-                params.append('lon', centerLon.toString());
-                params.append('radius_km', '30');
-                params.append('sort', sortBy);
-                params.append('page', '1');
-                params.append('limit', '50');
-                
-                // Предзагрузка в фоне (не показываем в UI)
-                    // Только если основной запрос успешен
-                    // Добавляем специальный заголовок чтобы axios interceptor не показывал уведомления
-                    if (!isOffersError) {
-                        axiosInstance.get(`/offers/search?${params.toString()}`, {
-                            skipErrorNotification: true // Флаг для пропуска уведомлений
-                        }).catch(() => {
-                    // Игнорируем ошибки предзагрузки
-                });
-                    }
-                }, index * 500); // Увеличиваем задержку между запросами
-        });
-        }, 1000); // Дебаунс 1 секунда
-        
-        return () => {
-            clearTimeout(timeoutId);
-        };
-    }, [mapBounds, userLocation, sortBy, isOffersError, isLoadingOffers]);
+    // Предзагрузка отключена из-за проблем с сервером
+    // Включать только после исправления проблем на бэкенде
+    // useEffect(() => {
+    //     // Предзагрузка отключена
+    // }, [mapBounds, userLocation, sortBy, isOffersError, isLoadingOffers]);
 
 
     const handleOpenOrder = (offer: Offer) => {

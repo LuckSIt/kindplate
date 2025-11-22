@@ -152,10 +152,18 @@ function RootRoute() {
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
-    // Скрываем навигацию и поиск на страницах входа, регистрации и главной странице (лендинг)
+    // Скрываем навигацию и поиск на страницах входа, регистрации, главной странице (лендинг),
+    // списке заведений, корзине, оплате, коде выдачи, странице заведения
     const hideNav = location.pathname.startsWith('/auth/login') || 
                     location.pathname.startsWith('/auth/register') || 
-                    location.pathname === '/';
+                    location.pathname === '/' ||
+                    location.pathname === '/list' ||
+                    location.pathname.startsWith('/list/') ||
+                    location.pathname === '/cart' ||
+                    location.pathname.startsWith('/cart/') ||
+                    location.pathname.startsWith('/payment/') ||
+                    location.pathname.startsWith('/pickup-code/') ||
+                    location.pathname.startsWith('/v/');
     
     // Для главной страницы показываем лендинг без MobileOnly обертки
     const isLandingPage = location.pathname === '/';
@@ -168,14 +176,28 @@ function RootRoute() {
                     {/* Для лендинга не используем MobileOnly - показываем везде */}
                     {isLandingPage ? (
                         <>
-                            {(() => { ensureNoPushWithoutVapid(); unregisterServiceWorker(); return null; })()}
+                            {(() => { 
+                                ensureNoPushWithoutVapid();
+                                // Отключаем Service Worker только в dev режиме для избежания ошибок
+                                if (import.meta.env.DEV) {
+                                    unregisterServiceWorker().catch(() => {});
+                                }
+                                return null; 
+                            })()}
                             <Outlet />
                         </>
                     ) : (
                         <MobileOnly>
                             <div className="min-h-screen w-full bg-gray-900">
                             {/* Ensure no push subscription without VAPID on mount */}
-                            {(() => { ensureNoPushWithoutVapid(); unregisterServiceWorker(); return null; })()}
+                            {(() => { 
+                                ensureNoPushWithoutVapid();
+                                // Отключаем Service Worker только в dev режиме для избежания ошибок
+                                if (import.meta.env.DEV) {
+                                    unregisterServiceWorker().catch(() => {});
+                                }
+                                return null; 
+                            })()}
                             {!hideNav && (
                                 <header className={`sticky top-0 z-50 bg-gray-900 pt-safe ${hasShadow ? 'shadow-md' : 'shadow-none'} transition-shadow`}>
                                     <div className="px-4">

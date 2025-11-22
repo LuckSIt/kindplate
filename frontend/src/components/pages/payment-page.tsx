@@ -1,70 +1,85 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { ArrowLeft, CreditCard, Clock, AlertCircle, CheckCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { usePayments } from '@/lib/hooks/use-orders';
+import { usePayments, useOrders } from '@/lib/hooks/use-orders';
 import { notify } from '@/lib/notifications';
+import { useQuery } from '@tanstack/react-query';
+import { axiosInstance } from '@/lib/axiosInstance';
+import arrowBackIcon from "@/figma/arrow-back.svg";
 
 interface PaymentPageProps {
   orderId: string;
 }
 
+interface OrderDetails {
+  id: number;
+  business_name: string;
+  business_address: string;
+  pickup_time_start: string;
+  pickup_time_end: string;
+  subtotal: number;
+  service_fee: number;
+  total: number;
+  status: string;
+  created_at: string;
+  items?: Array<{
+    title: string;
+    quantity: number;
+    price: number;
+  }>;
+}
+
 export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
   const navigate = useNavigate();
-  const [paymentStatus, setPaymentStatus] = useState<'loading' | 'pending' | 'succeeded' | 'failed' | 'cancelled'>('loading');
-  const [paymentUrl, setPaymentUrl] = useState<string>('');
+  const [paymentStatus, setPaymentStatus] = useState<'loading' | 'pending' | 'processing' | 'failed'>('loading');
   const [error, setError] = useState<string>('');
   const [isInitializing, setIsInitializing] = useState(false);
-
+  
   const { createPayment } = usePayments();
+  const { config } = useOrders();
 
-  useEffect(() => {
-    let isMounted = true;
+  // Fetch order details
+  const { data: orderData, isLoading: orderLoading } = useQuery({
+    queryKey: ['order', orderId],
+    queryFn: () => axiosInstance.get(`/orders/${orderId}`),
+    enabled: !!orderId,
+    retry: false,
+    select: (res) => res.data.data as OrderDetails,
+  });
 
-    const initializePayment = async () => {
-      if (isInitializing) return; // Предотвращаем повторные запросы
-      
-      setIsInitializing(true);
-      
-      try {
-        // Создаем платеж
-        const payment = await createPayment({
-          order_id: parseInt(orderId),
-          payment_method: 'yookassa', // По умолчанию ЮKassa
-          return_url: `${window.location.origin}/payment/${orderId}/success`,
-        });
+  const orderDetails = orderData;
 
-        if (!isMounted) return;
 
-        if (payment.payment_url) {
-          setPaymentUrl(payment.payment_url);
-          setPaymentStatus('pending');
-          
-          // Редиректим на платежный провайдер
+  const handleCreatePayment = async () => {
+    if (isInitializing) return;
+    
+    setIsInitializing(true);
+    setPaymentStatus('processing');
+
+    try {
+      const payment = await createPayment({
+        order_id: parseInt(orderId),
+        payment_method: 'yookassa',
+        return_url: `${window.location.origin}/payment/${orderId}/success`,
+      });
+
+      if (payment.payment_url) {
+        setPaymentStatus('pending');
+        // Автоматически перенаправляем на страницу оплаты
+        setTimeout(() => {
           window.location.href = payment.payment_url;
-        } else {
-          setError('Не удалось получить ссылку для оплаты');
-          setPaymentStatus('failed');
-        }
-      } catch (err: any) {
-        if (!isMounted) return;
-        
-        console.error('Ошибка создания платежа:', err);
-        setError(err.message || 'Ошибка создания платежа');
+        }, 1000);
+      } else {
+        setError('Не удалось получить ссылку для оплаты');
         setPaymentStatus('failed');
-      } finally {
-        if (isMounted) {
-          setIsInitializing(false);
-        }
       }
-    };
-
-    initializePayment();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [orderId, isInitializing]); // Добавляем isInitializing в зависимости
+    } catch (err: any) {
+      console.error('Ошибка создания платежа:', err);
+      setError(err.message || 'Ошибка создания платежа');
+      setPaymentStatus('failed');
+    } finally {
+      setIsInitializing(false);
+    }
+  };
 
   const handleCancel = () => {
     navigate({ to: '/cart' });
@@ -73,20 +88,19 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
   const handleRetry = () => {
     setError('');
     setPaymentStatus('loading');
-    window.location.reload();
+    handleCreatePayment();
   };
 
-  if (paymentStatus === 'loading') {
+  if (orderLoading || !orderDetails) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            Подготовка к оплате...
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            Создаем платеж и перенаправляем на страницу оплаты
-          </p>
+      <div className="payment-page">
+        <div className="payment-page__status-bar">
+          <div className="payment-page__status-bar-time">9:41</div>
+          <div className="payment-page__status-bar-levels"></div>
+        </div>
+        <div className="payment-page__loading">
+          <div className="payment-page__spinner"></div>
+          <p>Загрузка заказа...</p>
         </div>
       </div>
     );
@@ -94,54 +108,160 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
 
   if (paymentStatus === 'failed') {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
-          <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Ошибка оплаты
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {error || 'Произошла ошибка при создании платежа'}
-          </p>
-          <div className="space-y-3">
-            <Button onClick={handleRetry} className="w-full">
+      <div className="payment-page">
+        <div className="payment-page__status-bar">
+          <div className="payment-page__status-bar-time">9:41</div>
+          <div className="payment-page__status-bar-levels"></div>
+        </div>
+        
+        <div className="payment-page__header">
+          <div className="payment-page__header-background"></div>
+          <button 
+            className="payment-page__back-button"
+            onClick={() => navigate({ to: "/cart" })}
+            aria-label="Назад"
+          >
+            <img 
+              src={arrowBackIcon} 
+              alt="Назад" 
+              className="payment-page__back-button-icon"
+            />
+          </button>
+          <div className="payment-page__header-info">
+            <h1 className="payment-page__header-name">Оплата заказа</h1>
+          </div>
+        </div>
+
+        <div className="payment-page__error">
+          <div className="payment-page__error-icon">⚠️</div>
+          <h2>Ошибка оплаты</h2>
+          <p>{error || 'Произошла ошибка при создании платежа'}</p>
+          <div className="payment-page__error-actions">
+            <button 
+              className="payment-page__retry-button"
+              onClick={handleRetry}
+            >
               Попробовать снова
-            </Button>
-            <Button variant="outline" onClick={handleCancel} className="w-full">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+            </button>
+            <button 
+              className="payment-page__cancel-button"
+              onClick={handleCancel}
+            >
               Вернуться в корзину
-            </Button>
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  if (paymentStatus === 'pending') {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
-          <CreditCard className="h-16 w-16 text-blue-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Перенаправление на оплату
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Вы будете перенаправлены на страницу оплаты...
-          </p>
-          <div className="space-y-3">
-            <Button onClick={() => window.location.href = paymentUrl} className="w-full">
-              <CreditCard className="mr-2 h-4 w-4" />
-              Перейти к оплате
-            </Button>
-            <Button variant="outline" onClick={handleCancel} className="w-full">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Отменить
-            </Button>
+  return (
+    <div className="payment-page">
+      {/* Status Bar */}
+      <div className="payment-page__status-bar">
+        <div className="payment-page__status-bar-time">9:41</div>
+        <div className="payment-page__status-bar-levels"></div>
+      </div>
+
+      {/* Header */}
+      <div className="payment-page__header">
+        <div className="payment-page__header-background"></div>
+        <button 
+          className="payment-page__back-button"
+          onClick={() => navigate({ to: "/cart" })}
+          aria-label="Назад"
+        >
+          <img 
+            src={arrowBackIcon} 
+            alt="Назад" 
+            className="payment-page__back-button-icon"
+          />
+        </button>
+        <div className="payment-page__header-info">
+          <h1 className="payment-page__header-name">Оплата заказа</h1>
+        </div>
+      </div>
+
+      {/* Order Info Card */}
+      <div className="payment-page__order-card">
+        <div className="payment-page__order-info">
+          <h2 className="payment-page__order-business">{orderDetails.business_name}</h2>
+          <p className="payment-page__order-address">{orderDetails.business_address}</p>
+        </div>
+        <div className="payment-page__order-time">
+          <div className="payment-page__order-time-badge">
+            забрать до {orderDetails.pickup_time_end || '19:00'}
           </div>
         </div>
       </div>
-    );
-  }
 
-  return null;
+      {/* Order Items */}
+      {orderDetails.items && orderDetails.items.length > 0 && (
+        <div className="payment-page__items">
+          {orderDetails.items.map((item, index) => (
+            <div key={index} className="payment-page__item">
+              <div className="payment-page__item-info">
+                <p className="payment-page__item-name">{item.title}</p>
+                <p className="payment-page__item-quantity">×{item.quantity}</p>
+              </div>
+              <p className="payment-page__item-price">{item.price * item.quantity}₽</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Summary Card */}
+      <div className="payment-page__summary">
+        <div className="payment-page__summary-row">
+          <span className="payment-page__summary-label">Подытог</span>
+          <span className="payment-page__summary-value">{orderDetails.subtotal}₽</span>
+        </div>
+        {orderDetails.service_fee > 0 && (
+          <div className="payment-page__summary-row">
+            <span className="payment-page__summary-label">Сервисный сбор</span>
+            <span className="payment-page__summary-value">{orderDetails.service_fee}₽</span>
+          </div>
+        )}
+        <div className="payment-page__summary-divider"></div>
+        <div className="payment-page__summary-row payment-page__summary-row--total">
+          <span className="payment-page__summary-label">Итого</span>
+          <span className="payment-page__summary-value">{orderDetails.total}₽</span>
+        </div>
+      </div>
+
+      {/* Payment Status */}
+      {paymentStatus === 'processing' && (
+        <div className="payment-page__processing">
+          <div className="payment-page__spinner"></div>
+          <p>Подготовка к оплате...</p>
+        </div>
+      )}
+
+      {paymentStatus === 'pending' && (
+        <div className="payment-page__pending">
+          <p>Перенаправление на страницу оплаты...</p>
+        </div>
+      )}
+
+      {/* Payment Button */}
+      {(paymentStatus === 'loading' || paymentStatus === 'failed') && (
+        <div className="payment-page__actions">
+          <button 
+            className="payment-page__pay-button"
+            onClick={handleCreatePayment}
+            disabled={isInitializing || paymentStatus === 'processing'}
+          >
+            {isInitializing || paymentStatus === 'processing' ? "Подготовка..." : "Оплатить"}
+          </button>
+          <button 
+            className="payment-page__cancel-button"
+            onClick={handleCancel}
+            disabled={isInitializing}
+          >
+            Отменить
+          </button>
+        </div>
+      )}
+    </div>
+  );
 };
