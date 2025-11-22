@@ -5,6 +5,7 @@
 :root {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-montserrat: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   /* Radii tokens (4px grid) */
   --r-sm: 8px;
   --r-md: 12px;
@@ -739,5 +740,2399 @@ button, .btn-primary, .btn-secondary {
   
   .seller-card {
     border-radius: 1rem 1rem 0 0;
+  }
+}
+
+/* Login Page Styles (BEM naming) */
+
+.login-page {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #10172A;
+  position: relative;
+  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.login-page__status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 21px 16px 19px;
+  width: 100%;
+  height: 60px;
+}
+
+.login-page__status-bar-time {
+  font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 590;
+  font-size: 17px;
+  line-height: 22px;
+  text-align: center;
+  color: #FFFFFF;
+}
+
+.login-page__status-bar-levels {
+  width: 27.33px;
+  height: 13px;
+  background: transparent;
+}
+
+.login-page__container {
+  position: relative;
+  width: 100%;
+  max-width: 402px;
+  margin: 0 auto;
+  min-height: calc(100vh - 60px);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-page__back-button {
+  position: absolute;
+  left: 54px;
+  top: 51px;
+  width: 39px;
+  height: 39px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-page__back-button-icon {
+  width: 39px;
+  height: 39px;
+  display: block;
+}
+
+.login-page__card {
+  width: 320px;
+  min-height: 696px;
+  background-color: #2B344D;
+  border-radius: 15px;
+  margin-top: 97px;
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-page__header {
+  text-align: center;
+  margin-top: 93px;
+  margin-bottom: 60px;
+  padding: 0 20px;
+}
+
+.login-page__title {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 18px;
+  color: #FFFFFF;
+  margin: 0 0 21px 0;
+  text-align: center;
+}
+
+.login-page__subtitle {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  line-height: 18px;
+  color: #D9D9D9;
+  margin: 0;
+  text-align: center;
+}
+
+.login-page__link {
+  color: #D9D9D9;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.login-page__link:hover {
+  color: #FFFFFF;
+}
+
+.login-page__form {
+  padding: 0 29px;
+  display: flex;
+  flex-direction: column;
+  gap: 39px;
+}
+
+.login-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-page__field-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 18px;
+  color: #FFFFFF;
+  text-align: center;
+  margin: 0;
+}
+
+.login-page__input-wrapper {
+  position: relative;
+  width: 100%;
+  height: 63px;
+  border: 3px solid #10172A;
+  border-radius: 15px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-page__input {
+  width: 233px;
+  height: 39px;
+  background-color: #7E879D;
+  border: none;
+  border-radius: 5px;
+  padding: 0 24px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  color: #FFFFFF;
+  outline: none;
+  transition: background-color 0.2s ease;
+}
+
+.login-page__input::placeholder {
+  color: #C1C1C1;
+}
+
+.login-page__input:focus {
+  background-color: #8A94AA;
+}
+
+.login-page__submit-button {
+  width: 211px;
+  height: 39px;
+  background-color: #35741F;
+  border: none;
+  border-radius: 10px;
+  margin: 0 auto;
+  margin-top: 9px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 19px;
+  line-height: 18px;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-page__submit-button:hover:not(:disabled) {
+  background-color: #3d8822;
+  transform: translateY(-1px);
+}
+
+.login-page__submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-page__submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-page__submit-button-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.login-page__spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #FFFFFF;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.login-page__footer-text {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 12px;
+  color: #C1C1C1;
+  text-align: center;
+  margin: 142px 15px 35px 15px;
+  padding: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 420px) {
+  .login-page__container {
+    max-width: 100%;
+  }
+  
+  .login-page__card {
+    width: calc(100% - 82px);
+    margin-left: 41px;
+    margin-right: 41px;
+  }
+  
+  .login-page__back-button {
+    left: 15px;
+    top: 51px;
+  }
+}
+
+@media (min-width: 421px) {
+  .login-page__container {
+    max-width: 402px;
+  }
+}
+
+/* Register Page Styles (BEM naming) */
+.register-page {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #10172A;
+  position: relative;
+  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.register-page__status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 21px 16px 19px;
+  width: 100%;
+  height: 60px;
+}
+
+.register-page__status-bar-time {
+  font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 590;
+  font-size: 17px;
+  line-height: 22px;
+  text-align: center;
+  color: #FFFFFF;
+}
+
+.register-page__status-bar-levels {
+  width: 27.33px;
+  height: 13px;
+  background: transparent;
+}
+
+.register-page__container {
+  position: relative;
+  width: 100%;
+  max-width: 402px;
+  margin: 0 auto;
+  min-height: calc(100vh - 60px);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.register-page__back-button {
+  position: absolute;
+  left: 54px;
+  top: 51px;
+  width: 39px;
+  height: 39px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-page__back-button-icon {
+  width: 39px;
+  height: 39px;
+  display: block;
+}
+
+.register-page__card {
+  width: 320px;
+  min-height: 696px;
+  background-color: #2B344D;
+  border-radius: 15px;
+  margin-top: 97px;
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.register-page__header {
+  text-align: center;
+  margin-top: 77px;
+  margin-bottom: 45px;
+  padding: 0 20px;
+}
+
+.register-page__title {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 18px;
+  color: #FFFFFF;
+  margin: 0 0 21px 0;
+  text-align: center;
+}
+
+.register-page__subtitle {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  line-height: 18px;
+  color: #D9D9D9;
+  margin: 0;
+  text-align: center;
+}
+
+.register-page__link {
+  color: #D9D9D9;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.register-page__link:hover {
+  color: #FFFFFF;
+}
+
+.register-page__form {
+  padding: 0 29px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.register-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.register-page__field-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 18px;
+  color: #FFFFFF;
+  text-align: center;
+  margin: 0;
+}
+
+.register-page__input-wrapper {
+  position: relative;
+  width: 100%;
+  height: 63px;
+  border: 3px solid #10172A;
+  border-radius: 15px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-page__input {
+  width: 233px;
+  height: 39px;
+  background-color: #7E879D;
+  border: none;
+  border-radius: 5px;
+  padding: 0 24px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  color: #FFFFFF;
+  outline: none;
+  transition: background-color 0.2s ease;
+}
+
+.register-page__input::placeholder {
+  color: #C1C1C1;
+}
+
+.register-page__input:focus {
+  background-color: #8A94AA;
+}
+
+.register-page__submit-button {
+  width: 211px;
+  height: 39px;
+  background-color: #35741F;
+  border: none;
+  border-radius: 10px;
+  margin: 0 auto;
+  margin-top: 51px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 19px;
+  line-height: 18px;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.register-page__submit-button:hover:not(:disabled) {
+  background-color: #3d8822;
+  transform: translateY(-1px);
+}
+
+.register-page__submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.register-page__submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.register-page__submit-button-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.register-page__spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #FFFFFF;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.register-page__footer-text {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 12px;
+  color: #C1C1C1;
+  text-align: center;
+  margin: 142px 15px 35px 15px;
+  padding: 0;
+}
+
+/* Responsive adjustments for register page */
+@media (max-width: 420px) {
+  .register-page__container {
+    max-width: 100%;
+  }
+  
+  .register-page__card {
+    width: calc(100% - 82px);
+    margin-left: 41px;
+    margin-right: 41px;
+  }
+  
+  .register-page__back-button {
+    left: 15px;
+    top: 51px;
+  }
+}
+
+@media (min-width: 421px) {
+  .register-page__container {
+    max-width: 402px;
+  }
+}
+
+/* Businesses List Page Styles (BEM naming) */
+.businesses-list-page {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #10172A;
+  position: relative;
+  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  padding-bottom: 73px;
+}
+
+.businesses-list-page__status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 21px 16px 19px;
+  width: 100%;
+  height: 60px;
+}
+
+.businesses-list-page__status-bar-time {
+  font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 590;
+  font-size: 17px;
+  line-height: 22px;
+  text-align: center;
+  color: #FFFFFF;
+}
+
+.businesses-list-page__status-bar-levels {
+  width: 27.33px;
+  height: 13px;
+  background: transparent;
+}
+
+.businesses-list-page__header {
+  width: 100%;
+  height: 89px;
+  background-color: #35741F;
+  padding: 27px 22px 0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.businesses-list-page__search {
+  flex: 1;
+  height: 59px;
+  background-color: #D9D9D9;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 23px;
+  position: relative;
+}
+
+.businesses-list-page__search-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.businesses-list-page__search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  color: #757575;
+  padding: 0;
+}
+
+.businesses-list-page__search-input::placeholder {
+  color: #757575;
+}
+
+.businesses-list-page__cart-button {
+  width: 59px;
+  height: 59px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.businesses-list-page__statistics {
+  display: flex;
+  gap: 14px;
+  padding: 0 22px;
+  margin-top: 138px;
+  margin-bottom: 19px;
+}
+
+.businesses-list-page__stat-card {
+  flex: 1;
+  height: 79px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid;
+  position: relative;
+}
+
+.businesses-list-page__stat-card--saved {
+  background-color: rgba(53, 116, 31, 0.6);
+  border-color: #35741F;
+}
+
+.businesses-list-page__stat-card--money {
+  background-color: rgba(219, 126, 47, 0.6);
+  border-color: #DB7E2F;
+}
+
+.businesses-list-page__stat-card--co2 {
+  background-color: rgba(245, 251, 162, 0.6);
+  border-color: #F5FBA2;
+}
+
+.businesses-list-page__stat-value {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 23px;
+  line-height: 22px;
+  color: #FFFFFF;
+  text-align: center;
+  margin-bottom: 3px;
+}
+
+.businesses-list-page__stat-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 11px;
+  text-align: center;
+}
+
+.businesses-list-page__stat-card--saved .businesses-list-page__stat-label {
+  color: #C8EBBB;
+}
+
+.businesses-list-page__stat-card--money .businesses-list-page__stat-label {
+  color: #F1D8C3;
+}
+
+.businesses-list-page__stat-card--co2 .businesses-list-page__stat-label {
+  color: #FDFFE2;
+}
+
+.businesses-list-page__available-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 22px;
+  margin-bottom: 17px;
+}
+
+.businesses-list-page__available-title {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 22px;
+  color: #FFFFFF;
+}
+
+.businesses-list-page__available-count {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  background: linear-gradient(90deg, rgba(219, 126, 47, 1) 0%, rgba(245, 251, 162, 1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.businesses-list-page__content {
+  padding: 0 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding-bottom: 20px;
+}
+
+.businesses-list-page__loading,
+.businesses-list-page__empty {
+  text-align: center;
+  color: #FFFFFF;
+  padding: 40px 20px;
+  font-family: 'Montserrat Alternates', sans-serif;
+}
+
+.businesses-list-page__business-card {
+  width: 100%;
+  background-color: #2B344D;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.businesses-list-page__business-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.businesses-list-page__business-image {
+  width: 100%;
+  height: 190px;
+  overflow: hidden;
+  border-radius: 20px 20px 0 0;
+}
+
+.businesses-list-page__business-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.businesses-list-page__favorite-button {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 33px;
+  height: 33px;
+  background: rgba(16, 23, 42, 0.74);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+}
+
+.businesses-list-page__business-info {
+  padding: 9px 15px 13px;
+}
+
+.businesses-list-page__business-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 3px;
+}
+
+.businesses-list-page__business-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 22px;
+  color: #FFFFFF;
+  margin: 0 0 20px 0;
+}
+
+.businesses-list-page__business-type {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 22px;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.businesses-list-page__rating {
+  width: 47px;
+  height: 23px;
+  background-color: rgba(219, 126, 47, 0.4);
+  border: 1px solid #DB7E2F;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px;
+}
+
+.businesses-list-page__rating svg {
+  width: 15px;
+  height: 15px;
+}
+
+.businesses-list-page__rating span {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 22px;
+  color: #DB7E2F;
+}
+
+.businesses-list-page__business-meta {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 34px;
+}
+
+.businesses-list-page__business-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 22px;
+  color: #FFFFFF;
+}
+
+.businesses-list-page__business-meta-item svg {
+  width: 24px;
+  height: 24px;
+}
+
+.businesses-list-page__business-offers {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 13px;
+}
+
+.businesses-list-page__offer-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.businesses-list-page__offer-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  color: #FFFFFF;
+}
+
+.businesses-list-page__offer-prices {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0;
+}
+
+.businesses-list-page__offer-price-old {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 22px;
+  color: #767676;
+  text-decoration: line-through;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+.businesses-list-page__offer-price-old::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+  background-color: #757575;
+}
+
+.businesses-list-page__offer-price {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  color: #FFFFFF;
+}
+
+.businesses-list-page__offer-more {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 22px;
+  color: #E3E3E3;
+  margin-top: 7px;
+}
+
+.businesses-list-page__business-divider {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.4);
+  margin-top: 12px;
+}
+
+.businesses-list-page__bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 73px;
+  background-color: #D9D9D9;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding-top: 18px;
+  z-index: 50;
+}
+
+.businesses-list-page__nav-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.businesses-list-page__nav-button:hover {
+  opacity: 0.8;
+}
+
+.businesses-list-page__nav-button--active .businesses-list-page__nav-label {
+  color: #35741F;
+}
+
+.businesses-list-page__nav-button--active svg {
+  stroke: #35741F;
+}
+
+.businesses-list-page__nav-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 22px;
+  color: #767676;
+  text-align: center;
+}
+
+.businesses-list-page__nav-button svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* Responsive adjustments for businesses list page */
+@media (max-width: 420px) {
+  .businesses-list-page {
+    max-width: 100%;
+  }
+  
+  .businesses-list-page__statistics {
+    gap: 10px;
+    padding: 0 16px;
+  }
+  
+  .businesses-list-page__stat-card {
+    height: 70px;
+  }
+  
+  .businesses-list-page__stat-value {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 421px) {
+  .businesses-list-page {
+    max-width: 402px;
+    margin: 0 auto;
+  }
+}
+
+/* Pickup Code Page Styles (BEM naming) */
+.pickup-code-page {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #10172A;
+  position: relative;
+  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  padding-bottom: 73px;
+}
+
+.pickup-code-page__status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 21px 16px 19px;
+  width: 100%;
+  height: 60px;
+}
+
+.pickup-code-page__status-bar-time {
+  font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 590;
+  font-size: 17px;
+  line-height: 22px;
+  text-align: center;
+  color: #FFFFFF;
+}
+
+.pickup-code-page__status-bar-levels {
+  width: 27.33px;
+  height: 13px;
+  background: transparent;
+}
+
+.pickup-code-page__header {
+  width: 100%;
+  height: 89px;
+  background-color: #35741F;
+  padding: 27px 22px 0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.pickup-code-page__search {
+  flex: 1;
+  height: 59px;
+  background-color: #D9D9D9;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 23px;
+  position: relative;
+}
+
+.pickup-code-page__search-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.pickup-code-page__search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  color: #757575;
+  padding: 0;
+}
+
+.pickup-code-page__cart-button {
+  width: 59px;
+  height: 59px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.pickup-code-page__statistics {
+  display: flex;
+  gap: 14px;
+  padding: 0 22px;
+  margin-top: 138px;
+  margin-bottom: 19px;
+}
+
+.pickup-code-page__stat-card {
+  flex: 1;
+  height: 79px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid;
+  position: relative;
+}
+
+.pickup-code-page__stat-card--saved {
+  background-color: rgba(53, 116, 31, 0.6);
+  border-color: #35741F;
+}
+
+.pickup-code-page__stat-card--money {
+  background-color: rgba(219, 126, 47, 0.6);
+  border-color: #DB7E2F;
+}
+
+.pickup-code-page__stat-card--co2 {
+  background-color: rgba(245, 251, 162, 0.6);
+  border-color: #F5FBA2;
+}
+
+.pickup-code-page__stat-value {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 23px;
+  line-height: 22px;
+  color: #FFFFFF;
+  text-align: center;
+  margin-bottom: 3px;
+}
+
+.pickup-code-page__stat-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 11px;
+  text-align: center;
+}
+
+.pickup-code-page__stat-card--saved .pickup-code-page__stat-label {
+  color: #C8EBBB;
+}
+
+.pickup-code-page__stat-card--money .pickup-code-page__stat-label {
+  color: #F1D8C3;
+}
+
+.pickup-code-page__stat-card--co2 .pickup-code-page__stat-label {
+  color: #FDFFE2;
+}
+
+.pickup-code-page__available-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 22px;
+  margin-bottom: 17px;
+}
+
+.pickup-code-page__available-title {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 22px;
+  color: #FFFFFF;
+}
+
+.pickup-code-page__available-count {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  background: linear-gradient(90deg, rgba(219, 126, 47, 1) 0%, rgba(245, 251, 162, 1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pickup-code-page__content {
+  padding: 0 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding-bottom: 20px;
+}
+
+.pickup-code-page__business-card {
+  width: 100%;
+  background-color: #2B344D;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.pickup-code-page__business-image {
+  width: 100%;
+  height: 190px;
+  overflow: hidden;
+  border-radius: 20px 20px 0 0;
+}
+
+.pickup-code-page__business-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Pickup Code Card */
+.pickup-code-page__code-card {
+  margin: 0 22px 20px;
+  background-color: #2B344D;
+  border: 1px solid #35741F;
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+}
+
+.pickup-code-page__code-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background-color: #D9D9D9;
+  border-radius: 10px;
+}
+
+.pickup-code-page__code-number {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 36px;
+  line-height: 44px;
+  color: #FFFFFF;
+  letter-spacing: 4px;
+}
+
+.pickup-code-page__code-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 22px;
+  color: #FFFFFF;
+}
+
+.pickup-code-page__code-description {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+  color: #FFFFFF;
+  text-align: center;
+  margin: 0 0 16px 0;
+}
+
+.pickup-code-page__code-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.pickup-code-page__code-info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 22px;
+  color: #FFFFFF;
+}
+
+.pickup-code-page__code-info-item svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.pickup-code-page__code-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pickup-code-page__code-button {
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 15px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pickup-code-page__code-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.pickup-code-page__code-button:active {
+  transform: translateY(0);
+}
+
+.pickup-code-page__code-button--share {
+  background-color: #D9D9D9;
+  color: #10172A;
+}
+
+.pickup-code-page__code-button--close {
+  background-color: transparent;
+  border: 1px solid #D9D9D9;
+  color: #D9D9D9;
+}
+
+.pickup-code-page__bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 73px;
+  background-color: #D9D9D9;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding-top: 18px;
+  z-index: 50;
+}
+
+.pickup-code-page__nav-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.pickup-code-page__nav-button:hover {
+  opacity: 0.8;
+}
+
+.pickup-code-page__nav-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 22px;
+  color: #767676;
+  text-align: center;
+}
+
+.pickup-code-page__nav-button svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* Responsive adjustments for pickup code page */
+@media (max-width: 420px) {
+  .pickup-code-page {
+    max-width: 100%;
+  }
+  
+  .pickup-code-page__statistics {
+    gap: 10px;
+    padding: 0 16px;
+  }
+  
+  .pickup-code-page__stat-card {
+    height: 70px;
+  }
+  
+  .pickup-code-page__stat-value {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 421px) {
+  .pickup-code-page {
+    max-width: 402px;
+    margin: 0 auto;
+  }
+}
+
+/* Vendor Page Styles (BEM naming) */
+.vendor-page {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #10172A;
+  position: relative;
+  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  padding-bottom: 73px;
+}
+
+.vendor-page__status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 21px 16px 19px;
+  width: 100%;
+  height: 60px;
+}
+
+.vendor-page__status-bar-time {
+  font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 590;
+  font-size: 17px;
+  line-height: 22px;
+  text-align: center;
+  color: #FFFFFF;
+}
+
+.vendor-page__status-bar-levels {
+  width: 27.33px;
+  height: 13px;
+  background: transparent;
+}
+
+.vendor-page__header {
+  width: 100%;
+  height: 89px;
+  background-color: #35741F;
+  padding: 27px 14px 0;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.vendor-page__header-background {
+  position: absolute;
+  top: 62px;
+  left: 14px;
+  right: 14px;
+  height: 59px;
+  background-color: #D9D9D9;
+  border-radius: 15px;
+  z-index: 0;
+}
+
+.vendor-page__back-button {
+  width: 59px;
+  height: 59px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vendor-page__back-button-icon {
+  width: 39px;
+  height: 39px;
+  display: block;
+}
+
+.vendor-page__header-info {
+  flex: 1;
+  margin-left: 9px;
+  margin-right: 9px;
+  padding: 13px 12px;
+  z-index: 1;
+}
+
+.vendor-page__header-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 22px;
+  color: #10172A;
+  margin: 0 0 8px 0;
+}
+
+.vendor-page__header-address {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 22px;
+  color: #10172A;
+  margin: 0;
+}
+
+.vendor-page__favorite-button {
+  width: 59px;
+  height: 59px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vendor-page__info-buttons {
+  display: flex;
+  gap: 12px;
+  padding: 0 52px;
+  margin-top: 133px;
+  margin-bottom: 19px;
+  justify-content: space-between;
+}
+
+.vendor-page__info-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s ease;
+}
+
+.vendor-page__info-button:hover {
+  opacity: 0.8;
+}
+
+.vendor-page__info-button-icon {
+  width: 42px;
+  height: 42px;
+  background-color: rgba(217, 217, 217, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vendor-page__info-button-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 22px;
+  color: #C1C1C1;
+  text-align: center;
+  margin-top: 2px;
+}
+
+.vendor-page__available-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px;
+  margin-bottom: 11px;
+}
+
+.vendor-page__available-title {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 22px;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.vendor-page__available-count {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  background: linear-gradient(90deg, rgba(219, 126, 47, 1) 0%, rgba(245, 251, 162, 1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.vendor-page__content {
+  padding: 0 14px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.vendor-page__empty,
+.vendor-page__loading,
+.vendor-page__error {
+  text-align: center;
+  color: #FFFFFF;
+  padding: 40px 20px;
+  font-family: 'Montserrat Alternates', sans-serif;
+}
+
+.vendor-page__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.vendor-page__spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #FFFFFF;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.vendor-page__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.vendor-page__error-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.vendor-page__error h2 {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  color: #FFFFFF;
+  margin: 0 0 8px 0;
+}
+
+.vendor-page__error p {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 14px;
+  color: #C1C1C1;
+  margin: 0;
+}
+
+.vendor-page__offer-card {
+  width: 100%;
+  background-color: #2B344D;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.vendor-page__offer-image {
+  width: 100%;
+  height: 190px;
+  overflow: hidden;
+  border-radius: 20px 20px 0 0;
+}
+
+.vendor-page__offer-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vendor-page__offer-favorite {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 33px;
+  height: 33px;
+  background: rgba(16, 23, 42, 0.74);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+}
+
+.vendor-page__offer-info {
+  padding: 9px 16px 13px;
+}
+
+.vendor-page__offer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 11px;
+}
+
+.vendor-page__offer-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  color: #FFFFFF;
+  margin: 0;
+  flex: 1;
+}
+
+.vendor-page__offer-prices {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0;
+  margin-left: 16px;
+}
+
+.vendor-page__offer-price-old {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 22px;
+  color: #767676;
+  text-decoration: line-through;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+.vendor-page__offer-price-old::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+  background-color: #757575;
+}
+
+.vendor-page__offer-price {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  color: #FFFFFF;
+}
+
+.vendor-page__offer-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.vendor-page__quantity-selector {
+  width: 57px;
+  height: 23px;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+.vendor-page__quantity-button {
+  width: 20px;
+  height: 23px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.vendor-page__quantity-button--minus {
+  position: relative;
+}
+
+.vendor-page__quantity-button--minus::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 7px;
+  height: 1px;
+  background-color: #10172A;
+}
+
+.vendor-page__quantity-button--plus {
+  position: relative;
+}
+
+.vendor-page__quantity-button--plus::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 1px;
+  height: 7px;
+  background-color: #10172A;
+}
+
+.vendor-page__quantity-button--plus::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 7px;
+  height: 1px;
+  background-color: #10172A;
+}
+
+.vendor-page__quantity-value {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 9px;
+  color: #10172A;
+  text-align: center;
+  flex: 1;
+  padding: 7px 0;
+  min-width: 17px;
+}
+
+.vendor-page__add-button {
+  flex: 1;
+  height: 23px;
+  background-color: #10172A;
+  border: none;
+  border-radius: 5px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 9px;
+  line-height: 8px;
+  color: #E3E3E3;
+  cursor: pointer;
+  padding: 0 6px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  transition: opacity 0.2s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.vendor-page__add-button:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.vendor-page__add-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.vendor-page__add-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.vendor-page__add-button--full {
+  width: 100%;
+}
+
+.vendor-page__bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 73px;
+  background-color: #D9D9D9;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding-top: 18px;
+  z-index: 50;
+}
+
+.vendor-page__nav-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.vendor-page__nav-button:hover {
+  opacity: 0.8;
+}
+
+.vendor-page__nav-button--active .vendor-page__nav-label {
+  color: #35741F;
+}
+
+.vendor-page__nav-button--active svg {
+  stroke: #35741F;
+}
+
+.vendor-page__nav-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 22px;
+  color: #767676;
+  text-align: center;
+}
+
+.vendor-page__nav-button svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* Responsive adjustments for vendor page */
+@media (max-width: 420px) {
+  .vendor-page {
+    max-width: 100%;
+  }
+  
+  .vendor-page__info-buttons {
+    gap: 8px;
+    padding: 0 32px;
+  }
+  
+  .vendor-page__info-button-icon {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@media (min-width: 421px) {
+  .vendor-page {
+    max-width: 402px;
+    margin: 0 auto;
+  }
+}
+
+/* Cart Page Styles (BEM naming) */
+.cart-page {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #10172A;
+  position: relative;
+  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  padding-bottom: 73px;
+}
+
+.cart-page__status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 21px 16px 19px;
+  width: 100%;
+  height: 60px;
+}
+
+.cart-page__status-bar-time {
+  font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 590;
+  font-size: 17px;
+  line-height: 22px;
+  text-align: center;
+  color: #FFFFFF;
+}
+
+.cart-page__status-bar-levels {
+  width: 27.33px;
+  height: 13px;
+  background: transparent;
+}
+
+.cart-page__header {
+  width: 100%;
+  height: 89px;
+  background-color: #35741F;
+  padding: 27px 14px 0;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.cart-page__header-background {
+  position: absolute;
+  top: 62px;
+  left: 14px;
+  right: 14px;
+  height: 59px;
+  background-color: #D9D9D9;
+  border-radius: 15px;
+  z-index: 0;
+}
+
+.cart-page__back-button {
+  width: 59px;
+  height: 59px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cart-page__back-button-icon {
+  width: 39px;
+  height: 39px;
+  display: block;
+}
+
+.cart-page__header-info {
+  flex: 1;
+  margin-left: 9px;
+  padding: 17px 9px;
+  z-index: 1;
+}
+
+.cart-page__header-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 22px;
+  color: #10172A;
+  margin: 0;
+}
+
+.cart-page__pickup-card {
+  margin: 14px;
+  padding: 10px 13px 10px 12px;
+  background-color: #2B344D;
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-page__pickup-info {
+  flex: 1;
+}
+
+.cart-page__pickup-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 22px;
+  color: #FFFFFF;
+  margin: 0 0 7px 0;
+}
+
+.cart-page__pickup-address {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 22px;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.cart-page__pickup-time {
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+
+.cart-page__pickup-time-badge {
+  width: 130px;
+  height: 20px;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 22px;
+  color: #10172A;
+  padding: 0 9px;
+}
+
+.cart-page__products {
+  margin: 14px 30px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-page__product {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+.cart-page__product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+}
+
+.cart-page__product-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  color: #FFFFFF;
+  margin: 0 0 0 0;
+}
+
+.cart-page__product-price {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  color: #FFFFFF;
+  margin: 0;
+  margin-left: auto;
+}
+
+.cart-page__product-divider {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.25);
+  margin: 17px 0;
+}
+
+.cart-page__quantity-selector {
+  width: 54px;
+  height: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  margin-left: 13px;
+  position: relative;
+}
+
+.cart-page__quantity-button {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.cart-page__quantity-button--minus {
+  position: relative;
+}
+
+.cart-page__quantity-button--minus::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 7px;
+  height: 1px;
+  background-color: #D9D9D9;
+}
+
+.cart-page__quantity-button--plus {
+  position: relative;
+}
+
+.cart-page__quantity-button--plus::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 1px;
+  height: 7px;
+  background-color: #FFFFFF;
+}
+
+.cart-page__quantity-button--plus::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 7px;
+  height: 1px;
+  background-color: #FFFFFF;
+}
+
+.cart-page__quantity-value {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 9px;
+  color: #FFFFFF;
+  text-align: center;
+  min-width: 54px;
+  padding: 0;
+}
+
+.cart-page__summary {
+  position: fixed;
+  bottom: 73px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background-color: #2B344D;
+  border-radius: 20px 20px 0 0;
+  padding: 19px 32px 64px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  z-index: 40;
+}
+
+.cart-page__summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.cart-page__summary-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 19px;
+  line-height: 22px;
+  color: #FFFFFF;
+}
+
+.cart-page__summary-value {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 19px;
+  line-height: 22px;
+  color: #FFFFFF;
+}
+
+.cart-page__checkout-button {
+  width: 100%;
+  height: 50px;
+  background-color: #D9D9D9;
+  border: none;
+  border-radius: 15px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 22px;
+  color: #10172A;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-page__checkout-button:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.cart-page__checkout-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.cart-page__checkout-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cart-page__empty {
+  text-align: center;
+  color: #FFFFFF;
+  padding: 40px 20px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.cart-page__empty p {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  color: #FFFFFF;
+  margin: 0 0 16px 0;
+}
+
+.cart-page__empty-button {
+  padding: 12px 24px;
+  background-color: #D9D9D9;
+  border: none;
+  border-radius: 15px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #10172A;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.cart-page__empty-button:hover {
+  opacity: 0.9;
+}
+
+.cart-page__bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 73px;
+  background-color: #D9D9D9;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding-top: 18px;
+  z-index: 50;
+}
+
+.cart-page__nav-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.cart-page__nav-button:hover {
+  opacity: 0.8;
+}
+
+.cart-page__nav-button--active .cart-page__nav-label {
+  color: #35741F;
+}
+
+.cart-page__nav-button--active svg {
+  stroke: #35741F;
+}
+
+.cart-page__nav-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 22px;
+  color: #767676;
+  text-align: center;
+}
+
+.cart-page__nav-button svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* Responsive adjustments for cart page */
+@media (max-width: 420px) {
+  .cart-page {
+    max-width: 100%;
+  }
+  
+  .cart-page__pickup-card {
+    margin: 14px;
+  }
+  
+  .cart-page__products {
+    margin: 14px 16px 0;
+  }
+}
+
+@media (min-width: 421px) {
+  .cart-page {
+    max-width: 402px;
+    margin: 0 auto;
   }
 }

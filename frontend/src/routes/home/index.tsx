@@ -253,39 +253,39 @@ function RouteComponent() {
         
         // Debounce для предзагрузки - делаем запросы только через 1 секунду после изменения границ
         const timeoutId = setTimeout(() => {
-            // Предзагружаем данные для соседних областей (север, юг, восток, запад)
-            const preloadBounds = [
-                { north: mapBounds.north + 0.1, south: mapBounds.south + 0.1, east: mapBounds.east, west: mapBounds.west }, // Север
-                { north: mapBounds.north - 0.1, south: mapBounds.south - 0.1, east: mapBounds.east, west: mapBounds.west }, // Юг
-                { north: mapBounds.north, south: mapBounds.south, east: mapBounds.east + 0.1, west: mapBounds.west + 0.1 }, // Восток
-                { north: mapBounds.north, south: mapBounds.south, east: mapBounds.east - 0.1, west: mapBounds.west - 0.1 }, // Запад
-            ];
-            
-            // Предзагружаем в фоне (не блокируем UI)
-            preloadBounds.forEach((bounds, index) => {
-                setTimeout(() => {
-                    const centerLat = (bounds.north + bounds.south) / 2;
-                    const centerLon = (bounds.east + bounds.west) / 2;
-                    const params = new URLSearchParams();
-                    params.append('lat', centerLat.toString());
-                    params.append('lon', centerLon.toString());
-                    params.append('radius_km', '30');
-                    params.append('sort', sortBy);
-                    params.append('page', '1');
-                    params.append('limit', '50');
-                    
-                    // Предзагрузка в фоне (не показываем в UI)
+        // Предзагружаем данные для соседних областей (север, юг, восток, запад)
+        const preloadBounds = [
+            { north: mapBounds.north + 0.1, south: mapBounds.south + 0.1, east: mapBounds.east, west: mapBounds.west }, // Север
+            { north: mapBounds.north - 0.1, south: mapBounds.south - 0.1, east: mapBounds.east, west: mapBounds.west }, // Юг
+            { north: mapBounds.north, south: mapBounds.south, east: mapBounds.east + 0.1, west: mapBounds.west + 0.1 }, // Восток
+            { north: mapBounds.north, south: mapBounds.south, east: mapBounds.east - 0.1, west: mapBounds.west - 0.1 }, // Запад
+        ];
+        
+        // Предзагружаем в фоне (не блокируем UI)
+        preloadBounds.forEach((bounds, index) => {
+            setTimeout(() => {
+                const centerLat = (bounds.north + bounds.south) / 2;
+                const centerLon = (bounds.east + bounds.west) / 2;
+                const params = new URLSearchParams();
+                params.append('lat', centerLat.toString());
+                params.append('lon', centerLon.toString());
+                params.append('radius_km', '30');
+                params.append('sort', sortBy);
+                params.append('page', '1');
+                params.append('limit', '50');
+                
+                // Предзагрузка в фоне (не показываем в UI)
                     // Только если основной запрос успешен
                     // Добавляем специальный заголовок чтобы axios interceptor не показывал уведомления
                     if (!isOffersError) {
                         axiosInstance.get(`/offers/search?${params.toString()}`, {
                             skipErrorNotification: true // Флаг для пропуска уведомлений
                         }).catch(() => {
-                            // Игнорируем ошибки предзагрузки
-                        });
+                    // Игнорируем ошибки предзагрузки
+                });
                     }
                 }, index * 500); // Увеличиваем задержку между запросами
-            });
+        });
         }, 1000); // Дебаунс 1 секунда
         
         return () => {

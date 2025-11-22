@@ -97,6 +97,15 @@ export default {
         'dark-border': '#334155',
         'dark-text': '#f8fafc',
         'dark-text-secondary': '#cbd5e1',
+        // Цвета из Figma для страницы входа
+        'figma': {
+          'bg': '#10172A',
+          'card': '#2B344D',
+          'button': '#35741F',
+          'input-bg': '#7E879D',
+          'text-gray': '#D9D9D9',
+          'text-light-gray': '#C1C1C1',
+        },
       }
     },
   },
