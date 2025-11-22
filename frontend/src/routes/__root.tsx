@@ -152,68 +152,83 @@ function RootRoute() {
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
-    // Скрываем навигацию и поиск на страницах входа и регистрации
-    const hideNav = location.pathname.startsWith('/auth/login') || location.pathname.startsWith('/auth/register');
+    // Скрываем навигацию и поиск на страницах входа, регистрации и главной странице (лендинг)
+    const hideNav = location.pathname.startsWith('/auth/login') || 
+                    location.pathname.startsWith('/auth/register') || 
+                    location.pathname === '/';
+    
+    // Для главной страницы показываем лендинг без MobileOnly обертки
+    const isLandingPage = location.pathname === '/';
 
     return (
         <HelmetProvider>
             <QueryClientProvider client={queryClient}>
                 <ThemeProvider>
                     <AuthProvider>
-                    <MobileOnly>
-                    <div className="min-h-screen w-full bg-gray-900">
-                    {/* Ensure no push subscription without VAPID on mount */}
-                    {(() => { ensureNoPushWithoutVapid(); unregisterServiceWorker(); return null; })()}
-                    <header className={`sticky top-0 z-50 bg-gray-900 pt-safe ${hasShadow ? 'shadow-md' : 'shadow-none'} transition-shadow`}>
-                        <div className="px-4">
-                            <div className="flex items-center justify-between h-14">
-                                <Link to="/home" className="flex items-center gap-2">
-                                    <div className="w-7 h-7 rounded-lg overflow-hidden">
-                                        <img src="/kandlate.png" alt="Kandlate" className="w-full h-full object-contain" />
+                    {/* Для лендинга не используем MobileOnly - показываем везде */}
+                    {isLandingPage ? (
+                        <>
+                            {(() => { ensureNoPushWithoutVapid(); unregisterServiceWorker(); return null; })()}
+                            <Outlet />
+                        </>
+                    ) : (
+                        <MobileOnly>
+                            <div className="min-h-screen w-full bg-gray-900">
+                            {/* Ensure no push subscription without VAPID on mount */}
+                            {(() => { ensureNoPushWithoutVapid(); unregisterServiceWorker(); return null; })()}
+                            {!hideNav && (
+                                <header className={`sticky top-0 z-50 bg-gray-900 pt-safe ${hasShadow ? 'shadow-md' : 'shadow-none'} transition-shadow`}>
+                                    <div className="px-4">
+                                        <div className="flex items-center justify-between h-14">
+                                            <Link to="/home" className="flex items-center gap-2">
+                                                <div className="w-7 h-7 rounded-lg overflow-hidden">
+                                                    <img src="/kandlate.png" alt="Kandlate" className="w-full h-full object-contain" />
+                                                </div>
+                                                <span className="text-lg font-bold">KindPlate</span>
+                                            </Link>
+                                            <div />
+                                        </div>
                                     </div>
-                                    <span className="text-lg font-bold">KindPlate</span>
-                                </Link>
-                                <div />
+                                </header>
+                            )}
+                            {/* Inline search under header */}
+                            {!hideNav && (
+                                <div className="bg-gray-900 px-4 py-2 border-b border-gray-700">
+                                    <Link to="/search" className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-800 text-gray-300">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
+                                        <span className="text-sm">Поиск по заведениям и предложениям</span>
+                                    </Link>
+                                </div>
+                            )}
+                            <main className="flex-1 pb-16">
+                                <Outlet />
+                            </main>
+                            {/* Bottom Tab Bar - скрываем на страницах входа и регистрации */}
+                            {!hideNav && (
+                                <nav className="fixed bottom-0 inset-x-0 z-50 bg-gray-900/95 border-t border-gray-700 backdrop-blur pt-2 pb-safe">
+                                    <div className="mx-auto px-6 grid grid-cols-2 gap-2">
+                                        <TabLink to="/home" label="Карта" icon={(active) => (
+                                            <svg className={`w-6 h-6 ${active ? 'text-primary-600' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7" />
+                                            </svg>
+                                        )} />
+                                        <TabLink to="/account" label="Профиль" icon={(active) => (
+                                            <svg className={`w-6 h-6 ${active ? 'text-primary-600' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                        )} />
+                                    </div>
+                                </nav>
+                            )}
                             </div>
-                        </div>
-                    </header>
-                    {/* Inline search under header */}
-                    {!hideNav && (
-                        <div className="bg-gray-900 px-4 py-2 border-b border-gray-700">
-                            <Link to="/search" className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-800 text-gray-300">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
-                                <span className="text-sm">Поиск по заведениям и предложениям</span>
-                            </Link>
-                        </div>
+                            <CartSheet
+                                isOpen={isCartOpen}
+                                onClose={() => setIsCartOpen(false)}
+                                onGoToOffers={() => setIsCartOpen(false)}
+                                onCheckout={() => setIsCartOpen(false)}
+                            />
+                        </MobileOnly>
                     )}
-                    <main className="flex-1 pb-16">
-                        <Outlet />
-                    </main>
-                    {/* Bottom Tab Bar - скрываем на страницах входа и регистрации */}
-                    {!hideNav && (
-                        <nav className="fixed bottom-0 inset-x-0 z-50 bg-gray-900/95 border-t border-gray-700 backdrop-blur pt-2 pb-safe">
-                            <div className="mx-auto px-6 grid grid-cols-2 gap-2">
-                                <TabLink to="/home" label="Карта" icon={(active) => (
-                                    <svg className={`w-6 h-6 ${active ? 'text-primary-600' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7" />
-                                    </svg>
-                                )} />
-                                <TabLink to="/account" label="Профиль" icon={(active) => (
-                                    <svg className={`w-6 h-6 ${active ? 'text-primary-600' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                )} />
-                            </div>
-                        </nav>
-                    )}
-                    </div>
-                    <CartSheet
-                        isOpen={isCartOpen}
-                        onClose={() => setIsCartOpen(false)}
-                        onGoToOffers={() => setIsCartOpen(false)}
-                        onCheckout={() => setIsCartOpen(false)}
-                    />
-                    </MobileOnly>
 
                     <TanstackDevtools
                         config={{

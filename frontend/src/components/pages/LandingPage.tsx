@@ -59,7 +59,7 @@ export function LandingPage() {
                     
                     {/* Partners Section - White Card */}
                     <UserSteps
-                        title="Для пользователей"
+                        title="Для партнеров"
                         subtitle="Экономьте и спасайте еду из любимых заведений"
                         description={partnerStepsDescription}
                         steps={partnerStepsData}

@@ -25,12 +25,14 @@ export function UserSteps({
     const bgClass = variant === "white" ? "bg-white" : "bg-slate-800";
     const textClass = variant === "white" ? "text-[#0a1628]" : "text-white";
     const textSecondaryClass = variant === "white" ? "text-gray-700" : "text-white/80";
+    // Subtitle должен быть зеленым/темным в зависимости от варианта
+    const subtitleClass = variant === "white" ? "text-[#0a1628]" : "text-primary-400";
 
     return (
         <div className="px-6 mb-6">
             <div className={`${bgClass} rounded-2xl p-6`}>
                 <h3 className={`text-lg font-bold ${textClass} mb-2`}>{title}</h3>
-                <h4 className={`text-2xl font-bold ${variant === "white" ? textClass : "text-primary-400"} mb-4`}>
+                <h4 className={`text-2xl font-bold ${subtitleClass} mb-4`}>
                     {subtitle}
                 </h4>
                 {description && (

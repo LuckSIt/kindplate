@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 export function HeroSection() {
     return (
         <div className="p-6 space-y-6">
-            <h1 className="text-4xl font-bold text-primary-400 leading-tight">
+            <h1 className="text-4xl font-bold text-white leading-tight">
                 Выгодно для тебя, полезно для планеты
             </h1>
             <p className="text-white/80 text-base leading-relaxed">
