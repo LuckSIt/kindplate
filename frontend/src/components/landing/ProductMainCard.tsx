@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import cinnamonRollImage from "@/figma/90428C7F-3E7E-49B8-81BC-472D67411732 1.png";
 
 export function ProductMainCard() {
     const [quantity, setQuantity] = useState(1);
@@ -17,23 +18,12 @@ export function ProductMainCard() {
 
     return (
         <div className="bg-white rounded-3xl p-6 mb-6 relative overflow-hidden shadow-2xl">
-            {/* Product Image with Map Overlay */}
-            <div className="relative h-[500px] rounded-2xl overflow-hidden mb-6 bg-gradient-to-br from-primary-100 to-primary-200">
-                {/* Placeholder for cinnamon roll image */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                        <div className="text-8xl mb-4">🥐</div>
-                        <p className="text-gray-800 text-xl font-semibold">Булочка с корицей</p>
-                    </div>
-                </div>
-                {/* Map overlay suggestion - subtle grid pattern */}
-                <div 
-                    className="absolute inset-0 opacity-10" 
-                    style={{
-                        backgroundImage: `linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
-                                          linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)`,
-                        backgroundSize: '50px 50px'
-                    }}
+            {/* Product Image */}
+            <div className="relative h-[500px] rounded-2xl overflow-hidden mb-6">
+                <img 
+                    src={cinnamonRollImage} 
+                    alt="Булочка с корицей"
+                    className="w-full h-full object-cover"
                 />
             </div>
             
@@ -41,6 +31,7 @@ export function ProductMainCard() {
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <p className="text-2xl font-bold text-gray-900 mb-1">Булочка с корицей</p>
+                    <p className="text-xs text-gray-500 mb-2">Пекарня / Выпечка</p>
                     <p className="text-3xl font-bold text-primary-500">79₽</p>
                 </div>
             </div>
