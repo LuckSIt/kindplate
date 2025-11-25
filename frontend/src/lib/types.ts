@@ -209,3 +209,55 @@ export type MapSettings = {
   showUserLocation: boolean;
   showOffers: boolean;
 }
+
+// Утилиты форматирования
+export function formatPrice(cents: number): string {
+  // Если цена в центах (больше 100), делим на 100
+  const rubles = cents >= 1000 ? Math.round(cents / 100) : cents;
+  return `${rubles.toLocaleString('ru-RU')}₽`;
+}
+
+export function formatDateTime(dateString: string): string {
+  try {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const daysDiff = Math.floor(diff / (1000 * 60 * 60 * 24));
+    
+    // Если сегодня
+    if (daysDiff === 0) {
+      return date.toLocaleTimeString('ru-RU', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    }
+    
+    // Если вчера
+    if (daysDiff === 1) {
+      return `Вчера в ${date.toLocaleTimeString('ru-RU', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      })}`;
+    }
+    
+    // Если на этой неделе
+    if (daysDiff < 7) {
+      return date.toLocaleDateString('ru-RU', { 
+        weekday: 'short',
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    }
+    
+    // Иначе полная дата
+    return date.toLocaleString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch {
+    return dateString;
+  }
+}

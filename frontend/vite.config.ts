@@ -97,8 +97,7 @@ export default defineConfig({
       devOptions: {
         enabled: false, // Отключаем Service Worker в dev режиме для избежания ошибок
         type: 'module'
-      },
-      registerType: 'prompt' // Вместо autoUpdate используем prompt для контроля обновлений
+      }
     })
   ],
   server: {
