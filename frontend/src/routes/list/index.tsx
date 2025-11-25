@@ -41,7 +41,7 @@ function ListPageComponent() {
     }, [searchQuery]);
 
     // Fetch offers data
-    const { data: offersData, isLoading, isError } = useMapQuery(
+    const { data: offersData, isLoading, isError, error } = useMapQuery(
         ["offers_search_list", debouncedSearchQuery, userLocation],
         () => {
             const params = new URLSearchParams();
@@ -188,6 +188,16 @@ function ListPageComponent() {
             <div className="businesses-list-page__content">
                 {isLoading ? (
                     <div className="businesses-list-page__loading">Загрузка...</div>
+                ) : isError ? (
+                    <div className="businesses-list-page__empty">
+                        <p>Ошибка загрузки данных</p>
+                        <button 
+                            onClick={() => window.location.reload()} 
+                            className="mt-2 px-4 py-2 bg-primary-500 text-white rounded"
+                        >
+                            Обновить страницу
+                        </button>
+                    </div>
                 ) : businesses.length === 0 ? (
                     <div className="businesses-list-page__empty">Нет доступных заведений</div>
                 ) : (

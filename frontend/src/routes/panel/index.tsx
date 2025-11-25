@@ -35,6 +35,7 @@ const offerSchema = z.object({
     quantity_available: z.number().min(0, "Минимум 0").max(100, "Максимум 100"),
     pickup_time_start: z.string().min(1, "Укажите время начала"),
     pickup_time_end: z.string().min(1, "Укажите время окончания"),
+    location_id: z.number().optional().nullable(),
 });
 
 type OfferFormData = z.infer<typeof offerSchema>;
@@ -61,6 +62,7 @@ const defaultOffer: OfferFormData = {
     quantity_available: 5,
     pickup_time_start: "18:00",
     pickup_time_end: "20:00",
+    location_id: null,
 };
 
 enum DialogMode {
@@ -87,7 +89,7 @@ function OfferPropertiesForm({ offer, onSave, children }: OfferPropertiesFormPro
         resolver: zodResolver(offerSchema),
         defaultValues: offer,
     });
-    const { register, handleSubmit, watch, setValue } = methods;
+    const { register, handleSubmit } = methods;
 
     // Получаем список локаций для выбора
     const { data: locationsData } = useQuery({
@@ -96,10 +98,11 @@ function OfferPropertiesForm({ offer, onSave, children }: OfferPropertiesFormPro
             const response = await axiosInstance.get('/business/locations');
             return response.data.locations;
         },
+        retry: 1,
+        retryDelay: 1000,
     });
 
     const locations = locationsData || [];
-    const selectedLocationId = watch('location_id');
 
     const onSubmit = (data: OfferFormData) => {
         // Валидация: цена со скидкой должна быть меньше обычной
@@ -486,7 +489,7 @@ function QRScannerButton({ onScanSuccess }: { onScanSuccess?: () => void }) {
                         </DialogDescription>
                     </DialogHeader>
                     <QRScanner
-                        onScanSuccess={(orderId) => {
+                        onScanSuccess={() => {
                             if (onScanSuccess) {
                                 onScanSuccess();
                             }
@@ -537,31 +540,43 @@ function RouteComponent() {
         data: offersData,
         isLoading: areOffersLoading,
         isSuccess: areOffersSuccessfullyLoaded,
+        isError: areOffersError,
+        error: offersError,
         refetch: refetchOffers,
     } = useQuery({
         queryKey: ["mine_offers"],
         queryFn: () => axiosInstance.get("/business/offers/mine"),
+        retry: 1,
+        retryDelay: 1000,
     });
 
     // Получаем заказы для бизнеса
     const {
         data: ordersData,
         isLoading: areOrdersLoading,
+        isError: areOrdersError,
+        error: ordersError,
         refetch: refetchOrders,
     } = useQuery({
         queryKey: ["business_orders"],
         queryFn: () => axiosInstance.get("/orders/business"),
         enabled: activeTab === 'orders',
+        retry: 1,
+        retryDelay: 1000,
     });
 
     // Получаем статистику для бизнеса
     const {
         data: statsData,
         isLoading: areStatsLoading,
+        isError: areStatsError,
+        error: statsError,
     } = useQuery({
         queryKey: ["business_stats"],
         queryFn: () => axiosInstance.get("/stats/business"),
         enabled: activeTab === 'stats',
+        retry: 1,
+        retryDelay: 1000,
     });
 
     // Mutation для обновления статуса заказа
@@ -571,8 +586,9 @@ function RouteComponent() {
         onSuccess: () => {
             refetchOrders();
         },
-        onError: (error: AxiosError<{ error?: string }>) => {
-            notify.error("Ошибка обновления статуса", error.response?.data?.error || "Не удалось обновить статус заказа");
+        onError: (error: AxiosError<{ error?: string; message?: string }>) => {
+            const message = error.response?.data?.message || error.response?.data?.error || "Не удалось обновить статус заказа";
+            notify.error("Ошибка обновления статуса", message);
         },
     });
 
@@ -591,8 +607,9 @@ function RouteComponent() {
             refetchOffers();
             notify.success("Фото загружено", "Фото успешно загружено! 📸");
         },
-        onError: (error: AxiosError<{ error?: string }>) => {
-            notify.error("Ошибка загрузки фото", error.response?.data?.error || "Не удалось загрузить фото");
+        onError: (error: AxiosError<{ error?: string; message?: string }>) => {
+            const message = error.response?.data?.message || error.response?.data?.error || "Не удалось загрузить фото";
+            notify.error("Ошибка загрузки фото", message);
         },
     });
 
@@ -645,7 +662,9 @@ function RouteComponent() {
                 console.log("Success:", data);
                 refetchOffers();
             },
-            onError: (error) => {
+            onError: (error: any) => {
+                const message = error.response?.data?.message || error.response?.data?.error || "Не удалось выполнить операцию";
+                notify.error("Ошибка", message);
                 console.error("Error:", error);
                 notify.error("Ошибка операции", "Произошла ошибка. Проверьте данные и попробуйте снова.");
             },
@@ -740,7 +759,19 @@ function RouteComponent() {
                             <p className="text-gray-600 dark:text-gray-300">Загружаем ваши предложения...</p>
                         </div>
                     )}
-                    {!areOffersLoading && !areOffersSuccessfullyLoaded && (
+                    {areOffersError && (
+                        <div className="text-center py-12">
+                            <span className="text-5xl block mb-4">❌</span>
+                            <p className="text-red-600 text-lg mb-2">Ошибка загрузки предложений</p>
+                            <p className="text-gray-500 mb-4">
+                                {(offersError as AxiosError<{ message?: string }>)?.response?.data?.message || "Проверьте соединение и попробуйте обновить страницу"}
+                            </p>
+                            <Button onClick={() => refetchOffers()} variant="outline">
+                                Обновить
+                            </Button>
+                        </div>
+                    )}
+                    {!areOffersLoading && !areOffersError && !areOffersSuccessfullyLoaded && (
                         <div className="text-center py-12">
                             <span className="text-5xl block mb-4">❌</span>
                             <p className="text-red-600 text-lg mb-2">Ошибка загрузки предложений</p>
@@ -823,7 +854,20 @@ function RouteComponent() {
                             </div>
                         )}
 
-                        {!areOrdersLoading && ordersData?.data?.orders && (
+                        {areOrdersError && (
+                            <div className="text-center py-12">
+                                <span className="text-5xl block mb-4">❌</span>
+                                <p className="text-red-600 text-lg mb-2">Ошибка загрузки заказов</p>
+                                <p className="text-gray-500 mb-4">
+                                    {(ordersError as AxiosError<{ message?: string }>)?.response?.data?.message || "Проверьте соединение и попробуйте обновить страницу"}
+                                </p>
+                                <Button onClick={() => refetchOrders()} variant="outline">
+                                    Обновить
+                                </Button>
+                            </div>
+                        )}
+
+                        {!areOrdersLoading && !areOrdersError && ordersData?.data?.orders && (
                             <div className="max-w-4xl mx-auto space-y-4">
                                 {ordersData.data.orders.length === 0 ? (
                                     <div className="text-center py-12">
@@ -951,7 +995,17 @@ function RouteComponent() {
                             </div>
                         )}
 
-                        {!areStatsLoading && statsData?.data?.stats && (
+                        {areStatsError && (
+                            <div className="text-center py-12">
+                                <span className="text-5xl block mb-4">❌</span>
+                                <p className="text-red-600 text-lg mb-2">Ошибка загрузки статистики</p>
+                                <p className="text-gray-500">
+                                    {(statsError as AxiosError<{ message?: string }>)?.response?.data?.message || "Проверьте соединение и попробуйте обновить страницу"}
+                                </p>
+                            </div>
+                        )}
+
+                        {!areStatsLoading && !areStatsError && statsData?.data?.stats && (
                             <div className="max-w-4xl mx-auto space-y-6">
                                 {/* Main Stats Cards */}
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -1088,11 +1142,7 @@ function RouteComponent() {
                 }}
                 onCreate={(data: OfferFormData) => {
                     setDialogMode(DialogMode.NONE);
-                    const offerData = {
-                        ...data,
-                        location_id: data.location_id || null,
-                    };
-                    mutateOffer({ type: OfferMutationType.CREATE, offer: offerData as Offer });
+                    mutateOffer({ type: OfferMutationType.CREATE, offer: data });
                 }}
             />
             <EditOfferDialog

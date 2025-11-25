@@ -120,11 +120,12 @@ function RouteComponent() {
         {
             enabled: !!debouncedMapBounds, // Загружаем только когда есть границы карты
             staleTime: 60000, // 60 секунд кэш (увеличено для уменьшения запросов)
-            retry: false, // Отключаем автоматические повторные попытки при ошибках
+            retry: 1, // Одна попытка повтора при ошибке
+            retryDelay: 1000,
             retryOnMount: false, // Не повторяем при монтировании
             refetchOnWindowFocus: false, // Не обновляем при фокусе окна
             refetchOnMount: false, // Не обновляем при монтировании
-            refetchOnReconnect: false, // Не обновляем при восстановлении соединения
+            refetchOnReconnect: true, // Обновляем при восстановлении соединения
         }
     );
     
@@ -271,7 +272,7 @@ function RouteComponent() {
             setMapBounds(bounds);
         });
     }, [mapBounds]);
-    
+        
     // Предзагрузка отключена из-за проблем с сервером
     // Включать только после исправления проблем на бэкенде
     // useEffect(() => {
@@ -333,7 +334,7 @@ function RouteComponent() {
     return (
         <>
             <HomePageSEO />
-            <div className="h-screen flex flex-col bg-gray-900">
+            <div className="h-screen flex flex-col" style={{ backgroundColor: '#10172A' }}>
 
             {/* Main Content: map full-screen with bottom sheet list */}
             <div className="flex-1 relative overflow-hidden">
@@ -373,11 +374,29 @@ function RouteComponent() {
                             <Drawer.Description className="sr-only">Проведите вверх, чтобы развернуть список предложений</Drawer.Description>
                             <div className="mx-auto h-1.5 w-10 rounded-full bg-gray-700 my-3" />
                             <div className="max-h-[70vh] px-3 pb-safe overflow-y-auto will-change-transform">
-                                <OffersFeed
-                                    businesses={filteredBusinesses}
-                                    selectedBusiness={selectedBusiness}
-                                    onOfferClick={handleOpenOrder}
-                                />
+                                {isOffersError ? (
+                                    <div className="flex flex-col items-center justify-center py-12 px-4">
+                                        <div className="text-4xl mb-4">⚠️</div>
+                                        <h3 className="text-lg font-semibold text-white mb-2">
+                                            Ошибка загрузки данных
+                                        </h3>
+                                        <p className="text-gray-400 text-center mb-4">
+                                            {offersError?.response?.data?.message || 'Не удалось загрузить предложения'}
+                                        </p>
+                                        <button
+                                            onClick={() => window.location.reload()}
+                                            className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+                                        >
+                                            Обновить страницу
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <OffersFeed
+                                        businesses={filteredBusinesses}
+                                        selectedBusiness={selectedBusiness}
+                                        onOfferClick={handleOpenOrder}
+                                    />
+                                )}
                             </div>
                         </Drawer.Content>
                     </Drawer.Portal>

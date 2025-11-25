@@ -46,24 +46,30 @@ function RouteComponent() {
     });
 
     // Получаем заказы клиента
-    const { data: ordersData, isLoading: ordersLoading, refetch: refetchOrders } = useQuery({
+    const { data: ordersData, isLoading: ordersLoading, isError: ordersError, error: ordersErrorData, refetch: refetchOrders } = useQuery({
         queryKey: ["my_orders"],
         queryFn: () => axiosInstance.get("/orders/mine"),
         enabled: showOrders,
+        retry: 1,
+        retryDelay: 1000,
     });
 
     // Получаем статистику клиента
-    const { data: statsData, isLoading: statsLoading } = useQuery({
+    const { data: statsData, isLoading: statsLoading, isError: statsError, error: statsErrorData } = useQuery({
         queryKey: ["customer_stats"],
         queryFn: () => axiosInstance.get("/stats/customer"),
         enabled: showStats,
+        retry: 1,
+        retryDelay: 1000,
     });
 
     // Получаем избранные заведения
-    const { data: favoritesData, isLoading: favoritesLoading, refetch: refetchFavorites } = useQuery({
+    const { data: favoritesData, isLoading: favoritesLoading, isError: favoritesError, error: favoritesErrorData, refetch: refetchFavorites } = useQuery({
         queryKey: ["my_favorites"],
         queryFn: () => axiosInstance.get("/favorites/mine"),
         enabled: showFavorites,
+        retry: 1,
+        retryDelay: 1000,
     });
 
     // Mutation для удаления из избранного
@@ -72,8 +78,9 @@ function RouteComponent() {
         onSuccess: () => {
             refetchFavorites();
         },
-        onError: (error) => {
-            notify.error("Ошибка удаления", error.response?.data?.error || "Не удалось удалить из избранного");
+        onError: (error: any) => {
+            const message = error.response?.data?.message || error.response?.data?.error || "Не удалось удалить из избранного";
+            notify.error("Ошибка удаления", message);
         },
     });
 
@@ -84,8 +91,9 @@ function RouteComponent() {
             refetchOrders();
             notify.success("Заказ отменен", "Заказ успешно отменен");
         },
-        onError: (error) => {
-            notify.error("Ошибка отмены", error.response?.data?.error || "Не удалось отменить заказ");
+        onError: (error: any) => {
+            const message = error.response?.data?.message || error.response?.data?.error || "Не удалось отменить заказ";
+            notify.error("Ошибка отмены", message);
         },
     });
 
@@ -605,123 +613,202 @@ function RouteComponent() {
 
     // Основной экран аккаунта
     return (
-        <div className="min-h-screen bg-white dark:bg-gray-900 pb-20">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-primary to-primary-light text-white px-4 py-8 shadow-lg">
-                <div className="flex items-center gap-4 mb-4">
-                    <div className="w-20 h-20 bg-white/20 dark:bg-gray-800/20 rounded-full flex items-center justify-center text-4xl">
-                        👤
+        <div className="min-h-screen bg-[#10172A] pb-20">
+            {/* Информация о клиенте */}
+            <div className="px-6 pt-6 pb-4">
+                <div className="bg-[#D9D9D9] rounded-[15px] px-4 py-4 flex items-center gap-4">
+                    {/* Avatar */}
+                    <div className="w-[46px] h-[46px] flex-shrink-0">
+                        <svg className="w-full h-full text-[#10172A]" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
                     </div>
-                    <div>
-                        <h1 className="text-2xl font-bold">{user?.name || 'Пользователь'}</h1>
-                        <p className="text-primary-100 text-sm">{user?.email}</p>
+                    {/* Name and Edit */}
+                    <div className="flex-1 min-w-0">
+                        <div className="text-[18px] font-semibold text-[#000000] mb-1">
+                            {user?.name || 'Пользователь'}
+                        </div>
+                        <button className="text-[11px] text-[#767676]">
+                            изменить информацию
+                        </button>
                     </div>
                 </div>
             </div>
 
             {/* Menu Options */}
-            <div className="bg-gray-50 py-4">
-                {/* Cart */}
-                <button 
-                    onClick={() => setIsCartOpen(true)}
-                    className="w-full bg-white dark:bg-gray-800 px-4 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-100 dark:border-gray-700"
-                >
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                            <span className="text-2xl">🛒</span>
-                        </div>
-                        <div className="text-left">
-                            <div className="text-base font-bold text-gray-900 dark:text-white">Корзина</div>
-                            <div className="text-xs text-gray-500">Просмотреть и оформить</div>
-                        </div>
-                    </div>
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-                {/* Orders */}
+            <div className="px-6 space-y-0">
+                {/* История заказов */}
                 <button 
                     onClick={() => setShowOrders(true)}
-                    className="w-full bg-white dark:bg-gray-800 px-4 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-100 dark:border-gray-700"
+                    className="w-full bg-[#2B344D] rounded-[15px] px-4 py-4 flex items-center justify-between border border-white/10 mb-3"
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center">
-                            <span className="text-2xl">📋</span>
+                    <div className="flex items-center gap-4">
+                        <div className="w-[50px] h-[50px] flex-shrink-0">
+                            <svg className="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
                         </div>
                         <div className="text-left">
-                            <div className="text-base font-bold text-gray-900 dark:text-white">Мои заказы</div>
-                            <div className="text-xs text-gray-500">История и активные заказы</div>
+                            <div className="text-[18px] font-semibold text-white">История заказов</div>
                         </div>
                     </div>
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                 </button>
 
-                {/* Favorites */}
+                {/* Пищевые предпочтения */}
+                <button 
+                    onClick={() => {}}
+                    className="w-full bg-[#2B344D] rounded-[15px] px-4 py-4 flex items-center justify-between border border-white/10 mb-3"
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="w-[50px] h-[50px] flex-shrink-0">
+                            <svg className="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </div>
+                        <div className="text-left">
+                            <div className="text-[18px] font-semibold text-white leading-tight">
+                                Пищевые<br/>предпочтения
+                            </div>
+                        </div>
+                    </div>
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+                {/* Избранное */}
                 <button 
                     onClick={() => setShowFavorites(true)}
-                    className="w-full bg-white dark:bg-gray-800 px-4 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-100 dark:border-gray-700"
+                    className="w-full bg-[#2B344D] rounded-[15px] px-4 py-4 flex items-center justify-between border border-white/10 mb-3"
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center">
-                            <span className="text-2xl">❤️</span>
+                    <div className="flex items-center gap-4">
+                        <div className="w-[50px] h-[50px] flex-shrink-0">
+                            <svg className="w-full h-full text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
                         </div>
                         <div className="text-left">
-                            <div className="text-base font-bold text-gray-900 dark:text-white">Избранное</div>
-                            <div className="text-xs text-gray-500">Любимые заведения</div>
+                            <div className="text-[18px] font-semibold text-white">Избранное</div>
                         </div>
                     </div>
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                 </button>
 
-                {/* Stats */}
-                <button 
-                    onClick={() => setShowStats(true)}
-                    className="w-full bg-white dark:bg-gray-800 px-4 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-100 dark:border-gray-700"
-                >
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span className="text-2xl">📊</span>
-                        </div>
-                        <div className="text-left">
-                            <div className="text-base font-bold text-gray-900 dark:text-white">Моя статистика</div>
-                            <div className="text-xs text-gray-500">Сэкономлено и спасено</div>
-                        </div>
-                    </div>
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-
-                {/* Subscriptions */}
+                {/* Уведомления */}
                 <button 
                     onClick={() => setShowSubscriptions(true)}
-                    className="w-full bg-white dark:bg-gray-800 px-4 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-100 dark:border-gray-700"
+                    className="w-full bg-[#2B344D] rounded-[15px] px-4 py-4 flex items-center justify-between border border-white/10 mb-3"
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                            <span className="text-2xl">🔔</span>
+                    <div className="flex items-center gap-4">
+                        <div className="w-[50px] h-[50px] flex-shrink-0">
+                            <svg className="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
                         </div>
                         <div className="text-left">
-                            <div className="text-base font-bold text-gray-900 dark:text-white">Уведомления</div>
-                            <div className="text-xs text-gray-500">Подписки на новые предложения</div>
+                            <div className="text-[18px] font-semibold text-white">Уведомления</div>
                         </div>
                     </div>
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+                {/* Разделитель */}
+                <div className="h-px bg-white/10 my-3"></div>
+
+                {/* Пригласить друзей */}
+                <button 
+                    onClick={() => {}}
+                    className="w-full px-4 py-3 flex items-center justify-between"
+                >
+                    <div className="text-[17px] font-semibold text-white">Пригласить друзей</div>
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+                {/* Разделитель */}
+                <div className="h-px bg-white/10 my-3"></div>
+
+                {/* Служба поддержки */}
+                <button 
+                    onClick={() => {}}
+                    className="w-full px-4 py-3 flex items-center justify-between"
+                >
+                    <div className="text-[17px] font-semibold text-white">Служба поддержки</div>
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+                {/* О нас */}
+                <button 
+                    onClick={() => {}}
+                    className="w-full px-4 py-3 flex items-center justify-between"
+                >
+                    <div className="text-[17px] font-semibold text-white">О нас</div>
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                 </button>
             </div>
 
+            {/* Информационный блок */}
+            <div className="mt-8 px-6 pb-24">
+                <div className="bg-[#2B344D] rounded-[15px] p-6">
+                    {/* О KindPlate */}
+                    <div className="mb-6">
+                        <div className="text-[14px] font-semibold text-[#35741F] mb-3">KindPlate</div>
+                        <div className="space-y-2">
+                            <button className="block text-[11px] text-white text-left">Для пользователей</button>
+                            <button className="block text-[11px] text-white text-left">Для партнеров</button>
+                            <button className="block text-[11px] text-white text-left">Документы</button>
+                            <button className="block text-[11px] text-white text-left">Блог</button>
+                        </div>
+                    </div>
+
+                    {/* Помощь */}
+                    <div className="mb-6">
+                        <div className="text-[14px] font-semibold text-[#35741F] mb-3">Нужна помощь?</div>
+                        <div className="space-y-2">
+                            <button className="block text-[11px] text-white text-left">Ответы на ворпосы</button>
+                            <button className="block text-[11px] text-white text-left">Контакты</button>
+                        </div>
+                    </div>
+
+                    {/* Социальные сети */}
+                    <div>
+                        <div className="text-[14px] font-semibold text-[#35741F] mb-3">Социальные сети</div>
+                        <div className="flex gap-4">
+                            <a href="#" className="w-[25px] h-[25px] bg-white/20 rounded flex items-center justify-center">
+                                <span className="text-white text-xs">VK</span>
+                            </a>
+                            <a href="#" className="w-[25px] h-[25px] bg-white/20 rounded flex items-center justify-center">
+                                <span className="text-white text-xs">TG</span>
+                            </a>
+                            <a href="#" className="w-[25px] h-[25px] bg-white/20 rounded flex items-center justify-center">
+                                <span className="text-white text-xs">IG</span>
+                            </a>
+                            <a href="#" className="w-[25px] h-[25px] bg-white/20 rounded flex items-center justify-center">
+                                <span className="text-white text-xs">GM</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Business Panel Link (if business user) */}
             {user?.is_business && (
-                <div className="bg-gray-50 py-4 mt-4">
+                <div className="px-6 mt-4">
                     <button 
                         onClick={() => navigate({ to: "/panel" })}
-                        className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-4 flex items-center justify-between hover:from-blue-600 hover:to-blue-700 transition-colors shadow-lg mx-4 rounded-xl"
+                        className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-4 flex items-center justify-between hover:from-blue-600 hover:to-blue-700 transition-colors shadow-lg rounded-xl"
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -738,10 +825,10 @@ function RouteComponent() {
 
             {/* Admin Panel Link (if admin) */}
             {user?.role === 'admin' && (
-                <div className="bg-gray-50 py-4 mt-4">
+                <div className="px-6 mt-4">
                     <button 
                         onClick={() => navigate({ to: "/admin" })}
-                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-4 flex items-center justify-between hover:from-purple-700 hover:to-indigo-700 transition-colors shadow-lg mx-4 rounded-xl"
+                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-4 flex items-center justify-between hover:from-purple-700 hover:to-indigo-700 transition-colors shadow-lg rounded-xl"
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -756,38 +843,32 @@ function RouteComponent() {
                 </div>
             )}
 
-            {/* Logout Button */}
-            <div className="px-4 py-6">
-                <Button 
-                    onClick={() => logoutMutation.mutate()}
-                    disabled={logoutMutation.isPending}
-                    className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl text-base font-bold shadow-lg"
-                >
-                    {logoutMutation.isPending ? 'Выход...' : 'Выйти из аккаунта'}
-                </Button>
-            </div>
-
             {/* Bottom Navigation */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 z-10">
+            <div className="fixed bottom-0 left-0 right-0 bg-[#D9D9D9] border-t border-white/10 z-10">
                 <div className="flex justify-around py-2">
                     <button 
                         onClick={() => navigate({ to: "/home" })}
                         className="flex flex-col items-center py-2 px-4"
                     >
-                        <div className="w-6 h-6 mb-1 bg-gray-100 rounded-full flex items-center justify-center">
-                            <svg className="w-4 h-4 text-gray-600 dark:text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                            </svg>
-                        </div>
-                        <span className="text-xs text-gray-600 dark:text-gray-400">Карта</span>
+                        <svg className="w-7 h-7 text-[#757575] mb-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                        <span className="text-[12px] text-[#757575]">Карта</span>
                     </button>
                     <button className="flex flex-col items-center py-2 px-4">
-                        <div className="w-6 h-6 mb-1 bg-primary rounded-full flex items-center justify-center">
-                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </div>
-                        <span className="text-xs font-medium text-primary">Профиль</span>
+                        <svg className="w-7 h-7 text-[#35741F] mb-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        <span className="text-[12px] font-semibold text-[#35741F]">Профиль</span>
+                    </button>
+                    <button 
+                        onClick={() => navigate({ to: "/search" })}
+                        className="flex flex-col items-center py-2 px-4"
+                    >
+                        <svg className="w-7 h-7 text-[#757575] mb-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 18h18v-2H3v2zM3 6v2h18V6H3zm0 7h18v-2H3v2z"/>
+                        </svg>
+                        <span className="text-[12px] text-[#757575]">Список</span>
                     </button>
                 </div>
             </div>

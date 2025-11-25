@@ -48,7 +48,7 @@ function RouteComponent() {
             <div className="register-page__status-bar">
                 <div className="register-page__status-bar-time">9:41</div>
                 <div className="register-page__status-bar-levels"></div>
-            </div>
+                </div>
 
             {/* Main Container */}
             <div className="register-page__container">
@@ -71,20 +71,20 @@ function RouteComponent() {
                     <div className="register-page__header">
                         <h1 className="register-page__title">
                             Регестрация<br />пользователя
-                        </h1>
+                                    </h1>
                         <p className="register-page__subtitle">
-                            Уже есть аккаунт?{" "}
+                                        Уже есть аккаунт?{" "}
                             <Link 
                                 to="/auth/login" 
                                 className="register-page__link"
                             >
-                                Войти
-                            </Link>
-                        </p>
-                    </div>
-
+                                            Войти
+                                        </Link>
+                                    </p>
+                                </div>
+                                
                     {/* Form */}
-                    <FormProvider {...methods}>
+                                <FormProvider {...methods}>
                         <form 
                             onSubmit={handleSubmit(onSubmit)} 
                             className="register-page__form"
@@ -92,80 +92,80 @@ function RouteComponent() {
                             {/* Name Field */}
                             <div className="register-page__field">
                                 <label className="register-page__field-label">
-                                    Ваше имя
-                                </label>
+                                                Ваше имя
+                                            </label>
                                 <div className="register-page__input-wrapper">
                                     <input
-                                        {...register("name")}
-                                        type="text"
+                                                {...register("name")} 
+                                                type="text" 
                                         className="register-page__input"
                                         placeholder="Введите ФИО"
-                                    />
+                                            />
                                 </div>
-                            </div>
+                                        </div>
 
                             {/* Email Field */}
                             <div className="register-page__field">
                                 <label className="register-page__field-label">
-                                    Электронная почта
-                                </label>
+                                                Электронная почта
+                                            </label>
                                 <div className="register-page__input-wrapper">
                                     <input
-                                        {...register("email")}
-                                        type="email"
+                                                {...register("email")} 
+                                                type="email" 
                                         className="register-page__input"
-                                        placeholder="your@email.com"
-                                    />
+                                                placeholder="your@email.com"
+                                            />
                                 </div>
-                            </div>
+                                        </div>
 
                             {/* Password Field */}
                             <div className="register-page__field">
                                 <label className="register-page__field-label">
-                                    Пароль
-                                </label>
+                                                Пароль
+                                            </label>
                                 <div className="register-page__input-wrapper">
                                     <input
-                                        {...register("password")}
-                                        type="password"
+                                                {...register("password")} 
+                                                type="password" 
                                         className="register-page__input"
-                                        placeholder="Минимум 6 символов"
-                                    />
+                                                placeholder="Минимум 6 символов"
+                                            />
                                 </div>
-                            </div>
+                                        </div>
 
                             {/* Confirm Password Field */}
                             <div className="register-page__field">
                                 <label className="register-page__field-label">
-                                    Повторите пароль
-                                </label>
+                                                Повторите пароль
+                                            </label>
                                 <div className="register-page__input-wrapper">
                                     <input
-                                        {...register("confirmPassword")}
-                                        type="password"
+                                                {...register("confirmPassword")} 
+                                                type="password" 
                                         className="register-page__input"
                                         placeholder="Повторить пароль"
-                                    />
+                                            />
                                 </div>
-                            </div>
+                                        </div>
 
                             {/* Submit Button */}
                             <button
-                                type="submit"
+                                            type="submit" 
                                 className="register-page__submit-button"
-                                disabled={isPending}
-                            >
-                                {isPending ? (
+                                            disabled={isPending}
+                                        >
+                                            {isPending ? (
                                     <div className="register-page__submit-button-loading">
                                         <div className="register-page__spinner"></div>
-                                        Создание...
-                                    </div>
-                                ) : (
-                                    "Создать аккаунт"
-                                )}
+                                                    Создание...
+                                                </div>
+                                            ) : (
+                                                "Создать аккаунт"
+                                            )}
                             </button>
-                        </form>
-                    </FormProvider>
+                                    </form>
+                                </FormProvider>
 
                     {/* Footer Text */}
                     <p className="register-page__footer-text">

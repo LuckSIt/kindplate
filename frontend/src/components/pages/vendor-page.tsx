@@ -111,23 +111,23 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     
     if (!business) return;
 
-    const orderData = {
-      items: [{
+      const orderData = {
+        items: [{
         offer_id: offer.id,
         quantity: quantity,
         business_id: offer.business_id,
         title: offer.title,
         price: offer.discounted_price
-      }],
+        }],
       business_id: business.id,
       business_name: business.name,
       business_address: business.address,
       pickup_time_start: offer.pickup_time_start,
       pickup_time_end: offer.pickup_time_end,
-      notes: ""
-    };
+        notes: ""
+      };
 
-    createOrderMutation.mutate(orderData);
+      createOrderMutation.mutate(orderData);
   };
 
   const handleCall = () => {
@@ -254,7 +254,7 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
               <path d="M13.5 5.5C14.5 5.5 15.5 6.5 15.5 7.5C15.5 8.5 14.5 9.5 13.5 9.5C12.5 9.5 11.5 8.5 11.5 7.5C11.5 6.5 12.5 5.5 13.5 5.5ZM13.5 1.5C14.5 1.5 15.5 2.5 15.5 3.5C15.5 4.5 14.5 5.5 13.5 5.5C12.5 5.5 11.5 4.5 11.5 3.5C11.5 2.5 12.5 1.5 13.5 1.5Z" fill="#F5F5F5"/>
               <path d="M13.5 9.5C14.5 9.5 15.5 10.5 15.5 11.5C15.5 12.5 14.5 13.5 13.5 13.5C12.5 13.5 11.5 12.5 11.5 11.5C11.5 10.5 12.5 9.5 13.5 9.5Z" fill="#F5F5F5"/>
             </svg>
-          </div>
+        </div>
           <span className="vendor-page__info-button-label">Маршрут</span>
         </button>
 
@@ -275,13 +275,13 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
           </div>
           <span className="vendor-page__info-button-label">Поделиться</span>
         </button>
-      </div>
+              </div>
 
       {/* Available Offers Section */}
       <div className="vendor-page__available-section">
         <h2 className="vendor-page__available-title">Доступные обьявления:</h2>
         <div className="vendor-page__available-count">{activeOffersCount} активных</div>
-      </div>
+            </div>
 
       {/* Offers List */}
       <div className="vendor-page__content">
@@ -343,8 +343,8 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
           </svg>
           <span className="vendor-page__nav-label">Профиль</span>
         </Link>
-      </div>
-    </div>
+                    </div>
+                  </div>
   );
 };
 
@@ -379,7 +379,7 @@ function OfferCard({
       </div>
 
       {/* Favorite Button */}
-      <button 
+                  <button
         className="vendor-page__offer-favorite"
         onClick={() => setIsFavorite(!isFavorite)}
         aria-label={isFavorite ? "Удалить из избранного" : "Добавить в избранное"}
@@ -395,7 +395,7 @@ function OfferCard({
             clipRule="evenodd"
           />
         </svg>
-      </button>
+                  </button>
 
       {/* Offer Info */}
       <div className="vendor-page__offer-info">
@@ -406,9 +406,9 @@ function OfferCard({
               <span className="vendor-page__offer-price-old">{offer.original_price}₽</span>
             )}
             <span className="vendor-page__offer-price">{offer.discounted_price}₽</span>
-          </div>
-        </div>
-
+                </div>
+              </div>
+              
         {/* Quantity Selector and Add Button */}
         <div className="vendor-page__offer-actions">
           {showQuantitySelector ? (
@@ -426,16 +426,16 @@ function OfferCard({
                   aria-label="Увеличить количество"
                 ></button>
               </div>
-              <button 
+            <button
                 className="vendor-page__add-button"
                 onClick={onAddToOrder}
                 disabled={isAdding}
-              >
+            >
                 {isAdding ? "Добавление..." : "добавить в заказ"}
-              </button>
+            </button>
             </>
           ) : (
-            <button 
+            <button
               className="vendor-page__add-button vendor-page__add-button--full"
               onClick={() => {
                 onQuantityIncrease();

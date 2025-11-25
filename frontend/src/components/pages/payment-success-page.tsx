@@ -39,9 +39,9 @@ export const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = ({ orderId 
 
   useEffect(() => {
     if (orderDetails) {
-      notify.success('Оплата успешна!', 'Ваш заказ подтвержден');
-      // Генерируем чек (в реальном приложении это будет API)
-      setReceiptUrl(`/api/receipts/${orderId}.pdf`);
+          notify.success('Оплата успешна!', 'Ваш заказ подтвержден');
+          // Генерируем чек (в реальном приложении это будет API)
+          setReceiptUrl(`/api/receipts/${orderId}.pdf`);
     }
   }, [orderDetails, orderId]);
 

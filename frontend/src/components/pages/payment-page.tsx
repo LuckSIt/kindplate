@@ -33,7 +33,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
   const [paymentStatus, setPaymentStatus] = useState<'loading' | 'pending' | 'processing' | 'failed'>('loading');
   const [error, setError] = useState<string>('');
   const [isInitializing, setIsInitializing] = useState(false);
-  
+
   const { createPayment } = usePayments();
   const { config } = useOrders();
 
@@ -51,35 +51,35 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
 
   const handleCreatePayment = async () => {
     if (isInitializing) return;
-    
-    setIsInitializing(true);
+      
+      setIsInitializing(true);
     setPaymentStatus('processing');
-
-    try {
-      const payment = await createPayment({
-        order_id: parseInt(orderId),
+      
+      try {
+        const payment = await createPayment({
+          order_id: parseInt(orderId),
         payment_method: 'yookassa',
-        return_url: `${window.location.origin}/payment/${orderId}/success`,
-      });
+          return_url: `${window.location.origin}/payment/${orderId}/success`,
+        });
 
-      if (payment.payment_url) {
-        setPaymentStatus('pending');
+        if (payment.payment_url) {
+          setPaymentStatus('pending');
         // Автоматически перенаправляем на страницу оплаты
         setTimeout(() => {
           window.location.href = payment.payment_url;
         }, 1000);
-      } else {
-        setError('Не удалось получить ссылку для оплаты');
+        } else {
+          setError('Не удалось получить ссылку для оплаты');
+          setPaymentStatus('failed');
+        }
+      } catch (err: any) {
+        console.error('Ошибка создания платежа:', err);
+        setError(err.message || 'Ошибка создания платежа');
         setPaymentStatus('failed');
-      }
-    } catch (err: any) {
-      console.error('Ошибка создания платежа:', err);
-      setError(err.message || 'Ошибка создания платежа');
-      setPaymentStatus('failed');
-    } finally {
-      setIsInitializing(false);
-    }
-  };
+      } finally {
+          setIsInitializing(false);
+        }
+    };
 
   const handleCancel = () => {
     navigate({ to: '/cart' });
@@ -155,7 +155,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
     );
   }
 
-  return (
+    return (
     <div className="payment-page">
       {/* Status Bar */}
       <div className="payment-page__status-bar">
@@ -262,6 +262,6 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
           </button>
         </div>
       )}
-    </div>
-  );
+      </div>
+    );
 };

@@ -136,7 +136,7 @@ export const MapView: React.FC<MapViewProps> = ({
       toRemove.forEach((obj) => map.geoObjects.remove(obj));
 
     const clusterIconContentLayout = window.ymaps.templateLayoutFactory.createClass(
-      '<div style="width:44px;height:44px;border-radius:22px;background:#22c55e;box-shadow:0 6px 16px rgba(34,197,94,0.35);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-family:Inter,Arial,sans-serif;font-size:14px;">{{ properties.geoObjects.length }}</div>'
+      '<div style="width:44px;height:44px;border-radius:22px;background:#35741F;box-shadow:0 6px 16px rgba(53,116,31,0.35);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-family:Inter,Arial,sans-serif;font-size:14px;">{{ properties.geoObjects.length }}</div>'
     );
 
     // Оптимизированные настройки кластеризации для больших кластеров
@@ -156,14 +156,21 @@ export const MapView: React.FC<MapViewProps> = ({
     });
 
     businesses.forEach((business) => {
-      const hasActiveOffers = business.offers && business.offers.some(offer => offer.quantity_available > 0);
+      // Проверяем, есть ли активные заказы (работает и есть активные предложения)
+      const hasActiveOffers = business.offers && business.offers.some(offer => 
+        offer.is_active && offer.quantity_available > 0
+      );
+      
       const coords = [parseFloat(business.coords[0]), parseFloat(business.coords[1])];
       
       const isSelected = selectedBusiness && selectedBusiness.id === business.id;
 
-      // Build inline SVG pin
-      const color = hasActiveOffers ? '#22c55e' : '#9ca3af';
-      const r = isSelected ? 10 : 8;
+      // Цвета согласно макету Figma:
+      // Зеленый (#35741F) - заведение работает и есть активные заказы
+      // Серый (#757575) - заведение закрыто или нет активных заказов
+      const color = hasActiveOffers ? '#35741F' : '#757575';
+      // Размеры маркеров согласно макету: обычные 10px, выбранные 12px
+      const r = isSelected ? 12 : 10;
       const shadow = isSelected ? 'filter="url(#s)"' : '';
       const svg = `<?xml version="1.0" encoding="UTF-8"?>
         <svg xmlns="http://www.w3.org/2000/svg" width="${r*2+4}" height="${r*2+4}" viewBox="0 0 ${r*2+4} ${r*2+4}">

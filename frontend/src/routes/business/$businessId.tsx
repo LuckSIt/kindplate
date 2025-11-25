@@ -22,7 +22,7 @@ function BusinessPage() {
   const [orderQuantity, setOrderQuantity] = useState(1);
 
   // Fetch business data
-  const { data: businessData, isLoading: businessLoading } = useQuery({
+  const { data: businessData, isLoading: businessLoading, isError: businessError, error: businessErrorData } = useQuery({
     queryKey: ['business', businessId],
     queryFn: async () => {
       const response = await axiosInstance.get(`/customer/sellers`);
@@ -31,6 +31,8 @@ function BusinessPage() {
       return business;
     },
     enabled: !!businessId,
+    retry: 1,
+    retryDelay: 1000,
   });
 
   // Handle scroll for sticky header
@@ -95,15 +97,17 @@ function BusinessPage() {
     );
   }
 
-  if (!businessData) {
+  if (businessError || !businessData) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Заведение не найдено
+            {businessError ? 'Ошибка загрузки' : 'Заведение не найдено'}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Возможно, оно было удалено или перемещено
+            {businessError 
+              ? businessErrorData?.response?.data?.message || 'Не удалось загрузить данные заведения'
+              : 'Возможно, оно было удалено или перемещено'}
           </p>
           <Button onClick={() => navigate({ to: '/home' })}>
             Вернуться на главную

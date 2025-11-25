@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { notify } from "@/lib/notifications";
 
 export const Route = createFileRoute("/checkout/")({
   component: CheckoutPage,
@@ -13,13 +14,22 @@ function CheckoutPage() {
   const navigate = useNavigate();
 
   // Cart
-  const { data: cartData } = useQuery({
+  const { data: cartData, isLoading: cartLoading, isError: cartError } = useQuery({
     queryKey: ["cart"],
     queryFn: async () => {
       const res = await axiosInstance.get("/customer/cart");
       return res.data.data || [];
     },
+    retry: 1,
+    retryDelay: 1000,
   });
+
+  // Redirect if cart is empty or error
+  useEffect(() => {
+    if (!cartLoading && (cartError || !cartData || cartData.length === 0)) {
+      navigate({ to: "/cart" });
+    }
+  }, [cartLoading, cartError, cartData, navigate]);
 
   const subtotal = useMemo(
     () => (cartData || []).reduce((s: number, it: any) => s + it.offer.discounted_price * it.quantity, 0),

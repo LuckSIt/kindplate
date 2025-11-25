@@ -50,16 +50,20 @@ export const Route = createRootRoute({
 });
 
 function AuthProvider({ children }) {
-    const { data, isLoading, isSuccess, isError } = useQuery({
+    const { data, isLoading, isSuccess, isError, error } = useQuery({
         queryKey: ["auth"],
-        queryFn: () => axiosInstance.get("/auth/me"),
+        queryFn: () => axiosInstance.get("/auth/me", {
+            skipErrorNotification: true // Пропускаем уведомления для проверки авторизации
+        } as any),
+        retry: false, // Не повторяем при ошибке 401
+        staleTime: 5 * 60 * 1000, // 5 минут кэш
     });
 
     const value = {
         isLoading,
         isSuccess,
         isError,
-        user: isSuccess ? data.data.user : null,
+        user: isSuccess && data?.data?.user ? data.data.user : null,
     };
 
     return (
@@ -188,7 +192,7 @@ function RootRoute() {
                         </>
                     ) : (
                         <MobileOnly>
-                            <div className="min-h-screen w-full bg-gray-900">
+                            <div className="min-h-screen w-full" style={{ backgroundColor: '#10172A' }}>
                             {/* Ensure no push subscription without VAPID on mount */}
                             {(() => { 
                                 ensureNoPushWithoutVapid();
@@ -199,7 +203,7 @@ function RootRoute() {
                                 return null; 
                             })()}
                             {!hideNav && (
-                                <header className={`sticky top-0 z-50 bg-gray-900 pt-safe ${hasShadow ? 'shadow-md' : 'shadow-none'} transition-shadow`}>
+                                <header className={`sticky top-0 z-50 pt-safe ${hasShadow ? 'shadow-md' : 'shadow-none'} transition-shadow`} style={{ backgroundColor: '#10172A' }}>
                                     <div className="px-4">
                                         <div className="flex items-center justify-between h-14">
                                             <Link to="/home" className="flex items-center gap-2">
@@ -215,10 +219,10 @@ function RootRoute() {
                             )}
                             {/* Inline search under header */}
                             {!hideNav && (
-                                <div className="bg-gray-900 px-4 py-2 border-b border-gray-700">
-                                    <Link to="/search" className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-800 text-gray-300">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
-                                        <span className="text-sm">Поиск по заведениям и предложениям</span>
+                                <div className="px-4 py-2" style={{ backgroundColor: '#10172A' }}>
+                                    <Link to="/search" className="flex items-center gap-2 px-3 py-2 rounded-[15px] text-[#757575]" style={{ backgroundColor: '#D9D9D9' }}>
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
+                                        <span className="text-[15px] font-semibold" style={{ fontFamily: 'Montserrat Alternates' }}>Найти заведение</span>
                                     </Link>
                                 </div>
                             )}
@@ -227,16 +231,22 @@ function RootRoute() {
                             </main>
                             {/* Bottom Tab Bar - скрываем на страницах входа и регистрации */}
                             {!hideNav && (
-                                <nav className="fixed bottom-0 inset-x-0 z-50 bg-gray-900/95 border-t border-gray-700 backdrop-blur pt-2 pb-safe">
-                                    <div className="mx-auto px-6 grid grid-cols-2 gap-2">
+                                <nav className="fixed bottom-0 inset-x-0 z-50 pt-2 pb-safe" style={{ backgroundColor: '#D9D9D9' }}>
+                                    <div className="mx-auto px-6 grid grid-cols-3 gap-2">
                                         <TabLink to="/home" label="Карта" icon={(active) => (
-                                            <svg className={`w-6 h-6 ${active ? 'text-primary-600' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7" />
+                                            <svg className={`w-7 h-7`} fill="none" stroke={active ? '#35741F' : '#757575'} viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7L9 4L15 7L21 4V17L15 20L9 17L3 20V7Z" />
+                                            </svg>
+                                        )} />
+                                        <TabLink to="/list" label="Список" icon={(active) => (
+                                            <svg className={`w-7 h-7`} fill="none" stroke={active ? '#35741F' : '#757575'} viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6H20M4 12H20M4 18H20" />
                                             </svg>
                                         )} />
                                         <TabLink to="/account" label="Профиль" icon={(active) => (
-                                            <svg className={`w-6 h-6 ${active ? 'text-primary-600' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            <svg className={`w-7 h-7`} fill="none" stroke={active ? '#35741F' : '#757575'} viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" />
                                             </svg>
                                         )} />
                                     </div>
@@ -316,13 +326,16 @@ function TabLink({ to, label, icon }: { to: string; label: string; icon: (active
         <Link
             to={to}
             activeOptions={{ exact: to === '/' }}
-            inactiveProps={{ className: "flex flex-col items-center justify-center py-2 text-gray-500 transition-transform duration-150 motion-tap" }}
-            activeProps={{ className: "flex flex-col items-center justify-center py-2 text-primary-600 transition-transform duration-150 motion-tap" }}
+            inactiveProps={{ className: "flex flex-col items-center justify-center py-2 transition-transform duration-150 motion-tap" }}
+            activeProps={{ className: "flex flex-col items-center justify-center py-2 transition-transform duration-150 motion-tap" }}
         >
             {({ isActive }) => (
                 <div className="flex flex-col items-center gap-1">
                     {icon(isActive)}
-                    <span className="text-[11px] leading-4 font-medium">{label}</span>
+                    <span className="text-[12px] leading-[22px] font-semibold" style={{ 
+                        color: isActive ? '#35741F' : '#757575',
+                        fontFamily: 'Montserrat Alternates'
+                    }}>{label}</span>
                 </div>
             )}
         </Link>

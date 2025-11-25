@@ -25,7 +25,7 @@ export const CartPage: React.FC = () => {
     if (newQuantity === 0) {
       removeFromCart(offerId);
     } else {
-      updateCartItem({ offer_id: offerId, quantity: newQuantity });
+    updateCartItem({ offer_id: offerId, quantity: newQuantity });
     }
   };
 
@@ -42,27 +42,27 @@ export const CartPage: React.FC = () => {
         return itemEndTime > latest ? itemEndTime : latest;
       }, '19:00');
 
-      const orderDraft: OrderDraft = {
-        items: cartItems.map(item => ({
-          offer_id: item.offer_id,
-          quantity: item.quantity,
-          business_id: item.business_id,
-          title: item.offer.title,
-          discounted_price: item.offer.discounted_price,
+    const orderDraft: OrderDraft = {
+      items: cartItems.map(item => ({
+        offer_id: item.offer_id,
+        quantity: item.quantity,
+        business_id: item.business_id,
+        title: item.offer.title,
+        discounted_price: item.offer.discounted_price,
           pickup_time_start: item.offer.pickup_time_start || '00:00',
           pickup_time_end: item.offer.pickup_time_end || latestPickupTime,
-        })),
+      })),
         pickup_time_start: cartItems[0]?.offer.pickup_time_start || '00:00',
         pickup_time_end: latestPickupTime,
-        business_id: currentBusiness.id,
-        business_name: currentBusiness.name,
-        business_address: currentBusiness.address,
-        subtotal,
+      business_id: currentBusiness.id,
+      business_name: currentBusiness.name,
+      business_address: currentBusiness.address,
+      subtotal,
         service_fee: config?.service_fee || 0,
         promocode_discount: 0,
         total: subtotal + (config?.service_fee || 0),
         notes: ""
-      };
+    };
 
       const response = await axiosInstance.post('/orders/draft', orderDraft);
       const orderId = response.data?.data?.id || response.data?.id;
@@ -103,7 +103,7 @@ export const CartPage: React.FC = () => {
             className="cart-page__back-button"
             onClick={() => navigate({ to: "/list" })}
             aria-label="Назад"
-          >
+              >
             <img 
               src={arrowBackIcon} 
               alt="Назад" 
@@ -184,7 +184,7 @@ export const CartPage: React.FC = () => {
           className="cart-page__back-button"
           onClick={() => navigate({ to: "/list" })}
           aria-label="Назад"
-        >
+              >
           <img 
             src={arrowBackIcon} 
             alt="Назад" 
@@ -202,14 +202,14 @@ export const CartPage: React.FC = () => {
           <div className="cart-page__pickup-info">
             <h2 className="cart-page__pickup-name">{currentBusiness.name}</h2>
             <p className="cart-page__pickup-address">{currentBusiness.address}</p>
-          </div>
+                  </div>
           <div className="cart-page__pickup-time">
             <div className="cart-page__pickup-time-badge">
               забрать до {formatPickupTime(latestPickupTime)}
             </div>
           </div>
-        </div>
-      )}
+                </div>
+              )}
 
       {/* Products List */}
       <div className="cart-page__products">
@@ -231,7 +231,7 @@ export const CartPage: React.FC = () => {
             )}
           </React.Fragment>
         ))}
-      </div>
+          </div>
 
       {/* Summary Panel */}
       <div className="cart-page__summary">

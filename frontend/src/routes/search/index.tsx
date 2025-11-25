@@ -41,7 +41,7 @@ function RouteComponent() {
     }, []);
 
     // Поиск офферов
-    const { data: searchData, isLoading } = useQuery({
+    const { data: searchData, isLoading, isError, error } = useQuery({
         queryKey: ['offers_search', filters, page],
         queryFn: async () => {
             const params = new URLSearchParams();
@@ -71,6 +71,8 @@ function RouteComponent() {
             return response.data.data;
         },
         staleTime: 60000, // 60 секунд кэш
+        retry: 1, // Одна попытка повтора
+        retryDelay: 1000,
     });
 
     const offers = searchData?.offers || [];
@@ -152,6 +154,19 @@ function RouteComponent() {
                     <div className="flex flex-col items-center justify-center py-12">
                         <Loader2 className="w-8 h-8 animate-spin text-primary-600 mb-4" />
                         <p className="text-gray-600 dark:text-gray-300">Поиск предложений...</p>
+                    </div>
+                ) : isError ? (
+                    <div className="text-center py-12">
+                        <div className="w-16 h-16 text-red-500 mx-auto mb-4">⚠️</div>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                            Ошибка загрузки
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400 mb-4">
+                            {error?.response?.data?.message || 'Не удалось загрузить результаты поиска'}
+                        </p>
+                        <Button onClick={() => window.location.reload()} variant="outline">
+                            Обновить страницу
+                        </Button>
                     </div>
                 ) : offers.length === 0 ? (
                     <div className="text-center py-12">
