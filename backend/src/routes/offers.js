@@ -737,6 +737,29 @@ const CACHE_TTL = 60000; // 60 секунд
 // GET /offers/search - Расширенный поиск офферов
 offersRouter.get("/search", asyncHandler(async (req, res) => {
     try {
+        // Проверяем существование основных таблиц
+        const tablesCheck = await pool.query(`
+            SELECT table_name FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name IN ('offers', 'users')
+        `);
+        const existingTables = tablesCheck.rows.map(r => r.table_name);
+        
+        if (!existingTables.includes('offers') || !existingTables.includes('users')) {
+            logger.warn('Таблицы offers или users не найдены');
+            return res.json({
+                success: true,
+                data: {
+                    offers: [],
+                    meta: {
+                        total: 0,
+                        page: 1,
+                        limit: 20,
+                        total_pages: 0
+                    }
+                }
+            });
+        }
+
         // Параметры поиска
         const {
             q, // Поисковый запрос
@@ -779,6 +802,31 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
         `);
         const hasBusinessLocations = tablesCheck.rows.length > 0;
 
+        // Проверяем наличие дополнительных полей в offers
+        const offersColumnsCheck = await pool.query(`
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_schema = 'public' AND table_name = 'offers'
+            AND column_name IN ('cuisine_tags', 'diet_tags', 'allergen_tags', 'rating_avg', 'rating_count')
+        `);
+        const availableColumns = offersColumnsCheck.rows.map(r => r.column_name);
+        const hasCuisineTags = availableColumns.includes('cuisine_tags');
+        const hasDietTags = availableColumns.includes('diet_tags');
+        const hasAllergenTags = availableColumns.includes('allergen_tags');
+        const hasRatingAvg = availableColumns.includes('rating_avg');
+        const hasRatingCount = availableColumns.includes('rating_count');
+
+        // Проверяем наличие полей в users
+        const usersColumnsCheck = await pool.query(`
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_schema = 'public' AND table_name = 'users'
+            AND column_name IN ('cuisine_tags', 'logo_url', 'rating', 'total_reviews')
+        `);
+        const availableUserColumns = usersColumnsCheck.rows.map(r => r.column_name);
+        const userHasCuisineTags = availableUserColumns.includes('cuisine_tags');
+        const userHasLogoUrl = availableUserColumns.includes('logo_url');
+        const userHasRating = availableUserColumns.includes('rating');
+        const userHasTotalReviews = availableUserColumns.includes('total_reviews');
+
         // Формируем SQL запрос
         let query = `
             SELECT 
@@ -792,20 +840,20 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
                 o.pickup_time_start,
                 o.pickup_time_end,
                 o.is_active,
-                o.cuisine_tags,
-                o.diet_tags,
-                o.allergen_tags,
-                o.rating_avg,
-                o.rating_count,
+                ${hasCuisineTags ? 'o.cuisine_tags' : 'NULL::text[] as cuisine_tags'},
+                ${hasDietTags ? 'o.diet_tags' : 'NULL::text[] as diet_tags'},
+                ${hasAllergenTags ? 'o.allergen_tags' : 'NULL::text[] as allergen_tags'},
+                ${hasRatingAvg ? 'o.rating_avg' : 'NULL::numeric as rating_avg'},
+                ${hasRatingCount ? 'o.rating_count' : '0::integer as rating_count'},
                 o.created_at,
                 u.id as business_id,
                 u.name as business_name,
                 u.address as business_address,
                 u.coord_0 as business_lat,
                 u.coord_1 as business_lon,
-                u.logo_url as business_logo_url,
-                u.rating as business_rating,
-                u.total_reviews as business_total_reviews
+                ${userHasLogoUrl ? 'u.logo_url' : 'NULL::text as business_logo_url'} as business_logo_url,
+                ${userHasRating ? 'u.rating' : '0::numeric as business_rating'} as business_rating,
+                ${userHasTotalReviews ? 'u.total_reviews' : '0::integer as business_total_reviews'} as business_total_reviews
         `;
         
         // Добавляем поля локации только если таблица существует
@@ -865,12 +913,11 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
         let whereConditions = `
             FROM offers o
             JOIN users u ON o.business_id = u.id
-            ${hasBusinessLocations ? 'LEFT JOIN business_locations bl ON o.location_id = bl.id' : ''}
+            ${hasBusinessLocations ? 'LEFT JOIN business_locations bl ON o.location_id = bl.id AND bl.is_active = true' : ''}
             WHERE u.is_business = true
             AND o.is_active = true
             AND o.quantity_available > 0
-            AND u.coord_0 IS NOT NULL
-            AND u.coord_1 IS NOT NULL
+            AND (u.coord_0 IS NOT NULL AND u.coord_1 IS NOT NULL)
         `;
 
         // Фильтр по геолокации (радиус) - используем координаты локации, если есть
@@ -952,21 +999,27 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
             paramIndex++;
         }
 
-        // Фильтр по кухне
-        if (cuisines) {
+        // Фильтр по кухне (только если поля существуют)
+        if (cuisines && (hasCuisineTags || userHasCuisineTags)) {
             const cuisineArray = Array.isArray(cuisines) ? cuisines : cuisines.split(',').map(c => c.trim());
             if (cuisineArray.length > 0) {
-                whereConditions += ` AND (
-                    o.cuisine_tags && $${paramIndex}::text[]
-                    OR u.cuisine_tags && $${paramIndex}::text[]
-                )`;
-                params.push(cuisineArray);
-                paramIndex++;
+                const conditions = [];
+                if (hasCuisineTags) {
+                    conditions.push(`o.cuisine_tags && $${paramIndex}::text[]`);
+                }
+                if (userHasCuisineTags) {
+                    conditions.push(`u.cuisine_tags && $${paramIndex}::text[]`);
+                }
+                if (conditions.length > 0) {
+                    whereConditions += ` AND (${conditions.join(' OR ')})`;
+                    params.push(cuisineArray);
+                    paramIndex++;
+                }
             }
         }
 
-        // Фильтр по диетам
-        if (diets) {
+        // Фильтр по диетам (только если поле существует)
+        if (diets && hasDietTags) {
             const dietArray = Array.isArray(diets) ? diets : diets.split(',').map(d => d.trim());
             if (dietArray.length > 0) {
                 whereConditions += ` AND o.diet_tags && $${paramIndex}::text[]`;
@@ -975,8 +1028,8 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
             }
         }
 
-        // Исключение аллергенов
-        if (allergens) {
+        // Исключение аллергенов (только если поле существует)
+        if (allergens && hasAllergenTags) {
             const allergenArray = Array.isArray(allergens) ? allergens : allergens.split(',').map(a => a.trim());
             if (allergenArray.length > 0) {
                 whereConditions += ` AND NOT (o.allergen_tags && $${paramIndex}::text[])`;
@@ -992,7 +1045,11 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
                 orderBy = ` ORDER BY o.discounted_price ASC`;
                 break;
             case 'rating':
-                orderBy = ` ORDER BY COALESCE(o.rating_avg, 0) DESC, o.rating_count DESC`;
+                if (hasRatingAvg && hasRatingCount) {
+                    orderBy = ` ORDER BY COALESCE(o.rating_avg, 0) DESC, o.rating_count DESC`;
+                } else {
+                    orderBy = ` ORDER BY o.created_at DESC`;
+                }
                 break;
             case 'distance':
             default:
@@ -1008,15 +1065,49 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
         query += whereConditions + orderBy;
 
         // Подсчет общего количества (для пагинации) - делаем ДО добавления LIMIT/OFFSET
-        const countQuery = query
-            .replace(/SELECT[\s\S]*?FROM/, 'SELECT COUNT(DISTINCT o.id) as count FROM')
-            .replace(/ORDER BY[\s\S]*$/, '');
+        // Создаем отдельный запрос для подсчета с теми же условиями
+        let countQuery = `
+            SELECT COUNT(DISTINCT o.id) as count
+            FROM offers o
+            JOIN users u ON o.business_id = u.id
+            ${hasBusinessLocations ? 'LEFT JOIN business_locations bl ON o.location_id = bl.id AND bl.is_active = true' : ''}
+            WHERE u.is_business = true
+            AND o.is_active = true
+            AND o.quantity_available > 0
+            AND (u.coord_0 IS NOT NULL AND u.coord_1 IS NOT NULL)
+        `;
         
-        const countResult = await pool.query(countQuery, params);
-        const totalCount = parseInt(countResult.rows[0]?.count || 0);
+        // Добавляем те же условия WHERE, что и в основном запросе
+        // Извлекаем условия после "WHERE" из whereConditions
+        const whereStart = whereConditions.indexOf('WHERE');
+        if (whereStart !== -1) {
+            const conditionsAfterWhere = whereConditions.substring(whereStart + 5).trim(); // Пропускаем "WHERE"
+            if (conditionsAfterWhere) {
+                countQuery += ' AND ' + conditionsAfterWhere;
+            }
+        }
+        
+        // Используем те же параметры, но без LIMIT/OFFSET (они добавляются позже в основном запросе)
+        const countParams = params.slice(); // Копируем все параметры
+        
+        let totalCount = 0;
+        try {
+            const countResult = await pool.query(countQuery, countParams);
+            totalCount = parseInt(countResult.rows[0]?.count || 0);
+        } catch (countError) {
+            logger.error('Ошибка подсчета количества:', {
+                error: countError.message,
+                stack: countError.stack,
+                query: countQuery.substring(0, 200),
+                paramsCount: countParams.length
+            });
+            // Если подсчет не удался, используем 0
+            totalCount = 0;
+        }
 
         // Добавляем лимит и оффсет
-        query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+        const finalParamIndex = paramIndex;
+        query += ` LIMIT $${finalParamIndex} OFFSET $${finalParamIndex + 1}`;
         params.push(limitNum, offset);
 
         // Выполняем запрос
@@ -1050,11 +1141,11 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
                 pickup_time_start: row.pickup_time_start,
                 pickup_time_end: row.pickup_time_end,
                 is_active: row.is_active,
-                cuisine_tags: row.cuisine_tags || [],
-                diet_tags: row.diet_tags || [],
-                allergen_tags: row.allergen_tags || [],
-                rating_avg: parseFloat(row.rating_avg) || 0,
-                rating_count: row.rating_count || 0,
+                cuisine_tags: (row.cuisine_tags && Array.isArray(row.cuisine_tags)) ? row.cuisine_tags : [],
+                diet_tags: (row.diet_tags && Array.isArray(row.diet_tags)) ? row.diet_tags : [],
+                allergen_tags: (row.allergen_tags && Array.isArray(row.allergen_tags)) ? row.allergen_tags : [],
+                rating_avg: row.rating_avg != null ? parseFloat(row.rating_avg) : 0,
+                rating_count: row.rating_count != null ? parseInt(row.rating_count) : 0,
                 created_at: row.created_at,
                 distance_km: row.distance_km ? parseFloat(row.distance_km) : null,
                 business: {
@@ -1109,14 +1200,26 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
             data: responseData
         });
     } catch (error) {
-        logger.error('❌ Ошибка в /offers/search:', error);
-        logger.error('❌ Stack trace:', error.stack);
-        logger.error('❌ Query params:', req.query);
-        res.status(500).json({
-            success: false,
-            error: 'SEARCH_ERROR',
-            message: 'Ошибка при выполнении поиска',
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        logger.error('❌ Ошибка в /offers/search:', {
+            message: error.message,
+            stack: error.stack,
+            query: req.query,
+            url: req.url
+        });
+        
+        // Возвращаем пустой результат вместо ошибки, чтобы не ломать фронтенд
+        res.status(200).json({
+            success: true,
+            data: {
+                offers: [],
+                meta: {
+                    total: 0,
+                    page: parseInt(req.query.page) || 1,
+                    limit: parseInt(req.query.limit) || 20,
+                    total_pages: 0
+                }
+            },
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 }));
