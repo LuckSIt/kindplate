@@ -693,7 +693,7 @@ export function LandingPage() {
                             </div>
                             
                             {/* Product Image */}
-                            <div className="w-[289px] h-[289px] rounded-0 mb-[12px] overflow-hidden flex-shrink-0 -ml-[53px]">
+                            <div className="w-[289px] h-[289px] mb-[12px] overflow-hidden flex-shrink-0 -ml-[53px]">
                                 <img 
                                     src={cinnamonRollImage} 
                                     alt="Булочка с корицей"
