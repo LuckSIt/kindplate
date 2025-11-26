@@ -222,9 +222,6 @@ ordersRouter.post("/draft", async (req, res) => {
 // ============================================
 // ОСНОВНЫЕ МАРШРУТЫ
 // ============================================
-
-// Обновить заказ
-ordersRouter.patch("/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const { items, pickup_time_start, pickup_time_end, notes } = req.body;
@@ -980,6 +977,110 @@ ordersRouter.post("/scan", scanRateLimiter, async (req, res) => {
         });
     } catch (e) {
         console.error("❌ Ошибка в POST /orders/scan:", e);
+        res.status(500).send({
+            success: false,
+            error: "UNKNOWN_ERROR",
+            message: "Внутренняя ошибка сервера"
+        });
+    }
+});
+
+// Обновить заказ (должен быть ПОСЛЕ всех специфичных маршрутов с :id)
+ordersRouter.patch("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { items, pickup_time_start, pickup_time_end, notes } = req.body;
+        // TODO: Получить user_id из JWT токена
+        const userId = 1; // Временное решение для тестирования
+
+        console.log("🔍 Запрос PATCH /orders/:id", { id, userId });
+
+        // Проверяем, что заказ принадлежит пользователю
+        const orderResult = await pool.query(
+            `SELECT id, status, business_id FROM orders 
+             WHERE id = $1 AND user_id = $2`,
+            [id, userId]
+        );
+
+        if (orderResult.rows.length === 0) {
+            return res.status(404).send({
+                success: false,
+                error: "ORDER_NOT_FOUND",
+                message: "Заказ не найден"
+            });
+        }
+
+        const order = orderResult.rows[0];
+
+        if (order.status !== 'draft') {
+            return res.status(400).send({
+                success: false,
+                error: "ORDER_NOT_EDITABLE",
+                message: "Заказ нельзя изменить"
+            });
+        }
+
+        // Обновляем заказ
+        const updateFields = [];
+        const updateValues = [];
+        let paramCount = 1;
+
+        if (pickup_time_start) {
+            updateFields.push(`pickup_time_start = $${paramCount++}`);
+            updateValues.push(pickup_time_start);
+        }
+
+        if (pickup_time_end) {
+            updateFields.push(`pickup_time_end = $${paramCount++}`);
+            updateValues.push(pickup_time_end);
+        }
+
+        if (notes !== undefined) {
+            updateFields.push(`notes = $${paramCount++}`);
+            updateValues.push(notes);
+        }
+
+        if (updateFields.length > 0) {
+            updateValues.push(id, userId);
+            await pool.query(
+                `UPDATE orders SET ${updateFields.join(', ')} 
+                 WHERE id = $${paramCount} AND user_id = $${paramCount + 1}`,
+                updateValues
+            );
+        }
+
+        // Обновляем позиции, если переданы
+        if (items) {
+            // Удаляем старые позиции
+            await pool.query('DELETE FROM order_items WHERE order_id = $1', [id]);
+
+            // Добавляем новые позиции
+            for (const item of items) {
+                await pool.query(
+                    `INSERT INTO order_items (order_id, offer_id, quantity, price, title)
+                     VALUES ($1, $2, $3, $4, $5)`,
+                    [id, item.offer_id, item.quantity, item.discounted_price, item.title]
+                );
+            }
+
+            // Пересчитываем суммы
+            const subtotal = items.reduce((sum, item) => sum + (item.discounted_price * item.quantity), 0);
+            const serviceFee = 50; // TODO: Получить из конфигурации
+            const total = subtotal + serviceFee;
+
+            await pool.query(
+                `UPDATE orders SET subtotal = $1, service_fee = $2, total = $3 
+                 WHERE id = $4`,
+                [subtotal, serviceFee, total, id]
+            );
+        }
+
+        res.send({
+            success: true,
+            message: "Заказ обновлен"
+        });
+    } catch (e) {
+        console.error("❌ Ошибка в PATCH /orders/:id:", e);
         res.status(500).send({
             success: false,
             error: "UNKNOWN_ERROR",

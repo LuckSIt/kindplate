@@ -649,57 +649,8 @@ reviewsRouter.get('/admin/pending', requireAdmin, asyncHandler(async (req, res) 
  *   action: 'publish' | 'reject',
  *   reason?: string (для reject)
  * }
+ * 
+ * ДУБЛИКАТ УДАЛЕН - маршрут уже определен выше на строке 219
  */
-reviewsRouter.post('/admin/moderate/:id', requireAdmin, asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const { action, reason } = req.body;
-    const moderator_id = req.session.userId;
-
-    logger.info('Moderating review', { review_id: id, action, moderator_id });
-
-    if (!action || !['publish', 'reject'].includes(action)) {
-        throw new AppError('action должен быть "publish" или "reject"', 400, 'INVALID_ACTION');
-    }
-
-    // Проверяем, что отзыв существует и на модерации
-    const reviewCheck = await pool.query(
-        'SELECT id, status FROM reviews WHERE id = $1',
-        [id]
-    );
-
-    if (reviewCheck.rowCount === 0) {
-        throw new AppError('Отзыв не найден', 404, 'REVIEW_NOT_FOUND');
-    }
-
-    if (reviewCheck.rows[0].status !== 'pending') {
-        throw new AppError('Отзыв уже прошел модерацию', 400, 'REVIEW_ALREADY_MODERATED');
-    }
-
-    const newStatus = action === 'publish' ? 'published' : 'rejected';
-
-    // Обновляем статус отзыва
-    const result = await pool.query(
-        `UPDATE reviews 
-         SET status = $1, 
-             moderated_at = CURRENT_TIMESTAMP,
-             moderated_by = $2
-         WHERE id = $3
-         RETURNING id, status, moderated_at, moderated_by`,
-        [newStatus, moderator_id, id]
-    );
-
-    logger.info('Review moderated successfully', { 
-        review_id: id, 
-        action, 
-        new_status: newStatus,
-        moderator_id 
-    });
-
-    res.json({
-        success: true,
-        data: result.rows[0],
-        message: action === 'publish' ? 'Отзыв опубликован' : 'Отзыв отклонен'
-    });
-}));
 
 module.exports = reviewsRouter;
