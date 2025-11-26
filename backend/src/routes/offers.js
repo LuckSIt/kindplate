@@ -54,6 +54,483 @@ const upload = multer({
 // ============================================
 
 // GET /offers/search - Расширенный поиск офферов (ПЕРВЫЙ - должен быть до всех маршрутов с параметрами)
+offersRouter.get("/search", asyncHandler(async (req, res) => {
+    try {
+        // Проверяем существование основных таблиц
+        const tablesCheck = await pool.query(`
+            SELECT table_name FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name IN ('offers', 'users')
+        `);
+        const existingTables = tablesCheck.rows.map(r => r.table_name);
+        
+        if (!existingTables.includes('offers') || !existingTables.includes('users')) {
+            logger.warn('Таблицы offers или users не найдены');
+            return res.json({
+                success: true,
+                data: {
+                    offers: [],
+                    meta: {
+                        total: 0,
+                        page: 1,
+                        limit: 20,
+                        total_pages: 0
+                    }
+                }
+            });
+        }
+
+        // Параметры поиска
+        const {
+            q, // Поисковый запрос
+            lat, // Широта
+            lon, // Долгота
+            radius_km = 10, // Радиус поиска в км
+            pickup_from, // Время начала самовывоза
+            pickup_to, // Время окончания самовывоза
+            price_min, // Минимальная цена
+            price_max, // Максимальная цена
+            cuisines, // Массив тегов кухни (строка с запятыми или массив)
+            diets, // Массив тегов диет
+            allergens, // Массив тегов аллергенов (исключить офферы с этими аллергенами)
+            sort = 'distance', // Сортировка: distance, price, rating
+            page = 1, // Номер страницы
+            limit = 20 // Лимит на страницу
+        } = req.query;
+
+        // Валидация
+        const pageNum = Math.max(1, parseInt(page) || 1);
+        const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 20));
+        const offset = (pageNum - 1) * limitNum;
+
+        // Проверка кэша
+        const cacheKey = JSON.stringify(req.query);
+        const cached = searchCache.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+            logger.info(`📦 Возвращаем из кэша: ${cacheKey.substring(0, 50)}...`);
+            return res.json({
+                success: true,
+                data: cached.data,
+                meta: cached.meta
+            });
+        }
+
+        // Проверяем существование таблицы business_locations
+        const businessLocationsCheck = await pool.query(`
+            SELECT table_name FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = 'business_locations'
+        `);
+        const hasBusinessLocations = businessLocationsCheck.rows.length > 0;
+
+        // Проверяем наличие дополнительных полей в offers
+        const offersColumnsCheck = await pool.query(`
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_schema = 'public' AND table_name = 'offers'
+            AND column_name IN ('cuisine_tags', 'diet_tags', 'allergen_tags', 'rating_avg', 'rating_count')
+        `);
+        const availableColumns = offersColumnsCheck.rows.map(r => r.column_name);
+        const hasCuisineTags = availableColumns.includes('cuisine_tags');
+        const hasDietTags = availableColumns.includes('diet_tags');
+        const hasAllergenTags = availableColumns.includes('allergen_tags');
+        const hasRatingAvg = availableColumns.includes('rating_avg');
+        const hasRatingCount = availableColumns.includes('rating_count');
+
+        // Проверяем наличие полей в users
+        const usersColumnsCheck = await pool.query(`
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_schema = 'public' AND table_name = 'users'
+            AND column_name IN ('cuisine_tags', 'logo_url', 'rating', 'total_reviews')
+        `);
+        const availableUserColumns = usersColumnsCheck.rows.map(r => r.column_name);
+        const userHasCuisineTags = availableUserColumns.includes('cuisine_tags');
+        const userHasLogoUrl = availableUserColumns.includes('logo_url');
+        const userHasRating = availableUserColumns.includes('rating');
+        const userHasTotalReviews = availableUserColumns.includes('total_reviews');
+
+        // Формируем SQL запрос
+        let query = `
+            SELECT 
+                o.id,
+                o.title,
+                o.description,
+                o.image_url,
+                o.original_price,
+                o.discounted_price,
+                o.quantity_available,
+                o.pickup_time_start,
+                o.pickup_time_end,
+                o.is_active,
+                ${hasCuisineTags ? 'o.cuisine_tags' : 'NULL::text[] as cuisine_tags'},
+                ${hasDietTags ? 'o.diet_tags' : 'NULL::text[] as diet_tags'},
+                ${hasAllergenTags ? 'o.allergen_tags' : 'NULL::text[] as allergen_tags'},
+                ${hasRatingAvg ? 'o.rating_avg' : 'NULL::numeric as rating_avg'},
+                ${hasRatingCount ? 'o.rating_count' : '0::integer as rating_count'},
+                o.created_at,
+                u.id as business_id,
+                u.name as business_name,
+                u.address as business_address,
+                u.coord_0 as business_lat,
+                u.coord_1 as business_lon,
+                ${userHasLogoUrl ? 'u.logo_url' : 'NULL::text as business_logo_url'} as business_logo_url,
+                ${userHasRating ? 'u.rating' : '0::numeric as business_rating'} as business_rating,
+                ${userHasTotalReviews ? 'u.total_reviews' : '0::integer as business_total_reviews'} as business_total_reviews
+        `;
+        
+        // Добавляем поля локации только если таблица существует
+        if (hasBusinessLocations) {
+            query += `,
+                bl.id as location_id,
+                bl.name as location_name,
+                bl.address as location_address,
+                bl.lat as location_lat,
+                bl.lon as location_lon
+            `;
+        } else {
+            query += `,
+                NULL::integer as location_id,
+                NULL::text as location_name,
+                NULL::text as location_address,
+                NULL::numeric as location_lat,
+                NULL::numeric as location_lon
+            `;
+        }
+
+        // Добавляем расчет расстояния, если есть координаты
+        if (lat && lon) {
+            if (hasBusinessLocations) {
+                query += `,
+                    (
+                        6371 * acos(
+                            LEAST(1, GREATEST(-1,
+                                cos(radians($1)) * cos(radians(COALESCE(bl.lat, u.coord_0))) *
+                                cos(radians(COALESCE(bl.lon, u.coord_1)) - radians($2)) +
+                                sin(radians($1)) * sin(radians(COALESCE(bl.lat, u.coord_0)))
+                            ))
+                        )
+                    ) as distance_km
+                `;
+            } else {
+                query += `,
+                    (
+                        6371 * acos(
+                            LEAST(1, GREATEST(-1,
+                                cos(radians($1)) * cos(radians(u.coord_0)) *
+                                cos(radians(u.coord_1) - radians($2)) +
+                                sin(radians($1)) * sin(radians(u.coord_0))
+                            ))
+                        )
+                    ) as distance_km
+                `;
+            }
+        } else {
+            query += `, NULL as distance_km`;
+        }
+
+        const params = [];
+        let paramIndex = 1;
+        let whereConditions = `
+            FROM offers o
+            JOIN users u ON o.business_id = u.id
+            ${hasBusinessLocations ? 'LEFT JOIN business_locations bl ON o.location_id = bl.id AND bl.is_active = true' : ''}
+            WHERE u.is_business = true
+            AND o.is_active = true
+            AND o.quantity_available > 0
+            AND (u.coord_0 IS NOT NULL AND u.coord_1 IS NOT NULL)
+        `;
+
+        // Фильтр по геолокации (радиус)
+        if (lat && lon) {
+            const latVal = parseFloat(lat);
+            const lonVal = parseFloat(lon);
+            const radius = parseFloat(radius_km) || 10;
+            
+            if (isNaN(latVal) || isNaN(lonVal) || latVal < -90 || latVal > 90 || lonVal < -180 || lonVal > 180) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'INVALID_COORDINATES',
+                    message: 'Некорректные координаты'
+                });
+            }
+            
+            params.push(latVal, lonVal, radius);
+            if (hasBusinessLocations) {
+                whereConditions += ` AND (
+                    COALESCE(bl.lat, u.coord_0) IS NOT NULL
+                    AND COALESCE(bl.lon, u.coord_1) IS NOT NULL
+                    AND (
+                        6371 * acos(
+                            LEAST(1, GREATEST(-1,
+                                cos(radians($${paramIndex})) * cos(radians(COALESCE(bl.lat, u.coord_0))) *
+                                cos(radians(COALESCE(bl.lon, u.coord_1)) - radians($${paramIndex + 1})) +
+                                sin(radians($${paramIndex})) * sin(radians(COALESCE(bl.lat, u.coord_0)))
+                            ))
+                        ) <= $${paramIndex + 2}
+                    )
+                )`;
+            } else {
+                whereConditions += ` AND (
+                    6371 * acos(
+                        LEAST(1, GREATEST(-1,
+                            cos(radians($${paramIndex})) * cos(radians(u.coord_0)) *
+                            cos(radians(u.coord_1) - radians($${paramIndex + 1})) +
+                            sin(radians($${paramIndex})) * sin(radians(u.coord_0))
+                        ))
+                    ) <= $${paramIndex + 2}
+                )`;
+            }
+            paramIndex += 3;
+        }
+
+        // Поиск по тексту
+        if (q) {
+            whereConditions += ` AND (
+                o.title ILIKE $${paramIndex}
+                OR o.description ILIKE $${paramIndex}
+                OR u.name ILIKE $${paramIndex}
+            )`;
+            params.push(`%${q}%`);
+            paramIndex++;
+        }
+
+        // Фильтр по цене
+        if (price_min) {
+            whereConditions += ` AND o.discounted_price >= $${paramIndex}`;
+            params.push(parseFloat(price_min));
+            paramIndex++;
+        }
+        if (price_max) {
+            whereConditions += ` AND o.discounted_price <= $${paramIndex}`;
+            params.push(parseFloat(price_max));
+            paramIndex++;
+        }
+
+        // Фильтр по времени самовывоза
+        if (pickup_from) {
+            whereConditions += ` AND o.pickup_time_start >= $${paramIndex}::time`;
+            params.push(pickup_from);
+            paramIndex++;
+        }
+        if (pickup_to) {
+            whereConditions += ` AND o.pickup_time_end <= $${paramIndex}::time`;
+            params.push(pickup_to);
+            paramIndex++;
+        }
+
+        // Фильтр по кухне
+        if (cuisines && (hasCuisineTags || userHasCuisineTags)) {
+            const cuisineArray = Array.isArray(cuisines) ? cuisines : cuisines.split(',').map(c => c.trim());
+            if (cuisineArray.length > 0) {
+                const conditions = [];
+                if (hasCuisineTags) {
+                    conditions.push(`o.cuisine_tags && $${paramIndex}::text[]`);
+                }
+                if (userHasCuisineTags) {
+                    conditions.push(`u.cuisine_tags && $${paramIndex}::text[]`);
+                }
+                if (conditions.length > 0) {
+                    whereConditions += ` AND (${conditions.join(' OR ')})`;
+                    params.push(cuisineArray);
+                    paramIndex++;
+                }
+            }
+        }
+
+        // Фильтр по диетам
+        if (diets && hasDietTags) {
+            const dietArray = Array.isArray(diets) ? diets : diets.split(',').map(d => d.trim());
+            if (dietArray.length > 0) {
+                whereConditions += ` AND o.diet_tags && $${paramIndex}::text[]`;
+                params.push(dietArray);
+                paramIndex++;
+            }
+        }
+
+        // Исключение аллергенов
+        if (allergens && hasAllergenTags) {
+            const allergenArray = Array.isArray(allergens) ? allergens : allergens.split(',').map(a => a.trim());
+            if (allergenArray.length > 0) {
+                whereConditions += ` AND NOT (o.allergen_tags && $${paramIndex}::text[])`;
+                params.push(allergenArray);
+                paramIndex++;
+            }
+        }
+
+        // Сортировка
+        let orderBy = '';
+        switch (sort) {
+            case 'price':
+                orderBy = ` ORDER BY o.discounted_price ASC`;
+                break;
+            case 'rating':
+                if (hasRatingAvg && hasRatingCount) {
+                    orderBy = ` ORDER BY COALESCE(o.rating_avg, 0) DESC, o.rating_count DESC`;
+                } else {
+                    orderBy = ` ORDER BY o.created_at DESC`;
+                }
+                break;
+            case 'distance':
+            default:
+                if (lat && lon) {
+                    orderBy = ` ORDER BY distance_km ASC`;
+                } else {
+                    orderBy = ` ORDER BY o.created_at DESC`;
+                }
+                break;
+        }
+
+        // Формируем финальный запрос
+        query += whereConditions + orderBy;
+
+        // Подсчет общего количества
+        let countQuery = `
+            SELECT COUNT(DISTINCT o.id) as count
+            FROM offers o
+            JOIN users u ON o.business_id = u.id
+            ${hasBusinessLocations ? 'LEFT JOIN business_locations bl ON o.location_id = bl.id AND bl.is_active = true' : ''}
+            WHERE u.is_business = true
+            AND o.is_active = true
+            AND o.quantity_available > 0
+            AND (u.coord_0 IS NOT NULL AND u.coord_1 IS NOT NULL)
+        `;
+        
+        const whereStart = whereConditions.indexOf('WHERE');
+        if (whereStart !== -1) {
+            const conditionsAfterWhere = whereConditions.substring(whereStart + 5).trim();
+            if (conditionsAfterWhere) {
+                countQuery += ' AND ' + conditionsAfterWhere;
+            }
+        }
+        
+        const countParams = params.slice();
+        
+        let totalCount = 0;
+        try {
+            const countResult = await pool.query(countQuery, countParams);
+            totalCount = parseInt(countResult.rows[0]?.count || 0);
+        } catch (countError) {
+            logger.error('Ошибка подсчета количества:', {
+                error: countError.message,
+                stack: countError.stack
+            });
+            totalCount = 0;
+        }
+
+        // Добавляем лимит и оффсет
+        const finalParamIndex = paramIndex;
+        query += ` LIMIT $${finalParamIndex} OFFSET $${finalParamIndex + 1}`;
+        params.push(limitNum, offset);
+
+        // Выполняем запрос
+        const result = await pool.query(query, params);
+
+        // Форматируем результат
+        const offers = result.rows.map(row => {
+            const businessLat = row.business_lat != null ? parseFloat(row.business_lat) : null;
+            const businessLon = row.business_lon != null ? parseFloat(row.business_lon) : null;
+            const businessCoords = (businessLat != null && businessLon != null) ? [businessLat, businessLon] : null;
+            
+            let locationCoords = null;
+            if (row.location_id && row.location_lat != null && row.location_lon != null) {
+                const locLat = parseFloat(row.location_lat);
+                const locLon = parseFloat(row.location_lon);
+                if (!isNaN(locLat) && !isNaN(locLon)) {
+                    locationCoords = [locLat, locLon];
+                }
+            }
+            
+            return {
+                id: row.id,
+                title: row.title,
+                description: row.description,
+                image_url: row.image_url,
+                original_price: parseFloat(row.original_price) || 0,
+                discounted_price: parseFloat(row.discounted_price) || 0,
+                quantity_available: row.quantity_available || 0,
+                pickup_time_start: row.pickup_time_start,
+                pickup_time_end: row.pickup_time_end,
+                is_active: row.is_active,
+                cuisine_tags: (row.cuisine_tags && Array.isArray(row.cuisine_tags)) ? row.cuisine_tags : [],
+                diet_tags: (row.diet_tags && Array.isArray(row.diet_tags)) ? row.diet_tags : [],
+                allergen_tags: (row.allergen_tags && Array.isArray(row.allergen_tags)) ? row.allergen_tags : [],
+                rating_avg: row.rating_avg != null ? parseFloat(row.rating_avg) : 0,
+                rating_count: row.rating_count != null ? parseInt(row.rating_count) : 0,
+                created_at: row.created_at,
+                distance_km: row.distance_km ? parseFloat(row.distance_km) : null,
+                business: {
+                    id: row.business_id,
+                    name: row.business_name || '',
+                    address: row.business_address || '',
+                    coords: businessCoords,
+                    logo_url: row.business_logo_url || null,
+                    rating: parseFloat(row.business_rating) || 0,
+                    total_reviews: row.business_total_reviews || 0
+                },
+                location: row.location_id ? {
+                    id: row.location_id,
+                    name: row.location_name || '',
+                    address: row.location_address || '',
+                    coords: locationCoords
+                } : null
+            };
+        });
+
+        const responseData = {
+            offers,
+            meta: {
+                total: totalCount,
+                page: pageNum,
+                limit: limitNum,
+                total_pages: Math.ceil(totalCount / limitNum)
+            }
+        };
+
+        // Сохраняем в кэш
+        searchCache.set(cacheKey, {
+            timestamp: Date.now(),
+            data: responseData,
+            meta: responseData.meta
+        });
+
+        // Очистка старых записей из кэша
+        if (searchCache.size > 1000) {
+            const now = Date.now();
+            for (const [key, value] of searchCache.entries()) {
+                if (now - value.timestamp > CACHE_TTL) {
+                    searchCache.delete(key);
+                }
+            }
+        }
+
+        logger.info(`🔍 Поиск завершен: найдено ${offers.length} офферов из ${totalCount}`);
+
+        res.json({
+            success: true,
+            data: responseData
+        });
+    } catch (error) {
+        logger.error('❌ Ошибка в /offers/search:', {
+            message: error.message,
+            stack: error.stack,
+            query: req.query,
+            url: req.url
+        });
+        
+        res.status(200).json({
+            success: true,
+            data: {
+                offers: [],
+                meta: {
+                    total: 0,
+                    page: parseInt(req.query.page) || 1,
+                    limit: parseInt(req.query.limit) || 20,
+                    total_pages: 0
+                }
+            },
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+}));
+
+// POST /offers/upload-photo/:offer_id - Загрузить фото для предложения
 offersRouter.post("/upload-photo/:offer_id", upload.single("photo"), asyncHandler(async (req, res) => {
     const { offer_id } = req.params;
     const businessId = req.session.userId;
@@ -614,496 +1091,6 @@ offersRouter.post("/toggle", asyncHandler(async (req, res) => {
 }));
 
 // Дубликат удален - маршрут уже определен выше в секции специфичных маршрутов
-
-// Дубликат удален - маршрут уже определен выше в секции специфичных маршрутов
-// offersRouter.get("/search", asyncHandler(async (req, res) => {
-    try {
-        // Проверяем существование основных таблиц
-        const tablesCheck = await pool.query(`
-            SELECT table_name FROM information_schema.tables 
-            WHERE table_schema = 'public' AND table_name IN ('offers', 'users')
-        `);
-        const existingTables = tablesCheck.rows.map(r => r.table_name);
-        
-        if (!existingTables.includes('offers') || !existingTables.includes('users')) {
-            logger.warn('Таблицы offers или users не найдены');
-            return res.json({
-                success: true,
-                data: {
-                    offers: [],
-                    meta: {
-                        total: 0,
-                        page: 1,
-                        limit: 20,
-                        total_pages: 0
-                    }
-                }
-            });
-        }
-
-        // Параметры поиска
-        const {
-            q, // Поисковый запрос
-            lat, // Широта
-            lon, // Долгота
-            radius_km = 10, // Радиус поиска в км
-            pickup_from, // Время начала самовывоза
-            pickup_to, // Время окончания самовывоза
-            price_min, // Минимальная цена
-            price_max, // Максимальная цена
-            cuisines, // Массив тегов кухни (строка с запятыми или массив)
-            diets, // Массив тегов диет
-            allergens, // Массив тегов аллергенов (исключить офферы с этими аллергенами)
-            sort = 'distance', // Сортировка: distance, price, rating
-            page = 1, // Номер страницы
-            limit = 20 // Лимит на страницу
-        } = req.query;
-
-        // Валидация
-        const pageNum = Math.max(1, parseInt(page) || 1);
-        const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 20));
-        const offset = (pageNum - 1) * limitNum;
-
-        // Проверка кэша
-        const cacheKey = JSON.stringify(req.query);
-        const cached = searchCache.get(cacheKey);
-        if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-            logger.info(`📦 Возвращаем из кэша: ${cacheKey.substring(0, 50)}...`);
-            return res.json({
-                success: true,
-                data: cached.data,
-                meta: cached.meta
-            });
-        }
-
-        // Проверяем существование таблицы business_locations
-        const businessLocationsCheck = await pool.query(`
-            SELECT table_name FROM information_schema.tables 
-            WHERE table_schema = 'public' AND table_name = 'business_locations'
-        `);
-        const hasBusinessLocations = businessLocationsCheck.rows.length > 0;
-
-        // Проверяем наличие дополнительных полей в offers
-        const offersColumnsCheck = await pool.query(`
-            SELECT column_name FROM information_schema.columns 
-            WHERE table_schema = 'public' AND table_name = 'offers'
-            AND column_name IN ('cuisine_tags', 'diet_tags', 'allergen_tags', 'rating_avg', 'rating_count')
-        `);
-        const availableColumns = offersColumnsCheck.rows.map(r => r.column_name);
-        const hasCuisineTags = availableColumns.includes('cuisine_tags');
-        const hasDietTags = availableColumns.includes('diet_tags');
-        const hasAllergenTags = availableColumns.includes('allergen_tags');
-        const hasRatingAvg = availableColumns.includes('rating_avg');
-        const hasRatingCount = availableColumns.includes('rating_count');
-
-        // Проверяем наличие полей в users
-        const usersColumnsCheck = await pool.query(`
-            SELECT column_name FROM information_schema.columns 
-            WHERE table_schema = 'public' AND table_name = 'users'
-            AND column_name IN ('cuisine_tags', 'logo_url', 'rating', 'total_reviews')
-        `);
-        const availableUserColumns = usersColumnsCheck.rows.map(r => r.column_name);
-        const userHasCuisineTags = availableUserColumns.includes('cuisine_tags');
-        const userHasLogoUrl = availableUserColumns.includes('logo_url');
-        const userHasRating = availableUserColumns.includes('rating');
-        const userHasTotalReviews = availableUserColumns.includes('total_reviews');
-
-        // Формируем SQL запрос
-        let query = `
-            SELECT 
-                o.id,
-                o.title,
-                o.description,
-                o.image_url,
-                o.original_price,
-                o.discounted_price,
-                o.quantity_available,
-                o.pickup_time_start,
-                o.pickup_time_end,
-                o.is_active,
-                ${hasCuisineTags ? 'o.cuisine_tags' : 'NULL::text[] as cuisine_tags'},
-                ${hasDietTags ? 'o.diet_tags' : 'NULL::text[] as diet_tags'},
-                ${hasAllergenTags ? 'o.allergen_tags' : 'NULL::text[] as allergen_tags'},
-                ${hasRatingAvg ? 'o.rating_avg' : 'NULL::numeric as rating_avg'},
-                ${hasRatingCount ? 'o.rating_count' : '0::integer as rating_count'},
-                o.created_at,
-                u.id as business_id,
-                u.name as business_name,
-                u.address as business_address,
-                u.coord_0 as business_lat,
-                u.coord_1 as business_lon,
-                ${userHasLogoUrl ? 'u.logo_url' : 'NULL::text as business_logo_url'} as business_logo_url,
-                ${userHasRating ? 'u.rating' : '0::numeric as business_rating'} as business_rating,
-                ${userHasTotalReviews ? 'u.total_reviews' : '0::integer as business_total_reviews'} as business_total_reviews
-        `;
-        
-        // Добавляем поля локации только если таблица существует
-        if (hasBusinessLocations) {
-            query += `,
-                bl.id as location_id,
-                bl.name as location_name,
-                bl.address as location_address,
-                bl.lat as location_lat,
-                bl.lon as location_lon
-            `;
-        } else {
-            query += `,
-                NULL::integer as location_id,
-                NULL::text as location_name,
-                NULL::text as location_address,
-                NULL::numeric as location_lat,
-                NULL::numeric as location_lon
-            `;
-        }
-
-        // Добавляем расчет расстояния, если есть координаты
-        // Используем координаты локации, если есть, иначе координаты бизнеса
-        // Используем LEAST/GREATEST для защиты от ошибок округления в acos
-        if (lat && lon) {
-            if (hasBusinessLocations) {
-                query += `,
-                    (
-                        6371 * acos(
-                            LEAST(1, GREATEST(-1,
-                                cos(radians($1)) * cos(radians(COALESCE(bl.lat, u.coord_0))) *
-                                cos(radians(COALESCE(bl.lon, u.coord_1)) - radians($2)) +
-                                sin(radians($1)) * sin(radians(COALESCE(bl.lat, u.coord_0)))
-                            ))
-                        )
-                    ) as distance_km
-                `;
-            } else {
-                query += `,
-                    (
-                        6371 * acos(
-                            LEAST(1, GREATEST(-1,
-                                cos(radians($1)) * cos(radians(u.coord_0)) *
-                                cos(radians(u.coord_1) - radians($2)) +
-                                sin(radians($1)) * sin(radians(u.coord_0))
-                            ))
-                        )
-                    ) as distance_km
-                `;
-            }
-        } else {
-            query += `, NULL as distance_km`;
-        }
-
-        const params = [];
-        let paramIndex = 1;
-        let whereConditions = `
-            FROM offers o
-            JOIN users u ON o.business_id = u.id
-            ${hasBusinessLocations ? 'LEFT JOIN business_locations bl ON o.location_id = bl.id AND bl.is_active = true' : ''}
-            WHERE u.is_business = true
-            AND o.is_active = true
-            AND o.quantity_available > 0
-            AND (u.coord_0 IS NOT NULL AND u.coord_1 IS NOT NULL)
-        `;
-
-        // Фильтр по геолокации (радиус) - используем координаты локации, если есть
-        if (lat && lon) {
-            const latVal = parseFloat(lat);
-            const lonVal = parseFloat(lon);
-            const radius = parseFloat(radius_km) || 10;
-            
-            // Валидация координат
-            if (isNaN(latVal) || isNaN(lonVal) || latVal < -90 || latVal > 90 || lonVal < -180 || lonVal > 180) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'INVALID_COORDINATES',
-                    message: 'Некорректные координаты'
-                });
-            }
-            
-            params.push(latVal, lonVal, radius);
-            if (hasBusinessLocations) {
-                whereConditions += ` AND (
-                    COALESCE(bl.lat, u.coord_0) IS NOT NULL
-                    AND COALESCE(bl.lon, u.coord_1) IS NOT NULL
-                    AND (
-                        6371 * acos(
-                            LEAST(1, GREATEST(-1,
-                                cos(radians($${paramIndex})) * cos(radians(COALESCE(bl.lat, u.coord_0))) *
-                                cos(radians(COALESCE(bl.lon, u.coord_1)) - radians($${paramIndex + 1})) +
-                                sin(radians($${paramIndex})) * sin(radians(COALESCE(bl.lat, u.coord_0)))
-                            ))
-                        ) <= $${paramIndex + 2}
-                    )
-                )`;
-            } else {
-                whereConditions += ` AND (
-                    6371 * acos(
-                        LEAST(1, GREATEST(-1,
-                            cos(radians($${paramIndex})) * cos(radians(u.coord_0)) *
-                            cos(radians(u.coord_1) - radians($${paramIndex + 1})) +
-                            sin(radians($${paramIndex})) * sin(radians(u.coord_0))
-                        ))
-                    ) <= $${paramIndex + 2}
-                )`;
-            }
-            paramIndex += 3;
-        }
-
-        // Поиск по тексту
-        if (q) {
-            whereConditions += ` AND (
-                o.title ILIKE $${paramIndex}
-                OR o.description ILIKE $${paramIndex}
-                OR u.name ILIKE $${paramIndex}
-            )`;
-            params.push(`%${q}%`);
-            paramIndex++;
-        }
-
-        // Фильтр по цене
-        if (price_min) {
-            whereConditions += ` AND o.discounted_price >= $${paramIndex}`;
-            params.push(parseFloat(price_min));
-            paramIndex++;
-        }
-        if (price_max) {
-            whereConditions += ` AND o.discounted_price <= $${paramIndex}`;
-            params.push(parseFloat(price_max));
-            paramIndex++;
-        }
-
-        // Фильтр по времени самовывоза
-        if (pickup_from) {
-            whereConditions += ` AND o.pickup_time_start >= $${paramIndex}::time`;
-            params.push(pickup_from);
-            paramIndex++;
-        }
-        if (pickup_to) {
-            whereConditions += ` AND o.pickup_time_end <= $${paramIndex}::time`;
-            params.push(pickup_to);
-            paramIndex++;
-        }
-
-        // Фильтр по кухне (только если поля существуют)
-        if (cuisines && (hasCuisineTags || userHasCuisineTags)) {
-            const cuisineArray = Array.isArray(cuisines) ? cuisines : cuisines.split(',').map(c => c.trim());
-            if (cuisineArray.length > 0) {
-                const conditions = [];
-                if (hasCuisineTags) {
-                    conditions.push(`o.cuisine_tags && $${paramIndex}::text[]`);
-                }
-                if (userHasCuisineTags) {
-                    conditions.push(`u.cuisine_tags && $${paramIndex}::text[]`);
-                }
-                if (conditions.length > 0) {
-                    whereConditions += ` AND (${conditions.join(' OR ')})`;
-                    params.push(cuisineArray);
-                    paramIndex++;
-                }
-            }
-        }
-
-        // Фильтр по диетам (только если поле существует)
-        if (diets && hasDietTags) {
-            const dietArray = Array.isArray(diets) ? diets : diets.split(',').map(d => d.trim());
-            if (dietArray.length > 0) {
-                whereConditions += ` AND o.diet_tags && $${paramIndex}::text[]`;
-                params.push(dietArray);
-                paramIndex++;
-            }
-        }
-
-        // Исключение аллергенов (только если поле существует)
-        if (allergens && hasAllergenTags) {
-            const allergenArray = Array.isArray(allergens) ? allergens : allergens.split(',').map(a => a.trim());
-            if (allergenArray.length > 0) {
-                whereConditions += ` AND NOT (o.allergen_tags && $${paramIndex}::text[])`;
-                params.push(allergenArray);
-                paramIndex++;
-            }
-        }
-
-        // Сортировка
-        let orderBy = '';
-        switch (sort) {
-            case 'price':
-                orderBy = ` ORDER BY o.discounted_price ASC`;
-                break;
-            case 'rating':
-                if (hasRatingAvg && hasRatingCount) {
-                    orderBy = ` ORDER BY COALESCE(o.rating_avg, 0) DESC, o.rating_count DESC`;
-                } else {
-                    orderBy = ` ORDER BY o.created_at DESC`;
-                }
-                break;
-            case 'distance':
-            default:
-                if (lat && lon) {
-                    orderBy = ` ORDER BY distance_km ASC`;
-                } else {
-                    orderBy = ` ORDER BY o.created_at DESC`;
-                }
-                break;
-        }
-
-        // Формируем финальный запрос
-        query += whereConditions + orderBy;
-
-        // Подсчет общего количества (для пагинации) - делаем ДО добавления LIMIT/OFFSET
-        // Создаем отдельный запрос для подсчета с теми же условиями
-        let countQuery = `
-            SELECT COUNT(DISTINCT o.id) as count
-            FROM offers o
-            JOIN users u ON o.business_id = u.id
-            ${hasBusinessLocations ? 'LEFT JOIN business_locations bl ON o.location_id = bl.id AND bl.is_active = true' : ''}
-            WHERE u.is_business = true
-            AND o.is_active = true
-            AND o.quantity_available > 0
-            AND (u.coord_0 IS NOT NULL AND u.coord_1 IS NOT NULL)
-        `;
-        
-        // Добавляем те же условия WHERE, что и в основном запросе
-        // Извлекаем условия после "WHERE" из whereConditions
-        const whereStart = whereConditions.indexOf('WHERE');
-        if (whereStart !== -1) {
-            const conditionsAfterWhere = whereConditions.substring(whereStart + 5).trim(); // Пропускаем "WHERE"
-            if (conditionsAfterWhere) {
-                countQuery += ' AND ' + conditionsAfterWhere;
-            }
-        }
-        
-        // Используем те же параметры, но без LIMIT/OFFSET (они добавляются позже в основном запросе)
-        const countParams = params.slice(); // Копируем все параметры
-        
-        let totalCount = 0;
-        try {
-            const countResult = await pool.query(countQuery, countParams);
-            totalCount = parseInt(countResult.rows[0]?.count || 0);
-        } catch (countError) {
-            logger.error('Ошибка подсчета количества:', {
-                error: countError.message,
-                stack: countError.stack,
-                query: countQuery.substring(0, 200),
-                paramsCount: countParams.length
-            });
-            // Если подсчет не удался, используем 0
-            totalCount = 0;
-        }
-
-        // Добавляем лимит и оффсет
-        const finalParamIndex = paramIndex;
-        query += ` LIMIT $${finalParamIndex} OFFSET $${finalParamIndex + 1}`;
-        params.push(limitNum, offset);
-
-        // Выполняем запрос
-        const result = await pool.query(query, params);
-
-        // Форматируем результат
-        const offers = result.rows.map(row => {
-            // Безопасное преобразование координат бизнеса
-            const businessLat = row.business_lat != null ? parseFloat(row.business_lat) : null;
-            const businessLon = row.business_lon != null ? parseFloat(row.business_lon) : null;
-            const businessCoords = (businessLat != null && businessLon != null) ? [businessLat, businessLon] : null;
-            
-            // Безопасное преобразование координат локации
-            let locationCoords = null;
-            if (row.location_id && row.location_lat != null && row.location_lon != null) {
-                const locLat = parseFloat(row.location_lat);
-                const locLon = parseFloat(row.location_lon);
-                if (!isNaN(locLat) && !isNaN(locLon)) {
-                    locationCoords = [locLat, locLon];
-                }
-            }
-            
-            return {
-                id: row.id,
-                title: row.title,
-                description: row.description,
-                image_url: row.image_url,
-                original_price: parseFloat(row.original_price) || 0,
-                discounted_price: parseFloat(row.discounted_price) || 0,
-                quantity_available: row.quantity_available || 0,
-                pickup_time_start: row.pickup_time_start,
-                pickup_time_end: row.pickup_time_end,
-                is_active: row.is_active,
-                cuisine_tags: (row.cuisine_tags && Array.isArray(row.cuisine_tags)) ? row.cuisine_tags : [],
-                diet_tags: (row.diet_tags && Array.isArray(row.diet_tags)) ? row.diet_tags : [],
-                allergen_tags: (row.allergen_tags && Array.isArray(row.allergen_tags)) ? row.allergen_tags : [],
-                rating_avg: row.rating_avg != null ? parseFloat(row.rating_avg) : 0,
-                rating_count: row.rating_count != null ? parseInt(row.rating_count) : 0,
-                created_at: row.created_at,
-                distance_km: row.distance_km ? parseFloat(row.distance_km) : null,
-                business: {
-                    id: row.business_id,
-                    name: row.business_name || '',
-                    address: row.business_address || '',
-                    coords: businessCoords,
-                    logo_url: row.business_logo_url || null,
-                    rating: parseFloat(row.business_rating) || 0,
-                    total_reviews: row.business_total_reviews || 0
-                },
-                location: row.location_id ? {
-                    id: row.location_id,
-                    name: row.location_name || '',
-                    address: row.location_address || '',
-                    coords: locationCoords
-                } : null
-            };
-        });
-
-        const responseData = {
-            offers,
-            meta: {
-                total: totalCount,
-                page: pageNum,
-                limit: limitNum,
-                total_pages: Math.ceil(totalCount / limitNum)
-            }
-        };
-
-        // Сохраняем в кэш
-        searchCache.set(cacheKey, {
-            timestamp: Date.now(),
-            data: responseData,
-            meta: responseData.meta
-        });
-
-        // Очистка старых записей из кэша (раз в 100 запросов)
-        if (searchCache.size > 1000) {
-            const now = Date.now();
-            for (const [key, value] of searchCache.entries()) {
-                if (now - value.timestamp > CACHE_TTL) {
-                    searchCache.delete(key);
-                }
-            }
-        }
-
-        logger.info(`🔍 Поиск завершен: найдено ${offers.length} офферов из ${totalCount}`);
-
-        res.json({
-            success: true,
-            data: responseData
-        });
-    } catch (error) {
-        logger.error('❌ Ошибка в /offers/search:', {
-            message: error.message,
-            stack: error.stack,
-            query: req.query,
-            url: req.url
-        });
-        
-        // Возвращаем пустой результат вместо ошибки, чтобы не ломать фронтенд
-        res.status(200).json({
-            success: true,
-            data: {
-                offers: [],
-                meta: {
-                    total: 0,
-                    page: parseInt(req.query.page) || 1,
-                    limit: parseInt(req.query.limit) || 20,
-                    total_pages: 0
-                }
-            },
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined
-        });
-    }
-}));
 
 // Публичные предложения для клиентов
 offersRouter.get("/", asyncHandler(async (req, res) => {
