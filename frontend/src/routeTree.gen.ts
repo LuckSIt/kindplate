@@ -10,15 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as OrderRouteImport } from './routes/order'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SearchIndexRouteImport } from './routes/search/index'
 import { Route as PanelIndexRouteImport } from './routes/panel/index'
+import { Route as ListIndexRouteImport } from './routes/list/index'
 import { Route as HomeIndexRouteImport } from './routes/home/index'
 import { Route as CheckoutIndexRouteImport } from './routes/checkout/index'
-import { Route as CartIndexRouteImport } from './routes/cart/index'
 import { Route as BizIndexRouteImport } from './routes/biz/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
@@ -33,6 +35,7 @@ import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
 import { Route as LegalFaqRouteImport } from './routes/legal/faq'
 import { Route as CheckoutSuccessRouteImport } from './routes/checkout/success'
 import { Route as BusinessBusinessIdRouteImport } from './routes/business/$businessId'
+import { Route as PickupCodeOrderIdIndexRouteImport } from './routes/pickup-code/$orderId/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
 import { Route as PaymentOrderIdSuccessRouteImport } from './routes/payment/$orderId/success'
 import { Route as PaymentOrderIdCancelRouteImport } from './routes/payment/$orderId/cancel'
@@ -44,6 +47,16 @@ import { Route as BizOffersOfferIdEditRouteImport } from './routes/biz/offers/$o
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrderRoute = OrderRouteImport.update({
+  id: '/order',
+  path: '/order',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -76,6 +89,11 @@ const PanelIndexRoute = PanelIndexRouteImport.update({
   path: '/panel/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ListIndexRoute = ListIndexRouteImport.update({
+  id: '/list/',
+  path: '/list/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HomeIndexRoute = HomeIndexRouteImport.update({
   id: '/home/',
   path: '/home/',
@@ -85,11 +103,6 @@ const CheckoutIndexRoute = CheckoutIndexRouteImport.update({
   id: '/checkout/',
   path: '/checkout/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const CartIndexRoute = CartIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => CartRoute,
 } as any)
 const BizIndexRoute = BizIndexRouteImport.update({
   id: '/biz/',
@@ -161,6 +174,11 @@ const BusinessBusinessIdRoute = BusinessBusinessIdRouteImport.update({
   path: '/business/$businessId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PickupCodeOrderIdIndexRoute = PickupCodeOrderIdIndexRouteImport.update({
+  id: '/pickup-code/$orderId/',
+  path: '/pickup-code/$orderId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
@@ -202,8 +220,10 @@ const BizOffersOfferIdEditRoute = BizOffersOfferIdEditRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/cart': typeof CartRouteWithChildren
+  '/cart': typeof CartRoute
   '/favorites': typeof FavoritesRoute
+  '/order': typeof OrderRoute
+  '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/business/$businessId': typeof BusinessBusinessIdRoute
   '/checkout/success': typeof CheckoutSuccessRoute
@@ -219,15 +239,16 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/biz': typeof BizIndexRoute
-  '/cart/': typeof CartIndexRoute
   '/checkout': typeof CheckoutIndexRoute
   '/home': typeof HomeIndexRoute
+  '/list': typeof ListIndexRoute
   '/panel': typeof PanelIndexRoute
   '/search': typeof SearchIndexRoute
   '/biz/offers/create': typeof BizOffersCreateRoute
   '/payment/$orderId/cancel': typeof PaymentOrderIdCancelRoute
   '/payment/$orderId/success': typeof PaymentOrderIdSuccessRoute
   '/auth/login': typeof AuthLoginIndexRoute
+  '/pickup-code/$orderId': typeof PickupCodeOrderIdIndexRoute
   '/biz/offers/$offerId/edit': typeof BizOffersOfferIdEditRoute
   '/auth/register/business': typeof AuthRegisterBusinessIndexRoute
   '/auth/register/customer': typeof AuthRegisterCustomerIndexRoute
@@ -235,7 +256,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
+  '/cart': typeof CartRoute
   '/favorites': typeof FavoritesRoute
+  '/order': typeof OrderRoute
+  '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/business/$businessId': typeof BusinessBusinessIdRoute
   '/checkout/success': typeof CheckoutSuccessRoute
@@ -251,15 +275,16 @@ export interface FileRoutesByTo {
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/biz': typeof BizIndexRoute
-  '/cart': typeof CartIndexRoute
   '/checkout': typeof CheckoutIndexRoute
   '/home': typeof HomeIndexRoute
+  '/list': typeof ListIndexRoute
   '/panel': typeof PanelIndexRoute
   '/search': typeof SearchIndexRoute
   '/biz/offers/create': typeof BizOffersCreateRoute
   '/payment/$orderId/cancel': typeof PaymentOrderIdCancelRoute
   '/payment/$orderId/success': typeof PaymentOrderIdSuccessRoute
   '/auth/login': typeof AuthLoginIndexRoute
+  '/pickup-code/$orderId': typeof PickupCodeOrderIdIndexRoute
   '/biz/offers/$offerId/edit': typeof BizOffersOfferIdEditRoute
   '/auth/register/business': typeof AuthRegisterBusinessIndexRoute
   '/auth/register/customer': typeof AuthRegisterCustomerIndexRoute
@@ -268,8 +293,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/cart': typeof CartRouteWithChildren
+  '/cart': typeof CartRoute
   '/favorites': typeof FavoritesRoute
+  '/order': typeof OrderRoute
+  '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/business/$businessId': typeof BusinessBusinessIdRoute
   '/checkout/success': typeof CheckoutSuccessRoute
@@ -285,15 +312,16 @@ export interface FileRoutesById {
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/biz/': typeof BizIndexRoute
-  '/cart/': typeof CartIndexRoute
   '/checkout/': typeof CheckoutIndexRoute
   '/home/': typeof HomeIndexRoute
+  '/list/': typeof ListIndexRoute
   '/panel/': typeof PanelIndexRoute
   '/search/': typeof SearchIndexRoute
   '/biz/offers/create': typeof BizOffersCreateRoute
   '/payment/$orderId/cancel': typeof PaymentOrderIdCancelRoute
   '/payment/$orderId/success': typeof PaymentOrderIdSuccessRoute
   '/auth/login/': typeof AuthLoginIndexRoute
+  '/pickup-code/$orderId/': typeof PickupCodeOrderIdIndexRoute
   '/biz/offers/$offerId/edit': typeof BizOffersOfferIdEditRoute
   '/auth/register/business/': typeof AuthRegisterBusinessIndexRoute
   '/auth/register/customer/': typeof AuthRegisterCustomerIndexRoute
@@ -305,6 +333,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cart'
     | '/favorites'
+    | '/order'
+    | '/orders'
     | '/profile'
     | '/business/$businessId'
     | '/checkout/success'
@@ -320,15 +350,16 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/biz'
-    | '/cart/'
     | '/checkout'
     | '/home'
+    | '/list'
     | '/panel'
     | '/search'
     | '/biz/offers/create'
     | '/payment/$orderId/cancel'
     | '/payment/$orderId/success'
     | '/auth/login'
+    | '/pickup-code/$orderId'
     | '/biz/offers/$offerId/edit'
     | '/auth/register/business'
     | '/auth/register/customer'
@@ -336,7 +367,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/cart'
     | '/favorites'
+    | '/order'
+    | '/orders'
     | '/profile'
     | '/business/$businessId'
     | '/checkout/success'
@@ -352,15 +386,16 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/biz'
-    | '/cart'
     | '/checkout'
     | '/home'
+    | '/list'
     | '/panel'
     | '/search'
     | '/biz/offers/create'
     | '/payment/$orderId/cancel'
     | '/payment/$orderId/success'
     | '/auth/login'
+    | '/pickup-code/$orderId'
     | '/biz/offers/$offerId/edit'
     | '/auth/register/business'
     | '/auth/register/customer'
@@ -370,6 +405,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cart'
     | '/favorites'
+    | '/order'
+    | '/orders'
     | '/profile'
     | '/business/$businessId'
     | '/checkout/success'
@@ -385,15 +422,16 @@ export interface FileRouteTypes {
     | '/account/'
     | '/admin/'
     | '/biz/'
-    | '/cart/'
     | '/checkout/'
     | '/home/'
+    | '/list/'
     | '/panel/'
     | '/search/'
     | '/biz/offers/create'
     | '/payment/$orderId/cancel'
     | '/payment/$orderId/success'
     | '/auth/login/'
+    | '/pickup-code/$orderId/'
     | '/biz/offers/$offerId/edit'
     | '/auth/register/business/'
     | '/auth/register/customer/'
@@ -402,8 +440,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
-  CartRoute: typeof CartRouteWithChildren
+  CartRoute: typeof CartRoute
   FavoritesRoute: typeof FavoritesRoute
+  OrderRoute: typeof OrderRoute
+  OrdersRoute: typeof OrdersRoute
   ProfileRoute: typeof ProfileRoute
   BusinessBusinessIdRoute: typeof BusinessBusinessIdRoute
   CheckoutSuccessRoute: typeof CheckoutSuccessRoute
@@ -421,9 +461,11 @@ export interface RootRouteChildren {
   BizIndexRoute: typeof BizIndexRoute
   CheckoutIndexRoute: typeof CheckoutIndexRoute
   HomeIndexRoute: typeof HomeIndexRoute
+  ListIndexRoute: typeof ListIndexRoute
   PanelIndexRoute: typeof PanelIndexRoute
   SearchIndexRoute: typeof SearchIndexRoute
   BizOffersCreateRoute: typeof BizOffersCreateRoute
+  PickupCodeOrderIdIndexRoute: typeof PickupCodeOrderIdIndexRoute
   BizOffersOfferIdEditRoute: typeof BizOffersOfferIdEditRoute
 }
 
@@ -434,6 +476,20 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/order': {
+      id: '/order'
+      path: '/order'
+      fullPath: '/order'
+      preLoaderRoute: typeof OrderRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favorites': {
@@ -478,6 +534,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PanelIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/list/': {
+      id: '/list/'
+      path: '/list'
+      fullPath: '/list'
+      preLoaderRoute: typeof ListIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/home/': {
       id: '/home/'
       path: '/home'
@@ -491,13 +554,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutIndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/cart/': {
-      id: '/cart/'
-      path: '/'
-      fullPath: '/cart/'
-      preLoaderRoute: typeof CartIndexRouteImport
-      parentRoute: typeof CartRoute
     }
     '/biz/': {
       id: '/biz/'
@@ -597,6 +653,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessBusinessIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pickup-code/$orderId/': {
+      id: '/pickup-code/$orderId/'
+      path: '/pickup-code/$orderId'
+      fullPath: '/pickup-code/$orderId'
+      preLoaderRoute: typeof PickupCodeOrderIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/login/': {
       id: '/auth/login/'
       path: '/login'
@@ -663,16 +726,6 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
-interface CartRouteChildren {
-  CartIndexRoute: typeof CartIndexRoute
-}
-
-const CartRouteChildren: CartRouteChildren = {
-  CartIndexRoute: CartIndexRoute,
-}
-
-const CartRouteWithChildren = CartRoute._addFileChildren(CartRouteChildren)
-
 interface PaymentOrderIdRouteChildren {
   PaymentOrderIdCancelRoute: typeof PaymentOrderIdCancelRoute
   PaymentOrderIdSuccessRoute: typeof PaymentOrderIdSuccessRoute
@@ -690,8 +743,10 @@ const PaymentOrderIdRouteWithChildren = PaymentOrderIdRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
-  CartRoute: CartRouteWithChildren,
+  CartRoute: CartRoute,
   FavoritesRoute: FavoritesRoute,
+  OrderRoute: OrderRoute,
+  OrdersRoute: OrdersRoute,
   ProfileRoute: ProfileRoute,
   BusinessBusinessIdRoute: BusinessBusinessIdRoute,
   CheckoutSuccessRoute: CheckoutSuccessRoute,
@@ -709,9 +764,11 @@ const rootRouteChildren: RootRouteChildren = {
   BizIndexRoute: BizIndexRoute,
   CheckoutIndexRoute: CheckoutIndexRoute,
   HomeIndexRoute: HomeIndexRoute,
+  ListIndexRoute: ListIndexRoute,
   PanelIndexRoute: PanelIndexRoute,
   SearchIndexRoute: SearchIndexRoute,
   BizOffersCreateRoute: BizOffersCreateRoute,
+  PickupCodeOrderIdIndexRoute: PickupCodeOrderIdIndexRoute,
   BizOffersOfferIdEditRoute: BizOffersOfferIdEditRoute,
 }
 export const routeTree = rootRouteImport
