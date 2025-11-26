@@ -53,9 +53,7 @@ const upload = multer({
 // СПЕЦИФИЧНЫЕ МАРШРУТЫ (должны быть ДО маршрутов с параметрами)
 // ============================================
 
-// GET /offers/search - Расширенный поиск офферов (уже перемещен выше)
-
-// POST /offers/upload-photo/:offer_id - Загрузить фото для предложения
+// GET /offers/search - Расширенный поиск офферов (ПЕРВЫЙ - должен быть до всех маршрутов с параметрами)
 offersRouter.post("/upload-photo/:offer_id", upload.single("photo"), asyncHandler(async (req, res) => {
     const { offer_id } = req.params;
     const businessId = req.session.userId;
@@ -615,64 +613,10 @@ offersRouter.post("/toggle", asyncHandler(async (req, res) => {
     });
 }));
 
-// POST /upload-photo/:offer_id - Загрузить фото для предложения
-offersRouter.post("/upload-photo/:offer_id", upload.single("photo"), asyncHandler(async (req, res) => {
-    const { offer_id } = req.params;
-    const business_id = req.session.userId;
+// Дубликат удален - маршрут уже определен выше в секции специфичных маршрутов
 
-    if (!req.file) {
-        throw new AppError("Файл не загружен", 400, "NO_FILE_UPLOADED");
-    }
-
-    // Проверка что предложение принадлежит текущему бизнесу
-    const checkResult = await pool.query(
-        `SELECT id, image_url FROM offers WHERE id = $1 AND business_id = $2`,
-        [offer_id, business_id]
-    );
-
-    if (checkResult.rowCount === 0) {
-        // Удаляем загруженный файл если предложение не найдено
-        fs.unlinkSync(req.file.path);
-        throw new AppError("Предложение не найдено", 404, "OFFER_NOT_FOUND");
-    }
-
-    // Удаляем старое фото если существует
-    const oldImageUrl = checkResult.rows[0].image_url;
-    if (oldImageUrl) {
-        const oldImagePath = path.join(__dirname, "../../uploads/offers", path.basename(oldImageUrl));
-        if (fs.existsSync(oldImagePath)) {
-            fs.unlinkSync(oldImagePath);
-        }
-    }
-
-    // Формируем URL для фото
-    const imageUrl = `/uploads/offers/${req.file.filename}`;
-
-    // Обновляем запись в БД
-    await pool.query(
-        `UPDATE offers SET image_url = $1 WHERE id = $2`,
-        [imageUrl, offer_id]
-    );
-
-    logger.info("Photo uploaded", { 
-        offerId: offer_id, 
-        businessId: business_id,
-        imageUrl 
-    });
-
-    res.json({ 
-        success: true, 
-        image_url: imageUrl,
-        message: "Фото успешно загружено"
-    });
-}));
-
-// ============================================
-// РАСШИРЕННЫЙ ПОИСК ОФФЕРОВ (должен быть ДО маршрутов с параметрами)
-// ============================================
-
-// GET /offers/search - Расширенный поиск офферов
-offersRouter.get("/search", asyncHandler(async (req, res) => {
+// Дубликат удален - маршрут уже определен выше в секции специфичных маршрутов
+// offersRouter.get("/search", asyncHandler(async (req, res) => {
     try {
         // Проверяем существование основных таблиц
         const tablesCheck = await pool.query(`
