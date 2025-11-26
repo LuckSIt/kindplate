@@ -9,6 +9,10 @@ const { AppError, asyncHandler } = require("../lib/errorHandler");
 const { validateOffer } = require("../lib/validation");
 const { sanitizePlainTextFields } = require("../middleware/sanitization");
 
+// Простой in-memory кэш для поиска (можно заменить на Redis)
+const searchCache = new Map();
+const CACHE_TTL = 60000; // 60 секунд
+
 // Настройка multer для загрузки файлов
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -491,248 +495,9 @@ offersRouter.post("/upload-photo/:offer_id", upload.single("photo"), asyncHandle
     });
 }));
 
-// Публичные предложения для клиентов
-offersRouter.get("/", asyncHandler(async (req, res) => {
-    try {
-        console.log("🔍 Запрос /customer/offers");
-
-        // Проверяем наличие таблиц
-        const tablesCheck = await pool.query(`
-            SELECT table_name FROM information_schema.tables 
-            WHERE table_schema = 'public' AND table_name = ANY($1)
-        `, [[ 'offers', 'businesses', 'users' ]]);
-        const have = tablesCheck.rows.map(r => r.table_name);
-
-        if (!have.includes('offers')) {
-            console.warn('⚠️ Таблица offers отсутствует. Возвращаем пустой список.');
-            return res.json({ success: true, data: [] });
-        }
-
-        // Выясняем доступные колонки и строим SELECT динамически
-        const offersColsRes = await pool.query(`
-            SELECT column_name FROM information_schema.columns 
-            WHERE table_schema = 'public' AND table_name = 'offers'
-        `);
-        const offerCols = offersColsRes.rows.map(r => r.column_name);
-        const has = (c) => offerCols.includes(c);
-
-        const titleSel = has('title') ? 'o.title' : (has('name') ? 'o.name' : 'NULL::text');
-        const descSel = has('description') ? 'o.description' : 'NULL::text';
-        const imageSel = has('image_url') ? 'o.image_url' : (has('photo_url') ? 'o.photo_url' : 'NULL::text');
-        const origPriceSel = has('original_price') ? 'o.original_price' : (has('price_orig') ? 'o.price_orig' : 'NULL::numeric');
-        const discPriceSel = has('discounted_price') ? 'o.discounted_price' : (has('price_disc') ? 'o.price_disc' : 'NULL::numeric');
-        const qtySel = has('quantity_available') ? 'o.quantity_available' : (has('quantity') ? 'o.quantity' : 'NULL::int');
-        const startSel = has('pickup_time_start') ? 'o.pickup_time_start' : 'NULL::time';
-        const endSel = has('pickup_time_end') ? 'o.pickup_time_end' : 'NULL::time';
-        const createdSel = has('created_at') ? 'o.created_at' : 'NOW()';
-        const activeCond = has('is_active') ? 'o.is_active = true' : '1=1';
-
-        let query;
-        if (have.includes('businesses')) {
-            // Современная схема: JOIN businesses
-            query = `
-                SELECT 
-                    o.id,
-                    o.business_id,
-                    ${titleSel} as title,
-                    ${descSel} as description,
-                    ${imageSel} as image_url,
-                    ${origPriceSel} as original_price,
-                    ${discPriceSel} as discounted_price,
-                    ${qtySel} as quantity_available,
-                    ${startSel} as pickup_time_start,
-                    ${endSel} as pickup_time_end,
-                    ${createdSel} as created_at,
-                    b.name AS business_name,
-                    b.address AS business_address,
-                    b.coord_0,
-                    b.coord_1,
-                    b.phone AS business_phone,
-                    b.email AS business_email
-                FROM offers o
-                LEFT JOIN businesses b ON o.business_id = b.id
-                WHERE ${activeCond}
-                ORDER BY ${createdSel} DESC
-            `;
-        } else {
-            // Legacy схема: JOIN users (business_id указывает на users.id)
-            query = `
-                SELECT 
-                    o.id,
-                    o.business_id,
-                    ${titleSel} as title,
-                    ${descSel} as description,
-                    ${imageSel} as image_url,
-                    ${origPriceSel} as original_price,
-                    ${discPriceSel} as discounted_price,
-                    ${qtySel} as quantity_available,
-                    ${startSel} as pickup_time_start,
-                    ${endSel} as pickup_time_end,
-                    ${createdSel} as created_at,
-                    u.name AS business_name,
-                    u.address AS business_address,
-                    u.coord_0,
-                    u.coord_1,
-                    NULL::text AS business_phone,
-                    u.email AS business_email
-                FROM offers o
-                LEFT JOIN users u ON o.business_id = u.id
-                WHERE ${activeCond}
-                ORDER BY ${createdSel} DESC
-            `;
-        }
-
-        const result = await pool.query(query);
-        console.log(`✅ Найдено ${result.rows.length} предложений`);
-
-        return res.json({ success: true, data: result.rows });
-    } catch (error) {
-        console.error("❌ Ошибка в /customer/offers:", error);
-        return res.status(200).json({ success: true, data: [] });
-    }
-}));
-
 // ============================================
-// РАСПИСАНИЕ ПУБЛИКАЦИИ ОФФЕРОВ
+// РАСШИРЕННЫЙ ПОИСК ОФФЕРОВ (должен быть ДО маршрутов с параметрами)
 // ============================================
-
-// Получить расписания для оффера
-offersRouter.get("/:id/schedule", asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const businessId = req.session.userId;
-
-    // Проверяем, что оффер принадлежит бизнесу
-    const offerCheck = await pool.query(
-        `SELECT id, business_id FROM offers WHERE id = $1 AND business_id = $2`,
-        [id, businessId]
-    );
-
-    if (offerCheck.rows.length === 0) {
-        return res.status(404).json({
-            success: false,
-            error: "OFFER_NOT_FOUND",
-            message: "Оффер не найден"
-        });
-    }
-
-    const schedules = await pool.query(
-        `SELECT id, offer_id, publish_at, unpublish_at, qty_planned, is_active, created_at
-         FROM offer_schedules
-         WHERE offer_id = $1
-         ORDER BY publish_at ASC`,
-        [id]
-    );
-
-    res.json({
-        success: true,
-        data: schedules.rows
-    });
-}));
-
-// Создать/обновить расписание для оффера
-offersRouter.post("/:id/schedule", asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const { publish_at, unpublish_at, qty_planned } = req.body;
-    const businessId = req.session.userId;
-
-    // Валидация
-    if (!publish_at) {
-        return res.status(400).json({
-            success: false,
-            error: "INVALID_REQUEST",
-            message: "Необходимо указать время публикации"
-        });
-    }
-
-    const publishDate = new Date(publish_at);
-    if (isNaN(publishDate.getTime())) {
-        return res.status(400).json({
-            success: false,
-            error: "INVALID_DATE",
-            message: "Неверный формат даты публикации"
-        });
-    }
-
-    if (publishDate < new Date()) {
-        return res.status(400).json({
-            success: false,
-            error: "INVALID_DATE",
-            message: "Время публикации не может быть в прошлом"
-        });
-    }
-
-    // Проверяем, что оффер принадлежит бизнесу
-    const offerCheck = await pool.query(
-        `SELECT id, business_id FROM offers WHERE id = $1 AND business_id = $2`,
-        [id, businessId]
-    );
-
-    if (offerCheck.rows.length === 0) {
-        return res.status(404).json({
-            success: false,
-            error: "OFFER_NOT_FOUND",
-            message: "Оффер не найден"
-        });
-    }
-
-    // Создаем расписание
-    const result = await pool.query(
-        `INSERT INTO offer_schedules (offer_id, business_id, publish_at, unpublish_at, qty_planned)
-         VALUES ($1, $2, $3, $4, $5)
-         RETURNING id, offer_id, publish_at, unpublish_at, qty_planned, is_active, created_at`,
-        [id, businessId, publishDate, unpublish_at ? new Date(unpublish_at) : null, qty_planned || null]
-    );
-
-    logger.info(`📅 Создано расписание для оффера ${id}: ${publishDate.toISOString()}`);
-
-    res.json({
-        success: true,
-        data: result.rows[0],
-        message: "Расписание создано"
-    });
-}));
-
-// Удалить расписание
-offersRouter.delete("/:id/schedule/:scheduleId", asyncHandler(async (req, res) => {
-    const { id, scheduleId } = req.params;
-    const businessId = req.session.userId;
-
-    // Проверяем, что расписание принадлежит бизнесу
-    const scheduleCheck = await pool.query(
-        `SELECT s.id FROM offer_schedules s
-         JOIN offers o ON s.offer_id = o.id
-         WHERE s.id = $1 AND o.business_id = $2`,
-        [scheduleId, businessId]
-    );
-
-    if (scheduleCheck.rows.length === 0) {
-        return res.status(404).json({
-            success: false,
-            error: "SCHEDULE_NOT_FOUND",
-            message: "Расписание не найдено"
-        });
-    }
-
-    await pool.query(
-        `DELETE FROM offer_schedules WHERE id = $1`,
-        [scheduleId]
-    );
-
-    logger.info(`🗑️ Удалено расписание ${scheduleId} для оффера ${id}`);
-
-    res.json({
-        success: true,
-        message: "Расписание удалено"
-    });
-}));
-
-// ============================================
-// РАСШИРЕННЫЙ ПОИСК ОФФЕРОВ
-// ============================================
-
-// Простой in-memory кэш (можно заменить на Redis)
-const searchCache = new Map();
-const CACHE_TTL = 60000; // 60 секунд
 
 // GET /offers/search - Расширенный поиск офферов
 offersRouter.get("/search", asyncHandler(async (req, res) => {
@@ -1223,6 +988,242 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
         });
     }
 }));
+
+// Публичные предложения для клиентов
+offersRouter.get("/", asyncHandler(async (req, res) => {
+    try {
+        console.log("🔍 Запрос /customer/offers");
+
+        // Проверяем наличие таблиц
+        const tablesCheck = await pool.query(`
+            SELECT table_name FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = ANY($1)
+        `, [[ 'offers', 'businesses', 'users' ]]);
+        const have = tablesCheck.rows.map(r => r.table_name);
+
+        if (!have.includes('offers')) {
+            console.warn('⚠️ Таблица offers отсутствует. Возвращаем пустой список.');
+            return res.json({ success: true, data: [] });
+        }
+
+        // Выясняем доступные колонки и строим SELECT динамически
+        const offersColsRes = await pool.query(`
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_schema = 'public' AND table_name = 'offers'
+        `);
+        const offerCols = offersColsRes.rows.map(r => r.column_name);
+        const has = (c) => offerCols.includes(c);
+
+        const titleSel = has('title') ? 'o.title' : (has('name') ? 'o.name' : 'NULL::text');
+        const descSel = has('description') ? 'o.description' : 'NULL::text';
+        const imageSel = has('image_url') ? 'o.image_url' : (has('photo_url') ? 'o.photo_url' : 'NULL::text');
+        const origPriceSel = has('original_price') ? 'o.original_price' : (has('price_orig') ? 'o.price_orig' : 'NULL::numeric');
+        const discPriceSel = has('discounted_price') ? 'o.discounted_price' : (has('price_disc') ? 'o.price_disc' : 'NULL::numeric');
+        const qtySel = has('quantity_available') ? 'o.quantity_available' : (has('quantity') ? 'o.quantity' : 'NULL::int');
+        const startSel = has('pickup_time_start') ? 'o.pickup_time_start' : 'NULL::time';
+        const endSel = has('pickup_time_end') ? 'o.pickup_time_end' : 'NULL::time';
+        const createdSel = has('created_at') ? 'o.created_at' : 'NOW()';
+        const activeCond = has('is_active') ? 'o.is_active = true' : '1=1';
+
+        let query;
+        if (have.includes('businesses')) {
+            // Современная схема: JOIN businesses
+            query = `
+                SELECT 
+                    o.id,
+                    o.business_id,
+                    ${titleSel} as title,
+                    ${descSel} as description,
+                    ${imageSel} as image_url,
+                    ${origPriceSel} as original_price,
+                    ${discPriceSel} as discounted_price,
+                    ${qtySel} as quantity_available,
+                    ${startSel} as pickup_time_start,
+                    ${endSel} as pickup_time_end,
+                    ${createdSel} as created_at,
+                    b.name AS business_name,
+                    b.address AS business_address,
+                    b.coord_0,
+                    b.coord_1,
+                    b.phone AS business_phone,
+                    b.email AS business_email
+                FROM offers o
+                LEFT JOIN businesses b ON o.business_id = b.id
+                WHERE ${activeCond}
+                ORDER BY ${createdSel} DESC
+            `;
+        } else {
+            // Legacy схема: JOIN users (business_id указывает на users.id)
+            query = `
+                SELECT 
+                    o.id,
+                    o.business_id,
+                    ${titleSel} as title,
+                    ${descSel} as description,
+                    ${imageSel} as image_url,
+                    ${origPriceSel} as original_price,
+                    ${discPriceSel} as discounted_price,
+                    ${qtySel} as quantity_available,
+                    ${startSel} as pickup_time_start,
+                    ${endSel} as pickup_time_end,
+                    ${createdSel} as created_at,
+                    u.name AS business_name,
+                    u.address AS business_address,
+                    u.coord_0,
+                    u.coord_1,
+                    NULL::text AS business_phone,
+                    u.email AS business_email
+                FROM offers o
+                LEFT JOIN users u ON o.business_id = u.id
+                WHERE ${activeCond}
+                ORDER BY ${createdSel} DESC
+            `;
+        }
+
+        const result = await pool.query(query);
+        console.log(`✅ Найдено ${result.rows.length} предложений`);
+
+        return res.json({ success: true, data: result.rows });
+    } catch (error) {
+        console.error("❌ Ошибка в /customer/offers:", error);
+        return res.status(200).json({ success: true, data: [] });
+    }
+}));
+
+// ============================================
+// РАСПИСАНИЕ ПУБЛИКАЦИИ ОФФЕРОВ
+// ============================================
+
+// Получить расписания для оффера
+offersRouter.get("/:id/schedule", asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const businessId = req.session.userId;
+
+    // Проверяем, что оффер принадлежит бизнесу
+    const offerCheck = await pool.query(
+        `SELECT id, business_id FROM offers WHERE id = $1 AND business_id = $2`,
+        [id, businessId]
+    );
+
+    if (offerCheck.rows.length === 0) {
+        return res.status(404).json({
+            success: false,
+            error: "OFFER_NOT_FOUND",
+            message: "Оффер не найден"
+        });
+    }
+
+    const schedules = await pool.query(
+        `SELECT id, offer_id, publish_at, unpublish_at, qty_planned, is_active, created_at
+         FROM offer_schedules
+         WHERE offer_id = $1
+         ORDER BY publish_at ASC`,
+        [id]
+    );
+
+    res.json({
+        success: true,
+        data: schedules.rows
+    });
+}));
+
+// Создать/обновить расписание для оффера
+offersRouter.post("/:id/schedule", asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { publish_at, unpublish_at, qty_planned } = req.body;
+    const businessId = req.session.userId;
+
+    // Валидация
+    if (!publish_at) {
+        return res.status(400).json({
+            success: false,
+            error: "INVALID_REQUEST",
+            message: "Необходимо указать время публикации"
+        });
+    }
+
+    const publishDate = new Date(publish_at);
+    if (isNaN(publishDate.getTime())) {
+        return res.status(400).json({
+            success: false,
+            error: "INVALID_DATE",
+            message: "Неверный формат даты публикации"
+        });
+    }
+
+    if (publishDate < new Date()) {
+        return res.status(400).json({
+            success: false,
+            error: "INVALID_DATE",
+            message: "Время публикации не может быть в прошлом"
+        });
+    }
+
+    // Проверяем, что оффер принадлежит бизнесу
+    const offerCheck = await pool.query(
+        `SELECT id, business_id FROM offers WHERE id = $1 AND business_id = $2`,
+        [id, businessId]
+    );
+
+    if (offerCheck.rows.length === 0) {
+        return res.status(404).json({
+            success: false,
+            error: "OFFER_NOT_FOUND",
+            message: "Оффер не найден"
+        });
+    }
+
+    // Создаем расписание
+    const result = await pool.query(
+        `INSERT INTO offer_schedules (offer_id, business_id, publish_at, unpublish_at, qty_planned)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING id, offer_id, publish_at, unpublish_at, qty_planned, is_active, created_at`,
+        [id, businessId, publishDate, unpublish_at ? new Date(unpublish_at) : null, qty_planned || null]
+    );
+
+    logger.info(`📅 Создано расписание для оффера ${id}: ${publishDate.toISOString()}`);
+
+    res.json({
+        success: true,
+        data: result.rows[0],
+        message: "Расписание создано"
+    });
+}));
+
+// Удалить расписание
+offersRouter.delete("/:id/schedule/:scheduleId", asyncHandler(async (req, res) => {
+    const { id, scheduleId } = req.params;
+    const businessId = req.session.userId;
+
+    // Проверяем, что расписание принадлежит бизнесу
+    const scheduleCheck = await pool.query(
+        `SELECT s.id FROM offer_schedules s
+         JOIN offers o ON s.offer_id = o.id
+         WHERE s.id = $1 AND o.business_id = $2`,
+        [scheduleId, businessId]
+    );
+
+    if (scheduleCheck.rows.length === 0) {
+        return res.status(404).json({
+            success: false,
+            error: "SCHEDULE_NOT_FOUND",
+            message: "Расписание не найдено"
+        });
+    }
+
+    await pool.query(
+        `DELETE FROM offer_schedules WHERE id = $1`,
+        [scheduleId]
+    );
+
+    logger.info(`🗑️ Удалено расписание ${scheduleId} для оффера ${id}`);
+
+    res.json({
+        success: true,
+        message: "Расписание удалено"
+    });
+}));
+
 
 module.exports = offersRouter;
 
