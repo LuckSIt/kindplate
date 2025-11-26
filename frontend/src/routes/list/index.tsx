@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useContext } from "react";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { useMapQuery } from "@/lib/hooks/use-optimized-query";
+import { authContext } from "@/lib/auth";
 import type { Business } from "@/lib/types";
 import businessImage1 from "@/figma/business-image-1.png";
 import businessImage2 from "@/figma/business-image-2.png";
@@ -12,6 +13,7 @@ export const Route = createFileRoute("/list/")({
 
 function ListPageComponent() {
     const navigate = useNavigate();
+    const { user } = useContext(authContext);
     const [searchQuery, setSearchQuery] = useState('');
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
 
@@ -136,10 +138,27 @@ function ListPageComponent() {
                 <div className="businesses-list-page__status-bar-levels"></div>
             </div>
 
-            {/* Header with Search */}
-            <div className="businesses-list-page__header">
+            {/* Logo and Title */}
+            <div className="businesses-list-page__logo-section">
+                <div className="businesses-list-page__logo-icon">
+                    <svg width="100%" height="100%" viewBox="0 0 60 80" fill="none">
+                        {/* Location pin shape */}
+                        <path d="M30 0C18.954 0 10 8.954 10 20C10 35 30 60 30 60C30 60 50 35 50 20C50 8.954 41.046 0 30 0Z" fill="#35741F"/>
+                        {/* Fork */}
+                        <path d="M20 25L20 35L22 35L22 30L25 30L25 35L27 35L27 25L20 25Z" fill="white"/>
+                        <path d="M20 30L22 30L22 28L20 28L20 30Z" fill="white"/>
+                        {/* Knife */}
+                        <path d="M35 25L35 35L37 35L37 28L40 28L40 35L42 35L42 25L35 25Z" fill="white"/>
+                        <path d="M35 28L37 28L37 26L35 26L35 28Z" fill="white"/>
+                    </svg>
+                </div>
+                <span className="businesses-list-page__logo-text">KindPlate</span>
+            </div>
+
+            {/* Search Bar */}
+            <div className="businesses-list-page__search-container">
                 <div className="businesses-list-page__search">
-                    <svg className="businesses-list-page__search-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <svg className="businesses-list-page__search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
                         <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="#757575" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         <path d="M21 21L16.65 16.65" stroke="#757575" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
@@ -151,15 +170,17 @@ function ListPageComponent() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
-                <Link 
-                    to="/cart" 
-                    className="businesses-list-page__cart-button"
-                    aria-label="Корзина"
-                >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V17C17 18.1 17.9 19 19 19H21M9 19.5C9.8 19.5 10.5 20.2 10.5 21S9.8 22.5 9 22.5 7.5 21.8 7.5 21 8.2 19.5 9 19.5ZM20 19.5C20.8 19.5 21.5 20.2 21.5 21S20.8 22.5 20 22.5 18.5 21.8 18.5 21 19.2 19.5 20 19.5Z" stroke="#10172A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                </Link>
+            </div>
+
+            {/* User Profile Strip */}
+            <div className="businesses-list-page__user-strip" onClick={() => navigate({ to: "/account" })}>
+                <svg className="businesses-list-page__user-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#757575"/>
+                </svg>
+                <div className="businesses-list-page__user-info">
+                    <div className="businesses-list-page__user-name">{user?.name || 'Пользователь'}</div>
+                    <div className="businesses-list-page__user-edit">изменить информацию</div>
+                </div>
             </div>
 
             {/* Statistics */}

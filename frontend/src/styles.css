@@ -1389,52 +1389,70 @@ button, .btn-primary, .btn-secondary {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 21px 16px 19px;
+  padding: 12px 16px 10px;
   width: 100%;
-  height: 60px;
+  height: 44px;
 }
 
 .businesses-list-page__status-bar-time {
   font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-weight: 590;
-  font-size: 17px;
-  line-height: 22px;
+  font-size: 15px;
+  line-height: 20px;
   text-align: center;
   color: #FFFFFF;
 }
 
 .businesses-list-page__status-bar-levels {
-  width: 27.33px;
-  height: 13px;
+  width: 24px;
+  height: 11px;
   background: transparent;
 }
 
-.businesses-list-page__header {
-  width: 100%;
-  height: 89px;
-  background-color: #35741F;
-  padding: 27px 22px 0;
+.businesses-list-page__logo-section {
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: 8px;
+  padding: 12px 15px;
+  width: 100%;
+}
+
+.businesses-list-page__logo-icon {
+  width: 50px;
+  height: 65px;
+  flex-shrink: 0;
+}
+
+.businesses-list-page__logo-text {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: #10172A;
+  text-decoration: underline;
+}
+
+.businesses-list-page__search-container {
+  padding: 0 15px 12px;
+  width: 100%;
 }
 
 .businesses-list-page__search {
-  flex: 1;
-  height: 59px;
+  width: 100%;
+  height: 50px;
   background-color: #D9D9D9;
-  border-radius: 15px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 23px;
+  gap: 8px;
+  padding: 0 15px;
   position: relative;
 }
 
 .businesses-list-page__search-icon {
   flex-shrink: 0;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 
 .businesses-list-page__search-input {
@@ -1444,40 +1462,71 @@ button, .btn-primary, .btn-secondary {
   background: transparent;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 15px;
-  line-height: 22px;
+  font-size: 13px;
+  line-height: 18px;
   color: #757575;
   padding: 0;
 }
 
 .businesses-list-page__search-input::placeholder {
   color: #757575;
+  text-decoration: underline;
 }
 
-.businesses-list-page__cart-button {
-  width: 59px;
-  height: 59px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
+.businesses-list-page__user-strip {
+  width: 100%;
+  height: 50px;
+  background-color: #D9D9D9;
+  border-radius: 12px;
+  margin: 0 15px 12px;
+  padding: 0 15px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.businesses-list-page__user-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.businesses-list-page__user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.businesses-list-page__user-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 16px;
+  color: #10172A;
+}
+
+.businesses-list-page__user-edit {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 12px;
+  color: #757575;
 }
 
 .businesses-list-page__statistics {
   display: flex;
-  gap: 14px;
-  padding: 0 22px;
-  margin-top: 138px;
-  margin-bottom: 19px;
+  gap: 10px;
+  padding: 0 15px;
+  margin-top: 20px;
+  margin-bottom: 15px;
 }
 
 .businesses-list-page__stat-card {
   flex: 1;
-  height: 79px;
-  border-radius: 15px;
+  height: 65px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1504,18 +1553,18 @@ button, .btn-primary, .btn-secondary {
 .businesses-list-page__stat-value {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 23px;
-  line-height: 22px;
+  font-size: 18px;
+  line-height: 18px;
   color: #FFFFFF;
   text-align: center;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 
 .businesses-list-page__stat-label {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 11px;
+  font-size: 10px;
+  line-height: 10px;
   text-align: center;
 }
 
@@ -1535,23 +1584,23 @@ button, .btn-primary, .btn-secondary {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 22px;
-  margin-bottom: 17px;
+  padding: 0 15px;
+  margin-bottom: 12px;
 }
 
 .businesses-list-page__available-title {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 17px;
-  line-height: 22px;
+  font-size: 14px;
+  line-height: 18px;
   color: #FFFFFF;
 }
 
 .businesses-list-page__available-count {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 15px;
-  line-height: 22px;
+  font-size: 13px;
+  line-height: 18px;
   background: linear-gradient(90deg, rgba(219, 126, 47, 1) 0%, rgba(245, 251, 162, 1) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1559,11 +1608,11 @@ button, .btn-primary, .btn-secondary {
 }
 
 .businesses-list-page__content {
-  padding: 0 22px;
+  padding: 0 15px;
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  padding-bottom: 20px;
+  gap: 15px;
+  padding-bottom: 15px;
 }
 
 .businesses-list-page__loading,
@@ -1577,7 +1626,7 @@ button, .btn-primary, .btn-secondary {
 .businesses-list-page__business-card {
   width: 100%;
   background-color: #2B344D;
-  border-radius: 20px;
+  border-radius: 12px;
   overflow: hidden;
   position: relative;
   cursor: pointer;
@@ -1591,9 +1640,9 @@ button, .btn-primary, .btn-secondary {
 
 .businesses-list-page__business-image {
   width: 100%;
-  height: 190px;
+  height: 140px;
   overflow: hidden;
-  border-radius: 20px 20px 0 0;
+  border-radius: 12px 12px 0 0;
 }
 
 .businesses-list-page__business-image img {
@@ -1604,10 +1653,10 @@ button, .btn-primary, .btn-secondary {
 
 .businesses-list-page__favorite-button {
   position: absolute;
-  top: 7px;
-  right: 7px;
-  width: 33px;
-  height: 33px;
+  top: 5px;
+  right: 5px;
+  width: 28px;
+  height: 28px;
   background: rgba(16, 23, 42, 0.74);
   border: none;
   border-radius: 50%;
@@ -1620,7 +1669,7 @@ button, .btn-primary, .btn-secondary {
 }
 
 .businesses-list-page__business-info {
-  padding: 9px 15px 13px;
+  padding: 8px 12px 10px;
 }
 
 .businesses-list-page__business-header {
@@ -1633,66 +1682,66 @@ button, .btn-primary, .btn-secondary {
 .businesses-list-page__business-name {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 21px;
-  line-height: 22px;
+  font-size: 16px;
+  line-height: 18px;
   color: #FFFFFF;
-  margin: 0 0 20px 0;
+  margin: 0 0 4px 0;
 }
 
 .businesses-list-page__business-type {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 22px;
+  font-size: 11px;
+  line-height: 14px;
   color: #FFFFFF;
   margin: 0;
 }
 
 .businesses-list-page__rating {
-  width: 47px;
-  height: 23px;
+  width: 40px;
+  height: 20px;
   background-color: rgba(219, 126, 47, 0.4);
   border: 1px solid #DB7E2F;
-  border-radius: 5px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 0 4px;
+  gap: 3px;
+  padding: 0 3px;
 }
 
 .businesses-list-page__rating svg {
-  width: 15px;
-  height: 15px;
+  width: 12px;
+  height: 12px;
 }
 
 .businesses-list-page__rating span {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 22px;
+  font-size: 10px;
+  line-height: 14px;
   color: #DB7E2F;
 }
 
 .businesses-list-page__business-meta {
   display: flex;
-  gap: 5px;
-  margin-bottom: 34px;
+  gap: 4px;
+  margin-bottom: 12px;
 }
 
 .businesses-list-page__business-meta-item {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 11px;
-  line-height: 22px;
+  font-size: 10px;
+  line-height: 14px;
   color: #FFFFFF;
 }
 
 .businesses-list-page__business-meta-item svg {
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
 }
 
 .businesses-list-page__business-offers {
@@ -1711,8 +1760,8 @@ button, .btn-primary, .btn-secondary {
 .businesses-list-page__offer-name {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 15px;
-  line-height: 22px;
+  font-size: 12px;
+  line-height: 16px;
   color: #FFFFFF;
 }
 
@@ -1726,8 +1775,8 @@ button, .btn-primary, .btn-secondary {
 .businesses-list-page__offer-price-old {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 13px;
-  line-height: 22px;
+  font-size: 11px;
+  line-height: 14px;
   color: #767676;
   text-decoration: line-through;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -1747,18 +1796,18 @@ button, .btn-primary, .btn-secondary {
 .businesses-list-page__offer-price {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 15px;
-  line-height: 22px;
+  font-size: 12px;
+  line-height: 16px;
   color: #FFFFFF;
 }
 
 .businesses-list-page__offer-more {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 22px;
+  font-size: 10px;
+  line-height: 14px;
   color: #E3E3E3;
-  margin-top: 7px;
+  margin-top: 5px;
 }
 
 .businesses-list-page__business-divider {
@@ -1774,12 +1823,12 @@ button, .btn-primary, .btn-secondary {
   left: 0;
   right: 0;
   width: 100%;
-  height: 73px;
+  height: 60px;
   background-color: #D9D9D9;
   display: flex;
   justify-content: space-around;
-  align-items: flex-start;
-  padding-top: 18px;
+  align-items: center;
+  padding-top: 8px;
   z-index: 50;
 }
 
@@ -1787,7 +1836,7 @@ button, .btn-primary, .btn-secondary {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -1811,15 +1860,15 @@ button, .btn-primary, .btn-secondary {
 .businesses-list-page__nav-label {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 22px;
+  font-size: 10px;
+  line-height: 12px;
   color: #767676;
   text-align: center;
 }
 
 .businesses-list-page__nav-button svg {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
 }
 
 /* Responsive adjustments for businesses list page */
