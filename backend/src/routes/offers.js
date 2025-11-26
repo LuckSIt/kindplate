@@ -49,6 +49,178 @@ const upload = multer({
     }
 });
 
+// ============================================
+// СПЕЦИФИЧНЫЕ МАРШРУТЫ (должны быть ДО маршрутов с параметрами)
+// ============================================
+
+// GET /offers/search - Расширенный поиск офферов (уже перемещен выше)
+
+// POST /offers/upload-photo/:offer_id - Загрузить фото для предложения
+offersRouter.post("/upload-photo/:offer_id", upload.single("photo"), asyncHandler(async (req, res) => {
+    const { offer_id } = req.params;
+    const businessId = req.session.userId;
+
+    if (!req.file) {
+        throw new AppError("Файл не загружен", 400, "NO_FILE");
+    }
+
+    // Проверяем, что оффер принадлежит бизнесу
+    const offerCheck = await pool.query(
+        "SELECT id, business_id FROM offers WHERE id = $1 AND business_id = $2",
+        [offer_id, businessId]
+    );
+
+    if (offerCheck.rowCount === 0) {
+        throw new AppError("Предложение не найдено", 404, "OFFER_NOT_FOUND");
+    }
+
+    // Обновляем image_url
+    await pool.query(
+        "UPDATE offers SET image_url = $1 WHERE id = $2",
+        [req.file.path, offer_id]
+    );
+
+    res.json({
+        success: true,
+        message: "Фото загружено",
+        image_url: req.file.path
+    });
+}));
+
+// GET /offers/:id/schedule/:scheduleId - Удалить расписание (самый специфичный)
+offersRouter.delete("/:id/schedule/:scheduleId", asyncHandler(async (req, res) => {
+    const { id, scheduleId } = req.params;
+    const businessId = req.session.userId;
+
+    // Проверяем, что расписание принадлежит бизнесу
+    const scheduleCheck = await pool.query(
+        `SELECT s.id FROM offer_schedules s
+         JOIN offers o ON s.offer_id = o.id
+         WHERE s.id = $1 AND o.business_id = $2`,
+        [scheduleId, businessId]
+    );
+
+    if (scheduleCheck.rows.length === 0) {
+        return res.status(404).json({
+            success: false,
+            error: "SCHEDULE_NOT_FOUND",
+            message: "Расписание не найдено"
+        });
+    }
+
+    await pool.query(
+        `DELETE FROM offer_schedules WHERE id = $1`,
+        [scheduleId]
+    );
+
+    logger.info(`🗑️ Удалено расписание ${scheduleId} для оффера ${id}`);
+
+    res.json({
+        success: true,
+        message: "Расписание удалено"
+    });
+}));
+
+// GET /offers/:id/schedule - Получить расписания для оффера
+offersRouter.get("/:id/schedule", asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const businessId = req.session.userId;
+
+    // Проверяем, что оффер принадлежит бизнесу
+    const offerCheck = await pool.query(
+        `SELECT id, business_id FROM offers WHERE id = $1 AND business_id = $2`,
+        [id, businessId]
+    );
+
+    if (offerCheck.rows.length === 0) {
+        return res.status(404).json({
+            success: false,
+            error: "OFFER_NOT_FOUND",
+            message: "Оффер не найден"
+        });
+    }
+
+    const schedules = await pool.query(
+        `SELECT id, offer_id, publish_at, unpublish_at, qty_planned, is_active, created_at
+         FROM offer_schedules
+         WHERE offer_id = $1
+         ORDER BY publish_at ASC`,
+        [id]
+    );
+
+    res.json({
+        success: true,
+        data: schedules.rows
+    });
+}));
+
+// POST /offers/:id/schedule - Создать/обновить расписание для оффера
+offersRouter.post("/:id/schedule", asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { publish_at, unpublish_at, qty_planned } = req.body;
+    const businessId = req.session.userId;
+
+    // Валидация
+    if (!publish_at) {
+        return res.status(400).json({
+            success: false,
+            error: "INVALID_REQUEST",
+            message: "Необходимо указать время публикации"
+        });
+    }
+
+    const publishDate = new Date(publish_at);
+    if (isNaN(publishDate.getTime())) {
+        return res.status(400).json({
+            success: false,
+            error: "INVALID_DATE",
+            message: "Неверный формат даты публикации"
+        });
+    }
+
+    if (publishDate < new Date()) {
+        return res.status(400).json({
+            success: false,
+            error: "INVALID_DATE",
+            message: "Время публикации не может быть в прошлом"
+        });
+    }
+
+    // Проверяем, что оффер принадлежит бизнесу
+    const offerCheck = await pool.query(
+        `SELECT id, business_id FROM offers WHERE id = $1 AND business_id = $2`,
+        [id, businessId]
+    );
+
+    if (offerCheck.rows.length === 0) {
+        return res.status(404).json({
+            success: false,
+            error: "OFFER_NOT_FOUND",
+            message: "Оффер не найден"
+        });
+    }
+
+    // Создаем расписание
+    const result = await pool.query(
+        `INSERT INTO offer_schedules (offer_id, business_id, publish_at, unpublish_at, qty_planned)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING id, offer_id, publish_at, unpublish_at, qty_planned, is_active, created_at`,
+        [id, businessId, publishDate, unpublish_at ? new Date(unpublish_at) : null, qty_planned || null]
+    );
+
+    logger.info(`📅 Создано расписание для оффера ${id}: ${publishDate.toISOString()}`);
+
+    res.json({
+        success: true,
+        data: result.rows[0],
+        message: "Расписание создано"
+    });
+}));
+
+// ============================================
+// ОСНОВНЫЕ МАРШРУТЫ
+// ============================================
+
 // Получить все предложения текущего бизнеса
 offersRouter.get("/mine", asyncHandler(async (req, res) => {
     const result = await pool.query(
@@ -1090,139 +1262,6 @@ offersRouter.get("/", asyncHandler(async (req, res) => {
     }
 }));
 
-// ============================================
-// РАСПИСАНИЕ ПУБЛИКАЦИИ ОФФЕРОВ
-// ============================================
-
-// Получить расписания для оффера
-offersRouter.get("/:id/schedule", asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const businessId = req.session.userId;
-
-    // Проверяем, что оффер принадлежит бизнесу
-    const offerCheck = await pool.query(
-        `SELECT id, business_id FROM offers WHERE id = $1 AND business_id = $2`,
-        [id, businessId]
-    );
-
-    if (offerCheck.rows.length === 0) {
-        return res.status(404).json({
-            success: false,
-            error: "OFFER_NOT_FOUND",
-            message: "Оффер не найден"
-        });
-    }
-
-    const schedules = await pool.query(
-        `SELECT id, offer_id, publish_at, unpublish_at, qty_planned, is_active, created_at
-         FROM offer_schedules
-         WHERE offer_id = $1
-         ORDER BY publish_at ASC`,
-        [id]
-    );
-
-    res.json({
-        success: true,
-        data: schedules.rows
-    });
-}));
-
-// Создать/обновить расписание для оффера
-offersRouter.post("/:id/schedule", asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const { publish_at, unpublish_at, qty_planned } = req.body;
-    const businessId = req.session.userId;
-
-    // Валидация
-    if (!publish_at) {
-        return res.status(400).json({
-            success: false,
-            error: "INVALID_REQUEST",
-            message: "Необходимо указать время публикации"
-        });
-    }
-
-    const publishDate = new Date(publish_at);
-    if (isNaN(publishDate.getTime())) {
-        return res.status(400).json({
-            success: false,
-            error: "INVALID_DATE",
-            message: "Неверный формат даты публикации"
-        });
-    }
-
-    if (publishDate < new Date()) {
-        return res.status(400).json({
-            success: false,
-            error: "INVALID_DATE",
-            message: "Время публикации не может быть в прошлом"
-        });
-    }
-
-    // Проверяем, что оффер принадлежит бизнесу
-    const offerCheck = await pool.query(
-        `SELECT id, business_id FROM offers WHERE id = $1 AND business_id = $2`,
-        [id, businessId]
-    );
-
-    if (offerCheck.rows.length === 0) {
-        return res.status(404).json({
-            success: false,
-            error: "OFFER_NOT_FOUND",
-            message: "Оффер не найден"
-        });
-    }
-
-    // Создаем расписание
-    const result = await pool.query(
-        `INSERT INTO offer_schedules (offer_id, business_id, publish_at, unpublish_at, qty_planned)
-         VALUES ($1, $2, $3, $4, $5)
-         RETURNING id, offer_id, publish_at, unpublish_at, qty_planned, is_active, created_at`,
-        [id, businessId, publishDate, unpublish_at ? new Date(unpublish_at) : null, qty_planned || null]
-    );
-
-    logger.info(`📅 Создано расписание для оффера ${id}: ${publishDate.toISOString()}`);
-
-    res.json({
-        success: true,
-        data: result.rows[0],
-        message: "Расписание создано"
-    });
-}));
-
-// Удалить расписание
-offersRouter.delete("/:id/schedule/:scheduleId", asyncHandler(async (req, res) => {
-    const { id, scheduleId } = req.params;
-    const businessId = req.session.userId;
-
-    // Проверяем, что расписание принадлежит бизнесу
-    const scheduleCheck = await pool.query(
-        `SELECT s.id FROM offer_schedules s
-         JOIN offers o ON s.offer_id = o.id
-         WHERE s.id = $1 AND o.business_id = $2`,
-        [scheduleId, businessId]
-    );
-
-    if (scheduleCheck.rows.length === 0) {
-        return res.status(404).json({
-            success: false,
-            error: "SCHEDULE_NOT_FOUND",
-            message: "Расписание не найдено"
-        });
-    }
-
-    await pool.query(
-        `DELETE FROM offer_schedules WHERE id = $1`,
-        [scheduleId]
-    );
-
-    logger.info(`🗑️ Удалено расписание ${scheduleId} для оффера ${id}`);
-
-    res.json({
-        success: true,
-        message: "Расписание удалено"
-    });
-}));
 
 
 module.exports = offersRouter;

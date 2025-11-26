@@ -186,6 +186,153 @@ customerRouter.get("/sellers", async (req, res) => {
     }
 });
 
+// ============================================
+// СПЕЦИФИЧНЫЕ МАРШРУТЫ (должны быть ДО маршрутов с параметрами)
+// ============================================
+
+// GET /customer/vendors/:id/offers - Получить предложения конкретного заведения
+customerRouter.get("/vendors/:id/offers", async (req, res) => {
+    try {
+        const vendorId = req.params.id;
+        const active = req.query.active === 'true';
+        console.log("🔍 Запрос /customer/vendors/:id/offers", { vendorId, active });
+        
+        let query = `
+            SELECT 
+                o.id,
+                o.title,
+                o.description,
+                o.image_url,
+                o.original_price,
+                o.discounted_price,
+                o.quantity_available,
+                o.pickup_time_start,
+                o.pickup_time_end,
+                o.is_active,
+                false as is_best,
+                o.created_at
+            FROM offers o
+            WHERE o.business_id = $1
+        `;
+        
+        const params = [vendorId];
+        
+        if (active) {
+            query += ` AND o.is_active = true AND o.quantity_available > 0`;
+        }
+        
+        query += ` ORDER BY o.created_at DESC`;
+
+        const result = await pool.query(query, params);
+        
+        const offers = result.rows.map(row => ({
+            id: row.id,
+            business_id: parseInt(vendorId),
+            title: row.title,
+            description: row.description,
+            image_url: row.image_url,
+            original_price: parseFloat(row.original_price),
+            discounted_price: parseFloat(row.discounted_price),
+            quantity_available: row.quantity_available,
+            pickup_time_start: row.pickup_time_start,
+            pickup_time_end: row.pickup_time_end,
+            is_active: row.is_active,
+            is_best: row.is_best || false,
+            created_at: row.created_at,
+            discount_percent: Math.round((1 - parseFloat(row.discounted_price) / parseFloat(row.original_price)) * 100)
+        }));
+
+        res.send({
+            success: true,
+            data: {
+                offers: offers
+            }
+        });
+    } catch (e) {
+        console.error("❌ Ошибка в /customer/vendors/:id/offers:", e);
+        res.status(500).send({
+            success: false,
+            error: "UNKNOWN_ERROR",
+            message: "Внутренняя ошибка сервера"
+        });
+    }
+});
+
+// GET /customer/offers/:id - Получить конкретное предложение по ID
+customerRouter.get("/offers/:id", async (req, res) => {
+    try {
+        const offerId = req.params.id;
+        console.log("🔍 Запрос /customer/offers/:id", offerId);
+
+        const result = await pool.query(
+            `SELECT 
+                o.id,
+                o.title,
+                o.description,
+                o.image_url,
+                o.original_price,
+                o.discounted_price,
+                o.quantity_available,
+                o.pickup_time_start,
+                o.pickup_time_end,
+                o.business_id,
+                u.name as business_name,
+                u.address as business_address,
+                u.coord_0,
+                u.coord_1,
+                u.logo_url as business_logo_url
+            FROM offers o
+            JOIN users u ON o.business_id = u.id
+            WHERE o.id = $1 AND o.is_active = true`,
+            [offerId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).send({
+                success: false,
+                error: "OFFER_NOT_FOUND",
+                message: "Предложение не найдено"
+            });
+        }
+
+        const offer = result.rows[0];
+
+        res.send({
+            success: true,
+            data: {
+                id: offer.id,
+                title: offer.title,
+                description: offer.description,
+                image_url: offer.image_url,
+                original_price: parseFloat(offer.original_price),
+                discounted_price: parseFloat(offer.discounted_price),
+                quantity_available: offer.quantity_available,
+                pickup_time_start: offer.pickup_time_start,
+                pickup_time_end: offer.pickup_time_end,
+                business: {
+                    id: offer.business_id,
+                    name: offer.business_name,
+                    address: offer.business_address,
+                    coords: [offer.coord_0, offer.coord_1],
+                    logo_url: offer.business_logo_url
+                },
+                discount_percent: Math.round((1 - parseFloat(offer.discounted_price) / parseFloat(offer.original_price)) * 100)
+            }
+        });
+    } catch (e) {
+        console.error("❌ Ошибка в /customer/offers/:id:", e);
+        res.status(500).send({
+            success: false,
+            error: "UNKNOWN_ERROR",
+            message: "Внутренняя ошибка сервера"
+        });
+    }
+});
+
+// ============================================
+// ОСНОВНЫЕ МАРШРУТЫ
+// ============================================
+
 // Получить конкретное заведение по ID
 customerRouter.get("/vendors/:id", async (req, res) => {
     try {
