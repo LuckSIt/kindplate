@@ -48,15 +48,50 @@ paymentsRouter.post("/create", async (req, res) => {
     }
 });
 
+// Получить статус платежа по order_id (должен быть ДО /:paymentId/status)
+paymentsRouter.get("/order/:orderId/status", async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        // TODO: Получить user_id из JWT токена
+        const userId = 1; // Временное решение для тестирования
+
+        console.log("🔍 Запрос /payments/order/:orderId/status", { orderId, userId });
+
+        // Пока таблица payments не создана правильно, возвращаем заглушку
+        const payment = {
+            id: Date.now(),
+            order_id: parseInt(orderId),
+            amount: 1000,
+            payment_method: 'yookassa',
+            status: 'succeeded', // Заглушка - успешный платеж
+            payment_url: `https://yookassa.ru/payment/${Date.now()}`,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+
+        res.send({
+            success: true,
+            data: payment
+        });
+    } catch (e) {
+        console.error("❌ Ошибка в /payments/order/:orderId/status:", e);
+        res.status(500).send({
+            success: false,
+            error: "UNKNOWN_ERROR",
+            message: "Внутренняя ошибка сервера"
+        });
+    }
+});
+
 // Создать платеж
-paymentsRouter.post("/:orderId/create", async (req, res) => {
+paymentsRouter.post("/order/:orderId/create", async (req, res) => {
     try {
         const { orderId } = req.params;
         const { payment_method, return_url } = req.body;
         // TODO: Получить user_id из JWT токена
         const userId = 1; // Временное решение для тестирования
 
-        console.log("🔍 Запрос POST /payments/:orderId/create", { orderId, payment_method, userId });
+        console.log("🔍 Запрос POST /payments/order/:orderId/create", { orderId, payment_method, userId });
 
         // Проверяем, что заказ принадлежит пользователю
         const orderResult = await pool.query(
@@ -153,42 +188,7 @@ paymentsRouter.post("/:orderId/create", async (req, res) => {
             }
         });
     } catch (e) {
-        console.error("❌ Ошибка в POST /payments/:orderId/create:", e);
-        res.status(500).send({
-            success: false,
-            error: "UNKNOWN_ERROR",
-            message: "Внутренняя ошибка сервера"
-        });
-    }
-});
-
-// Получить статус платежа по order_id
-paymentsRouter.get("/order/:orderId/status", async (req, res) => {
-    try {
-        const { orderId } = req.params;
-        // TODO: Получить user_id из JWT токена
-        const userId = 1; // Временное решение для тестирования
-
-        console.log("🔍 Запрос /payments/order/:orderId/status", { orderId, userId });
-
-        // Пока таблица payments не создана правильно, возвращаем заглушку
-        const payment = {
-            id: Date.now(),
-            order_id: parseInt(orderId),
-            amount: 1000,
-            payment_method: 'yookassa',
-            status: 'succeeded', // Заглушка - успешный платеж
-            payment_url: `https://yookassa.ru/payment/${Date.now()}`,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-        };
-
-        res.send({
-            success: true,
-            data: payment
-        });
-    } catch (e) {
-        console.error("❌ Ошибка в /payments/order/:orderId/status:", e);
+        console.error("❌ Ошибка в POST /payments/order/:orderId/create:", e);
         res.status(500).send({
             success: false,
             error: "UNKNOWN_ERROR",
