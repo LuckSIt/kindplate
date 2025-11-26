@@ -391,11 +391,11 @@ function RouteComponent() {
                                         </button>
                                     </div>
                                 ) : (
-                                    <OffersFeed
-                                        businesses={filteredBusinesses}
-                                        selectedBusiness={selectedBusiness}
-                                        onOfferClick={handleOpenOrder}
-                                    />
+                                <OffersFeed
+                                    businesses={filteredBusinesses}
+                                    selectedBusiness={selectedBusiness}
+                                    onOfferClick={handleOpenOrder}
+                                />
                                 )}
                             </div>
                         </Drawer.Content>

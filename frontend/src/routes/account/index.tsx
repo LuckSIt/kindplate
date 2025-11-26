@@ -671,8 +671,8 @@ function RouteComponent() {
                         <div className="text-left">
                             <div className="text-[18px] font-semibold text-white leading-tight">
                                 Пищевые<br/>предпочтения
-                            </div>
                         </div>
+                    </div>
                     </div>
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -851,14 +851,14 @@ function RouteComponent() {
                         className="flex flex-col items-center py-2 px-4"
                     >
                         <svg className="w-7 h-7 text-[#757575] mb-1" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                        </svg>
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                            </svg>
                         <span className="text-[12px] text-[#757575]">Карта</span>
                     </button>
                     <button className="flex flex-col items-center py-2 px-4">
                         <svg className="w-7 h-7 text-[#35741F] mb-1" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                        </svg>
+                            </svg>
                         <span className="text-[12px] font-semibold text-[#35741F]">Профиль</span>
                     </button>
                     <button 
