@@ -796,11 +796,11 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
         }
 
         // Проверяем существование таблицы business_locations
-        const tablesCheck = await pool.query(`
+        const businessLocationsCheck = await pool.query(`
             SELECT table_name FROM information_schema.tables 
             WHERE table_schema = 'public' AND table_name = 'business_locations'
         `);
-        const hasBusinessLocations = tablesCheck.rows.length > 0;
+        const hasBusinessLocations = businessLocationsCheck.rows.length > 0;
 
         // Проверяем наличие дополнительных полей в offers
         const offersColumnsCheck = await pool.query(`
