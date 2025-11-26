@@ -148,40 +148,74 @@ authRouter.get("/logout", (req, res) => {
 });
 
 authRouter.get("/me", asyncHandler(async (req, res) => {
-    if (req.session.userId === undefined) {
-        return res.json({
+    try {
+        if (req.session.userId === undefined) {
+            return res.json({
+                user: null,
+                success: true,
+                message: "Пользователь не авторизован"
+            });
+        }
+
+        // Проверяем наличие колонок перед запросом
+        const columnsCheck = await pool.query(`
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_schema = 'public' AND table_name = 'users'
+            AND column_name IN ('rating', 'total_reviews')
+        `);
+        const availableColumns = columnsCheck.rows.map(r => r.column_name);
+        const hasRating = availableColumns.includes('rating');
+        const hasTotalReviews = availableColumns.includes('total_reviews');
+
+        const selectFields = [
+            'id', 'name', 'email', 'is_business', 'role', 'address', 
+            'coord_0', 'coord_1'
+        ];
+        
+        if (hasRating) selectFields.push('rating');
+        if (hasTotalReviews) selectFields.push('total_reviews');
+
+        const result = await pool.query(
+            `SELECT ${selectFields.join(', ')} FROM users WHERE id=$1`,
+            [req.session.userId]
+        );
+
+        if (result.rowCount === 0) {
+            req.session.userId = undefined; // Очищаем сессию если пользователь не найден
+            return res.json({
+                user: null,
+                success: true,
+                message: "Пользователь не найден"
+            });
+        }
+
+        const user = result.rows[0];
+        user.coords = [user.coord_0, user.coord_1];
+        delete user.coord_0;
+        delete user.coord_1;
+        
+        // Устанавливаем роль в сессии, если её там нет (для обратной совместимости)
+        if (!req.session.role) {
+            req.session.role = user.role || (user.is_business ? 'business' : 'customer');
+        }
+
+        res.json({
+            user,
+            success: true
+        });
+    } catch (error) {
+        logger.error('Error in /auth/me:', {
+            error: error.message,
+            stack: error.stack,
+            userId: req.session?.userId
+        });
+        // Возвращаем пустой ответ вместо ошибки, чтобы не ломать фронтенд
+        res.json({
             user: null,
-            message: "Пользователь не авторизован"
+            success: true,
+            message: "Ошибка при получении данных пользователя"
         });
     }
-
-    const result = await pool.query(
-        "SELECT id, name, email, is_business, role, address, coord_0, coord_1, rating, total_reviews FROM users WHERE id=$1",
-        [req.session.userId]
-    );
-
-    if (result.rowCount === 0) {
-        req.session.userId = undefined; // Очищаем сессию если пользователь не найден
-        return res.json({
-            user: null,
-            message: "Пользователь не найден"
-        });
-    }
-
-    const user = result.rows[0];
-    user.coords = [user.coord_0, user.coord_1];
-    delete user.coord_0;
-    delete user.coord_1;
-    
-    // Устанавливаем роль в сессии, если её там нет (для обратной совместимости)
-    if (!req.session.role) {
-        req.session.role = user.role || (user.is_business ? 'business' : 'customer');
-    }
-
-    res.json({
-        user,
-        success: true
-    });
 }));
 
 // Endpoint для обновления токена через refresh token

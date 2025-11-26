@@ -17,6 +17,25 @@ const errorHandler = (err, req, res, next) => {
     let error = { ...err };
     error.message = err.message;
 
+    // Убеждаемся, что CORS заголовки установлены даже при ошибках
+    const origin = req.headers.origin;
+    if (origin) {
+        const allowedOrigins = [
+            "http://localhost:3000",
+            "http://localhost:3001", 
+            "http://localhost:5173",
+            "http://172.20.10.2:5173",
+            "https://app-kindplate.ru",
+            process.env.FRONTEND_ORIGIN
+        ].filter(Boolean);
+        
+        const isRender = /^https?:\/\/[^.]+\.onrender\.com$/i.test(origin);
+        if (allowedOrigins.includes(origin) || isRender || !origin) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+            res.setHeader('Access-Control-Allow-Credentials', 'true');
+        }
+    }
+
     // Логируем ошибку
     logger.error('Error occurred:', {
         message: err.message,
@@ -76,6 +95,25 @@ const errorHandler = (err, req, res, next) => {
 
 // Обработчик для несуществующих маршрутов
 const notFound = (req, res, next) => {
+    // Убеждаемся, что CORS заголовки установлены
+    const origin = req.headers.origin;
+    if (origin) {
+        const allowedOrigins = [
+            "http://localhost:3000",
+            "http://localhost:3001", 
+            "http://localhost:5173",
+            "http://172.20.10.2:5173",
+            "https://app-kindplate.ru",
+            process.env.FRONTEND_ORIGIN
+        ].filter(Boolean);
+        
+        const isRender = /^https?:\/\/[^.]+\.onrender\.com$/i.test(origin);
+        if (allowedOrigins.includes(origin) || isRender || !origin) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+            res.setHeader('Access-Control-Allow-Credentials', 'true');
+        }
+    }
+    
     const error = new AppError(`Маршрут ${req.originalUrl} не найден`, 404, 'ROUTE_NOT_FOUND');
     next(error);
 };

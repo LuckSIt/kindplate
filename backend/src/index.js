@@ -61,43 +61,48 @@ app.use(helmet({
 app.use(contentSecurityPolicy);
 
 // CORS с ограничениями
-app.use(
-    cors({
-        origin: function(origin, callback) {
-            const envOrigin = process.env.FRONTEND_ORIGIN;
-            const allowedOrigins = [
-                "http://localhost:3000",
-                "http://localhost:3001", 
-                "http://localhost:5173",
-                "http://172.20.10.2:5173",
-                "https://app-kindplate.ru", // Явно добавляем продакшен домен
-                envOrigin
-            ].filter(Boolean);
+const corsOptions = {
+    origin: function(origin, callback) {
+        const envOrigin = process.env.FRONTEND_ORIGIN;
+        const allowedOrigins = [
+            "http://localhost:3000",
+            "http://localhost:3001", 
+            "http://localhost:5173",
+            "http://172.20.10.2:5173",
+            "https://app-kindplate.ru", // Явно добавляем продакшен домен
+            envOrigin
+        ].filter(Boolean);
 
-            // Разрешаем запросы без origin (например, мобильные приложения, curl)
-            if (!origin) return callback(null, true);
+        // Разрешаем запросы без origin (например, мобильные приложения, curl)
+        if (!origin) return callback(null, true);
 
-            // Разрешаем домены Render *.onrender.com по https
-            const isRender = /^https?:\/\/[^.]+\.onrender\.com$/i.test(origin);
-            if (isRender) return callback(null, true);
+        // Разрешаем домены Render *.onrender.com по https
+        const isRender = /^https?:\/\/[^.]+\.onrender\.com$/i.test(origin);
+        if (isRender) return callback(null, true);
 
-            if (allowedOrigins.includes(origin)) {
-                logger.info(`✅ CORS разрешён для: ${origin}`);
-                callback(null, true);
-            } else {
-                logger.warn(`❌ CORS блокировка от источника: ${origin}`);
-                logger.warn(`   Разрешённые источники: ${allowedOrigins.join(', ')}`);
-                logger.warn(`   FRONTEND_ORIGIN из env: ${envOrigin || 'не задан'}`);
-                callback(new Error('Доступ запрещен политикой CORS'));
-            }
-        },
-        credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-        exposedHeaders: ['Content-Range', 'X-Content-Range'],
-        maxAge: 86400 // 24 hours
-    })
-);
+        if (allowedOrigins.includes(origin)) {
+            logger.info(`✅ CORS разрешён для: ${origin}`);
+            callback(null, true);
+        } else {
+            logger.warn(`❌ CORS блокировка от источника: ${origin}`);
+            logger.warn(`   Разрешённые источники: ${allowedOrigins.join(', ')}`);
+            logger.warn(`   FRONTEND_ORIGIN из env: ${envOrigin || 'не задан'}`);
+            callback(new Error('Доступ запрещен политикой CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    maxAge: 86400, // 24 hours
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
+
+// Явно обрабатываем OPTIONS запросы для всех маршрутов
+app.options('*', cors(corsOptions));
 
 // ============================================
 // БЕЗОПАСНОСТЬ: Парсинг и валидация данных
