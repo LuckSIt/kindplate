@@ -70,8 +70,8 @@ function RouteComponent() {
                     {/* Header */}
                     <div className="register-page__header">
                         <h1 className="register-page__title">
-                            Регестрация<br />пользователя
-                                    </h1>
+                            Регистрация пользователя
+                        </h1>
                         <p className="register-page__subtitle">
                                         Уже есть аккаунт?{" "}
                             <Link 

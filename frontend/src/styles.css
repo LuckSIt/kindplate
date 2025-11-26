@@ -791,18 +791,20 @@ button, .btn-primary, .btn-secondary {
 
 .login-page__back-button {
   position: absolute;
-  left: 54px;
+  left: 15px;
   top: 51px;
   width: 39px;
   height: 39px;
-  background: transparent;
+  background: #7E879D;
   border: none;
+  border-radius: 50%;
   cursor: pointer;
   padding: 0;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .login-page__back-button-icon {
@@ -833,8 +835,8 @@ button, .btn-primary, .btn-secondary {
 .login-page__title {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 22px;
-  line-height: 18px;
+  font-size: 24px;
+  line-height: 28px;
   color: #FFFFFF;
   margin: 0 0 21px 0;
   text-align: center;
@@ -887,7 +889,7 @@ button, .btn-primary, .btn-secondary {
   position: relative;
   width: 100%;
   height: 63px;
-  border: 3px solid #10172A;
+  border: none;
   border-radius: 15px;
   background: transparent;
   display: flex;
@@ -896,7 +898,7 @@ button, .btn-primary, .btn-secondary {
 }
 
 .login-page__input {
-  width: 233px;
+  width: 100%;
   height: 39px;
   background-color: #7E879D;
   border: none;
@@ -996,6 +998,11 @@ button, .btn-primary, .btn-secondary {
     left: 15px;
     top: 51px;
   }
+  
+  .login-page__card {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
 }
 
 @media (min-width: 421px) {
@@ -1051,18 +1058,20 @@ button, .btn-primary, .btn-secondary {
 
 .register-page__back-button {
   position: absolute;
-  left: 54px;
+  left: 15px;
   top: 51px;
   width: 39px;
   height: 39px;
-  background: transparent;
+  background: #7E879D;
   border: none;
+  border-radius: 50%;
   cursor: pointer;
   padding: 0;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .register-page__back-button-icon {
@@ -1093,8 +1102,8 @@ button, .btn-primary, .btn-secondary {
 .register-page__title {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 22px;
-  line-height: 18px;
+  font-size: 24px;
+  line-height: 28px;
   color: #FFFFFF;
   margin: 0 0 21px 0;
   text-align: center;
@@ -1147,7 +1156,7 @@ button, .btn-primary, .btn-secondary {
   position: relative;
   width: 100%;
   height: 63px;
-  border: 3px solid #10172A;
+  border: none;
   border-radius: 15px;
   background: transparent;
   display: flex;
@@ -1156,7 +1165,7 @@ button, .btn-primary, .btn-secondary {
 }
 
 .register-page__input {
-  width: 233px;
+  width: 100%;
   height: 39px;
   background-color: #7E879D;
   border: none;
@@ -1256,6 +1265,11 @@ button, .btn-primary, .btn-secondary {
   .register-page__back-button {
     left: 15px;
     top: 51px;
+  }
+  
+  .register-page__card {
+    margin-left: 15px;
+    margin-right: 15px;
   }
 }
 

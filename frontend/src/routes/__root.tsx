@@ -158,7 +158,8 @@ function RootRoute() {
 
     // Скрываем навигацию и поиск на страницах входа, регистрации, главной странице (лендинг),
     // списке заведений, корзине, оплате, коде выдачи, странице заведения
-    const hideNav = location.pathname.startsWith('/auth/login') || 
+    const hideNav = location.pathname === '/auth' ||
+                    location.pathname.startsWith('/auth/login') || 
                     location.pathname.startsWith('/auth/register') || 
                     location.pathname === '/' ||
                     location.pathname === '/list' ||
