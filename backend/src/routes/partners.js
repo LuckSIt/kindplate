@@ -39,42 +39,6 @@ const requirePartner = async (req, res, next) => {
     next();
 };
 
-// GET /api/partners/:id - Get partner details (public)
-partnersRouter.get("/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        const result = await pool.query(
-            `SELECT 
-                p.id, p.name, p.address, p.latitude, p.longitude, 
-                p.description, p.categories, p.working_hours, p.logo_url,
-                p.created_at
-             FROM partners p
-             WHERE p.id = $1 AND p.is_approved = TRUE`,
-            [id]
-        );
-
-        if (result.rowCount === 0) {
-            return res.status(404).json({
-                success: false,
-                error: "PARTNER_NOT_FOUND"
-            });
-        }
-
-        res.json({
-            success: true,
-            partner: result.rows[0]
-        });
-
-    } catch (ex) {
-        console.error("Get partner error:", ex);
-        res.status(500).json({
-            success: false,
-            error: "UNKNOWN_ERROR"
-        });
-    }
-});
-
 // GET /api/partners - Get all partners (public, with filters)
 partnersRouter.get("/", async (req, res) => {
     try {
@@ -256,6 +220,42 @@ partnersRouter.patch("/me", requireAuth, requirePartner, async (req, res) => {
 
     } catch (ex) {
         console.error("Update partner error:", ex);
+        res.status(500).json({
+            success: false,
+            error: "UNKNOWN_ERROR"
+        });
+    }
+});
+
+// GET /api/partners/:id - Get partner details (public) (должен быть ПОСЛЕ /me)
+partnersRouter.get("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const result = await pool.query(
+            `SELECT 
+                p.id, p.name, p.address, p.latitude, p.longitude, 
+                p.description, p.categories, p.working_hours, p.logo_url,
+                p.created_at
+             FROM partners p
+             WHERE p.id = $1 AND p.is_approved = TRUE`,
+            [id]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({
+                success: false,
+                error: "PARTNER_NOT_FOUND"
+            });
+        }
+
+        res.json({
+            success: true,
+            partner: result.rows[0]
+        });
+
+    } catch (ex) {
+        console.error("Get partner error:", ex);
         res.status(500).json({
             success: false,
             error: "UNKNOWN_ERROR"
