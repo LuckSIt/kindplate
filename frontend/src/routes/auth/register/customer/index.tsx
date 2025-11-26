@@ -52,21 +52,20 @@ function RouteComponent() {
 
             {/* Main Container */}
             <div className="register-page__container">
-                {/* Back Button */}
-                <button 
-                    className="register-page__back-button"
-                    onClick={() => navigate({ to: "/" })}
-                    aria-label="Назад"
-                >
-                    <img 
-                        src={arrowBackIcon} 
-                        alt="Назад" 
-                        className="register-page__back-button-icon"
-                    />
-                </button>
-
                 {/* Register Card */}
                 <div className="register-page__card">
+                    {/* Back Button */}
+                    <button 
+                        className="register-page__back-button"
+                        onClick={() => navigate({ to: "/" })}
+                        aria-label="Назад"
+                    >
+                        <img 
+                            src={arrowBackIcon} 
+                            alt="Назад" 
+                            className="register-page__back-button-icon"
+                        />
+                    </button>
                     {/* Header */}
                     <div className="register-page__header">
                         <h1 className="register-page__title">
