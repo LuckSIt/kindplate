@@ -1,5 +1,11 @@
 const express = require('express');
 const reviewsRouter = express.Router();
+const pool = require('../lib/db');
+const logger = require('../lib/logger');
+const { AppError, asyncHandler } = require('../lib/errorHandler');
+const { requireAuth, requireAdmin } = require('../lib/guards');
+const { sanitizePlainTextFields } = require('../middleware/sanitization');
+const { upload, processReviewPhotos } = require('../middleware/review-photos-upload');
 
 // ============================================
 // СПЕЦИФИЧНЫЕ МАРШРУТЫ (должны быть ДО маршрутов с параметрами)
@@ -255,12 +261,6 @@ reviewsRouter.post('/admin/moderate/:id', requireAdmin, asyncHandler(async (req,
         message: action === 'publish' ? 'Отзыв опубликован' : 'Отзыв отклонен'
     });
 }));
-const pool = require('../lib/db');
-const logger = require('../lib/logger');
-const { AppError, asyncHandler } = require('../lib/errorHandler');
-const { requireAuth, requireAdmin } = require('../lib/guards');
-const { sanitizePlainTextFields } = require('../middleware/sanitization');
-const { upload, processReviewPhotos } = require('../middleware/review-photos-upload');
 
 /**
  * Создать отзыв
