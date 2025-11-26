@@ -496,7 +496,7 @@ export function LandingPage() {
                     {/* Footer */}
                     <div className="px-0 pb-[60px]">
                         <div 
-                            className="rounded-0 p-[27px]"
+                            className="p-[27px]"
                             style={{ backgroundColor: '#2B344D' }}
                         >
                             <div className="grid grid-cols-2 gap-[27px] mb-[25px]">
