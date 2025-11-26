@@ -169,6 +169,14 @@ app.use("/reviews", reviewsRouter);
 app.use("/notifications", notificationsRouter);
 app.use("/subscriptions", subscriptionsRouter);
 
+// Health check endpoint для Docker/Caddy
+app.get("/health", (req, res) => {
+    res.status(200).json({
+        status: "ok",
+        timestamp: new Date().toISOString()
+    });
+});
+
 // Базовый маршрут API
 app.get("/", (req, res) => {
     res.json({
