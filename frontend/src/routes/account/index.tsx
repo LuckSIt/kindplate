@@ -613,9 +613,9 @@ function RouteComponent() {
 
     // Основной экран аккаунта
     return (
-        <div className="min-h-screen bg-[#10172A] pb-20">
+        <div className="min-h-screen bg-[#10172A] pb-20" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
             {/* Информация о клиенте */}
-            <div className="px-6 pt-6 pb-4">
+            <div className="px-[15px] pt-6 pb-4">
                 <div className="bg-[#D9D9D9] rounded-[15px] px-4 py-4 flex items-center gap-4">
                     {/* Avatar */}
                     <div className="w-[46px] h-[46px] flex-shrink-0">
@@ -625,10 +625,10 @@ function RouteComponent() {
                     </div>
                     {/* Name and Edit */}
                     <div className="flex-1 min-w-0">
-                        <div className="text-[18px] font-semibold text-[#000000] mb-1">
+                        <div className="text-[18px] font-semibold text-[#000000] mb-1" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
                             {user?.name || 'Пользователь'}
                         </div>
-                        <button className="text-[11px] text-[#767676]">
+                        <button className="text-[11px] text-[#767676]" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
                             изменить информацию
                         </button>
                     </div>
@@ -636,112 +636,109 @@ function RouteComponent() {
             </div>
 
             {/* Menu Options */}
-            <div className="px-6 space-y-0">
-                {/* История заказов */}
-                <button 
-                    onClick={() => setShowOrders(true)}
-                    className="w-full bg-[#2B344D] rounded-[15px] px-4 py-4 flex items-center justify-between border border-white/10 mb-3"
-                >
-                    <div className="flex items-center gap-4">
-                        <div className="w-[50px] h-[50px] flex-shrink-0">
-                            <svg className="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+            <div className="px-[15px] mt-4">
+                {/* Main Menu Card */}
+                <div className="bg-[#2B344D] rounded-[15px] p-4 mb-3">
+                    {/* Избранное */}
+                    <button 
+                        onClick={() => setShowFavorites(true)}
+                        className="w-full flex items-center justify-between mb-3 last:mb-0"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="w-[50px] h-[50px] bg-[#FF9500] rounded-[5px] flex items-center justify-center flex-shrink-0">
+                                <svg className="w-[30px] h-[30px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                            </div>
+                            <div className="text-left">
+                                <div className="text-[18px] font-semibold text-white" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Избранное</div>
+                            </div>
                         </div>
-                        <div className="text-left">
-                            <div className="text-[18px] font-semibold text-white">История заказов</div>
-                        </div>
-                    </div>
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
 
-                {/* Пищевые предпочтения */}
-                <button 
-                    onClick={() => {}}
-                    className="w-full bg-[#2B344D] rounded-[15px] px-4 py-4 flex items-center justify-between border border-white/10 mb-3"
-                >
-                    <div className="flex items-center gap-4">
-                        <div className="w-[50px] h-[50px] flex-shrink-0">
-                            <svg className="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
+                    {/* История заказов */}
+                    <button 
+                        onClick={() => setShowOrders(true)}
+                        className="w-full flex items-center justify-between mb-3 last:mb-0"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="w-[50px] h-[50px] bg-[#35741F] rounded-[5px] flex items-center justify-center flex-shrink-0">
+                                <svg className="w-[30px] h-[30px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div className="text-left">
+                                <div className="text-[18px] font-semibold text-white" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>История заказов</div>
+                            </div>
                         </div>
-                        <div className="text-left">
-                            <div className="text-[18px] font-semibold text-white leading-tight">
-                                Пищевые<br/>предпочтения
-                        </div>
-                    </div>
-                    </div>
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
 
-                {/* Избранное */}
-                <button 
-                    onClick={() => setShowFavorites(true)}
-                    className="w-full bg-[#2B344D] rounded-[15px] px-4 py-4 flex items-center justify-between border border-white/10 mb-3"
-                >
-                    <div className="flex items-center gap-4">
-                        <div className="w-[50px] h-[50px] flex-shrink-0">
-                            <svg className="w-full h-full text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                            </svg>
+                    {/* Пищевые предпочтения */}
+                    <button 
+                        onClick={() => {}}
+                        className="w-full flex items-center justify-between mb-3 last:mb-0"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="w-[50px] h-[50px] bg-[#C8EBBB] rounded-[5px] flex items-center justify-center flex-shrink-0">
+                                <svg className="w-[30px] h-[30px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </div>
+                            <div className="text-left">
+                                <div className="text-[18px] font-semibold text-white leading-tight" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
+                                    Пищевые<br/>предпочтения
+                                </div>
+                            </div>
                         </div>
-                        <div className="text-left">
-                            <div className="text-[18px] font-semibold text-white">Избранное</div>
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+
+                    {/* Уведомления */}
+                    <button 
+                        onClick={() => setShowSubscriptions(true)}
+                        className="w-full flex items-center justify-between"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="w-[50px] h-[50px] bg-[#9BCF7A] rounded-[5px] flex items-center justify-center flex-shrink-0">
+                                <svg className="w-[30px] h-[30px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                            </div>
+                            <div className="text-left">
+                                <div className="text-[18px] font-semibold text-white" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Уведомления</div>
+                            </div>
                         </div>
-                    </div>
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-
-                {/* Уведомления */}
-                <button 
-                    onClick={() => setShowSubscriptions(true)}
-                    className="w-full bg-[#2B344D] rounded-[15px] px-4 py-4 flex items-center justify-between border border-white/10 mb-3"
-                >
-                    <div className="flex items-center gap-4">
-                        <div className="w-[50px] h-[50px] flex-shrink-0">
-                            <svg className="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                            </svg>
-                        </div>
-                        <div className="text-left">
-                            <div className="text-[18px] font-semibold text-white">Уведомления</div>
-                        </div>
-                    </div>
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-
-                {/* Разделитель */}
-                <div className="h-px bg-white/10 my-3"></div>
-
-                {/* Пригласить друзей */}
-                <button 
-                    onClick={() => {}}
-                    className="w-full px-4 py-3 flex items-center justify-between"
-                >
-                    <div className="text-[17px] font-semibold text-white">Пригласить друзей</div>
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-
-                {/* Разделитель */}
-                <div className="h-px bg-white/10 my-3"></div>
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
 
                 {/* Служба поддержки */}
                 <button 
                     onClick={() => {}}
-                    className="w-full px-4 py-3 flex items-center justify-between"
+                    className="w-full px-4 py-3 flex items-center justify-between mb-3"
                 >
-                    <div className="text-[17px] font-semibold text-white">Служба поддержки</div>
+                    <div className="text-[17px] font-semibold text-white" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Служба поддержки</div>
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+                {/* Пригласить друзей */}
+                <button 
+                    onClick={() => {}}
+                    className="w-full px-4 py-3 flex items-center justify-between mb-3"
+                >
+                    <div className="text-[17px] font-semibold text-white" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Пригласить друзей</div>
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
@@ -752,7 +749,7 @@ function RouteComponent() {
                     onClick={() => {}}
                     className="w-full px-4 py-3 flex items-center justify-between"
                 >
-                    <div className="text-[17px] font-semibold text-white">О нас</div>
+                    <div className="text-[17px] font-semibold text-white" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>О нас</div>
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
@@ -760,43 +757,51 @@ function RouteComponent() {
             </div>
 
             {/* Информационный блок */}
-            <div className="mt-8 px-6 pb-24">
+            <div className="mt-8 px-[15px] pb-24">
                 <div className="bg-[#2B344D] rounded-[15px] p-6">
-                    {/* О KindPlate */}
-                    <div className="mb-6">
-                        <div className="text-[14px] font-semibold text-[#35741F] mb-3">KindPlate</div>
-                        <div className="space-y-2">
-                            <button className="block text-[11px] text-white text-left">Для пользователей</button>
-                            <button className="block text-[11px] text-white text-left">Для партнеров</button>
-                            <button className="block text-[11px] text-white text-left">Документы</button>
-                            <button className="block text-[11px] text-white text-left">Блог</button>
+                    <div className="grid grid-cols-2 gap-6 mb-6">
+                        {/* О KindPlate */}
+                        <div>
+                            <div className="text-[14px] font-semibold text-[#35741F] mb-3" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>KindPlate</div>
+                            <div className="space-y-2">
+                                <button className="block text-[11px] text-white text-left" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Для партнеров</button>
+                                <button className="block text-[11px] text-white text-left" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Для пользователей</button>
+                                <button className="block text-[11px] text-white text-left" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Документы</button>
+                                <button className="block text-[11px] text-white text-left" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Блог</button>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Помощь */}
-                    <div className="mb-6">
-                        <div className="text-[14px] font-semibold text-[#35741F] mb-3">Нужна помощь?</div>
-                        <div className="space-y-2">
-                            <button className="block text-[11px] text-white text-left">Ответы на ворпосы</button>
-                            <button className="block text-[11px] text-white text-left">Контакты</button>
+                        {/* Помощь */}
+                        <div>
+                            <div className="text-[14px] font-semibold text-[#35741F] mb-3" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Нужна помощь?</div>
+                            <div className="space-y-2">
+                                <button className="block text-[11px] text-white text-left" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Ответы на вопросы</button>
+                                <button className="block text-[11px] text-white text-left" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Контакты</button>
+                            </div>
                         </div>
                     </div>
 
                     {/* Социальные сети */}
                     <div>
-                        <div className="text-[14px] font-semibold text-[#35741F] mb-3">Социальные сети</div>
-                        <div className="flex gap-4">
-                            <a href="#" className="w-[25px] h-[25px] bg-white/20 rounded flex items-center justify-center">
-                                <span className="text-white text-xs">VK</span>
+                        <div className="text-[14px] font-semibold text-[#35741F] mb-3" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Социальные сети</div>
+                        <div className="flex gap-[11px]">
+                            <a href="#" className="w-[25px] h-[25px] bg-[#7E879D] rounded-full flex items-center justify-center">
+                                <span className="text-white text-[10px] font-bold">VK</span>
                             </a>
-                            <a href="#" className="w-[25px] h-[25px] bg-white/20 rounded flex items-center justify-center">
-                                <span className="text-white text-xs">TG</span>
+                            <a href="#" className="w-[25px] h-[25px] bg-[#7E879D] rounded-full flex items-center justify-center">
+                                <svg className="w-[14px] h-[14px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
                             </a>
-                            <a href="#" className="w-[25px] h-[25px] bg-white/20 rounded flex items-center justify-center">
-                                <span className="text-white text-xs">IG</span>
+                            <a href="#" className="w-[31px] h-[31px] bg-[#7E879D] rounded-full flex items-center justify-center">
+                                <svg className="w-[19px] h-[19px] text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                </svg>
                             </a>
-                            <a href="#" className="w-[25px] h-[25px] bg-white/20 rounded flex items-center justify-center">
-                                <span className="text-white text-xs">GM</span>
+                            <a href="#" className="w-[25px] h-[25px] bg-[#7E879D] rounded-full flex items-center justify-center">
+                                <svg className="w-[14px] h-[14px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
                             </a>
                         </div>
                     </div>
@@ -844,31 +849,33 @@ function RouteComponent() {
             )}
 
             {/* Bottom Navigation */}
-            <div className="fixed bottom-0 left-0 right-0 bg-[#D9D9D9] border-t border-white/10 z-10">
-                <div className="flex justify-around py-2">
+            <div className="fixed bottom-0 left-0 right-0 bg-[#D9D9D9] z-10 pt-2 pb-safe">
+                <div className="flex justify-around">
+                    <button 
+                        onClick={() => navigate({ to: "/list" })}
+                        className="flex flex-col items-center py-2 px-4"
+                    >
+                        <svg className="w-7 h-7 text-[#757575] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <span className="text-[12px] font-semibold text-[#757575]" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Список</span>
+                    </button>
                     <button 
                         onClick={() => navigate({ to: "/home" })}
                         className="flex flex-col items-center py-2 px-4"
                     >
                         <svg className="w-7 h-7 text-[#757575] mb-1" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                            </svg>
-                        <span className="text-[12px] text-[#757575]">Карта</span>
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                        <span className="text-[12px] font-semibold text-[#757575]" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Карта</span>
                     </button>
                     <button className="flex flex-col items-center py-2 px-4">
-                        <svg className="w-7 h-7 text-[#35741F] mb-1" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        <div className="w-7 h-7 bg-[#35741F] rounded-full flex items-center justify-center mb-1">
+                            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                             </svg>
-                        <span className="text-[12px] font-semibold text-[#35741F]">Профиль</span>
-                    </button>
-                    <button 
-                        onClick={() => navigate({ to: "/search" })}
-                        className="flex flex-col items-center py-2 px-4"
-                    >
-                        <svg className="w-7 h-7 text-[#757575] mb-1" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M3 18h18v-2H3v2zM3 6v2h18V6H3zm0 7h18v-2H3v2z"/>
-                        </svg>
-                        <span className="text-[12px] text-[#757575]">Список</span>
+                        </div>
+                        <span className="text-[12px] font-semibold text-[#35741F]" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Профиль</span>
                     </button>
                 </div>
             </div>
