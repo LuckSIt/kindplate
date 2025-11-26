@@ -119,20 +119,19 @@ export function LandingPage() {
                             >
                                 Вместе мы спасли
                             </p>
-                            <div className="flex items-center justify-center gap-[15px]">
+                            <div className="flex items-center justify-center">
                                 <div 
-                                    className="w-[115px] h-[25px] rounded-[5px] flex items-center justify-center"
+                                    className="rounded-[5px] px-[15px] py-[5px] flex items-center justify-center"
                                     style={{ backgroundColor: '#35741F' }}
                                 >
                                     <p 
-                                        className="text-[22px] font-semibold leading-[0.84]"
+                                        className="text-[22px] font-semibold leading-[0.84] whitespace-nowrap"
                                         style={{ 
                                             fontFamily: 'Montserrat Alternates, sans-serif',
-                                            color: '#FFFFFF',
                                             lineHeight: '0.84em'
                                         }}
                                     >
-                                        532 блюд от выброса
+                                        <span style={{ color: '#C8EBBB' }}>532</span> <span style={{ color: '#C8EBBB' }}>блюд</span> <span style={{ color: '#FFFFFF' }}>от выброса</span>
                                     </p>
                                 </div>
                             </div>
@@ -278,13 +277,13 @@ export function LandingPage() {
                                     lineHeight: '1.08em'
                                 }}
                             >
-                                Для пользователей
+                                Для партнеров
                             </h3>
                             <h4 
                                 className="text-[22px] font-semibold leading-[0.87] mb-[46px]"
                                 style={{ 
                                     fontFamily: 'Montserrat Alternates, sans-serif',
-                                    color: '#10172A',
+                                    color: '#FFFFFF',
                                     lineHeight: '0.87em'
                                 }}
                             >
