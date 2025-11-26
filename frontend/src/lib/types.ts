@@ -13,6 +13,7 @@ export type User = {
   name: string;
   email: string;
   is_business: boolean;
+  role?: 'admin' | 'business' | 'customer';
   phone?: string;
   address?: string;
   coords?: [number, number];

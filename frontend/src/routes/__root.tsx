@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, createRootRoute, Link } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanstackDevtools } from "@tanstack/react-devtools";
@@ -9,15 +9,15 @@ import {
 } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import { axiosInstance } from "@/lib/axiosInstance";
-import { Button } from "@/components/ui/button";
-import { authContext } from "@/lib/auth";
-import { ThemeProvider, useTheme } from "@/lib/theme";
+import { authContext, type AuthContextType } from "@/lib/auth";
+import type { User } from "@/lib/types";
+import { ThemeProvider } from "@/lib/theme";
 import { NotificationContainer } from "@/components/ui/notification";
-import { InstallPrompt, NetworkStatus } from "@/components/ui/install-prompt";
+import { NetworkStatus } from "@/components/ui/install-prompt";
 import { ensureNoPushWithoutVapid, unregisterServiceWorker } from "@/lib/pwa";
 import { PushOnboarding } from "@/components/ui/push-onboarding";
 import { CartSheet } from "@/components/ui/cart-sheet";
-import { useRouter, useLocation } from "@tanstack/react-router";
+import { useLocation } from "@tanstack/react-router";
 
 // Оптимизированная конфигурация QueryClient для лучшей производительности
 const queryClient = new QueryClient({
@@ -49,8 +49,8 @@ export const Route = createRootRoute({
     component: RootRoute,
 });
 
-function AuthProvider({ children }) {
-    const { data, isLoading, isSuccess, isError, error } = useQuery({
+function AuthProvider({ children }: { children: React.ReactNode }) {
+    const { data, isLoading, isSuccess, isError } = useQuery<{ data: { user: User } }>({
         queryKey: ["auth"],
         queryFn: () => axiosInstance.get("/auth/me", {
             skipErrorNotification: true // Пропускаем уведомления для проверки авторизации
@@ -59,10 +59,10 @@ function AuthProvider({ children }) {
         staleTime: 5 * 60 * 1000, // 5 минут кэш
     });
 
-    const value = {
+    const value: AuthContextType = {
         isLoading,
-        isSuccess,
-        isError,
+        isSuccess: isSuccess ?? false,
+        isError: isError ?? false,
         user: isSuccess && data?.data?.user ? data.data.user : null,
     };
 
@@ -71,78 +71,7 @@ function AuthProvider({ children }) {
     );
 }
 
-function AuthStatus() {
-    const { isLoading, isSuccess, user } = useContext(authContext);
-
-    if (isLoading) {
-        return (
-            <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
-            </div>
-        );
-    } else if (isSuccess && user !== undefined && user !== null) {
-        return (
-            <Link to="/account">
-                <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors">
-                    <div className="w-8 h-8 bg-gradient-to-r from-primary to-primary-light rounded-full flex items-center justify-center">
-                        <span className="text-white font-medium text-sm">
-                            {user.name.charAt(0).toUpperCase()}
-                        </span>
-                    </div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{user.name}</span>
-                </div>
-            </Link>
-        );
-    }
-
-    return (
-        <Link to="/auth/login">
-            <Button className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200">
-                Войти
-            </Button>
-        </Link>
-    );
-}
-
-function Nav() {
-    const { user } = useContext(authContext);
-
-    if (user === null || user === undefined) {
-        return <></>;
-    }
-
-    // Админ панель для администраторов
-    if (user.role === 'admin') {
-        return (
-            <Link 
-                to="/admin" 
-                className="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
-            >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                </svg>
-                Администрирование
-            </Link>
-        );
-    }
-
-    // Панель управления для бизнесов
-    if (user.is_business || user.role === 'business') {
-        return (
-            <Link 
-                to="/panel" 
-                className="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
-            >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                Панель управления
-            </Link>
-        );
-    }
-
-    return <></>;
-}
+// AuthStatus и Nav функции удалены, так как не используются
 
 function RootRoute() {
     const [hasShadow, setHasShadow] = useState(false);
@@ -158,8 +87,7 @@ function RootRoute() {
 
     // Скрываем навигацию и поиск на страницах входа, регистрации, главной странице (лендинг),
     // списке заведений, корзине, оплате, коде выдачи, странице заведения
-    const hideNav = location.pathname === '/auth' ||
-                    location.pathname.startsWith('/auth/login') || 
+    const hideNav = location.pathname.startsWith('/auth/login') || 
                     location.pathname.startsWith('/auth/register') || 
                     location.pathname === '/' ||
                     location.pathname === '/list' ||
@@ -330,7 +258,7 @@ function TabLink({ to, label, icon }: { to: string; label: string; icon: (active
             inactiveProps={{ className: "flex flex-col items-center justify-center py-2 transition-transform duration-150 motion-tap" }}
             activeProps={{ className: "flex flex-col items-center justify-center py-2 transition-transform duration-150 motion-tap" }}
         >
-            {({ isActive }) => (
+            {({ isActive }: { isActive: boolean }) => (
                 <div className="flex flex-col items-center gap-1">
                     {icon(isActive)}
                     <span className="text-[12px] leading-[22px] font-semibold" style={{ 
