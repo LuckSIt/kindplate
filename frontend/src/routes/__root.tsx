@@ -134,12 +134,12 @@ function RootRoute() {
                             {!hideNav && (
                                 <header className={`sticky top-0 z-50 pt-safe ${hasShadow ? 'shadow-md' : 'shadow-none'} transition-shadow`} style={{ backgroundColor: '#10172A' }}>
                                     <div className="px-4">
-                                        <div className="flex items-center justify-between h-14">
+                                        <div className="flex items-center justify-between h-12">
                                             <Link to="/home" className="flex items-center gap-2">
-                                                <div className="w-7 h-7 rounded-lg overflow-hidden">
+                                                <div className="w-5 h-5 rounded-lg overflow-hidden">
                                                     <img src="/kandlate.png" alt="Kandlate" className="w-full h-full object-contain" />
                                                 </div>
-                                                <span className="text-lg font-bold">KindPlate</span>
+                                                <span className="text-sm font-bold">KindPlate</span>
                                             </Link>
                                             <div />
                                         </div>
@@ -149,9 +149,9 @@ function RootRoute() {
                             {/* Inline search under header */}
                             {!hideNav && (
                                 <div className="px-4 py-2" style={{ backgroundColor: '#10172A' }}>
-                                    <Link to="/search" className="flex items-center gap-2 px-3 py-2 rounded-[15px] text-[#757575]" style={{ backgroundColor: '#D9D9D9' }}>
-                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
-                                        <span className="text-[15px] font-semibold" style={{ fontFamily: 'Montserrat Alternates' }}>Найти заведение</span>
+                                    <Link to="/search" className="flex items-center gap-2 px-3 py-2 rounded-[12px] text-[#757575] h-[44px]" style={{ backgroundColor: '#D9D9D9' }}>
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
+                                        <span className="text-[13px] font-semibold" style={{ fontFamily: 'Montserrat Alternates' }}>Найти заведение</span>
                                     </Link>
                                 </div>
                             )}
@@ -160,20 +160,20 @@ function RootRoute() {
                             </main>
                             {/* Bottom Tab Bar - скрываем на страницах входа и регистрации */}
                             {!hideNav && (
-                                <nav className="fixed bottom-0 inset-x-0 z-50 pt-2 pb-safe" style={{ backgroundColor: '#D9D9D9' }}>
+                                <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 pt-2 pb-safe w-full max-w-[402px]" style={{ backgroundColor: '#D9D9D9' }}>
                                     <div className="mx-auto px-6 grid grid-cols-3 gap-2">
                                         <TabLink to="/home" label="Карта" icon={(active) => (
-                                            <svg className={`w-7 h-7`} fill="none" stroke={active ? '#35741F' : '#757575'} viewBox="0 0 24 24">
+                                            <svg className={`w-5 h-5`} fill="none" stroke={active ? '#35741F' : '#757575'} viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7L9 4L15 7L21 4V17L15 20L9 17L3 20V7Z" />
                                             </svg>
                                         )} />
                                         <TabLink to="/list" label="Список" icon={(active) => (
-                                            <svg className={`w-7 h-7`} fill="none" stroke={active ? '#35741F' : '#757575'} viewBox="0 0 24 24">
+                                            <svg className={`w-5 h-5`} fill="none" stroke={active ? '#35741F' : '#757575'} viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6H20M4 12H20M4 18H20" />
                                             </svg>
                                         )} />
                                         <TabLink to="/account" label="Профиль" icon={(active) => (
-                                            <svg className={`w-7 h-7`} fill="none" stroke={active ? '#35741F' : '#757575'} viewBox="0 0 24 24">
+                                            <svg className={`w-5 h-5`} fill="none" stroke={active ? '#35741F' : '#757575'} viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" />
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" />
                                             </svg>
@@ -261,7 +261,7 @@ function TabLink({ to, label, icon }: { to: string; label: string; icon: (active
             {({ isActive }: { isActive: boolean }) => (
                 <div className="flex flex-col items-center gap-1">
                     {icon(isActive)}
-                    <span className="text-[12px] leading-[22px] font-semibold" style={{ 
+                    <span className="text-[10px] leading-[14px] font-semibold" style={{ 
                         color: isActive ? '#35741F' : '#757575',
                         fontFamily: 'Montserrat Alternates'
                     }}>{label}</span>
