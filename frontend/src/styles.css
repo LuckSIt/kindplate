@@ -166,15 +166,23 @@ html, body {
   background: #10172A !important;
   color: #f8fafc !important;
   line-height: 1.5;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* Предотвращаем масштабирование */
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Фиксируем размеры */
+  font-size: 16px;
 }
 
-/* Mobile typography */
-h1 { font-size: 24px; line-height: 30px; font-weight: 700; color: #f8fafc; }
-h2 { font-size: 20px; line-height: 28px; font-weight: 700; color: #f8fafc; }
-h3 { font-size: 18px; line-height: 26px; font-weight: 600; color: #f8fafc; }
-p, span, li { font-size: 14px; line-height: 20px; color: #e2e8f0; }
-small, .caption { font-size: 12px; line-height: 18px; color: #94a3b8; }
+/* Mobile typography - фиксированные размеры */
+h1 { font-size: 24px !important; line-height: 30px !important; font-weight: 700; color: #f8fafc; }
+h2 { font-size: 20px !important; line-height: 28px !important; font-weight: 700; color: #f8fafc; }
+h3 { font-size: 18px !important; line-height: 26px !important; font-weight: 600; color: #f8fafc; }
+p, span, li { font-size: 14px !important; line-height: 20px !important; color: #e2e8f0; }
+small, .caption { font-size: 12px !important; line-height: 18px !important; color: #94a3b8; }
 
 /* iOS input zoom prevention */
 input, select, textarea { font-size: 16px; }
@@ -244,15 +252,22 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-semibold, .font-medium, button {
 
 #app {
   min-height: 100vh;
-  height: 100vh;
   width: 100%;
-  max-width: 402px;
+  max-width: 402px !important;
   margin: 0 auto;
+  position: relative;
+  overflow-x: hidden;
   font-family: var(--font-sans) !important;
   background: #10172A !important;
   color: #f8fafc !important;
   overflow-y: auto;
   overflow-x: hidden;
+  /* Предотвращаем масштабирование */
+  transform: scale(1);
+  zoom: 1;
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
 }
 
 /* Принудительная темная тема - переопределяем все светлые цвета */

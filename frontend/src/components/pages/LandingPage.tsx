@@ -10,15 +10,15 @@ export function LandingPage() {
                 <header className="px-[15px] pt-0 pb-0">
                     <div className="flex items-center justify-between h-[103px]">
                         <div className="flex items-center">
-                            <span 
-                                className="text-[32px] font-bold"
-                                style={{ 
-                                    fontFamily: 'Montserrat Alternates, sans-serif',
-                                    color: '#FFFFFF'
-                                }}
+                            {/* Logo Icon - будет заменен на логотип из брендбука */}
+                            <div 
+                                className="w-[40px] h-[40px] rounded-full flex items-center justify-center flex-shrink-0"
+                                style={{ backgroundColor: '#35741F' }}
                             >
-                                KindPlate
-                            </span>
+                                <svg className="w-[24px] h-[24px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
                         </div>
                         <button 
                             className="flex flex-col gap-[7px] cursor-pointer"
@@ -73,13 +73,14 @@ export function LandingPage() {
                 </section>
 
                 {/* CTA Buttons */}
-                <section className="px-[60px] pb-[105px]">
+                <section className="px-[60px] pb-[40px]">
                     <div className="flex gap-[18px]">
                         <Link to="/home" className="flex-1">
                             <button 
                                 className="w-full h-[24px] rounded-[20px] text-[9px] font-bold leading-[1.08] text-center transition-opacity hover:opacity-90"
                                 style={{ 
                                     backgroundColor: '#FFFFFF',
+                                    border: '1px solid #35741F',
                                     color: '#35741F',
                                     fontFamily: 'Montserrat Alternates, sans-serif',
                                     lineHeight: '1.08em'
@@ -92,8 +93,8 @@ export function LandingPage() {
                             <button 
                                 className="w-full h-[24px] rounded-[20px] border border-white text-[9px] font-bold leading-[1.08] text-center transition-opacity hover:opacity-90"
                                 style={{ 
-                                    backgroundColor: 'transparent',
-                                    color: '#E3E3E3',
+                                    backgroundColor: '#10172A',
+                                    color: '#FFFFFF',
                                     fontFamily: 'Montserrat Alternates, sans-serif',
                                     borderWidth: '1px',
                                     lineHeight: '1.08em'
@@ -102,6 +103,104 @@ export function LandingPage() {
                                 начать продавать
                             </button>
                         </Link>
+                    </div>
+                </section>
+
+                {/* Phone Mockup Section with Product */}
+                <section className="px-[15px] pb-[60px]">
+                    <div className="flex justify-center">
+                        {/* Phone Frame */}
+                        <div 
+                            className="relative w-[280px] h-[500px] rounded-[30px] p-[15px]"
+                            style={{ backgroundColor: '#C8EBBB' }}
+                        >
+                            {/* Phone Screen */}
+                            <div 
+                                className="w-full h-full rounded-[20px] overflow-hidden relative"
+                                style={{ backgroundColor: '#FFFFFF' }}
+                            >
+                                {/* Product Image */}
+                                <div className="w-full h-[60%] relative overflow-hidden">
+                                    <div 
+                                        className="absolute inset-0 bg-gradient-to-b from-gray-100 to-gray-200"
+                                        style={{ 
+                                            backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23e5e7eb\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' 
+                                        }}
+                                    />
+                                    {/* Cinnamon Bun Placeholder */}
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div 
+                                            className="w-[120px] h-[120px] rounded-full"
+                                            style={{ 
+                                                backgroundColor: '#D4A574',
+                                                boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                                
+                                {/* Product Card */}
+                                <div 
+                                    className="absolute bottom-0 left-0 right-0 p-[15px] rounded-t-[20px]"
+                                    style={{ backgroundColor: '#FFFFFF' }}
+                                >
+                                    <h3 
+                                        className="text-[16px] font-semibold mb-[8px]"
+                                        style={{ 
+                                            fontFamily: 'Montserrat Alternates, sans-serif',
+                                            color: '#10172A'
+                                        }}
+                                    >
+                                        Булочка с корицей
+                                    </h3>
+                                    <div className="flex items-center justify-between mb-[12px]">
+                                        <span 
+                                            className="text-[20px] font-bold"
+                                            style={{ 
+                                                fontFamily: 'Montserrat Alternates, sans-serif',
+                                                color: '#35741F'
+                                            }}
+                                        >
+                                            739 ₽
+                                        </span>
+                                        {/* Quantity Selector */}
+                                        <div className="flex items-center gap-[10px]">
+                                            <button 
+                                                className="w-[24px] h-[24px] rounded-full flex items-center justify-center"
+                                                style={{ backgroundColor: '#F3F4F6' }}
+                                            >
+                                                <span className="text-[14px] font-bold" style={{ color: '#10172A' }}>-</span>
+                                            </button>
+                                            <span 
+                                                className="text-[14px] font-semibold"
+                                                style={{ 
+                                                    fontFamily: 'Montserrat Alternates, sans-serif',
+                                                    color: '#10172A'
+                                                }}
+                                            >
+                                                1
+                                            </span>
+                                            <button 
+                                                className="w-[24px] h-[24px] rounded-full flex items-center justify-center"
+                                                style={{ backgroundColor: '#F3F4F6' }}
+                                            >
+                                                <span className="text-[14px] font-bold" style={{ color: '#10172A' }}>+</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        className="w-full h-[36px] rounded-[8px] text-[12px] font-semibold"
+                                        style={{ 
+                                            backgroundColor: '#10172A',
+                                            color: '#FFFFFF',
+                                            fontFamily: 'Montserrat Alternates, sans-serif'
+                                        }}
+                                    >
+                                        Добавить в заказ
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -140,8 +239,8 @@ export function LandingPage() {
                         </div>
                     </div>
                 </section>
-
-                {/* User Benefits Section - White Card */}
+                    
+                    {/* User Benefits Section - White Card */}
                 <section className="px-[15px] pb-[60px]">
                     <div 
                         className="rounded-[15px] p-[20px]"
@@ -191,16 +290,6 @@ export function LandingPage() {
                                 >
                                     01
                                 </span>
-                                <p 
-                                    className="text-[11px] font-semibold leading-[0.87]"
-                                    style={{ 
-                                        fontFamily: 'Montserrat Alternates, sans-serif',
-                                        color: '#10172A',
-                                        lineHeight: '0.87em'
-                                    }}
-                                >
-                                    Смотри предложения рядом с тобой
-                                </p>
                             </div>
                             <div className="w-full h-[1px]" style={{ backgroundColor: '#C4CEE8' }}></div>
                             <div className="flex items-start gap-[22px]">
@@ -212,7 +301,7 @@ export function LandingPage() {
                                         lineHeight: '0.87em'
                                     }}
                                 >
-                                    02
+                                    02.
                                 </span>
                                 <p 
                                     className="text-[11px] font-semibold leading-[0.87]"
@@ -235,7 +324,7 @@ export function LandingPage() {
                                         lineHeight: '0.87em'
                                     }}
                                 >
-                                    03
+                                    03.
                                 </span>
                                 <p 
                                     className="text-[11px] font-semibold leading-[0.87]"
@@ -286,7 +375,7 @@ export function LandingPage() {
                             className="text-[22px] font-semibold leading-[0.87] mb-[46px]"
                             style={{ 
                                 fontFamily: 'Montserrat Alternates, sans-serif',
-                                color: '#FFFFFF',
+                                color: '#F5FBA2',
                                 lineHeight: '0.87em'
                             }}
                         >
@@ -372,9 +461,9 @@ export function LandingPage() {
                                 >
                                     Забери в заведении и наслаждайся
                                 </p>
-                            </div>
-                        </div>
-                        
+                </div>
+            </div>
+
                         <Link to="/auth/register/business">
                             <button 
                                 className="w-full h-[31px] rounded-[5px] text-[12px] font-semibold leading-[0.94] transition-opacity hover:opacity-90"
@@ -416,7 +505,7 @@ export function LandingPage() {
                                 style={{ backgroundColor: '#C8EBBB' }}
                             >
                                 <div className="mb-[20px] w-[40px] h-[40px] flex items-center justify-center">
-                                    <Heart className="w-full h-full" style={{ color: '#FFFFFF', strokeWidth: 4, fill: '#FFFFFF' }} />
+                                    <ShoppingBag className="w-full h-full" style={{ color: '#35741F', strokeWidth: 2 }} />
                                 </div>
                                 <p 
                                     className="text-[13px] font-semibold leading-[0.87] text-center"
@@ -432,13 +521,33 @@ export function LandingPage() {
                                 </p>
                             </div>
                             
-                            {/* Card 2 - Support local businesses */}
+                            {/* Card 2 - Reduce waste */}
                             <div 
                                 className="rounded-[15px] p-[34px] relative h-[122px] flex flex-col items-center justify-center"
                                 style={{ backgroundColor: '#C8EBBB' }}
                             >
                                 <div className="mb-[20px] w-[40px] h-[40px] flex items-center justify-center">
-                                    <MapPin className="w-full h-full" style={{ color: '#FFFFFF', strokeWidth: 4, fill: '#FFFFFF' }} />
+                                    <Minimize2 className="w-full h-full" style={{ color: '#35741F', strokeWidth: 2 }} />
+                                </div>
+                                <p 
+                                    className="text-[13px] font-semibold leading-[0.87] text-center"
+                                    style={{ 
+                                        fontFamily: 'Montserrat Alternates, sans-serif',
+                                        color: '#10172A',
+                                        lineHeight: '0.87em'
+                                    }}
+                                >
+                                    Уменьшайте пищевые отходы и СО₂
+                                </p>
+                            </div>
+                            
+                            {/* Card 3 - Support local businesses */}
+                            <div 
+                                className="rounded-[15px] p-[34px] relative h-[122px] flex flex-col items-center justify-center"
+                                style={{ backgroundColor: '#C8EBBB' }}
+                            >
+                                <div className="mb-[20px] w-[40px] h-[40px] flex items-center justify-center">
+                                    <MapPin className="w-full h-full" style={{ color: '#35741F', strokeWidth: 2 }} />
                                 </div>
                                 <p 
                                     className="text-[13px] font-semibold leading-[0.87] text-center"
@@ -453,33 +562,13 @@ export function LandingPage() {
                                 </p>
                             </div>
                             
-                            {/* Card 3 - Reduce waste */}
-                            <div 
-                                className="rounded-[15px] p-[34px] relative h-[122px] flex flex-col items-center justify-center"
-                                style={{ backgroundColor: '#C8EBBB' }}
-                            >
-                                <div className="mb-[20px] w-[40px] h-[40px] flex items-center justify-center">
-                                    <Minimize2 className="w-full h-full" style={{ color: '#FFFFFF', strokeWidth: 4 }} />
-                                </div>
-                                <p 
-                                    className="text-[13px] font-semibold leading-[0.87] text-center"
-                                    style={{ 
-                                        fontFamily: 'Montserrat Alternates, sans-serif',
-                                        color: '#10172A',
-                                        lineHeight: '0.87em'
-                                    }}
-                                >
-                                    Уменьшайте пищевые отходы и CO₂
-                                </p>
-                            </div>
-                            
                             {/* Card 4 - Positive impact */}
                             <div 
                                 className="rounded-[15px] p-[34px] relative h-[122px] flex flex-col items-center justify-center"
                                 style={{ backgroundColor: '#C8EBBB' }}
                             >
                                 <div className="mb-[20px] w-[40px] h-[40px] flex items-center justify-center">
-                                    <ShoppingBag className="w-full h-full" style={{ color: '#FFFFFF', strokeWidth: 4, fill: '#FFFFFF' }} />
+                                    <Heart className="w-full h-full" style={{ color: '#35741F', strokeWidth: 2 }} />
                                 </div>
                                 <p 
                                     className="text-[13px] font-semibold leading-[0.87] text-center"
@@ -594,7 +683,7 @@ export function LandingPage() {
                                                 lineHeight: '2em'
                                             }}
                                         >
-                                            Ответы на вопросы
+                                            Ответы на ворпосы
                                         </Link>
                                     </li>
                                     <li>
@@ -671,7 +760,7 @@ export function LandingPage() {
                                 lineHeight: '2.75em'
                             }}
                         >
-                            ©KindPlate 2025. Все права защищены
+                            ©KindPlate 2005. Все права защищены
                         </p>
                     </div>
                 </footer>
