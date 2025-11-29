@@ -132,12 +132,6 @@ function ListPageComponent() {
 
     return (
         <div className="businesses-list-page">
-            {/* Status Bar */}
-            <div className="businesses-list-page__status-bar">
-                <div className="businesses-list-page__status-bar-time">9:41</div>
-                <div className="businesses-list-page__status-bar-levels"></div>
-            </div>
-
             {/* Logo and Title */}
             <div className="businesses-list-page__logo-section">
                 <div className="businesses-list-page__logo-icon">

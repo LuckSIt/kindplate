@@ -613,7 +613,7 @@ function RouteComponent() {
 
     // Основной экран аккаунта
     return (
-        <div className="w-full min-h-screen bg-[#10172A] flex flex-col items-center pb-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
+        <div className="w-full max-w-[402px] mx-auto min-h-screen bg-[#10172A] flex flex-col items-center pb-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
             {/* Информация о клиенте */}
             <div className="w-[350px] h-[59px] rounded-[15px] bg-[#D9D9D9] flex items-start mt-0 px-[14px] py-[7px]">
                 {/* Avatar */}

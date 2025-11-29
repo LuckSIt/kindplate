@@ -245,6 +245,9 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-semibold, .font-medium, button {
 #app {
   min-height: 100vh;
   height: 100vh;
+  width: 100%;
+  max-width: 402px;
+  margin: 0 auto;
   font-family: var(--font-sans) !important;
   background: #10172A !important;
   color: #f8fafc !important;
@@ -1379,6 +1382,8 @@ button, .btn-primary, .btn-secondary {
 .businesses-list-page {
   min-height: 100vh;
   width: 100%;
+  max-width: 402px;
+  margin: 0 auto;
   background-color: #10172A;
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -1874,7 +1879,8 @@ button, .btn-primary, .btn-secondary {
 /* Responsive adjustments for businesses list page */
 @media (max-width: 420px) {
   .businesses-list-page {
-    max-width: 100%;
+    max-width: 402px;
+    margin: 0 auto;
   }
   
   .businesses-list-page__statistics {
@@ -1888,13 +1894,6 @@ button, .btn-primary, .btn-secondary {
   
   .businesses-list-page__stat-value {
     font-size: 20px;
-  }
-}
-
-@media (min-width: 421px) {
-  .businesses-list-page {
-    max-width: 402px;
-    margin: 0 auto;
   }
 }
 

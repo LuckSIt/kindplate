@@ -121,7 +121,7 @@ function RootRoute() {
                         </>
                     ) : (
                         <MobileOnly>
-                            <div className="min-h-screen w-full" style={{ backgroundColor: '#10172A' }}>
+                            <div className="min-h-screen w-full max-w-[402px] mx-auto" style={{ backgroundColor: '#10172A' }}>
                             {/* Ensure no push subscription without VAPID on mount */}
                             {(() => { 
                                 ensureNoPushWithoutVapid();
