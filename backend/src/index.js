@@ -29,7 +29,6 @@ if (!fs.existsSync('logs')) {
 }
 
 const authRouter = require("./routes/auth");
-const businessRouter = require("./routes/business");
 const businessLocationsRouter = require("./routes/business-locations");
 const offersRouter = require("./routes/offers");
 const ordersRouter = require("./routes/orders");
@@ -154,7 +153,6 @@ app.use(
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
 app.use("/admin", adminRouter);
-app.use("/business", businessOnly, businessRouter);
 app.use("/business/locations", businessOnly, businessLocationsRouter);
 app.use("/business/offers", businessOnly, offersRouter);
 app.use("/offers", offersRouter); // Публичный эндпоинт для поиска
