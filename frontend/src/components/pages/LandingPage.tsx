@@ -108,21 +108,32 @@ export function LandingPage() {
 
                 {/* Phone Mockup Section with Product */}
                 <section className="px-[15px] pb-[60px]">
-                    <div className="flex justify-center">
+                    <div className="flex justify-center items-center">
                         {/* Phone Frame */}
                         <div 
-                            className="relative w-[280px] h-[500px] rounded-[30px] p-[15px]"
-                            style={{ backgroundColor: '#C8EBBB' }}
+                            className="relative rounded-[30px] p-[15px] mx-auto"
+                            style={{ 
+                                backgroundColor: '#C8EBBB',
+                                width: '280px',
+                                height: '500px',
+                                minWidth: '280px',
+                                minHeight: '500px'
+                            }}
                         >
                             {/* Phone Screen */}
                             <div 
                                 className="w-full h-full rounded-[20px] overflow-hidden relative"
-                                style={{ backgroundColor: '#FFFFFF' }}
+                                style={{ 
+                                    backgroundColor: '#FFFFFF',
+                                    width: '100%',
+                                    height: '100%'
+                                }}
                             >
                                 {/* Product Image */}
-                                <div className="w-full h-[60%] relative overflow-hidden">
+                                <div className="w-full h-[60%] relative overflow-hidden bg-gray-100">
+                                    {/* Map pattern background */}
                                     <div 
-                                        className="absolute inset-0 bg-gradient-to-b from-gray-100 to-gray-200"
+                                        className="absolute inset-0 opacity-30"
                                         style={{ 
                                             backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23e5e7eb\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' 
                                         }}
@@ -130,19 +141,24 @@ export function LandingPage() {
                                     {/* Cinnamon Bun Placeholder */}
                                     <div className="absolute inset-0 flex items-center justify-center">
                                         <div 
-                                            className="w-[120px] h-[120px] rounded-full"
+                                            className="w-[120px] h-[120px] rounded-full flex items-center justify-center"
                                             style={{ 
                                                 backgroundColor: '#D4A574',
                                                 boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
                                             }}
-                                        />
+                                        >
+                                            <div className="w-[80px] h-[80px] rounded-full" style={{ backgroundColor: '#F5DEB3' }}></div>
+                                        </div>
                                     </div>
                                 </div>
                                 
                                 {/* Product Card */}
                                 <div 
                                     className="absolute bottom-0 left-0 right-0 p-[15px] rounded-t-[20px]"
-                                    style={{ backgroundColor: '#FFFFFF' }}
+                                    style={{ 
+                                        backgroundColor: '#FFFFFF',
+                                        boxShadow: '0 -2px 10px rgba(0,0,0,0.1)'
+                                    }}
                                 >
                                     <h3 
                                         className="text-[16px] font-semibold mb-[8px]"
@@ -172,7 +188,7 @@ export function LandingPage() {
                                                 <span className="text-[14px] font-bold" style={{ color: '#10172A' }}>-</span>
                                             </button>
                                             <span 
-                                                className="text-[14px] font-semibold"
+                                                className="text-[14px] font-semibold min-w-[20px] text-center"
                                                 style={{ 
                                                     fontFamily: 'Montserrat Alternates, sans-serif',
                                                     color: '#10172A'
@@ -189,7 +205,7 @@ export function LandingPage() {
                                         </div>
                                     </div>
                                     <button 
-                                        className="w-full h-[36px] rounded-[8px] text-[12px] font-semibold"
+                                        className="w-full h-[36px] rounded-[8px] text-[12px] font-semibold transition-opacity hover:opacity-90"
                                         style={{ 
                                             backgroundColor: '#10172A',
                                             color: '#FFFFFF',
@@ -580,7 +596,7 @@ export function LandingPage() {
                                 >
                                     Создавайте позитивное влияние
                                 </p>
-                            </div>
+                </div>
                         </div>
                     </div>
                 </section>
