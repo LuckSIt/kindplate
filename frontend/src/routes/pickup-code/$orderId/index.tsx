@@ -11,10 +11,10 @@ export const Route = createFileRoute("/pickup-code/$orderId/")({
 function PickupCodePageComponent() {
     const navigate = useNavigate();
     const { orderId } = Route.useParams();
-    const [pickupCode, setPickupCode] = useState<string>("584046"); // Mock code, should come from API
+    const [pickupCode] = useState<string>("584046"); // Mock code, should come from API
 
     // Fetch order data
-    const { data: orderData, isLoading } = useQuery({
+    const { data: orderData } = useQuery({
         queryKey: ["order", orderId],
         queryFn: () => axiosInstance.get(`/orders/${orderId}`),
         enabled: !!orderId,

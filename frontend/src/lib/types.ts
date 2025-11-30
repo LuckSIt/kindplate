@@ -83,6 +83,15 @@ export type Offer = {
   discount_percent?: number;
 }
 
+// Элемент заказа
+export type OrderItem = {
+  id?: number;
+  title: string;
+  quantity: number;
+  price: number;
+  price_cents?: number; // Для обратной совместимости
+}
+
 // Заказ
 export type Order = {
   id: number;
@@ -104,6 +113,11 @@ export type Order = {
   pickup_time_end?: string;
   customer_name?: string;
   customer_email?: string;
+  customer_phone?: string;
+  business_name?: string;
+  business_address?: string;
+  order_items?: OrderItem[];
+  items?: OrderItem[]; // Для обратной совместимости
 }
 
 // Отзыв

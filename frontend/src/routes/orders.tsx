@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useContext } from "react";
 import { authContext } from "@/lib/auth";
 import { formatPrice, formatDateTime, type Order } from "@/lib/types";
+import type { AxiosError } from "axios";
 
 export const Route = createFileRoute("/orders")({
     component: RouteComponent,
@@ -32,7 +33,7 @@ function RouteComponent() {
     const queryClient = useQueryClient();
     const { user } = useContext(authContext);
 
-    const { data, isLoading, isError, error } = useQuery({
+    const { data, isLoading, isError, error } = useQuery<{ data?: { items?: Order[] }; items?: Order[] }, AxiosError<{ message?: string; error?: string }>>({
         queryKey: ["orders"],
         queryFn: async () => {
             const response = await axiosInstance.get("/orders/mine");
@@ -44,13 +45,13 @@ function RouteComponent() {
     });
 
     const cancelMutation = useMutation({
-        mutationFn: (orderId: string) => axiosInstance.patch(`/api/orders/${orderId}/cancel`),
+        mutationFn: (orderId: number) => axiosInstance.patch(`/orders/${orderId}/cancel`),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["orders"] });
             alert("Заказ отменён");
         },
-        onError: (error: any) => {
-            alert("Ошибка отмены: " + (error.response?.data?.error || "Неизвестная ошибка"));
+        onError: (error: AxiosError<{ error?: string; message?: string }>) => {
+            alert("Ошибка отмены: " + (error.response?.data?.error || error.response?.data?.message || "Неизвестная ошибка"));
         }
     });
 
@@ -82,7 +83,7 @@ function RouteComponent() {
                     <div className="bg-white rounded-lg shadow p-6 text-center">
                         <h1 className="text-2xl font-bold text-gray-900 mb-2">Ошибка загрузки</h1>
                         <p className="text-gray-600 mb-4">
-                            {error?.response?.data?.message || 'Не удалось загрузить заказы'}
+                            {error?.response?.data?.message || error?.response?.data?.error || 'Не удалось загрузить заказы'}
                         </p>
                         <Button onClick={() => window.location.reload()}>Обновить страницу</Button>
                     </div>
@@ -126,16 +127,16 @@ function RouteComponent() {
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
                                             <h3 className="text-xl font-semibold">
-                                                {user.role === 'partner' ? order.customer_name : order.partner_name}
+                                                {user.role === 'business' ? (order.customer_name || 'Клиент') : (order.business_name || 'Заведение')}
                                             </h3>
-                                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[order.status]}`}>
-                                                {statusLabels[order.status]}
+                                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[order.status] || 'bg-gray-100 text-gray-700'}`}>
+                                                {statusLabels[order.status] || order.status}
                                             </span>
                                         </div>
                                         <p className="text-gray-500 text-sm">
                                             {formatDateTime(order.created_at)}
                                         </p>
-                                        {user.role === 'partner' && order.customer_phone && (
+                                        {user.role === 'business' && order.customer_phone && (
                                             <p className="text-gray-600 text-sm mt-1">
                                                 Телефон: {order.customer_phone}
                                             </p>
@@ -144,9 +145,9 @@ function RouteComponent() {
 
                                     <div className="text-right">
                                         <div className="text-2xl font-bold text-green-600">
-                                            {formatPrice(order.total_cents)}
+                                            {formatPrice(order.total_price)}
                                         </div>
-                                        {(order.status === 'CONFIRMED' || order.status === 'READY_FOR_PICKUP') && (
+                                        {(order.status === 'confirmed' || order.status === 'ready') && (
                                             <div className="mt-2 bg-green-50 px-3 py-2 rounded">
                                                 <div className="text-xs text-gray-600">Код получения:</div>
                                                 <div className="text-2xl font-mono font-bold text-green-700">
@@ -160,22 +161,22 @@ function RouteComponent() {
                                 <div className="border-t pt-4">
                                     <h4 className="font-medium text-gray-700 mb-2">Состав заказа:</h4>
                                     <div className="space-y-2">
-                                        {order.items.map((item, idx) => (
+                                        {(order.order_items || order.items || []).map((item, idx: number) => (
                                             <div key={idx} className="flex items-center justify-between text-sm">
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-gray-600">{item.quantity}x</span>
                                                     <span>{item.title}</span>
                                                 </div>
-                                                <span className="font-medium">{formatPrice(item.price_cents * item.quantity)}</span>
+                                                <span className="font-medium">{formatPrice((item.price_cents || item.price) * item.quantity)}</span>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
 
-                                {user.role === 'user' && (order.status === 'NEW' || order.status === 'CONFIRMED') && (
+                                {user.role === 'customer' && (order.status === 'pending' || order.status === 'confirmed') && (
                                     <div className="border-t pt-4 mt-4">
                                         <Button
-                                            variant="destructive"
+                                            variant="danger"
                                             size="sm"
                                             onClick={() => {
                                                 if (confirm("Отменить этот заказ?")) {

@@ -89,6 +89,3 @@ export const notify = {
     });
   }
 };
-
-// Явный экспорт для совместимости
-export type { Notification };

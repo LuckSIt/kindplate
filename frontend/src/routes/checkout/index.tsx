@@ -1,10 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { notify } from "@/lib/notifications";
 
 export const Route = createFileRoute("/checkout/")({
   component: CheckoutPage,
@@ -31,8 +30,17 @@ function CheckoutPage() {
     }
   }, [cartLoading, cartError, cartData, navigate]);
 
+  interface CartItem {
+    offer: {
+      id: number;
+      title: string;
+      discounted_price: number;
+    };
+    quantity: number;
+  }
+
   const subtotal = useMemo(
-    () => (cartData || []).reduce((s: number, it: any) => s + it.offer.discounted_price * it.quantity, 0),
+    () => (cartData || []).reduce((s: number, it: CartItem) => s + it.offer.discounted_price * it.quantity, 0),
     [cartData]
   );
   const serviceFee = Math.round(subtotal * 0.05);
@@ -41,7 +49,9 @@ function CheckoutPage() {
   // Avoid iOS zoom: base text size >= 16px
   useEffect(() => {
     document.documentElement.style.setProperty("--kp-input-font-size", "16px");
-    return () => document.documentElement.style.removeProperty("--kp-input-font-size");
+    return () => {
+      document.documentElement.style.removeProperty("--kp-input-font-size");
+    };
   }, []);
 
   return (
@@ -83,7 +93,7 @@ function CheckoutPage() {
             Заберите заказ в выбранном заведении в интервале, указанном в предложении.
           </div>
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
-            {(cartData || []).map((it: any) => (
+            {(cartData || []).map((it: CartItem) => (
               <div key={it.offer.id} className="flex items-center justify-between py-2 text-sm">
                 <div className="truncate pr-2">
                   <div className="font-semibold text-gray-900 dark:text-white truncate">{it.offer.title}</div>

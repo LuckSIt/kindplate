@@ -26,18 +26,19 @@ function RouteComponent() {
             if (res.data.success) {
                 notify.success("Успешный вход", "Добро пожаловать!");
                 navigate({ to: "/home" });
-                queryClient.invalidateQueries(["auth"]);
+                queryClient.invalidateQueries({ queryKey: ["auth"] });
             } else {
                 notify.error("Ошибка входа", "Неверные учетные данные");
             }
         },
-        onError: (error: any) => {
-            const message = error.response?.data?.message || "Ошибка входа";
+        onError: (error: unknown) => {
+            const err = error as { response?: { data?: { message?: string } } };
+            const message = err.response?.data?.message || "Ошибка входа";
             notify.error("Ошибка входа", message);
         },
     });
 
-    const onSubmit = (toSend) => {
+    const onSubmit = (toSend: LoginForm) => {
         mutate(toSend);
     };
 

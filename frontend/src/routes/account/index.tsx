@@ -29,16 +29,19 @@ function RouteComponent() {
     const [reviewComment, setReviewComment] = useState("");
     const { user } = useContext(authContext);
     
-    // Mutation для выхода из системы
-    const logoutMutation = useMutation({
+    // Mutation для выхода из системы (не используется, но оставлено для будущего использования)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    useMutation({
         mutationFn: () => axiosInstance.get("/auth/logout"),
         onSuccess: () => {
             queryClient.clear();
             navigate({ to: "/auth/login" });
-            notify.success("Вы вышли из системы");
+            notify.success("Выход", "Вы вышли из системы");
         },
-        onError: (error) => {
-            console.error("Logout error:", error);
+        onError: (error: unknown) => {
+            if (import.meta.env.DEV) {
+                console.error("Logout error:", error);
+            }
             // Даже при ошибке выходим
             queryClient.clear();
             navigate({ to: "/auth/login" });
@@ -46,7 +49,7 @@ function RouteComponent() {
     });
 
     // Получаем заказы клиента
-    const { data: ordersData, isLoading: ordersLoading, isError: ordersError, error: ordersErrorData, refetch: refetchOrders } = useQuery({
+    const { data: ordersData, isLoading: ordersLoading, refetch: refetchOrders } = useQuery({
         queryKey: ["my_orders"],
         queryFn: () => axiosInstance.get("/orders/mine"),
         enabled: showOrders,
@@ -55,7 +58,7 @@ function RouteComponent() {
     });
 
     // Получаем статистику клиента
-    const { data: statsData, isLoading: statsLoading, isError: statsError, error: statsErrorData } = useQuery({
+    const { data: statsData, isLoading: statsLoading } = useQuery({
         queryKey: ["customer_stats"],
         queryFn: () => axiosInstance.get("/stats/customer"),
         enabled: showStats,
@@ -64,7 +67,7 @@ function RouteComponent() {
     });
 
     // Получаем избранные заведения
-    const { data: favoritesData, isLoading: favoritesLoading, isError: favoritesError, error: favoritesErrorData, refetch: refetchFavorites } = useQuery({
+    const { data: favoritesData, isLoading: favoritesLoading, refetch: refetchFavorites } = useQuery({
         queryKey: ["my_favorites"],
         queryFn: () => axiosInstance.get("/favorites/mine"),
         enabled: showFavorites,
@@ -72,27 +75,44 @@ function RouteComponent() {
         retryDelay: 1000,
     });
 
+    interface Order {
+        id: number;
+        status: string;
+        business_name: string;
+        title: string;
+        description?: string;
+        quantity: number;
+        total_price: number;
+        pickup_code: string;
+        pickup_time_start: string;
+        pickup_time_end: string;
+        business_address: string;
+        created_at: string;
+    }
+
     // Mutation для удаления из избранного
     const { mutate: removeFavorite } = useMutation({
-        mutationFn: (business_id) => axiosInstance.post("/favorites/remove", { business_id }),
+        mutationFn: (business_id: number) => axiosInstance.post("/favorites/remove", { business_id }),
         onSuccess: () => {
             refetchFavorites();
         },
-        onError: (error: any) => {
-            const message = error.response?.data?.message || error.response?.data?.error || "Не удалось удалить из избранного";
+        onError: (error: unknown) => {
+            const err = error as { response?: { data?: { message?: string; error?: string } } };
+            const message = err.response?.data?.message || err.response?.data?.error || "Не удалось удалить из избранного";
             notify.error("Ошибка удаления", message);
         },
     });
 
     // Mutation для отмены заказа
     const { mutate: cancelOrder } = useMutation({
-        mutationFn: (order_id) => axiosInstance.post("/orders/cancel", { order_id }),
+        mutationFn: (order_id: number) => axiosInstance.post("/orders/cancel", { order_id }),
         onSuccess: () => {
             refetchOrders();
             notify.success("Заказ отменен", "Заказ успешно отменен");
         },
-        onError: (error: any) => {
-            const message = error.response?.data?.message || error.response?.data?.error || "Не удалось отменить заказ";
+        onError: (error: unknown) => {
+            const err = error as { response?: { data?: { message?: string; error?: string } } };
+            const message = err.response?.data?.message || err.response?.data?.error || "Не удалось отменить заказ";
             notify.error("Ошибка отмены", message);
         },
     });
@@ -109,8 +129,9 @@ function RouteComponent() {
             setSelectedOrderForReview(null);
             notify.success("Отзыв добавлен", "Спасибо за отзыв! ⭐");
         },
-        onError: (error: any) => {
-            const errorMsg = error.response?.data?.error || "Ошибка";
+        onError: (error: unknown) => {
+            const err = error as { response?: { data?: { error?: string } } };
+            const errorMsg = err.response?.data?.error || "Ошибка";
             if (errorMsg === "REVIEW_ALREADY_EXISTS") {
                 notify.warning("Отзыв уже существует", "Вы уже оставляли отзыв на этот заказ");
             } else if (errorMsg === "ORDER_NOT_COMPLETED") {
@@ -121,7 +142,7 @@ function RouteComponent() {
         },
     });
 
-    const handleOpenReviewDialog = (order: any) => {
+    const handleOpenReviewDialog = (order: Order) => {
         setSelectedOrderForReview(order);
         setReviewRating(5);
         setReviewComment("");
@@ -137,7 +158,7 @@ function RouteComponent() {
         });
     };
 
-    const getStatusInfo = (status) => {
+    const getStatusInfo = (status: string) => {
         switch (status) {
             case 'pending':
                 return { text: 'Ожидает', color: 'bg-yellow-100 text-yellow-800', icon: '⏳' };
@@ -204,7 +225,7 @@ function RouteComponent() {
                         </div>
                     )}
 
-                    {orders.map((order) => {
+                    {orders.map((order: Order) => {
                         const statusInfo = getStatusInfo(order.status);
                         const canCancel = order.status === 'pending' || order.status === 'confirmed';
                         
@@ -522,7 +543,7 @@ function RouteComponent() {
                         </div>
                     )}
 
-                    {favorites.map((business) => (
+                    {favorites.map((business: { id: number; name: string; address?: string; rating?: number; total_reviews?: number; active_offers?: number; image_url?: string; logo_url?: string }) => (
                         <div key={business.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                             {/* Header */}
                             <div className="bg-gradient-to-r from-pink-500 to-red-500 text-white px-4 py-3">
@@ -530,13 +551,13 @@ function RouteComponent() {
                                     <div>
                                         <div className="font-bold text-lg">{business.name}</div>
                                         <div className="text-xs opacity-90 flex items-center gap-2">
-                                            {business.rating > 0 && (
+                                            {business.rating && business.rating > 0 && (
                                                 <>
-                                                    <span>⭐ {parseFloat(business.rating).toFixed(1)}</span>
+                                                    <span>⭐ {parseFloat(String(business.rating)).toFixed(1)}</span>
                                                     <span>•</span>
                                                 </>
                                             )}
-                                            <span>{business.total_reviews} отзывов</span>
+                                            <span>{(business.total_reviews || 0)} отзывов</span>
                                         </div>
                                     </div>
                                     <button
@@ -575,12 +596,12 @@ function RouteComponent() {
                                 </div>
 
                                 {/* Active Offers */}
-                                {business.active_offers > 0 && (
+                                {(business.active_offers || 0) > 0 && (
                                     <div className="bg-primary-50 border border-primary-200 rounded-lg p-3 flex items-center gap-2">
                                         <span className="text-2xl">🍽️</span>
                                         <div>
                                             <div className="font-bold text-primary-700">
-                                                {business.active_offers} активных предложений
+                                                {business.active_offers || 0} активных предложений
                                             </div>
                                             <div className="text-xs text-primary">Доступно сейчас</div>
                                         </div>
