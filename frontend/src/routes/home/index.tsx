@@ -103,9 +103,12 @@ function RouteComponent() {
             params.append('page', '1');
             params.append('limit', '100');
             
-            return axiosInstance.get(`/offers/search?${params.toString()}`, {
-                skipErrorNotification: true // Пропускаем уведомления - они обрабатываются в компоненте
-            } as any);
+            // Приводим ответ к формату { offers, meta }, чтобы не таскать лишнюю обёртку AxiosResponse
+            return axiosInstance
+                .get(`/offers/search?${params.toString()}`, {
+                    skipErrorNotification: true, // Пропускаем уведомления - они обрабатываются в компоненте
+                } as any)
+                .then((res) => res.data.data);
         },
         {
             enabled: !!debouncedMapBounds, // Загружаем только когда есть границы карты
@@ -130,7 +133,10 @@ function RouteComponent() {
                 params.append('east', mapBounds.east.toString());
                 params.append('west', mapBounds.west.toString());
             }
-            return axiosInstance.get(`/customer/sellers?${params.toString()}`);
+            // Здесь достаточно распаковать до тела ответа { success, sellers }
+            return axiosInstance
+                .get(`/customer/sellers?${params.toString()}`)
+                .then((res) => res.data);
         },
         {
             enabled: !offersData && !!mapBounds, // Используем только если новый эндпоинт не вернул данные
@@ -176,12 +182,12 @@ function RouteComponent() {
 
     // Process businesses data - адаптируем данные из нового эндпоинта
     const businesses: Business[] = useMemo(() => {
-        // Новый формат из /offers/search
-        if (offersData && typeof offersData === 'object' && 'data' in offersData && offersData.data && typeof offersData.data === 'object' && 'offers' in offersData.data && Array.isArray(offersData.data.offers)) {
+        // Новый формат из /offers/search → offersData уже имеет вид { offers, meta }
+        if (offersData && typeof offersData === 'object' && 'offers' in offersData && Array.isArray((offersData as any).offers)) {
             // Группируем офферы по бизнесам
             const businessMap = new Map<number, Business>();
             
-            (offersData.data as { offers: Array<{
+            (offersData as { offers: Array<{
                 id: number;
                 business: {
                     id: number;
@@ -258,9 +264,9 @@ function RouteComponent() {
             return Array.from(businessMap.values());
         }
         
-        // Старый формат из /customer/sellers
-        if (data && typeof data === 'object' && 'data' in data && data.data && typeof data.data === 'object' && 'sellers' in data.data) {
-            const sellersData = data.data as { sellers: Array<{
+        // Старый формат из /customer/sellers → fallbackData / data имеет вид { success, sellers }
+        if (data && typeof data === 'object' && 'sellers' in data) {
+            const sellersData = data as { sellers: Array<{
                 id: number;
                 name: string;
                 address: string;
