@@ -116,7 +116,14 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Явно обрабатываем OPTIONS запросы для всех маршрутов
-app.options('*', cors(corsOptions));
+// В Express 5 '*' может вызывать проблемы с path-to-regexp, поэтому используем middleware вместо app.options
+app.use((req, res, next) => {
+    if (req.method === 'OPTIONS') {
+        cors(corsOptions)(req, res, next);
+    } else {
+        next();
+    }
+});
 
 // ============================================
 // БЕЗОПАСНОСТЬ: Парсинг и валидация данных
