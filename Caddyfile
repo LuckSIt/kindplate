@@ -14,21 +14,6 @@ app-kindplate.ru {
 }
 
 api-kindplate.ru {
-  # Обработка OPTIONS запросов (preflight) - до reverse_proxy
-  @options {
-    method OPTIONS
-  }
-  handle @options {
-    header {
-      Access-Control-Allow-Origin "https://app-kindplate.ru"
-      Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
-      Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, Origin"
-      Access-Control-Allow-Credentials "true"
-      Access-Control-Max-Age "86400"
-    }
-    respond 204
-  }
-  
   reverse_proxy backend:5000 {
     header_up X-Forwarded-Proto {scheme}
     header_up X-Forwarded-For {remote_host}
@@ -47,13 +32,8 @@ api-kindplate.ru {
   
   encode gzip zstd
   
-  # CORS заголовки для всех ответов
+  # Безопасность заголовки (CORS обрабатывается в Express)
   header {
-    Access-Control-Allow-Origin "https://app-kindplate.ru"
-    Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
-    Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, Origin"
-    Access-Control-Allow-Credentials "true"
-    Access-Control-Max-Age "86400"
     Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     X-Content-Type-Options "nosniff"
     X-Frame-Options "SAMEORIGIN"
