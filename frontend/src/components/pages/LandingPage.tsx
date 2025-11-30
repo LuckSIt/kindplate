@@ -699,7 +699,7 @@ export function LandingPage() {
                                                 lineHeight: '2em'
                                             }}
                                         >
-                                            Ответы на ворпосы
+                                            Ответы на вопросы
                                         </Link>
                                     </li>
                                     <li>

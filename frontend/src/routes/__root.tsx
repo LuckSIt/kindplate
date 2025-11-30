@@ -220,9 +220,17 @@ function MobileOnly({ children }: { children: React.ReactNode }) {
         const check = () => {
             const width = window.innerWidth;
             const height = window.innerHeight;
-            const isPortrait = height >= width;
-            // Mobile-only: allow phones; show guard on width >= 768px
-            setIsMobile(width < 768 && isPortrait);
+            
+            // Проверяем: либо мобильное устройство (по user agent), либо узкий экран
+            const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isNarrowScreen = width <= 768;
+            const isPortrait = height > width;
+            
+            // Разрешаем доступ если:
+            // 1. Мобильное устройство (по user agent)
+            // 2. Узкий экран (ширина <= 768px)
+            // 3. Портретная ориентация на узком экране
+            setIsMobile(isMobileDevice || isNarrowScreen);
         };
         check();
         window.addEventListener('resize', check);
@@ -240,7 +248,7 @@ function MobileOnly({ children }: { children: React.ReactNode }) {
                     <div className="text-5xl mb-4">📱</div>
                     <h1 className="text-xl font-semibold text-white mb-2">Доступно только на мобильных</h1>
                     <p className="text-sm text-gray-300">
-                        Откройте приложение на смартфоне (ширина 360–430px, портретная ориентация).
+                        Откройте приложение на смартфоне или уменьшите ширину окна браузера (≤ 768px).
                     </p>
                 </div>
             </div>
