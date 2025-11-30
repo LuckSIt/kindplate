@@ -79,7 +79,7 @@ function RootRoute() {
     const location = useLocation();
 
     useEffect(() => {
-        const onScroll = () => setHasShadow(window.scrollY > 2);
+        const onScroll = () => _setHasShadow(window.scrollY > 2);
         onScroll();
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
@@ -206,12 +206,10 @@ function MobileOnly({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const check = () => {
             const width = window.innerWidth;
-            const height = window.innerHeight;
             
             // Проверяем: либо мобильное устройство (по user agent), либо узкий экран
             const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             const isNarrowScreen = width <= 768;
-            const _isPortrait = height > width;
             
             // Разрешаем доступ если:
             // 1. Мобильное устройство (по user agent)

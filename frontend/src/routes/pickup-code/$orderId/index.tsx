@@ -1,5 +1,4 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axiosInstance";
 import businessImage1 from "@/figma/business-image-1.png";
