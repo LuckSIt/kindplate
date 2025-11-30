@@ -375,18 +375,37 @@ function RouteComponent() {
 
     // Убираем aria-hidden с навигации, чтобы избежать проблем с доступностью
     useEffect(() => {
-        const observer = new MutationObserver(() => {
-            const nav = document.querySelector('nav.fixed.bottom-0');
-            if (nav && nav.getAttribute('aria-hidden') === 'true') {
-                nav.removeAttribute('aria-hidden');
-                nav.removeAttribute('data-aria-hidden');
-            }
+        const nav = document.querySelector('nav.fixed.bottom-0');
+        if (!nav) return;
+
+        // Немедленно удаляем aria-hidden если он уже есть
+        if (nav.hasAttribute('aria-hidden')) {
+            nav.removeAttribute('aria-hidden');
+        }
+        if (nav.hasAttribute('data-aria-hidden')) {
+            nav.removeAttribute('data-aria-hidden');
+        }
+
+        // Наблюдаем за изменениями конкретно на элементе навигации
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && 
+                    (mutation.attributeName === 'aria-hidden' || mutation.attributeName === 'data-aria-hidden')) {
+                    const target = mutation.target as HTMLElement;
+                    if (target.hasAttribute('aria-hidden')) {
+                        target.removeAttribute('aria-hidden');
+                    }
+                    if (target.hasAttribute('data-aria-hidden')) {
+                        target.removeAttribute('data-aria-hidden');
+                    }
+                }
+            });
         });
 
-        observer.observe(document.body, {
+        // Наблюдаем только за навигационным элементом
+        observer.observe(nav, {
             attributes: true,
             attributeFilter: ['aria-hidden', 'data-aria-hidden'],
-            subtree: true,
         });
 
         return () => observer.disconnect();
