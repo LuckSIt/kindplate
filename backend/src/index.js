@@ -41,21 +41,127 @@ if (!fs.existsSync('logs')) {
     fs.mkdirSync('logs');
 }
 
-const authRouter = require("./routes/auth");
-const businessLocationsRouter = require("./routes/business-locations");
-const offersRouter = require("./routes/offers");
-const ordersRouter = require("./routes/orders");
-const paymentsRouter = require("./routes/payments");
-const customerRouter = require("./routes/customer");
-const customerLocationsRouter = require("./routes/customer-locations");
-const cartRouter = require("./routes/cart");
-const statsRouter = require("./routes/stats");
-const favoritesRouter = require("./routes/favorites");
-const reviewsRouter = require("./routes/reviews");
-const notificationsRouter = require("./routes/notifications");
-const subscriptionsRouter = require("./routes/subscriptions");
-const profileRouter = require("./routes/profile");
-const adminRouter = require("./routes/admin");
+// Загружаем роуты по одному для диагностики
+try {
+    const authRouter = require("./routes/auth");
+    console.log("✅ authRouter loaded");
+} catch (e) {
+    console.error("❌ authRouter error:", e.message);
+    process.exit(1);
+}
+
+try {
+    const businessLocationsRouter = require("./routes/business-locations");
+    console.log("✅ businessLocationsRouter loaded");
+} catch (e) {
+    console.error("❌ businessLocationsRouter error:", e.message);
+    process.exit(1);
+}
+
+try {
+    const offersRouter = require("./routes/offers");
+    console.log("✅ offersRouter loaded");
+} catch (e) {
+    console.error("❌ offersRouter error:", e.message);
+    process.exit(1);
+}
+
+try {
+    const ordersRouter = require("./routes/orders");
+    console.log("✅ ordersRouter loaded");
+} catch (e) {
+    console.error("❌ ordersRouter error:", e.message);
+    process.exit(1);
+}
+
+try {
+    const paymentsRouter = require("./routes/payments");
+    console.log("✅ paymentsRouter loaded");
+} catch (e) {
+    console.error("❌ paymentsRouter error:", e.message);
+    process.exit(1);
+}
+
+try {
+    const customerRouter = require("./routes/customer");
+    console.log("✅ customerRouter loaded");
+} catch (e) {
+    console.error("❌ customerRouter error:", e.message);
+    process.exit(1);
+}
+
+try {
+    const customerLocationsRouter = require("./routes/customer-locations");
+    console.log("✅ customerLocationsRouter loaded");
+} catch (e) {
+    console.error("❌ customerLocationsRouter error:", e.message);
+    process.exit(1);
+}
+
+try {
+    const cartRouter = require("./routes/cart");
+    console.log("✅ cartRouter loaded");
+} catch (e) {
+    console.error("❌ cartRouter error:", e.message);
+    process.exit(1);
+}
+
+try {
+    const statsRouter = require("./routes/stats");
+    console.log("✅ statsRouter loaded");
+} catch (e) {
+    console.error("❌ statsRouter error:", e.message);
+    process.exit(1);
+}
+
+try {
+    const favoritesRouter = require("./routes/favorites");
+    console.log("✅ favoritesRouter loaded");
+} catch (e) {
+    console.error("❌ favoritesRouter error:", e.message);
+    process.exit(1);
+}
+
+try {
+    const reviewsRouter = require("./routes/reviews");
+    console.log("✅ reviewsRouter loaded");
+} catch (e) {
+    console.error("❌ reviewsRouter error:", e.message);
+    process.exit(1);
+}
+
+try {
+    const notificationsRouter = require("./routes/notifications");
+    console.log("✅ notificationsRouter loaded");
+} catch (e) {
+    console.error("❌ notificationsRouter error:", e.message);
+    process.exit(1);
+}
+
+try {
+    const subscriptionsRouter = require("./routes/subscriptions");
+    console.log("✅ subscriptionsRouter loaded");
+} catch (e) {
+    console.error("❌ subscriptionsRouter error:", e.message);
+    process.exit(1);
+}
+
+try {
+    const profileRouter = require("./routes/profile");
+    console.log("✅ profileRouter loaded");
+} catch (e) {
+    console.error("❌ profileRouter error:", e.message);
+    process.exit(1);
+}
+
+try {
+    const adminRouter = require("./routes/admin");
+    console.log("✅ adminRouter loaded");
+} catch (e) {
+    console.error("❌ adminRouter error:", e.message);
+    process.exit(1);
+}
+
 const { businessOnly } = require("./lib/auth");
 
 // ============================================
