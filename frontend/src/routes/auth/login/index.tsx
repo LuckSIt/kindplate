@@ -69,12 +69,12 @@ function RouteComponent() {
                     <div className="login-page__header">
                         <h1 className="login-page__title">Войти в аккаунт</h1>
                         <p className="login-page__subtitle">
-                            Нету аккаунта?{" "}
+                            Нет аккаунта?{" "}
                             <Link 
                                 to="/auth/register/customer" 
                                 className="login-page__link"
                             >
-                                Зарегестрируйтесь
+                                Зарегистрируйтесь
                             </Link>
                         </p>
                     </div>

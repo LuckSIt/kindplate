@@ -27,30 +27,57 @@ export const MapView: React.FC<MapViewProps> = ({
   const [isInitialized, setIsInitialized] = useState(false);
   const [userInteracted, setUserInteracted] = useState(false);
 
-  // Initialize Yandex Maps
+  // Initialize Yandex Maps - проверяем загрузку скрипта
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.ymaps) {
-      setMapLoaded(true);
-    } else {
-      // Retry after a short delay
-      setTimeout(() => {
-        if (typeof window !== 'undefined' && window.ymaps) {
-          setMapLoaded(true);
-        }
-      }, 1000);
-    }
+    const checkYmaps = () => {
+      if (typeof window !== 'undefined' && window.ymaps) {
+        setMapLoaded(true);
+        return true;
+      }
+      return false;
+    };
+
+    // Проверяем сразу
+    if (checkYmaps()) return;
+
+    // Если не загружен, проверяем периодически
+    const intervalId = setInterval(() => {
+      if (checkYmaps()) {
+        clearInterval(intervalId);
+      }
+    }, 100);
+
+    // Останавливаем проверку через 10 секунд
+    const timeoutId = setTimeout(() => {
+      clearInterval(intervalId);
+      if (!checkYmaps()) {
+        console.error('⚠️ Яндекс карты не загрузились за 10 секунд');
+      }
+    }, 10000);
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   // Initialize map
   useEffect(() => {
-    if (!mapLoaded || !window.ymaps || isInitialized) return;
+    if (!mapLoaded || !window.ymaps || isInitialized || !mapRef.current) return;
 
     window.ymaps.ready(() => {
       try {
+        if (!mapRef.current) {
+          console.error('⚠️ Map container ref is null');
+          return;
+        }
+
         const yandexMap = new window.ymaps.Map(mapRef.current, {
           center: userLocation || [59.92, 30.34],
           zoom: userLocation ? 14 : 12,
           controls: []
+        }, {
+          suppressMapOpenBlock: true // Убираем блокировку карты
         });
 
         setMap(yandexMap);
@@ -246,7 +273,6 @@ export const MapView: React.FC<MapViewProps> = ({
     };
   }, [businesses, onBusinessClick]);
 
-  console.log('🗺️ MapView render:', { mapLoaded, isInitialized, map: !!map });
 
   if (!mapLoaded) {
     return (
