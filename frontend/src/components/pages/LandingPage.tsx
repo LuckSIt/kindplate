@@ -1,7 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, MapPin, Minimize2, ShoppingBag, Send, Instagram, Mail } from "lucide-react";
+import { Heart, MapPin, Minimize2, ShoppingBag } from "lucide-react";
 import bunImage from "@/figma/90428C7F-3E7E-49B8-81BC-472D67411732 1.png";
 import phoneMapImage from "@/figma/image.png";
+import vkIcon from "@/figma/87413 1.png";
+import telegramIcon from "@/figma/25684 1.png";
+import instagramIcon from "@/figma/av16efeffeed4418c90c1 1.png";
+import emailIcon from "@/figma/email-and-mail-icon-black-free-png 1.png";
 
 export function LandingPage() {
     return (
@@ -9,32 +13,33 @@ export function LandingPage() {
             {/* Mobile-first layout - single column */}
             <div className="max-w-[375px] mx-auto w-full" style={{ backgroundColor: '#10172A' }}>
                 {/* Header */}
-                <header className="px-[15px] pt-0 pb-0">
-                    <div className="flex items-center justify-between h-[103px]">
-                        <div className="flex items-center">
-                            {/* Logo Icon - будет заменен на логотип из брендбука */}
-                            <div 
-                                className="w-[40px] h-[40px] rounded-full flex items-center justify-center flex-shrink-0"
-                                style={{ backgroundColor: '#35741F' }}
-                            >
-                                <svg className="w-[24px] h-[24px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                            </div>
+                <header className="px-[15px] pt-[26px] pb-0">
+                    {/* Белый прямоугольник-хедер как в макете */}
+                    <div className="w-80 h-11 mx-auto bg-white rounded-2xl flex items-center justify-between px-[16px]">
+                        {/* Лого‑заглушка (кружок) — на месте брендового лого */}
+                        <div 
+                            className="w-[40px] h-[40px] rounded-full flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: '#35741F' }}
+                        >
+                            <svg className="w-[24px] h-[24px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
                         </div>
+
+                        {/* Бургер‑меню, как в макете (3 тёмные полоски) */}
                         <button 
                             className="flex flex-col gap-[7px] cursor-pointer"
                             aria-label="Меню"
                         >
-                            <div className="w-[27px] h-[3px] bg-white rounded"></div>
-                            <div className="w-[27px] h-[3px] bg-white rounded"></div>
-                            <div className="w-[27px] h-[3px] bg-white rounded"></div>
+                            <div className="w-7 h-[3px] bg-[#10172A] rounded" />
+                            <div className="w-7 h-[3px] bg-[#10172A] rounded" />
+                            <div className="w-7 h-[3px] bg-[#10172A] rounded" />
                         </button>
                     </div>
                 </header>
 
                 {/* Hero Section */}
-                <section className="px-[15px] pt-[105px] pb-[105px]">
+                <section className="px-[15px] pt-[105px] pb-[40px]">
                     <div className="relative">
                         {/* Green Rectangle Backgrounds */}
                         <div 
@@ -60,11 +65,11 @@ export function LandingPage() {
                                 полезно для планеты
                             </h1>
                             <p 
-                                className="text-[10px] font-normal leading-[1.08] text-center mt-[3px]"
+                                className="text-[10px] font-normal text-center mt-[6px]"
                                 style={{ 
                                     fontFamily: 'Montserrat Alternates, sans-serif',
                                     color: '#FFFFFF',
-                                    lineHeight: '1.08em'
+                                    lineHeight: '10.8px'
                                 }}
                             >
                                 Соединяем людей с кафе и ресторанами<br />
@@ -96,7 +101,7 @@ export function LandingPage() {
                                 className="w-full h-[24px] rounded-[20px] border border-white text-[9px] font-bold leading-[1.08] text-center transition-opacity hover:opacity-90"
                                 style={{ 
                                     backgroundColor: '#10172A',
-                                    color: '#FFFFFF',
+                                    color: '#E3E3E3',
                                     fontFamily: 'Montserrat Alternates, sans-serif',
                                     borderWidth: '1px',
                                     lineHeight: '1.08em'
@@ -319,7 +324,7 @@ export function LandingPage() {
                         </p>
                         <div className="flex items-center justify-center">
                             <div 
-                                className="px-[15px] py-[5px] rounded-[5px] inline-block"
+                                className="flex items-center justify-center w-[115px] h-[25px] rounded-[5px]"
                                 style={{ backgroundColor: '#35741F' }}
                             >
                                 <p 
@@ -578,27 +583,27 @@ export function LandingPage() {
                 </section>
 
                 {/* Why KindPlate Section */}
-                <section className="px-[14px] pb-[60px]">
-                    <div 
-                        className="rounded-[15px] p-[53px] relative"
-                        style={{ backgroundColor: '#35741F' }}
+                <section className="px-[15px] pb-[60px]">
+                    <div
+                        className="rounded-[15px] pt-[24px] pb-[32px] px-[24px]"
+                        style={{ backgroundColor: "#35741F" }}
                     >
-                        <h3 
-                            className="text-[23px] font-bold leading-[1.08] mb-[196px] text-center"
-                            style={{ 
-                                fontFamily: 'Montserrat Alternates, sans-serif',
-                                color: '#FFFFFF',
-                                lineHeight: '1.08em'
+                        <h3
+                            className="text-[23px] font-bold text-center mb-[24px]"
+                            style={{
+                                fontFamily: "Montserrat Alternates, sans-serif",
+                                color: "#FFFFFF",
+                                lineHeight: "24.84px",
                             }}
                         >
                             Почему KindPlate?
                         </h3>
-                        
+
                         {/* Grid of 4 cards */}
-                        <div className="grid grid-cols-2 gap-[30px]">
+                        <div className="grid grid-cols-2 gap-x-[20px] gap-y-[18px]">
                             {/* Card 1 - Save up to 70% */}
                             <div 
-                                className="rounded-[15px] p-[34px] relative h-[122px] flex flex-col items-center justify-center"
+                                className="rounded-[15px] py-[20px] px-[12px] h-[122px] flex flex-col items-center justify-center"
                                 style={{ backgroundColor: '#C8EBBB' }}
                             >
                                 <div className="mb-[20px] w-[40px] h-[40px] flex items-center justify-center">
@@ -620,7 +625,7 @@ export function LandingPage() {
                             
                             {/* Card 2 - Reduce waste */}
                             <div 
-                                className="rounded-[15px] p-[34px] relative h-[122px] flex flex-col items-center justify-center"
+                                className="rounded-[15px] py-[20px] px-[12px] h-[122px] flex flex-col items-center justify-center"
                                 style={{ backgroundColor: '#C8EBBB' }}
                             >
                                 <div className="mb-[20px] w-[40px] h-[40px] flex items-center justify-center">
@@ -640,7 +645,7 @@ export function LandingPage() {
                             
                             {/* Card 3 - Support local businesses */}
                             <div 
-                                className="rounded-[15px] p-[34px] relative h-[122px] flex flex-col items-center justify-center"
+                                className="rounded-[15px] py-[20px] px-[12px] h-[122px] flex flex-col items-center justify-center"
                                 style={{ backgroundColor: '#C8EBBB' }}
                             >
                                 <div className="mb-[20px] w-[40px] h-[40px] flex items-center justify-center">
@@ -661,7 +666,7 @@ export function LandingPage() {
                             
                             {/* Card 4 - Positive impact */}
                             <div 
-                                className="rounded-[15px] p-[34px] relative h-[122px] flex flex-col items-center justify-center"
+                                className="rounded-[15px] py-[20px] px-[12px] h-[122px] flex flex-col items-center justify-center"
                                 style={{ backgroundColor: '#C8EBBB' }}
                             >
                                 <div className="mb-[20px] w-[40px] h-[40px] flex items-center justify-center">
@@ -684,9 +689,9 @@ export function LandingPage() {
 
                 {/* Footer */}
                 <footer className="px-0 pb-[60px]">
-                    <div 
+                    <div
                         className="rounded-0 p-[27px]"
-                        style={{ backgroundColor: '#2B344D' }}
+                        style={{ backgroundColor: "#2B344D" }}
                     >
                         <div className="grid grid-cols-2 gap-[27px] mb-[25px]">
                             {/* KindPlate Column */}
@@ -802,48 +807,60 @@ export function LandingPage() {
                         
                         {/* Social Media */}
                         <div className="mb-[25px]">
-                            <h4 
+                            <h4
                                 className="text-[14px] font-semibold leading-[1.57] mb-[25px]"
-                                style={{ 
-                                    fontFamily: 'Montserrat Alternates, sans-serif',
-                                    color: '#35741F',
-                                    lineHeight: '1.57em'
+                                style={{
+                                    fontFamily: "Montserrat Alternates, sans-serif",
+                                    color: "#35741F",
+                                    lineHeight: "1.57em",
                                 }}
                             >
                                 Социальные сети
                             </h4>
-                            <div className="flex gap-[11px]">
-                                <a 
-                                    href="#" 
-                                    className="w-[25px] h-[25px] rounded-full flex items-center justify-center transition-opacity hover:opacity-80"
-                                    style={{ backgroundColor: '#7E879D' }}
-                                    aria-label="ВКонтакте"
+                            <div className="flex gap-[11px] items-center">
+                                <a
+                                    href="#"
+                                    className="w-[25px] h-[25px] rounded-full flex items-center justify-center bg-[#7E879D] transition-opacity hover:opacity-80"
+                                    aria-label="VK"
                                 >
-                                    <span className="text-[10px] font-bold text-white">VK</span>
+                                    <img
+                                        src={vkIcon}
+                                        alt="VK"
+                                        className="w-[15px] h-[15px]"
+                                    />
                                 </a>
-                                <a 
-                                    href="#" 
-                                    className="w-[25px] h-[25px] rounded-full flex items-center justify-center transition-opacity hover:opacity-80"
-                                    style={{ backgroundColor: '#7E879D' }}
+                                <a
+                                    href="#"
+                                    className="w-[25px] h-[25px] rounded-full flex items-center justify-center bg-[#7E879D] transition-opacity hover:opacity-80"
                                     aria-label="Telegram"
                                 >
-                                    <Send className="w-[14px] h-[14px] text-white" />
+                                    <img
+                                        src={telegramIcon}
+                                        alt="Telegram"
+                                        className="w-[15px] h-[15px]"
+                                    />
                                 </a>
-                                <a 
-                                    href="#" 
-                                    className="w-[31px] h-[31px] rounded-full flex items-center justify-center transition-opacity hover:opacity-80"
-                                    style={{ backgroundColor: '#7E879D' }}
+                                <a
+                                    href="#"
+                                    className="w-[31px] h-[31px] rounded-full flex items-center justify-center bg-[#7E879D] transition-opacity hover:opacity-80"
                                     aria-label="Instagram"
                                 >
-                                    <Instagram className="w-[19px] h-[19px] text-white" />
+                                    <img
+                                        src={instagramIcon}
+                                        alt="Instagram"
+                                        className="w-[19px] h-[19px]"
+                                    />
                                 </a>
-                                <a 
-                                    href="#" 
-                                    className="w-[25px] h-[25px] rounded-full flex items-center justify-center transition-opacity hover:opacity-80"
-                                    style={{ backgroundColor: '#7E879D' }}
+                                <a
+                                    href="#"
+                                    className="w-[25px] h-[25px] rounded-full flex items-center justify-center bg-[#7E879D] transition-opacity hover:opacity-80"
                                     aria-label="Email"
                                 >
-                                    <Mail className="w-[14px] h-[14px] text-white" />
+                                    <img
+                                        src={emailIcon}
+                                        alt="Email"
+                                        className="w-[16px] h-[16px]"
+                                    />
                                 </a>
                             </div>
                         </div>
