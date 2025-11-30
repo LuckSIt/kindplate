@@ -373,6 +373,25 @@ function RouteComponent() {
         }
     }, [activeSnap]);
 
+    // Убираем aria-hidden с навигации, чтобы избежать проблем с доступностью
+    useEffect(() => {
+        const observer = new MutationObserver(() => {
+            const nav = document.querySelector('nav.fixed.bottom-0');
+            if (nav && nav.getAttribute('aria-hidden') === 'true') {
+                nav.removeAttribute('aria-hidden');
+                nav.removeAttribute('data-aria-hidden');
+            }
+        });
+
+        observer.observe(document.body, {
+            attributes: true,
+            attributeFilter: ['aria-hidden', 'data-aria-hidden'],
+            subtree: true,
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
     return (
         <>
             <HomePageSEO />
