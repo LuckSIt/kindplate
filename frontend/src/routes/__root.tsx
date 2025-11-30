@@ -74,7 +74,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 // AuthStatus и Nav функции удалены, так как не используются
 
 function RootRoute() {
-    const [hasShadow, setHasShadow] = useState(false);
+    const [_hasShadow, _setHasShadow] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const location = useLocation();
 
@@ -211,7 +211,7 @@ function MobileOnly({ children }: { children: React.ReactNode }) {
             // Проверяем: либо мобильное устройство (по user agent), либо узкий экран
             const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             const isNarrowScreen = width <= 768;
-            const isPortrait = height > width;
+            const _isPortrait = height > width;
             
             // Разрешаем доступ если:
             // 1. Мобильное устройство (по user agent)

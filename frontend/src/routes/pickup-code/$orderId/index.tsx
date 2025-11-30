@@ -11,7 +11,7 @@ export const Route = createFileRoute("/pickup-code/$orderId/")({
 function PickupCodePageComponent() {
     const navigate = useNavigate();
     const { orderId } = Route.useParams();
-    const [pickupCode] = useState<string>("584046"); // Mock code, should come from API
+    const pickupCode = "584046"; // Mock code, should come from API
 
     // Fetch order data
     const { data: orderData } = useQuery({

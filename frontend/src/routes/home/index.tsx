@@ -47,7 +47,6 @@ function RouteComponent() {
     const queryClient = useQueryClient();
     
     // UI State
-    const [searchQuery, setSearchQuery] = useState('');
     const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [activeSnap, setActiveSnap] = useState<number>(0.2);
@@ -68,7 +67,6 @@ function RouteComponent() {
 
     // Debounced map bounds для уменьшения количества запросов
     const [debouncedMapBounds, setDebouncedMapBounds] = useState(mapBounds);
-    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
     
     // Debounce для mapBounds - обновляем только через 500ms после последнего изменения
     useEffect(() => {
@@ -77,18 +75,10 @@ function RouteComponent() {
         }, 500);
         return () => clearTimeout(timer);
     }, [mapBounds]);
-    
-    // Debounce для searchQuery - обновляем только через 500ms после последнего изменения
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearchQuery(searchQuery);
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [searchQuery]);
 
     // Fetch offers data with optimized map query using new search endpoint
-    const { data: offersData, isLoading: isLoadingOffers, isError: isOffersError, error: offersError } = useMapQuery(
-        ["offers_search", debouncedMapBounds, debouncedSearchQuery, sortBy, userLocation],
+    const { data: offersData, isError: isOffersError, error: offersError } = useMapQuery(
+        ["offers_search", debouncedMapBounds, sortBy, userLocation],
         () => {
             const params = new URLSearchParams();
             
@@ -104,11 +94,6 @@ function RouteComponent() {
                 params.append('lat', centerLat.toString());
                 params.append('lon', centerLon.toString());
                 params.append('radius_km', '50');
-            }
-            
-            // Поиск
-            if (debouncedSearchQuery) {
-                params.append('q', debouncedSearchQuery);
             }
             
             // Сортировка
@@ -136,7 +121,7 @@ function RouteComponent() {
     
     // Fallback: если новый эндпоинт не работает, используем старый
     const { data: fallbackData } = useMapQuery(
-        ["businesses_fallback", mapBounds, searchQuery],
+        ["businesses_fallback", mapBounds],
         () => {
             const params = new URLSearchParams();
             if (mapBounds) {
@@ -144,9 +129,6 @@ function RouteComponent() {
                 params.append('south', mapBounds.south.toString());
                 params.append('east', mapBounds.east.toString());
                 params.append('west', mapBounds.west.toString());
-            }
-            if (searchQuery) {
-                params.append('search', searchQuery);
             }
             return axiosInstance.get(`/customer/sellers?${params.toString()}`);
         },
@@ -179,7 +161,7 @@ function RouteComponent() {
         mutationFn: (orderData: OrderData) => {
             return axiosInstance.post('/orders/draft', orderData);
         },
-        onSuccess: (response) => {
+        onSuccess: () => {
             setOrderDialogOpen(false);
             notify.success("Заказ создан", "Ваш заказ успешно оформлен!");
             queryClient.invalidateQueries({ queryKey: ["orders"] });
@@ -195,11 +177,31 @@ function RouteComponent() {
     // Process businesses data - адаптируем данные из нового эндпоинта
     const businesses: Business[] = useMemo(() => {
         // Новый формат из /offers/search
-        if (offersData?.data?.offers) {
+        if (offersData && typeof offersData === 'object' && 'data' in offersData && offersData.data && typeof offersData.data === 'object' && 'offers' in offersData.data && Array.isArray(offersData.data.offers)) {
             // Группируем офферы по бизнесам
             const businessMap = new Map<number, Business>();
             
-            offersData.data.offers.forEach((offer: {
+            (offersData.data as { offers: Array<{
+                id: number;
+                business: {
+                    id: number;
+                    name: string;
+                    address: string;
+                    coords: [string, string];
+                    rating?: number;
+                    logo_url?: string;
+                };
+                title: string;
+                description?: string;
+                image_url?: string;
+                original_price: number;
+                discounted_price: number;
+                quantity_available: number;
+                pickup_time_start: string;
+                pickup_time_end: string;
+                is_active: boolean;
+                created_at: string;
+            }> }).offers.forEach((offer: {
                 id: number;
                 business: {
                     id: number;
@@ -229,11 +231,14 @@ function RouteComponent() {
                         coords: offer.business.coords,
                         rating: offer.business.rating,
                         logo_url: offer.business.logo_url,
-                        phone: null,
+                        phone: undefined,
                         offers: []
                     });
                 }
                 const business = businessMap.get(businessId)!;
+                if (!business.offers) {
+                    business.offers = [];
+                }
                 business.offers.push({
                     id: offer.id,
                     title: offer.title,
@@ -254,8 +259,8 @@ function RouteComponent() {
         }
         
         // Старый формат из /customer/sellers
-        if (data?.data?.sellers) {
-            return data.data.sellers.map((seller: {
+        if (data && typeof data === 'object' && 'data' in data && data.data && typeof data.data === 'object' && 'sellers' in data.data) {
+            const sellersData = data.data as { sellers: Array<{
                 id: number;
                 name: string;
                 address: string;
@@ -264,20 +269,23 @@ function RouteComponent() {
                 logo_url?: string;
                 phone?: string;
                 offers?: Offer[];
-            }) => ({
-                id: seller.id,
-                name: seller.name,
-                address: seller.address,
-                coords: seller.coords,
-                rating: seller.rating,
-                logo_url: seller.logo_url,
-                phone: seller.phone,
-                offers: seller.offers || []
-            }));
+            }> };
+            if (Array.isArray(sellersData.sellers)) {
+                return sellersData.sellers.map((seller) => ({
+                    id: seller.id,
+                    name: seller.name,
+                    address: seller.address,
+                    coords: seller.coords,
+                    rating: seller.rating,
+                    logo_url: seller.logo_url,
+                    phone: seller.phone,
+                    offers: seller.offers || []
+                }));
+            }
         }
         
         return [];
-    }, [data?.data?.sellers, offersData?.data?.offers]);
+    }, [data, offersData]);
 
     // Filter businesses (сортировка уже сделана на бэкенде)
     const filteredBusinesses = useMemo(() => {
@@ -349,7 +357,7 @@ function RouteComponent() {
                 }],
                 business_id: business.id,
                 business_name: business.name,
-                business_address: business.address,
+                business_address: business.address || '',
                 pickup_time_start: selectedOffer.pickup_time_start,
                 pickup_time_end: selectedOffer.pickup_time_end,
                 notes: ""
@@ -446,10 +454,12 @@ function RouteComponent() {
                     modal={false}
                     snapPoints={[0.2, 0.6, 1]}
                     activeSnapPoint={activeSnap}
-                    onSnapPointChange={(v:number) => setActiveSnap(v)}
                 >
                     <Drawer.Portal>
-                        <Drawer.Content className="kp-sheet fixed bottom-0 left-0 right-0 z-40 bg-gray-900 border-t border-gray-700" style={{ touchAction: 'none' }}>
+                        <Drawer.Content 
+                            className="kp-sheet fixed bottom-0 left-0 right-0 z-40 bg-gray-900 border-t border-gray-700" 
+                            style={{ touchAction: 'none' }}
+                        >
                             <Drawer.Title className="sr-only">Список предложений</Drawer.Title>
                             <Drawer.Description className="sr-only">Проведите вверх, чтобы развернуть список предложений</Drawer.Description>
                             <div className="mx-auto h-1.5 w-10 rounded-full bg-gray-700 my-3" />
@@ -461,7 +471,7 @@ function RouteComponent() {
                                             Ошибка загрузки данных
                                         </h3>
                                         <p className="text-gray-400 text-center mb-4">
-                                            {offersError?.response?.data?.message || 'Не удалось загрузить предложения'}
+                                            {(offersError && typeof offersError === 'object' && 'response' in offersError && offersError.response && typeof offersError.response === 'object' && 'data' in offersError.response && offersError.response.data && typeof offersError.response.data === 'object' && 'message' in offersError.response.data && typeof offersError.response.data.message === 'string') ? offersError.response.data.message : 'Не удалось загрузить предложения'}
                                         </p>
                                         <button
                                             onClick={() => window.location.reload()}
