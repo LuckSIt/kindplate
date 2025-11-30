@@ -134,36 +134,42 @@ customerRouter.get("/sellers", async (req, res) => {
             seller => seller.offers.length > 0
         );
 
-        // Получаем бейджи для всех бизнесов
+        // Получаем бейджи для всех бизнесов (если таблица существует)
+        const badgesByBusiness = {};
         if (sellersWithOffers.length > 0) {
-            const businessIds = sellersWithOffers.map(s => s.id);
-            const badgesResult = await pool.query(
-                `SELECT 
-                    business_id,
-                    badge_key,
-                    awarded_at,
-                    expires_at,
-                    metadata
-                FROM quality_badges
-                WHERE business_id = ANY($1)
-                AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)
-                ORDER BY awarded_at DESC`,
-                [businessIds]
-            );
-            
-            // Группируем бейджи по business_id
-            const badgesByBusiness = {};
-            badgesResult.rows.forEach(row => {
-                if (!badgesByBusiness[row.business_id]) {
-                    badgesByBusiness[row.business_id] = [];
-                }
-                badgesByBusiness[row.business_id].push({
-                    key: row.badge_key,
-                    awarded_at: row.awarded_at,
-                    expires_at: row.expires_at,
-                    metadata: row.metadata
+            try {
+                const businessIds = sellersWithOffers.map(s => s.id);
+                const badgesResult = await pool.query(
+                    `SELECT 
+                        business_id,
+                        badge_key,
+                        awarded_at,
+                        expires_at,
+                        metadata
+                    FROM quality_badges
+                    WHERE business_id = ANY($1)
+                    AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)
+                    ORDER BY awarded_at DESC`,
+                    [businessIds]
+                );
+                
+                // Группируем бейджи по business_id
+                badgesResult.rows.forEach(row => {
+                    if (!badgesByBusiness[row.business_id]) {
+                        badgesByBusiness[row.business_id] = [];
+                    }
+                    badgesByBusiness[row.business_id].push({
+                        key: row.badge_key,
+                        awarded_at: row.awarded_at,
+                        expires_at: row.expires_at,
+                        metadata: row.metadata
+                    });
                 });
-            });
+            } catch (badgeError) {
+                // Таблица quality_badges может не существовать - это нормально
+                console.log('⚠️ Таблица quality_badges не найдена, пропускаем бейджи');
+            }
+        }
             
             // Добавляем бейджи к продавцам
             sellersWithOffers.forEach(seller => {
@@ -395,26 +401,32 @@ customerRouter.get("/vendors/:id", async (req, res) => {
 
         const vendor = vendorResult.rows[0];
         
-        // Получаем бейджи качества
-        const badgesResult = await pool.query(
-            `SELECT 
-                badge_key,
-                awarded_at,
-                expires_at,
-                metadata
-            FROM quality_badges
-            WHERE business_id = $1
-            AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)
-            ORDER BY awarded_at DESC`,
-            [vendorId]
-        );
-        
-        const badges = badgesResult.rows.map(row => ({
-            key: row.badge_key,
-            awarded_at: row.awarded_at,
-            expires_at: row.expires_at,
-            metadata: row.metadata
-        }));
+        // Получаем бейджи качества (если таблица существует)
+        let badges = [];
+        try {
+            const badgesResult = await pool.query(
+                `SELECT 
+                    badge_key,
+                    awarded_at,
+                    expires_at,
+                    metadata
+                FROM quality_badges
+                WHERE business_id = $1
+                AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)
+                ORDER BY awarded_at DESC`,
+                [vendorId]
+            );
+            
+            badges = badgesResult.rows.map(row => ({
+                key: row.badge_key,
+                awarded_at: row.awarded_at,
+                expires_at: row.expires_at,
+                metadata: row.metadata
+            }));
+        } catch (badgeError) {
+            // Таблица quality_badges может не существовать - это нормально
+            console.log('⚠️ Таблица quality_badges не найдена, пропускаем бейджи');
+        }
         
         res.send({
             success: true,
