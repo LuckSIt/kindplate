@@ -10,6 +10,19 @@ const fs = require("fs");
 
 const pool = require("./lib/db");
 const logger = require("./lib/logger");
+
+// Логируем критичные переменные окружения при старте (без паролей)
+if (process.env.NODE_ENV !== 'production') {
+    logger.info('🔧 Переменные окружения:');
+    logger.info(`   PORT: ${process.env.PORT || 'не установлен (будет использован 5000)'}`);
+    logger.info(`   NODE_ENV: ${process.env.NODE_ENV || 'не установлен'}`);
+    logger.info(`   DB_HOST: ${process.env.DB_HOST || 'не установлен'}`);
+    logger.info(`   DB_NAME: ${process.env.DB_NAME || 'не установлен'}`);
+    logger.info(`   DB_USER: ${process.env.DB_USER || 'не установлен'}`);
+    logger.info(`   DB_PORT: ${process.env.DB_PORT || 'не установлен'}`);
+    logger.info(`   SECRET_KEY: ${process.env.SECRET_KEY ? 'установлен' : 'не установлен'}`);
+    logger.info(`   FRONTEND_ORIGIN: ${process.env.FRONTEND_ORIGIN || 'не установлен'}`);
+}
 const { errorHandler, notFound } = require("./lib/errorHandler");
 const { 
     xssProtection, 
@@ -168,11 +181,23 @@ app.use("/notifications", notificationsRouter);
 app.use("/subscriptions", subscriptionsRouter);
 
 // Health check endpoint для Docker/Caddy
-app.get("/health", (req, res) => {
-    res.status(200).json({
-        status: "ok",
-        timestamp: new Date().toISOString()
-    });
+app.get("/health", async (req, res) => {
+    try {
+        // Проверяем подключение к БД
+        await pool.query('SELECT 1');
+        res.status(200).json({
+            status: "ok",
+            database: "connected",
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        logger.error('Health check failed:', error);
+        res.status(503).json({
+            status: "error",
+            database: "disconnected",
+            timestamp: new Date().toISOString()
+        });
+    }
 });
 
 // Базовый маршрут API
@@ -213,7 +238,78 @@ if (process.env.ENABLE_QUALITY_BADGES_JOB !== 'false') {
     logger.info('✅ Джоб обновления бейджей качества запущен');
 }
 
-app.listen(process.env.PORT, "0.0.0.0", () => {
-    logger.info(`🚀 Сервер запущен на порту ${process.env.PORT}`);
-    console.log("app is running on all interfaces");
+// Функция проверки подключения к БД
+async function checkDatabaseConnection() {
+    try {
+        const result = await pool.query('SELECT NOW()');
+        logger.info('✅ Подключение к базе данных успешно');
+        return true;
+    } catch (error) {
+        logger.error('❌ Ошибка подключения к базе данных:', error);
+        return false;
+    }
+}
+
+// Функция запуска сервера
+async function startServer() {
+    // Проверяем наличие PORT
+    const port = process.env.PORT || 5000;
+    if (!process.env.PORT) {
+        logger.warn(`⚠️ PORT не установлен, используем порт по умолчанию: ${port}`);
+    }
+
+    // Проверяем подключение к БД перед запуском
+    logger.info('🔍 Проверка подключения к базе данных...');
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+        logger.error('❌ Не удалось подключиться к базе данных. Проверьте настройки подключения.');
+        logger.error('   DB_HOST:', process.env.DB_HOST || 'не установлен');
+        logger.error('   DB_NAME:', process.env.DB_NAME || 'не установлен');
+        logger.error('   DB_USER:', process.env.DB_USER || 'не установлен');
+        logger.error('   DB_PORT:', process.env.DB_PORT || 'не установлен');
+        process.exit(1);
+    }
+
+    // Запускаем сервер
+    try {
+        app.listen(port, "0.0.0.0", () => {
+            logger.info(`🚀 Сервер запущен на порту ${port}`);
+            console.log("app is running on all interfaces");
+        });
+    } catch (error) {
+        logger.error('❌ Ошибка при запуске сервера:', error);
+        process.exit(1);
+    }
+}
+
+// Обработка ошибок при запуске
+process.on('uncaughtException', (error) => {
+    logger.error('❌ Необработанное исключение:', error);
+    process.exit(1);
 });
+
+process.on('unhandledRejection', (reason, promise) => {
+    logger.error('❌ Необработанный rejection:', reason);
+    logger.error('   Promise:', promise);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    logger.info('🛑 Получен сигнал SIGTERM, завершаем работу...');
+    pool.end(() => {
+        logger.info('✅ Подключение к БД закрыто');
+        process.exit(0);
+    });
+});
+
+process.on('SIGINT', () => {
+    logger.info('🛑 Получен сигнал SIGINT, завершаем работу...');
+    pool.end(() => {
+        logger.info('✅ Подключение к БД закрыто');
+        process.exit(0);
+    });
+});
+
+// Запускаем сервер
+startServer();
