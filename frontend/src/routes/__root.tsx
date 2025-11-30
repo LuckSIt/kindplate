@@ -178,17 +178,19 @@ function RootRoute() {
                         </MobileOnly>
                     )}
 
-                    <TanstackDevtools
-                        config={{
-                            position: "bottom-left",
-                        }}
-                        plugins={[
-                            {
-                                name: "Tanstack Router",
-                                render: <TanStackRouterDevtoolsPanel />,
-                            },
-                        ]}
-                    />
+                    {import.meta.env.DEV && (
+                        <TanstackDevtools
+                            config={{
+                                position: "bottom-left",
+                            }}
+                            plugins={[
+                                {
+                                    name: "Tanstack Router",
+                                    render: <TanStackRouterDevtoolsPanel />,
+                                },
+                            ]}
+                        />
+                    )}
                     <NotificationContainer />
                     {/* InstallPrompt removed per request to hide floating icon */}
                     <NetworkStatus />

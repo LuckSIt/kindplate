@@ -120,7 +120,7 @@ function PickupCodePageComponent() {
                     <div className="pickup-code-page__code-label">Код выдачи</div>
                 </div>
                 <p className="pickup-code-page__code-description">
-                    Скажите код выдачи в заведении,<br />чтобы забрать ввш заказ
+                    Скажите код выдачи в заведении,<br />чтобы забрать ваш заказ
                 </p>
                 
                 {/* Business Info */}
