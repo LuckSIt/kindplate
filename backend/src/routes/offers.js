@@ -530,9 +530,9 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
     }
 }));
 
-// POST /offers/upload-photo/:offer_id - Загрузить фото для предложения
-offersRouter.post("/upload-photo/:offer_id", upload.single("photo"), asyncHandler(async (req, res) => {
-    const { offer_id } = req.params;
+// POST /offers/upload-photo/:offerId - Загрузить фото для предложения
+offersRouter.post("/upload-photo/:offerId", upload.single("photo"), asyncHandler(async (req, res) => {
+    const offer_id = req.params.offerId;
     const businessId = req.session.userId;
 
     if (!req.file) {

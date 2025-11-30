@@ -95,10 +95,10 @@ favoritesRouter.get("/mine", requireAuth, async (req, res) => {
     }
 });
 
-// GET /favorites/check/:business_id - Проверить наличие в избранном
-favoritesRouter.get("/check/:business_id", requireAuth, async (req, res) => {
+// GET /favorites/check/:businessId - Проверить наличие в избранном
+favoritesRouter.get("/check/:businessId", requireAuth, async (req, res) => {
     try {
-        const { business_id } = req.params;
+        const business_id = req.params.businessId;
         const user_id = req.session.userId;
 
         const result = await pool.query(
