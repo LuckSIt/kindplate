@@ -7,7 +7,7 @@ import { MapView } from "@/components/ui/map-view";
 import { BusinessDrawer } from "@/components/ui/business-drawer";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 import { OffersFeed } from "@/components/ui/offers-feed";
-import { MapSortControls, type MapSortType } from "@/components/ui/map-sort-controls";
+import { type MapSortType } from "@/components/ui/map-sort-controls";
 import { Drawer } from "vaul";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { HomePageSEO } from "@/components/ui/seo";
@@ -443,13 +443,6 @@ function RouteComponent() {
                         onMapClick={() => { setSelectedBusiness(null); setActiveSnap(0.2); }}
                         className="h-full w-full"
                     />
-                    
-                    {/* Sort Controls */}
-                    <MapSortControls
-                        sortBy={sortBy}
-                        onSortChange={setSortBy}
-                        userLocation={userLocation}
-                    />
                 </div>
 
                 {/* Bottom Sheet List (Vaul) */}
@@ -463,36 +456,95 @@ function RouteComponent() {
                 >
                     <Drawer.Portal>
                         <Drawer.Content 
-                            className="kp-sheet fixed bottom-0 left-0 right-0 z-40 bg-gray-900 border-t border-gray-700" 
+                            className="kp-sheet fixed bottom-0 left-0 right-0 z-40 bg-transparent"
                             style={{ touchAction: 'none' }}
                         >
                             <Drawer.Title className="sr-only">Список предложений</Drawer.Title>
                             <Drawer.Description className="sr-only">Проведите вверх, чтобы развернуть список предложений</Drawer.Description>
-                            <div className="mx-auto h-1.5 w-10 rounded-full bg-gray-700 my-3" />
-                            <div className="max-h-[70vh] px-3 pb-safe overflow-y-auto will-change-transform">
-                                {isOffersError ? (
-                                    <div className="flex flex-col items-center justify-center py-12 px-4">
-                                        <div className="text-4xl mb-4">⚠️</div>
-                                        <h3 className="text-lg font-semibold text-white mb-2">
-                                            Ошибка загрузки данных
-                                        </h3>
-                                        <p className="text-gray-400 text-center mb-4">
-                                            {(offersError && typeof offersError === 'object' && 'response' in offersError && offersError.response && typeof offersError.response === 'object' && 'data' in offersError.response && offersError.response.data && typeof offersError.response.data === 'object' && 'message' in offersError.response.data && typeof offersError.response.data.message === 'string') ? offersError.response.data.message : 'Не удалось загрузить предложения'}
-                                        </p>
+                            <div className="mx-auto w-full max-w-[402px] px-0 pb-safe">
+                                {/* Всплывающий блок со списком предложений как на макете */}
+                                <div className="w-full bg-slate-900 rounded-t-2xl border-t border-white/40 overflow-hidden">
+                                    {/* Хэндл */}
+                                    <div className="flex justify-center pt-2 pb-2">
+                                        <div className="w-16 h-[5px] rounded-sm" style={{ backgroundColor: '#D9D9D9' }} />
+                                    </div>
+
+                                    {/* Вкладки сортировки: Избранное / Ближайшее / Недавнее */}
+                                    <div className="flex justify-center gap-2 px-3 pb-3">
                                         <button
-                                            onClick={() => window.location.reload()}
-                                            className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+                                            type="button"
+                                            onClick={() => setSortBy('rating')}
+                                            className={`h-6 px-3 rounded-[5px] text-xs font-semibold font-['Montserrat_Alternates'] leading-5 ${
+                                                sortBy === 'rating'
+                                                    ? 'text-white'
+                                                    : 'text-neutral-500'
+                                            }`}
+                                            style={sortBy === 'rating'
+                                                ? { backgroundColor: '#35741F' }
+                                                : { backgroundColor: '#D9D9D9' }}
                                         >
-                                            Обновить страницу
+                                            Избранное
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSortBy('distance')}
+                                            className={`h-6 px-3 rounded-[5px] text-xs font-semibold font-['Montserrat_Alternates'] leading-5 ${
+                                                sortBy === 'distance'
+                                                    ? 'text-white'
+                                                    : 'text-neutral-500'
+                                            } ${!userLocation && sortBy === 'distance' ? 'opacity-50' : ''}`}
+                                            style={sortBy === 'distance'
+                                                ? { backgroundColor: '#35741F' }
+                                                : { backgroundColor: '#D9D9D9' }}
+                                            title={!userLocation ? 'Требуется геолокация' : 'Ближайшее'}
+                                            disabled={!userLocation && sortBy === 'distance'}
+                                        >
+                                            Ближайшее
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSortBy('price')}
+                                            className={`h-6 px-3 rounded-[5px] text-xs font-semibold font-['Montserrat_Alternates'] leading-5 ${
+                                                sortBy === 'price'
+                                                    ? 'text-white'
+                                                    : 'text-neutral-500'
+                                            }`}
+                                            style={sortBy === 'price'
+                                                ? { backgroundColor: '#35741F' }
+                                                : { backgroundColor: '#D9D9D9' }}
+                                            title="Недавнее"
+                                        >
+                                            Недавнее
                                         </button>
                                     </div>
-                                ) : (
-                                <OffersFeed
-                                    businesses={filteredBusinesses}
-                                    selectedBusiness={selectedBusiness}
-                                    onOfferClick={handleOpenOrder}
-                                />
-                                )}
+
+                                    {/* Список предложений */}
+                                    <div className="max-h-[70vh] px-3 pb-4 overflow-y-auto will-change-transform">
+                                        {isOffersError ? (
+                                            <div className="flex flex-col items-center justify-center py-12 px-4">
+                                                <div className="text-4xl mb-4">⚠️</div>
+                                                <h3 className="text-lg font-semibold text-white mb-2">
+                                                    Ошибка загрузки данных
+                                                </h3>
+                                                <p className="text-gray-400 text-center mb-4">
+                                                    {(offersError && typeof offersError === 'object' && 'response' in offersError && offersError.response && typeof offersError.response === 'object' && 'data' in offersError.response && offersError.response.data && typeof offersError.response.data === 'object' && 'message' in offersError.response.data && typeof offersError.response.data.message === 'string') ? offersError.response.data.message : 'Не удалось загрузить предложения'}
+                                                </p>
+                                                <button
+                                                    onClick={() => window.location.reload()}
+                                                    className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+                                                >
+                                                    Обновить страницу
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <OffersFeed
+                                                businesses={filteredBusinesses}
+                                                selectedBusiness={selectedBusiness}
+                                                onOfferClick={handleOpenOrder}
+                                            />
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </Drawer.Content>
                     </Drawer.Portal>
