@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Heart, MapPin, Minimize2, ShoppingBag, Send, Instagram, Mail } from "lucide-react";
+import bunImage from "@/figma/90428C7F-3E7E-49B8-81BC-472D67411732 1.png";
 
 export function LandingPage() {
     return (
@@ -138,16 +139,20 @@ export function LandingPage() {
                                             backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23e5e7eb\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' 
                                         }}
                                     />
-                                    {/* Cinnamon Bun Placeholder */}
+                                    {/* Cinnamon Bun Image from Figma */}
                                     <div className="absolute inset-0 flex items-center justify-center">
                                         <div 
-                                            className="w-[120px] h-[120px] rounded-full flex items-center justify-center"
+                                            className="w-[140px] h-[140px] rounded-full flex items-center justify-center"
                                             style={{ 
-                                                backgroundColor: '#D4A574',
-                                                boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+                                                backgroundColor: '#FFFFFF',
+                                                boxShadow: '0 8px 24px rgba(0,0,0,0.35)'
                                             }}
                                         >
-                                            <div className="w-[80px] h-[80px] rounded-full" style={{ backgroundColor: '#F5DEB3' }}></div>
+                                            <img
+                                                src={bunImage}
+                                                alt="Булочка с корицей"
+                                                className="w-[120px] h-[120px] rounded-full object-cover"
+                                            />
                                         </div>
                                     </div>
                                 </div>
