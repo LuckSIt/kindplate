@@ -131,31 +131,18 @@ function RootRoute() {
                                 }
                                 return null; 
                             })()}
+                            {/* Search bar - только поисковая строка как на скриншоте */}
                             {!hideNav && (
-                                <header className={`sticky top-0 z-50 pt-safe ${hasShadow ? 'shadow-md' : 'shadow-none'} transition-shadow`} style={{ backgroundColor: '#10172A' }}>
-                                    <div className="px-4">
-                                        <div className="flex items-center justify-between h-12">
-                                            <Link to="/home" className="flex items-center gap-2">
-                                                <div className="w-5 h-5 rounded-lg overflow-hidden">
-                                                    <img src="/kandlate.png" alt="Kandlate" className="w-full h-full object-contain" />
-                                                </div>
-                                                <span className="text-sm font-bold">KindPlate</span>
-                                            </Link>
-                                            <div />
-                                        </div>
-                                    </div>
-                                </header>
-                            )}
-                            {/* Inline search under header */}
-                            {!hideNav && (
-                                <div className="px-4 py-2" style={{ backgroundColor: '#10172A' }}>
-                                    <Link to="/search" className="flex items-center gap-2 px-3 py-2 rounded-[12px] text-[#757575] h-[44px]" style={{ backgroundColor: '#D9D9D9' }}>
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
-                                        <span className="text-[13px] font-semibold" style={{ fontFamily: 'Montserrat Alternates' }}>Найти заведение</span>
+                                <div className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-[402px] pt-safe px-4 pt-4 pb-3">
+                                    <Link to="/search" className="flex items-center gap-3 px-4 py-[14px] rounded-[15px] text-[#757575] w-full" style={{ backgroundColor: '#D9D9D9' }}>
+                                        <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#757575' }}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/>
+                                        </svg>
+                                        <span className="text-[15px] font-medium flex-1" style={{ fontFamily: 'Montserrat Alternates', color: '#757575' }}>Найти заведение</span>
                                     </Link>
                                 </div>
                             )}
-                            <main className="flex-1 pb-16">
+                            <main className="flex-1 pb-16" style={{ paddingTop: hideNav ? '0' : '76px' }}>
                                 <Outlet />
                             </main>
                             {/* Bottom Tab Bar - скрываем на страницах входа и регистрации */}
