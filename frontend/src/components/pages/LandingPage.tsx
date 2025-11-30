@@ -113,18 +113,18 @@ export function LandingPage() {
                     <div className="flex justify-center items-center">
                         {/* Phone Frame */}
                         <div 
-                            className="relative rounded-[30px] p-[15px] mx-auto"
+                            className="relative rounded-[30px] p-[18px] mx-auto"
                             style={{ 
                                 backgroundColor: '#C8EBBB',
-                                width: '270px',
-                                height: '520px',
-                                minWidth: '270px',
-                                minHeight: '520px'
+                                width: '310px',
+                                height: '580px',
+                                minWidth: '310px',
+                                minHeight: '580px'
                             }}
                         >
                             {/* Phone Screen */}
                             <div 
-                                className="w-full h-full rounded-[20px] overflow-hidden relative"
+                                className="w-full h-full rounded-[24px] overflow-hidden relative"
                                 style={{ 
                                     backgroundColor: '#FFFFFF',
                                     width: '100%',
@@ -132,7 +132,7 @@ export function LandingPage() {
                                 }}
                             >
                                 {/* Product Image + карта СПб */}
-                                <div className="w-full h-[60%] relative overflow-hidden">
+                                <div className="w-full h-[65%] relative overflow-hidden">
                                     {/* Карта Санкт‑Петербурга как фон */}
                                     <img
                                         src={phoneMapImage}
@@ -142,16 +142,16 @@ export function LandingPage() {
                                     {/* Булочка поверх карты */}
                                     <div className="absolute inset-0 flex items-center justify-center">
                                         <div 
-                                            className="w-[150px] h-[150px] rounded-full flex items-center justify-center"
+                                            className="w-[200px] h-[200px] rounded-full flex items-center justify-center"
                                             style={{ 
                                                 backgroundColor: '#FFFFFF',
-                                                boxShadow: '0 12px 28px rgba(0,0,0,0.4)'
+                                                boxShadow: '0 16px 36px rgba(0,0,0,0.45)'
                                             }}
                                         >
                                             <img
                                                 src={bunImage}
                                                 alt="Булочка с корицей"
-                                                className="w-[130px] h-[130px] rounded-full object-cover"
+                                                className="w-[180px] h-[180px] rounded-full object-cover"
                                             />
                                         </div>
                                     </div>
