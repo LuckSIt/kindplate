@@ -115,15 +115,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Явно обрабатываем OPTIONS запросы для всех маршрутов
-// В Express 5 '*' может вызывать проблемы с path-to-regexp, поэтому используем middleware вместо app.options
-app.use((req, res, next) => {
-    if (req.method === 'OPTIONS') {
-        cors(corsOptions)(req, res, next);
-    } else {
-        next();
-    }
-});
+// OPTIONS запросы обрабатываются автоматически через cors middleware
 
 // ============================================
 // БЕЗОПАСНОСТЬ: Парсинг и валидация данных
@@ -172,134 +164,23 @@ app.use(
         maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 );
-// Регистрируем роуты с логированием для диагностики
-try {
-    logger.info('Регистрация /auth');
-    app.use("/auth", authRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /auth:', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /profile');
-    app.use("/profile", profileRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /profile:', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /admin');
-    app.use("/admin", adminRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /admin:', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /business/locations');
-    app.use("/business/locations", businessOnly, businessLocationsRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /business/locations:', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /business/offers');
-    app.use("/business/offers", businessOnly, offersRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /business/offers:', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /offers');
-    app.use("/offers", offersRouter); // Публичный эндпоинт для поиска
-} catch (e) {
-    logger.error('Ошибка при регистрации /offers:', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /orders');
-    app.use("/orders", ordersRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /orders:', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /payments');
-    app.use("/payments", paymentsRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /payments:', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /customer');
-    app.use("/customer", customerRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /customer:', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /customer (locations)');
-    app.use("/customer", customerLocationsRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /customer (locations):', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /customer (cart)');
-    app.use("/customer", cartRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /customer (cart):', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /stats');
-    app.use("/stats", statsRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /stats:', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /favorites');
-    app.use("/favorites", favoritesRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /favorites:', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /reviews');
-    app.use("/reviews", reviewsRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /reviews:', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /notifications');
-    app.use("/notifications", notificationsRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /notifications:', e);
-    throw e;
-}
-
-try {
-    logger.info('Регистрация /subscriptions');
-    app.use("/subscriptions", subscriptionsRouter);
-} catch (e) {
-    logger.error('Ошибка при регистрации /subscriptions:', e);
-    throw e;
-}
+// Регистрируем роуты
+app.use("/auth", authRouter);
+app.use("/profile", profileRouter);
+app.use("/admin", adminRouter);
+app.use("/business/locations", businessOnly, businessLocationsRouter);
+app.use("/business/offers", businessOnly, offersRouter);
+app.use("/offers", offersRouter); // Публичный эндпоинт для поиска
+app.use("/orders", ordersRouter);
+app.use("/payments", paymentsRouter);
+app.use("/customer", customerRouter);
+app.use("/customer", customerLocationsRouter);
+app.use("/customer", cartRouter);
+app.use("/stats", statsRouter);
+app.use("/favorites", favoritesRouter);
+app.use("/reviews", reviewsRouter);
+app.use("/notifications", notificationsRouter);
+app.use("/subscriptions", subscriptionsRouter);
 
 // Health check endpoint для Docker/Caddy
 app.get("/health", async (req, res) => {
