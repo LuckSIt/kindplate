@@ -3,7 +3,6 @@
  * Управление JWT токенами для аутентификации
  */
 
-const { SignJWT, jwtVerify } = require('jose');
 const crypto = require('crypto');
 
 // Secret key для подписи JWT (в production должен быть в .env)
@@ -14,12 +13,22 @@ const JWT_SECRET_KEY = new TextEncoder().encode(JWT_SECRET);
 const ACCESS_TOKEN_EXPIRY = '15m'; // 15 минут
 const REFRESH_TOKEN_EXPIRY = '7d'; // 7 дней
 
+// Ленивая загрузка jose (ES Module)
+let joseModule = null;
+async function getJose() {
+    if (!joseModule) {
+        joseModule = await import('jose');
+    }
+    return joseModule;
+}
+
 /**
  * Создать Access Token
  * @param {Object} payload - Данные для токена (userId, email, isBusiness)
  * @returns {Promise<string>} JWT токен
  */
 async function createAccessToken(payload) {
+    const { SignJWT } = await getJose();
     const token = await new SignJWT({
         userId: payload.userId,
         email: payload.email,
@@ -42,6 +51,7 @@ async function createAccessToken(payload) {
  * @returns {Promise<string>} JWT токен
  */
 async function createRefreshToken(payload) {
+    const { SignJWT } = await getJose();
     const token = await new SignJWT({
         userId: payload.userId,
         type: 'refresh'
@@ -63,6 +73,7 @@ async function createRefreshToken(payload) {
  */
 async function verifyToken(token) {
     try {
+        const { jwtVerify } = await getJose();
         const { payload } = await jwtVerify(token, JWT_SECRET_KEY, {
             issuer: 'kindplate-api',
             audience: 'kindplate-client'
