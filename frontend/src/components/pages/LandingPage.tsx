@@ -139,20 +139,96 @@ export function LandingPage() {
                                         alt="Карта Санкт-Петербурга"
                                         className="absolute inset-0 w-full h-full object-cover"
                                     />
-                                    {/* Булочка поверх карты */}
+                                    {/* Булочка поверх карты (по макету) */}
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                        <div 
-                                            className="w-[200px] h-[200px] rounded-full flex items-center justify-center"
-                                            style={{ 
-                                                backgroundColor: '#FFFFFF',
-                                                boxShadow: '0 16px 36px rgba(0,0,0,0.45)'
+                                        <div
+                                            style={{
+                                                width: 289,
+                                                height: 289,
+                                                position: "relative",
                                             }}
                                         >
+                                            {/* Фото булочки */}
                                             <img
                                                 src={bunImage}
                                                 alt="Булочка с корицей"
-                                                className="w-[180px] h-[180px] rounded-full object-cover"
+                                                style={{
+                                                    width: 289,
+                                                    height: 289,
+                                                    left: 0,
+                                                    top: 0,
+                                                    position: "absolute",
+                                                    borderRadius: "50%",
+                                                    objectFit: "cover",
+                                                    boxShadow: "0 16px 36px rgba(0,0,0,0.45)",
+                                                }}
                                             />
+
+                                            {/* Подпись под булочкой */}
+                                            <div
+                                                style={{
+                                                    width: 125,
+                                                    height: 26,
+                                                    left: 82,
+                                                    top: 244,
+                                                    position: "absolute",
+                                                    background: "#FFFFFF",
+                                                    boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+                                                    borderRadius: 5,
+                                                }}
+                                            />
+                                            <div
+                                                style={{
+                                                    width: 107,
+                                                    height: 7,
+                                                    left: 86,
+                                                    top: 256,
+                                                    position: "absolute",
+                                                    color: "#10172A",
+                                                    fontSize: 8,
+                                                    fontFamily: "Montserrat Alternates, sans-serif",
+                                                    fontWeight: 600,
+                                                    lineHeight: "6.96px",
+                                                    wordWrap: "break-word",
+                                                }}
+                                            >
+                                                Булочка с корицей
+                                            </div>
+                                            <div
+                                                style={{
+                                                    width: 19,
+                                                    height: 7,
+                                                    left: 183,
+                                                    top: 255,
+                                                    position: "absolute",
+                                                    textAlign: "right",
+                                                    color: "#35741F",
+                                                    fontSize: 9,
+                                                    fontFamily: "Montserrat Alternates, sans-serif",
+                                                    fontWeight: 600,
+                                                    lineHeight: "7.83px",
+                                                    wordWrap: "break-word",
+                                                }}
+                                            >
+                                                79₽
+                                            </div>
+                                            <div
+                                                style={{
+                                                    width: 107,
+                                                    height: 7,
+                                                    left: 86,
+                                                    top: 249,
+                                                    position: "absolute",
+                                                    color: "#757575",
+                                                    fontSize: 5,
+                                                    fontFamily: "Montserrat Alternates, sans-serif",
+                                                    fontWeight: 600,
+                                                    lineHeight: "4.35px",
+                                                    wordWrap: "break-word",
+                                                }}
+                                            >
+                                                Пекарня / Выпечка
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
