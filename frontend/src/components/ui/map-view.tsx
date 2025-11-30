@@ -31,6 +31,7 @@ export const MapView: React.FC<MapViewProps> = ({
   useEffect(() => {
     const checkYmaps = () => {
       if (typeof window !== 'undefined' && window.ymaps) {
+        console.log('✅ Yandex Maps API загружен');
         setMapLoaded(true);
         return true;
       }
@@ -39,6 +40,8 @@ export const MapView: React.FC<MapViewProps> = ({
 
     // Проверяем сразу
     if (checkYmaps()) return;
+
+    console.log('⏳ Ожидание загрузки Yandex Maps API...');
 
     // Если не загружен, проверяем периодически
     const intervalId = setInterval(() => {
@@ -51,7 +54,8 @@ export const MapView: React.FC<MapViewProps> = ({
     const timeoutId = setTimeout(() => {
       clearInterval(intervalId);
       if (!checkYmaps()) {
-        console.error('⚠️ Яндекс карты не загрузились за 10 секунд');
+        console.error('❌ Яндекс карты не загрузились за 10 секунд. Проверьте скрипт в index.html');
+        console.error('Проверьте наличие: <script src="https://api-maps.yandex.ru/2.1.79/?apikey=..."></script>');
       }
     }, 10000);
 
@@ -63,12 +67,40 @@ export const MapView: React.FC<MapViewProps> = ({
 
   // Initialize map
   useEffect(() => {
-    if (!mapLoaded || !window.ymaps || isInitialized || !mapRef.current) return;
+    if (!mapLoaded || !window.ymaps) {
+      if (!mapLoaded) console.log('⏳ Ожидание загрузки Yandex Maps API...');
+      if (!window.ymaps) console.log('⏳ window.ymaps не доступен');
+      return;
+    }
+
+    if (isInitialized) {
+      console.log('✅ Карта уже инициализирована');
+      return;
+    }
+
+    if (!mapRef.current) {
+      console.error('❌ Map container ref is null');
+      return;
+    }
+
+    // Проверяем размеры контейнера
+    const rect = mapRef.current.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) {
+      console.warn('⚠️ Контейнер карты имеет нулевые размеры:', { width: rect.width, height: rect.height });
+      // Пытаемся установить размеры явно
+      mapRef.current.style.width = '100%';
+      mapRef.current.style.height = '100%';
+    }
+
+    console.log('🗺️ Инициализация карты...', {
+      containerSize: { width: rect.width, height: rect.height },
+      center: userLocation || [59.92, 30.34]
+    });
 
     window.ymaps.ready(() => {
       try {
         if (!mapRef.current) {
-          console.error('⚠️ Map container ref is null');
+          console.error('❌ Map container ref is null в ymaps.ready');
           return;
         }
 
@@ -80,6 +112,7 @@ export const MapView: React.FC<MapViewProps> = ({
           suppressMapOpenBlock: true // Убираем блокировку карты
         });
 
+        console.log('✅ Карта успешно создана');
         setMap(yandexMap);
         setIsInitialized(true);
 
@@ -274,20 +307,31 @@ export const MapView: React.FC<MapViewProps> = ({
   }, [businesses, onBusinessClick]);
 
 
-  if (!mapLoaded) {
-    return (
-      <div className={`bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center ${className}`}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-2"></div>
-          <p className="text-sm text-gray-600 dark:text-gray-300">Загрузка карты...</p>
-        </div>
-      </div>
-    );
-  }
+  // Убрали ранний return - показываем контейнер всегда
 
   return (
-    <div className={`relative ${className}`}>
-      <div ref={mapRef} className="w-full h-full" />
+    <div className={`relative ${className}`} style={{ width: '100%', height: '100%', minHeight: '400px' }}>
+      <div 
+        ref={mapRef} 
+        className="w-full h-full" 
+        style={{ width: '100%', height: '100%', minHeight: '400px' }}
+      />
+      {!mapLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 z-10">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-2"></div>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Загрузка карты...</p>
+          </div>
+        </div>
+      )}
+      {mapLoaded && !isInitialized && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 z-10">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-2"></div>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Инициализация карты...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

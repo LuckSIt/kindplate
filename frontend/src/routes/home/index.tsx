@@ -417,9 +417,9 @@ function RouteComponent() {
             <div className="h-screen flex flex-col" style={{ backgroundColor: '#10172A' }}>
 
             {/* Main Content: map full-screen with bottom sheet list */}
-            <div className="flex-1 relative overflow-hidden">
+            <div className="flex-1 relative overflow-hidden" style={{ minHeight: '400px' }}>
                 {/* Map View */}
-                <div className="absolute inset-0">
+                <div className="absolute inset-0" style={{ width: '100%', height: '100%' }}>
                     <MapView
                         businesses={filteredBusinesses}
                         onBusinessClick={handleBusinessClick}
@@ -427,7 +427,7 @@ function RouteComponent() {
                         selectedBusiness={selectedBusiness}
                         userLocation={userLocation}
                         onMapClick={() => { setSelectedBusiness(null); setActiveSnap(0.2); }}
-                        className="h-full"
+                        className="h-full w-full"
                     />
                     
                     {/* Sort Controls */}
