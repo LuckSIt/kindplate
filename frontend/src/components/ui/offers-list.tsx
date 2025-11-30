@@ -32,7 +32,6 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
   searchQuery = '',
   onClick
 }) => {
-  console.log('🔍 BusinessCard:', { businessName: business.name, searchQuery });
   const navigate = useNavigate();
   
   const hasActiveOffers = business.offers && business.offers.some((offer: Offer) => offer.quantity_available > 0);

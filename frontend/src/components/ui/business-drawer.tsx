@@ -26,9 +26,9 @@ const OfferCard: React.FC<OfferCardProps> = ({ offer, onOrder }) => {
   const discountPercent = Math.round((1 - offer.discounted_price / offer.original_price) * 100);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+    <div className="relative bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
       {/* Discount Badge */}
-      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
         -{discountPercent}%
       </div>
 

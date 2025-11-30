@@ -29,16 +29,12 @@ export const MapView: React.FC<MapViewProps> = ({
 
   // Initialize Yandex Maps
   useEffect(() => {
-    console.log('🗺️ Checking Yandex Maps availability...');
     if (typeof window !== 'undefined' && window.ymaps) {
-      console.log('🗺️ Yandex Maps found, setting mapLoaded to true');
       setMapLoaded(true);
     } else {
-      console.log('🗺️ Yandex Maps not found, retrying...');
       // Retry after a short delay
       setTimeout(() => {
         if (typeof window !== 'undefined' && window.ymaps) {
-          console.log('🗺️ Yandex Maps found on retry');
           setMapLoaded(true);
         }
       }, 1000);
@@ -49,11 +45,7 @@ export const MapView: React.FC<MapViewProps> = ({
   useEffect(() => {
     if (!mapLoaded || !window.ymaps || isInitialized) return;
 
-    console.log('🗺️ Initializing Yandex Map...');
-
     window.ymaps.ready(() => {
-      console.log('🗺️ Yandex Maps ready, creating map...');
-      
       try {
         const yandexMap = new window.ymaps.Map(mapRef.current, {
           center: userLocation || [59.92, 30.34],
@@ -61,7 +53,6 @@ export const MapView: React.FC<MapViewProps> = ({
           controls: []
         });
 
-        console.log('🗺️ Map created successfully');
         setMap(yandexMap);
         setIsInitialized(true);
 

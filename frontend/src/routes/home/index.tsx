@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { notify } from "@/lib/notifications";
 import { MapView } from "@/components/ui/map-view";
-import { OffersList } from "@/components/ui/offers-list";
 import { BusinessDrawer } from "@/components/ui/business-drawer";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 import { OffersFeed } from "@/components/ui/offers-feed";
@@ -19,36 +18,42 @@ export const Route = createFileRoute("/home/")({
     component: RouteComponent,
 });
 
-// Calculate distance between two coordinates (Haversine formula)
-const calculateDistance = (coord1: [number, number], coord2: [number, number]): number => {
-    const R = 6371; // Radius of the Earth in km
-    const dLat = (coord2[0] - coord1[0]) * Math.PI / 180;
-    const dLon = (coord2[1] - coord1[1]) * Math.PI / 180;
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(coord1[0] * Math.PI / 180) * Math.cos(coord2[0] * Math.PI / 180) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-};
+interface MapBounds {
+    north: number;
+    south: number;
+    east: number;
+    west: number;
+}
+
+interface OrderItem {
+    offer_id: number;
+    quantity: number;
+    business_id: number;
+    title: string;
+    price: number;
+}
+
+interface OrderData {
+    items: OrderItem[];
+    business_id: number;
+    business_name: string;
+    business_address: string;
+    pickup_time_start: string;
+    pickup_time_end: string;
+    notes: string;
+}
 
 function RouteComponent() {
     const queryClient = useQueryClient();
     
     // UI State
-    const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
-    
-    // Debug searchQuery changes
-    useEffect(() => {
-        console.log('🔍 Main component: searchQuery changed to:', searchQuery);
-    }, [searchQuery]);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [activeSnap, setActiveSnap] = useState<number>(0.2);
     const [snippetDragStart, setSnippetDragStart] = useState<number | null>(null);
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
-    const [mapBounds, setMapBounds] = useState<any>({
+    const [mapBounds, setMapBounds] = useState<MapBounds>({
         north: 60.0,
         south: 59.8,
         east: 30.6,
@@ -160,7 +165,10 @@ function RouteComponent() {
                     setUserLocation([position.coords.latitude, position.coords.longitude]);
                 },
                 (error) => {
-                    console.warn("❌ Ошибка получения местоположения:", error);
+                    // Геолокация не критична, просто не используем её
+                    if (process.env.NODE_ENV === 'development') {
+                        console.warn("⚠️ Геолокация недоступна:", error.message);
+                    }
                 }
             );
         }
@@ -168,18 +176,19 @@ function RouteComponent() {
 
     // Create order mutation
     const createOrderMutation = useMutation({
-        mutationFn: (orderData: any) => {
+        mutationFn: (orderData: OrderData) => {
             return axiosInstance.post('/orders/draft', orderData);
         },
         onSuccess: (response) => {
-            console.log("✅ Заказ создан:", response.data);
             setOrderDialogOpen(false);
             notify.success("Заказ создан", "Ваш заказ успешно оформлен!");
             queryClient.invalidateQueries({ queryKey: ["orders"] });
         },
-        onError: (error: any) => {
-            console.error("❌ Ошибка создания заказа:", error);
-            notify.error("Ошибка создания заказа", error.response?.data?.error || "Не удалось создать заказ");
+        onError: (error: unknown) => {
+            const errorMessage = error && typeof error === 'object' && 'response' in error
+                ? (error.response as { data?: { error?: string } })?.data?.error || "Не удалось создать заказ"
+                : "Не удалось создать заказ";
+            notify.error("Ошибка создания заказа", errorMessage);
         },
     });
 
@@ -190,7 +199,27 @@ function RouteComponent() {
             // Группируем офферы по бизнесам
             const businessMap = new Map<number, Business>();
             
-            offersData.data.offers.forEach((offer: any) => {
+            offersData.data.offers.forEach((offer: {
+                id: number;
+                business: {
+                    id: number;
+                    name: string;
+                    address: string;
+                    coords: [string, string];
+                    rating?: number;
+                    logo_url?: string;
+                };
+                title: string;
+                description?: string;
+                image_url?: string;
+                original_price: number;
+                discounted_price: number;
+                quantity_available: number;
+                pickup_time_start: string;
+                pickup_time_end: string;
+                is_active: boolean;
+                created_at: string;
+            }) => {
                 const businessId = offer.business.id;
                 if (!businessMap.has(businessId)) {
                     businessMap.set(businessId, {
@@ -226,7 +255,16 @@ function RouteComponent() {
         
         // Старый формат из /customer/sellers
         if (data?.data?.sellers) {
-            return data.data.sellers.map((seller: any) => ({
+            return data.data.sellers.map((seller: {
+                id: number;
+                name: string;
+                address: string;
+                coords: [string, string];
+                rating?: number;
+                logo_url?: string;
+                phone?: string;
+                offers?: Offer[];
+            }) => ({
                 id: seller.id,
                 name: seller.name,
                 address: seller.address,
@@ -246,7 +284,11 @@ function RouteComponent() {
         // Если используем новый эндпоинт, сортировка уже применена на бэкенде
         // Остается только фильтрация по поисковому запросу (если нужно на клиенте)
         // Но лучше это делать на бэкенде через параметр q
-        return businesses;
+        return businesses.filter(business => {
+            // Фильтруем только бизнесы с активными предложениями
+            return business.offers && business.offers.length > 0 && 
+                   business.offers.some(offer => offer.is_active && offer.quantity_available > 0);
+        });
     }, [businesses]);
 
     // Event handlers
@@ -258,7 +300,7 @@ function RouteComponent() {
     }, []);
 
     // Throttled bounds change для оптимизации запросов
-    const handleBoundsChange = useCallback((bounds: any) => {
+    const handleBoundsChange = useCallback((bounds: MapBounds) => {
         // Используем requestAnimationFrame для throttling и проверяем, что границы действительно изменились
         requestAnimationFrame(() => {
             // Проверяем, что границы изменились хотя бы на 0.01 градуса
@@ -420,20 +462,27 @@ function RouteComponent() {
                 {selectedBusiness && activeSnap <= 0.2 && (
                     <div
                         className="fixed left-0 right-0 bottom-16 px-4 pb-safe z-40 pointer-events-auto"
-                        onTouchStart={(e) => setSnippetDragStart(e.touches[0].clientY)}
+                        onTouchStart={(e) => {
+                            if (e.touches.length > 0) {
+                                setSnippetDragStart(e.touches[0].clientY);
+                            }
+                        }}
                         onTouchMove={(e) => {
-                            if (snippetDragStart !== null) {
+                            if (snippetDragStart !== null && e.touches.length > 0) {
                                 const dy = e.touches[0].clientY - snippetDragStart;
-                                if (dy > 30) { setSelectedBusiness(null); setSnippetDragStart(null); }
+                                if (dy > 30) { 
+                                    setSelectedBusiness(null); 
+                                    setSnippetDragStart(null); 
+                                }
                             }
                         }}
                         onTouchEnd={() => setSnippetDragStart(null)}
                     >
                         <div className="kp-card border border-gray-700 p-3 flex items-center gap-3 shadow-lg bg-gray-900 rounded-2xl">
-                            <div className="w-12 h-12 rounded-lg bg-primary-900/20 flex items-center justify-center">🏪</div>
+                            <div className="w-12 h-12 rounded-lg bg-primary-900/20 flex items-center justify-center flex-shrink-0">🏪</div>
                             <div className="flex-1 min-w-0">
-                                <div className="text-sm font-semibold text-white truncate">{selectedBusiness.name}</div>
-                                <div className="text-xs text-gray-300 truncate">{selectedBusiness.address}</div>
+                                <div className="text-sm font-semibold text-white truncate">{selectedBusiness.name || 'Заведение'}</div>
+                                <div className="text-xs text-gray-300 truncate">{selectedBusiness.address || 'Адрес не указан'}</div>
                             </div>
                             <div className="flex items-center gap-2">
                                 <button
@@ -490,10 +539,10 @@ function RouteComponent() {
                             
                             <div className="text-right">
                                 <div className="text-lg font-semibold">
-                                    Итого: {(selectedOffer.discounted_price * orderQuantity).toFixed(0)}₽
+                                    Итого: {Math.round(selectedOffer.discounted_price * orderQuantity)}₽
                                 </div>
                                 <div className="text-sm text-gray-500">
-                                    {selectedOffer.discounted_price}₽ × {orderQuantity}
+                                    {Math.round(selectedOffer.discounted_price)}₽ × {orderQuantity}
                                 </div>
                             </div>
                         </div>
