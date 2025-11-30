@@ -170,12 +170,11 @@ customerRouter.get("/sellers", async (req, res) => {
                 console.log('⚠️ Таблица quality_badges не найдена, пропускаем бейджи');
             }
         }
-            
-            // Добавляем бейджи к продавцам
-            sellersWithOffers.forEach(seller => {
-                seller.badges = badgesByBusiness[seller.id] || [];
-            });
-        }
+        
+        // Добавляем бейджи к продавцам
+        sellersWithOffers.forEach(seller => {
+            seller.badges = badgesByBusiness[seller.id] || [];
+        });
 
         console.log("✅ Заведения с предложениями:", sellersWithOffers.length);
 
