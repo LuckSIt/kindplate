@@ -90,28 +90,23 @@ export const CartPage: React.FC = () => {
   if (cartItems.length === 0) {
     return (
       <div className="cart-page">
-        {/* Status Bar */}
-        <div className="cart-page__status-bar">
-          <div className="cart-page__status-bar-time">9:41</div>
-          <div className="cart-page__status-bar-levels"></div>
-        </div>
-
         {/* Header */}
         <div className="cart-page__header">
-          <div className="cart-page__header-background"></div>
-          <button 
-            className="cart-page__back-button"
-            onClick={() => navigate({ to: "/list" })}
-            aria-label="Назад"
-              >
-            <img 
-              src={arrowBackIcon} 
-              alt="Назад" 
-              className="cart-page__back-button-icon"
-            />
-          </button>
-          <div className="cart-page__header-info">
-            <h1 className="cart-page__header-name">Ваша корзина</h1>
+          <div className="cart-page__header-floating">
+            <button 
+              className="cart-page__back-button"
+              onClick={() => navigate({ to: "/list" })}
+              aria-label="Назад"
+            >
+              <img 
+                src={arrowBackIcon} 
+                alt="Назад" 
+                className="cart-page__back-button-icon"
+              />
+            </button>
+            <div className="cart-page__header-title-container">
+              <h1 className="cart-page__header-name">Ваша корзина</h1>
+            </div>
           </div>
         </div>
 
@@ -171,28 +166,23 @@ export const CartPage: React.FC = () => {
 
   return (
     <div className="cart-page">
-      {/* Status Bar */}
-      <div className="cart-page__status-bar">
-        <div className="cart-page__status-bar-time">9:41</div>
-        <div className="cart-page__status-bar-levels"></div>
-      </div>
-
       {/* Header */}
       <div className="cart-page__header">
-        <div className="cart-page__header-background"></div>
-        <button 
-          className="cart-page__back-button"
-          onClick={() => navigate({ to: "/list" })}
-          aria-label="Назад"
-              >
-          <img 
-            src={arrowBackIcon} 
-            alt="Назад" 
-            className="cart-page__back-button-icon"
-          />
-        </button>
-        <div className="cart-page__header-info">
-          <h1 className="cart-page__header-name">Ваша корзина</h1>
+        <div className="cart-page__header-floating">
+          <button 
+            className="cart-page__back-button"
+            onClick={() => navigate({ to: "/list" })}
+            aria-label="Назад"
+          >
+            <img 
+              src={arrowBackIcon} 
+              alt="Назад" 
+              className="cart-page__back-button-icon"
+            />
+          </button>
+          <div className="cart-page__header-title-container">
+            <h1 className="cart-page__header-name">Ваша корзина</h1>
+          </div>
         </div>
       </div>
 
@@ -205,7 +195,7 @@ export const CartPage: React.FC = () => {
                   </div>
           <div className="cart-page__pickup-time">
             <div className="cart-page__pickup-time-badge">
-              забрать до {formatPickupTime(latestPickupTime)}
+              забрать до 22:00
             </div>
           </div>
                 </div>
@@ -218,13 +208,13 @@ export const CartPage: React.FC = () => {
             <div className="cart-page__product">
               <div className="cart-page__product-info">
                 <h3 className="cart-page__product-name">{item.offer.title}</h3>
-                <div className="cart-page__product-price">{item.offer.discounted_price}₽</div>
+                <QuantitySelector
+                  quantity={item.quantity}
+                  onIncrease={() => handleQuantityChange(item.offer_id, 1)}
+                  onDecrease={() => handleQuantityChange(item.offer_id, -1)}
+                />
               </div>
-              <QuantitySelector
-                quantity={item.quantity}
-                onIncrease={() => handleQuantityChange(item.offer_id, 1)}
-                onDecrease={() => handleQuantityChange(item.offer_id, -1)}
-              />
+              <div className="cart-page__product-price">{item.offer.discounted_price}₽</div>
             </div>
             {index < cartItems.length - 1 && (
               <div className="cart-page__product-divider"></div>

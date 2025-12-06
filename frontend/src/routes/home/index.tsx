@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { axiosInstance } from "@/lib/axiosInstance";
+import { axiosInstance, getBackendURL } from "@/lib/axiosInstance";
 import { notify } from "@/lib/notifications";
+import { fetchOffersSearch, mapOffersToBusinesses } from "@/lib/offers-search";
 import { MapView } from "@/components/ui/map-view";
 import { BusinessDrawer } from "@/components/ui/business-drawer";
 import { FavoriteButton } from "@/components/ui/favorite-button";
-import { OffersFeed } from "@/components/ui/offers-feed";
 import { type MapSortType } from "@/components/ui/map-sort-controls";
 import { Drawer } from "vaul";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -59,6 +59,8 @@ function RouteComponent() {
         west: 30.0
     });
     const [sortBy, setSortBy] = useState<MapSortType>('distance');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
     
     // Order states
     const [orderDialogOpen, setOrderDialogOpen] = useState(false);
@@ -77,38 +79,41 @@ function RouteComponent() {
     }, [mapBounds]);
 
     // Fetch offers data with optimized map query using new search endpoint
+    useEffect(() => {
+        const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 400);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
     const { data: offersData, isError: isOffersError, error: offersError } = useMapQuery(
-        ["offers_search", debouncedMapBounds, sortBy, userLocation],
+        ["offers_search", debouncedMapBounds, sortBy, userLocation, debouncedSearchQuery],
         () => {
-            const params = new URLSearchParams();
+            const filters: Parameters<typeof fetchOffersSearch>[0] = {
+                sort: sortBy,
+                page: 1,
+                limit: 100,
+                radius_km: 50,
+            };
             
             // Геолокация
             if (userLocation) {
-                params.append('lat', userLocation[0].toString());
-                params.append('lon', userLocation[1].toString());
-                params.append('radius_km', '50');
+                filters.lat = userLocation[0];
+                filters.lon = userLocation[1];
             } else if (debouncedMapBounds) {
                 // Если нет геолокации, используем центр карты
                 const centerLat = (debouncedMapBounds.north + debouncedMapBounds.south) / 2;
                 const centerLon = (debouncedMapBounds.east + debouncedMapBounds.west) / 2;
-                params.append('lat', centerLat.toString());
-                params.append('lon', centerLon.toString());
-                params.append('radius_km', '50');
+                filters.lat = centerLat;
+                filters.lon = centerLon;
+            }
+
+            if (debouncedSearchQuery) {
+                filters.q = debouncedSearchQuery;
             }
             
-            // Сортировка
-            params.append('sort', sortBy);
-            
-            // Пагинация
-            params.append('page', '1');
-            params.append('limit', '100');
-            
             // Приводим ответ к формату { offers, meta }, чтобы не таскать лишнюю обёртку AxiosResponse
-            return axiosInstance
-                .get(`/offers/search?${params.toString()}`, {
-                    skipErrorNotification: true, // Пропускаем уведомления - они обрабатываются в компоненте
-                } as any)
-                .then((res) => res.data.data);
+            return fetchOffersSearch(filters, {
+                skipErrorNotification: true, // Пропускаем уведомления - они обрабатываются в компоненте
+            });
         },
         {
             enabled: !!debouncedMapBounds, // Загружаем только когда есть границы карты
@@ -143,7 +148,43 @@ function RouteComponent() {
         }
     );
     
-    const data = offersData || fallbackData;
+    // Преобразуем результаты поиска в список бизнесов
+    const businessesFromSearch = useMemo(
+        () => mapOffersToBusinesses(offersData?.offers),
+        [offersData]
+    );
+
+    const businessesFromFallback = useMemo(() => {
+        if (fallbackData && typeof fallbackData === 'object' && 'sellers' in fallbackData) {
+            const sellersData = fallbackData as { sellers: Array<{
+                id: number;
+                name: string;
+                address: string;
+                coords: [string, string];
+                rating?: number;
+                logo_url?: string;
+                phone?: string;
+                offers?: Offer[];
+            }> };
+            if (Array.isArray(sellersData.sellers)) {
+                return sellersData.sellers.map((seller) => ({
+                    id: seller.id,
+                    name: seller.name,
+                    address: seller.address,
+                    coords: seller.coords,
+                    rating: seller.rating,
+                    logo_url: seller.logo_url,
+                    phone: seller.phone,
+                    offers: seller.offers || []
+                }));
+            }
+        }
+        
+        return [];
+    }, [fallbackData]);
+
+    const businesses: Business[] = offersData ? businessesFromSearch : businessesFromFallback;
+    const hasBusinesses = businesses.length > 0;
 
     // Get user location
     useEffect(() => {
@@ -180,130 +221,25 @@ function RouteComponent() {
         },
     });
 
-    // Process businesses data - адаптируем данные из нового эндпоинта
-    const businesses: Business[] = useMemo(() => {
-        // Новый формат из /offers/search → offersData уже имеет вид { offers, meta }
-        if (offersData && typeof offersData === 'object' && 'offers' in offersData && Array.isArray((offersData as any).offers)) {
-            // Группируем офферы по бизнесам
-            const businessMap = new Map<number, Business>();
-            
-            (offersData as { offers: Array<{
-                id: number;
-                business: {
-                    id: number;
-                    name: string;
-                    address: string;
-                    coords: [string, string];
-                    rating?: number;
-                    logo_url?: string;
-                };
-                title: string;
-                description?: string;
-                image_url?: string;
-                original_price: number;
-                discounted_price: number;
-                quantity_available: number;
-                pickup_time_start: string;
-                pickup_time_end: string;
-                is_active: boolean;
-                created_at: string;
-            }> }).offers.forEach((offer: {
-                id: number;
-                business: {
-                    id: number;
-                    name: string;
-                    address: string;
-                    coords: [string, string];
-                    rating?: number;
-                    logo_url?: string;
-                };
-                title: string;
-                description?: string;
-                image_url?: string;
-                original_price: number;
-                discounted_price: number;
-                quantity_available: number;
-                pickup_time_start: string;
-                pickup_time_end: string;
-                is_active: boolean;
-                created_at: string;
-            }) => {
-                const businessId = offer.business.id;
-                if (!businessMap.has(businessId)) {
-                    businessMap.set(businessId, {
-                        id: businessId,
-                        name: offer.business.name,
-                        address: offer.business.address,
-                        coords: offer.business.coords,
-                        rating: offer.business.rating,
-                        logo_url: offer.business.logo_url,
-                        phone: undefined,
-                        offers: []
-                    });
-                }
-                const business = businessMap.get(businessId)!;
-                if (!business.offers) {
-                    business.offers = [];
-                }
-                business.offers.push({
-                    id: offer.id,
-                    title: offer.title,
-                    description: offer.description,
-                    image_url: offer.image_url,
-                    original_price: offer.original_price,
-                    discounted_price: offer.discounted_price,
-                    quantity_available: offer.quantity_available,
-                    pickup_time_start: offer.pickup_time_start,
-                    pickup_time_end: offer.pickup_time_end,
-                    is_active: offer.is_active,
-                    business_id: businessId,
-                    created_at: offer.created_at
-                });
-            });
-            
-            return Array.from(businessMap.values());
-        }
-        
-        // Старый формат из /customer/sellers → fallbackData / data имеет вид { success, sellers }
-        if (data && typeof data === 'object' && 'sellers' in data) {
-            const sellersData = data as { sellers: Array<{
-                id: number;
-                name: string;
-                address: string;
-                coords: [string, string];
-                rating?: number;
-                logo_url?: string;
-                phone?: string;
-                offers?: Offer[];
-            }> };
-            if (Array.isArray(sellersData.sellers)) {
-                return sellersData.sellers.map((seller) => ({
-                    id: seller.id,
-                    name: seller.name,
-                    address: seller.address,
-                    coords: seller.coords,
-                    rating: seller.rating,
-                    logo_url: seller.logo_url,
-                    phone: seller.phone,
-                    offers: seller.offers || []
-                }));
-            }
-        }
-        
-        return [];
-    }, [data, offersData]);
-
     // Filter businesses (сортировка уже сделана на бэкенде)
     const filteredBusinesses = useMemo(() => {
-        // Если используем новый эндпоинт, сортировка уже применена на бэкенде
-        // Остается только фильтрация по поисковому запросу (если нужно на клиенте)
-        // Но лучше это делать на бэкенде через параметр q
+        // Фильтруем только бизнесы с активными предложениями
         return businesses.filter(business => {
-            // Фильтруем только бизнесы с активными предложениями
             return business.offers && business.offers.length > 0 && 
                    business.offers.some(offer => offer.is_active && offer.quantity_available > 0);
         });
     }, [businesses]);
+
+    const sortOptions: Array<{ value: MapSortType; label: string; title?: string; requiresLocation?: boolean }> = [
+        { value: 'rating', label: 'Избранное' },
+        { 
+            value: 'distance', 
+            label: 'Ближайшее', 
+            title: userLocation ? 'Ближайшее' : 'Требуется геолокация', 
+            requiresLocation: true 
+        },
+        { value: 'price', label: 'Недавнее', title: 'Недавнее' },
+    ];
 
     // Event handlers
     const handleBusinessClick = useCallback((business: Business) => {
@@ -425,15 +361,61 @@ function RouteComponent() {
         return () => observer.disconnect();
     }, []);
 
+    // Высота навигации (52px + safe area)
+    const navHeight = 'calc(52px + env(safe-area-inset-bottom))';
+
     return (
         <>
             <HomePageSEO />
-            <div className="h-screen flex flex-col" style={{ backgroundColor: '#10172A' }}>
+            <div 
+                className="flex flex-col"
+                style={{ 
+                    backgroundColor: '#10172A',
+                    height: '100%',
+                    minHeight: '100%',
+                    position: 'relative',
+                    overflow: 'hidden'
+                }}
+            >
 
             {/* Main Content: map full-screen with bottom sheet list */}
-            <div className="flex-1 relative overflow-hidden" style={{ minHeight: '400px' }}>
+            <div 
+                className="overflow-hidden"
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: navHeight,
+                    zIndex: 1
+                }}
+            >
+                {/* Search bar overlay (same as list page) */}
+                <div className="businesses-list-page__search-container businesses-list-page__search-container--map">
+                    <div className="businesses-list-page__search">
+                        <svg className="businesses-list-page__search-icon" width="29" height="29" viewBox="0 0 24 24" fill="none">
+                            <path d="M19.6 21L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L21 19.6L19.6 21ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z" fill="#1D1B20"/>
+                        </svg>
+                        <input
+                            type="text"
+                            className="businesses-list-page__search-input"
+                            placeholder="Найти заведение"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                </div>
+
                 {/* Map View */}
-                <div className="absolute inset-0" style={{ width: '100%', height: '100%' }}>
+                <div 
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0
+                    }}
+                >
                     <MapView
                         businesses={filteredBusinesses}
                         onBusinessClick={handleBusinessClick}
@@ -441,127 +423,107 @@ function RouteComponent() {
                         selectedBusiness={selectedBusiness}
                         userLocation={userLocation}
                         onMapClick={() => { setSelectedBusiness(null); setActiveSnap(0.2); }}
-                        className="h-full w-full"
+                        className="w-full"
+                        style={{ width: '100%', height: '100%' }}
                     />
                 </div>
 
                 {/* Bottom Sheet List (Vaul) */}
-                <Drawer.Root 
-                    open={true}
-                    onOpenChange={() => {}}
-                    shouldScaleBackground={false}
-                    modal={false}
-                    snapPoints={[0.2, 0.6, 1]}
-                    activeSnapPoint={activeSnap}
-                >
-                    <Drawer.Portal>
-                        <Drawer.Content 
-                            className="kp-sheet fixed bottom-0 left-0 right-0 z-40 bg-transparent"
-                            style={{ touchAction: 'none' }}
-                        >
-                            <Drawer.Title className="sr-only">Список предложений</Drawer.Title>
-                            <Drawer.Description className="sr-only">Проведите вверх, чтобы развернуть список предложений</Drawer.Description>
-                            <div className="mx-auto w-full max-w-[402px] px-0 pb-safe">
-                                {/* Всплывающий блок со списком предложений как на макете */}
-                                <div className="w-full bg-slate-900 rounded-t-2xl border-t border-white/40 overflow-hidden">
-                                    {/* Хэндл */}
-                                    <div className="flex justify-center pt-2 pb-2">
-                                        <div className="w-16 h-[5px] rounded-sm" style={{ backgroundColor: '#D9D9D9' }} />
-                                    </div>
+                {hasBusinesses && (
+                    <Drawer.Root 
+                        open={true}
+                        shouldScaleBackground={false}
+                        modal={false}
+                        snapPoints={[0.2, 0.6, 1]}
+                        activeSnapPoint={activeSnap}
+                        setActiveSnapPoint={setActiveSnap}
+                    >
+                        <Drawer.Portal>
+                            <Drawer.Content 
+                                className="kp-sheet fixed bottom-0 left-0 right-0 z-40 bg-transparent"
+                                style={{ 
+                                    touchAction: 'pan-y',
+                                    paddingBottom: 'env(safe-area-inset-bottom)'
+                                }}
+                            >
+                                <Drawer.Title className="sr-only">Список предложений</Drawer.Title>
+                                <Drawer.Description className="sr-only">Проведите вверх, чтобы развернуть список предложений</Drawer.Description>
+                                <div className="mx-auto w-full px-0 pb-safe">
+                                    {/* Всплывающий блок со списком предложений как на макете */}
+                                    <div className="w-full bg-slate-900 rounded-t-2xl border-t border-white/40 overflow-hidden">
+                                        {/* Хэндл */}
+                                        <div className="flex justify-center pt-2 pb-2">
+                                            <div className="w-16 h-[5px] rounded-sm" style={{ backgroundColor: '#D9D9D9' }} />
+                                        </div>
 
-                                    {/* Вкладки сортировки: Избранное / Ближайшее / Недавнее */}
-                                    <div className="flex justify-center gap-2 px-3 pb-3">
-                                        <button
-                                            type="button"
-                                            onClick={() => setSortBy('rating')}
-                                            className={`h-6 px-3 rounded-[5px] text-xs font-semibold font-['Montserrat_Alternates'] leading-5 ${
-                                                sortBy === 'rating'
-                                                    ? 'text-white'
-                                                    : 'text-neutral-500'
-                                            }`}
-                                            style={sortBy === 'rating'
-                                                ? { backgroundColor: '#35741F' }
-                                                : { backgroundColor: '#D9D9D9' }}
-                                        >
-                                            Избранное
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setSortBy('distance')}
-                                            className={`h-6 px-3 rounded-[5px] text-xs font-semibold font-['Montserrat_Alternates'] leading-5 ${
-                                                sortBy === 'distance'
-                                                    ? 'text-white'
-                                                    : 'text-neutral-500'
-                                            } ${!userLocation && sortBy === 'distance' ? 'opacity-50' : ''}`}
-                                            style={sortBy === 'distance'
-                                                ? { backgroundColor: '#35741F' }
-                                                : { backgroundColor: '#D9D9D9' }}
-                                            title={!userLocation ? 'Требуется геолокация' : 'Ближайшее'}
-                                            disabled={!userLocation && sortBy === 'distance'}
-                                        >
-                                            Ближайшее
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setSortBy('price')}
-                                            className={`h-6 px-3 rounded-[5px] text-xs font-semibold font-['Montserrat_Alternates'] leading-5 ${
-                                                sortBy === 'price'
-                                                    ? 'text-white'
-                                                    : 'text-neutral-500'
-                                            }`}
-                                            style={sortBy === 'price'
-                                                ? { backgroundColor: '#35741F' }
-                                                : { backgroundColor: '#D9D9D9' }}
-                                            title="Недавнее"
-                                        >
-                                            Недавнее
-                                        </button>
-                                    </div>
+                                        {/* Вкладки сортировки: Избранное / Ближайшее / Недавнее */}
+                                        <div className="flex justify-center gap-2 px-3 pb-3">
+                                            {sortOptions.map(({ value, label, title, requiresLocation }) => {
+                                                const isActive = sortBy === value;
+                                                const isLocationMissing = requiresLocation && !userLocation;
+                                                const isDisabled = isLocationMissing && isActive;
+                                                
+                                                return (
+                                                    <button
+                                                        key={value}
+                                                        type="button"
+                                                        onClick={() => setSortBy(value)}
+                                                        className={`h-6 px-3 rounded-[5px] text-xs font-semibold font-['Montserrat_Alternates'] leading-5 ${
+                                                            isActive ? 'text-white' : 'text-neutral-500'
+                                                        } ${isDisabled ? 'opacity-50' : ''}`}
+                                                        style={isActive
+                                                            ? { backgroundColor: '#35741F' }
+                                                            : { backgroundColor: '#D9D9D9' }}
+                                                        title={title}
+                                                        disabled={isDisabled}
+                                                    >
+                                                        {label}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
 
-                                    {/* Список предложений */}
-                                    <div className="max-h-[70vh] px-3 pb-4 overflow-y-auto will-change-transform">
-                                        {isOffersError ? (
-                                            <div className="flex flex-col items-center justify-center py-12 px-4">
-                                                <div className="text-4xl mb-4">⚠️</div>
-                                                <h3 className="text-lg font-semibold text-white mb-2">
-                                                    Ошибка загрузки данных
-                                                </h3>
-                                                <p className="text-gray-400 text-center mb-4">
-                                                    {(offersError && typeof offersError === 'object' && 'response' in offersError && offersError.response && typeof offersError.response === 'object' && 'data' in offersError.response && offersError.response.data && typeof offersError.response.data === 'object' && 'message' in offersError.response.data && typeof offersError.response.data.message === 'string') ? offersError.response.data.message : 'Не удалось загрузить предложения'}
-                                                </p>
-                                                <button
-                                                    onClick={() => window.location.reload()}
-                                                    className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
-                                                >
-                                                    Обновить страницу
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <OffersFeed
-                                                businesses={filteredBusinesses}
-                                                selectedBusiness={selectedBusiness}
-                                                onOfferClick={handleOpenOrder}
-                                            />
-                                        )}
+                                        {/* Список предложений */}
+                                        <div className="max-h-[70vh] px-3 pb-4 overflow-y-auto will-change-transform">
+                                            {isOffersError ? (
+                                                <div className="flex flex-col items-center justify-center py-12 px-4">
+                                                    <div className="text-4xl mb-4">⚠️</div>
+                                                    <h3 className="text-lg font-semibold text-white mb-2">
+                                                        Ошибка загрузки данных
+                                                    </h3>
+                                                    <p className="text-gray-400 text-center mb-4">
+                                                        {(offersError && typeof offersError === 'object' && 'response' in offersError && offersError.response && typeof offersError.response === 'object' && 'data' in offersError.response && offersError.response.data && typeof offersError.response.data === 'object' && 'message' in offersError.response.data && typeof offersError.response.data.message === 'string') ? offersError.response.data.message : 'Не удалось загрузить предложения'}
+                                                    </p>
+                                                    <button
+                                                        onClick={() => window.location.reload()}
+                                                        className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+                                                    >
+                                                        Обновить страницу
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col gap-3">
+                                                    {filteredBusinesses.length === 0 ? (
+                                                        <div className="py-12 text-center text-gray-500 dark:text-gray-400">
+                                                            Пока нет предложений
+                                                        </div>
+                                                    ) : (
+                                                        filteredBusinesses.map((business) => (
+                                                            <HomeBusinessCard
+                                                                key={business.id}
+                                                                business={business}
+                                                                onClick={() => handleBusinessClick(business)}
+                                                            />
+                                                        ))
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </Drawer.Content>
-                    </Drawer.Portal>
-                </Drawer.Root>
-
-                {/* Floating button to open list like ResQ */}
-                {activeSnap <= 0.2 && (
-                  <div className="fixed bottom-20 inset-x-0 z-40 flex justify-center pointer-events-none">
-                      <button
-                          className="pointer-events-auto kp-fab motion-fade-in active:scale-95 flex items-center gap-2"
-                          onClick={() => setActiveSnap(0.6)}
-                          aria-label="Открыть список предложений"
-                      >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h18M3 12h18M3 17h18"/></svg>
-                          <span className="label">К предложениям</span>
-                      </button>
-                  </div>
+                            </Drawer.Content>
+                        </Drawer.Portal>
+                    </Drawer.Root>
                 )}
 
                 {/* Snippet Card (low snack) */}
@@ -675,5 +637,86 @@ function RouteComponent() {
             {/* Footer info removed */}
             </div>
         </>
+    );
+}
+
+function HomeBusinessCard({ business, onClick }: { business: Business; onClick: () => void }) {
+    const activeOffers = business.offers?.filter(o => o.quantity_available > 0 && o.is_active) || [];
+    const firstOffers = activeOffers.slice(0, 2);
+    const remainingCount = activeOffers.length - 2;
+    // Use first offer image or business logo as fallback
+    const image = activeOffers[0]?.image_url 
+        ? `${getBackendURL()}${activeOffers[0].image_url}` 
+        : business.logo_url 
+            ? `${getBackendURL()}${business.logo_url}` 
+            : null;
+
+    return (
+        <div className="businesses-list-page__business-card" onClick={onClick}>
+            {/* Image */}
+            <div className="businesses-list-page__business-image">
+                {image ? (
+                    <img src={image} alt={business.name} onError={(e) => e.currentTarget.style.display = 'none'} />
+                ) : (
+                    <div className="w-full h-full bg-gray-700 flex items-center justify-center text-3xl">🏪</div>
+                )}
+            </div>
+
+            {/* Favorite Button */}
+            <div className="businesses-list-page__favorite-button" onClick={(e) => e.stopPropagation()}>
+                <FavoriteButton businessId={business.id} size="sm" />
+            </div>
+
+            {/* Business Info */}
+            <div className="businesses-list-page__business-info">
+                <div className="businesses-list-page__business-header">
+                    <div>
+                        <h3 className="businesses-list-page__business-name">{business.name}</h3>
+                        <p className="businesses-list-page__business-type">Заведение</p>
+                    </div>
+                    <div className="businesses-list-page__rating">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#DB7E2F">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                        </svg>
+                        <span>{business.rating || 4.8}</span>
+                    </div>
+                </div>
+
+                <div className="businesses-list-page__business-meta">
+                    <div className="businesses-list-page__business-meta-item">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" fill="#F5FBA2"/>
+                        </svg>
+                        <span>~1 км</span>
+                    </div>
+                    <div className="businesses-list-page__business-meta-item">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12.5 7V11.25L16.5 13.5L15.75 14.5L11.5 11.75V7H12.5Z" fill="#F5FBA2"/>
+                        </svg>
+                        <span>{activeOffers[0]?.pickup_time_start?.slice(0, 5) || '10:00'}-{activeOffers[0]?.pickup_time_end?.slice(0, 5) || '22:00'}</span>
+                    </div>
+                </div>
+
+                {/* Offers */}
+                <div className="businesses-list-page__business-offers">
+                    {firstOffers.map((offer, idx) => (
+                        <div key={offer.id || idx} className="businesses-list-page__offer-item">
+                            <span className="businesses-list-page__offer-name">{offer.title}</span>
+                            <div className="businesses-list-page__offer-prices">
+                                {offer.original_price && (
+                                    <span className="businesses-list-page__offer-price-old">{Math.round(offer.original_price)}₽</span>
+                                )}
+                                <span className="businesses-list-page__offer-price">{Math.round(offer.discounted_price)}₽</span>
+                            </div>
+                        </div>
+                    ))}
+                    {remainingCount > 0 && (
+                        <div className="businesses-list-page__offer-more">
+                            еще {remainingCount} предложений
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 }

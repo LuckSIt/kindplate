@@ -2,20 +2,37 @@ import axios, { AxiosError } from "axios";
 import { notify } from "./notifications";
 import type { ApiResponse, ApiError } from "./types";
 
-// Получаем базовый URL для API
-const getBaseURL = () => {
-    // Принудительно используем HTTPS домен для продакшена
-    const envUrl = import.meta.env.VITE_BACKEND_BASE_URL;
-    if (envUrl && envUrl.trim() !== '') {
-        console.log("✅ Using env URL:", envUrl);
-        return envUrl;
+const LOCAL_BASE_URL = "http://localhost:5000";
+const DEFAULT_REMOTE_BASE_URL = "https://api-kindplate.ru";
+const envBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL?.trim();
+const envFallbackUrl = import.meta.env.VITE_BACKEND_FALLBACK_URL?.trim();
+
+const isLocalHost = (host: string) => /^(localhost|127\.0\.0\.1)/i.test(host);
+const isLocalUrl = (url: string) => /localhost|127\.0\.0\.1/i.test(url);
+
+// Текущий базовый URL, обновляется при фолбэке
+let currentBaseURL = (() => {
+    if (envBaseUrl) {
+        console.log("✅ Using env URL:", envBaseUrl);
+        return envBaseUrl;
     }
-    // Прод по умолчанию — HTTPS домен; локально — 5000
-    const isLocal = typeof window !== 'undefined' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
-    const fallback = isLocal ? "http://localhost:5000" : "https://api-kindplate.ru";
-    console.log("⚠️ Using fallback URL:", fallback, "Env was:", envUrl);
+    const isLocal = typeof window !== 'undefined' && isLocalHost(location.hostname);
+    const fallback = isLocal ? LOCAL_BASE_URL : DEFAULT_REMOTE_BASE_URL;
+    console.log("⚠️ Using fallback URL:", fallback, "Env was:", envBaseUrl);
     return fallback;
+})();
+
+const fallbackBaseURL = envFallbackUrl || DEFAULT_REMOTE_BASE_URL;
+
+const switchBaseURL = (nextBaseURL: string) => {
+    if (!nextBaseURL || nextBaseURL === currentBaseURL) return;
+    currentBaseURL = nextBaseURL;
+    axiosInstance.defaults.baseURL = nextBaseURL;
+    console.warn("🌐 Switched API baseURL to fallback:", nextBaseURL);
 };
+
+// Получаем актуальный базовый URL (с учетом возможного фолбэка)
+const getBaseURL = () => currentBaseURL;
 
 console.log("🔍 Backend URL:", getBaseURL(), "Location:", typeof window !== 'undefined' ? location.hostname : 'server');
 
@@ -62,6 +79,26 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     (error: AxiosError<ApiError>) => {
+        const config: any = error.config || {};
+        const isNetworkError =
+            error.code === 'ERR_NETWORK' ||
+            error.code === 'NETWORK_ERROR' ||
+            error.message?.includes('Network Error') ||
+            error.message?.includes('ECONNREFUSED') ||
+            !error.response;
+
+        // Авто-фолбэк: если локальный бэкенд недоступен, переключаемся на прод/резервный
+        if (
+            isNetworkError &&
+            isLocalUrl(getBaseURL()) &&
+            !config._retriedWithFallback
+        ) {
+            config._retriedWithFallback = true;
+            switchBaseURL(fallbackBaseURL);
+            config.baseURL = getBaseURL();
+            return axiosInstance.request(config);
+        }
+
         // Логируем ошибки
         if (import.meta.env.DEV) {
             console.error(`❌ ${error.config?.method?.toUpperCase()} ${error.config?.url}`, error.response?.data);
@@ -72,13 +109,13 @@ axiosInstance.interceptors.response.use(
 
         // Обрабатываем различные типы ошибок
         if (error.code === 'ECONNABORTED') {
-            if (!skipNotification) {
-                notify.error('Ошибка соединения', 'Превышено время ожидания ответа от сервера');
-            }
+            // if (!skipNotification) {
+            //     notify.error('Ошибка соединения', 'Превышено время ожидания ответа от сервера');
+            // }
         } else if (error.code === 'NETWORK_ERROR' || !error.response) {
-            if (!skipNotification) {
-                notify.error('Ошибка сети', 'Не удалось подключиться к серверу. Проверьте интернет-соединение');
-            }
+            // if (!skipNotification) {
+            //     notify.error('Ошибка сети', 'Не удалось подключиться к серверу. Проверьте интернет-соединение');
+            // }
         } else if (error.response) {
             const { status, data } = error.response;
             

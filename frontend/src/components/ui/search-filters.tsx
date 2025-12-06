@@ -1,22 +1,10 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import type { OffersSearchFilters } from '@/lib/offers-search';
 import { X, Filter, SlidersHorizontal } from 'lucide-react';
 
-export interface SearchFilters {
-    q?: string;
-    lat?: number;
-    lon?: number;
-    radius_km?: number;
-    pickup_from?: string;
-    pickup_to?: string;
-    price_min?: number;
-    price_max?: number;
-    cuisines?: string[];
-    diets?: string[];
-    allergens?: string[];
-    sort?: 'distance' | 'price' | 'rating';
-}
+export type SearchFilters = OffersSearchFilters;
 
 interface SearchFiltersPanelProps {
     filters: SearchFilters;

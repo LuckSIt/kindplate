@@ -1,13 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { axiosInstance } from '@/lib/axiosInstance';
 import { SearchFiltersPanel, type SearchFilters } from '@/components/ui/search-filters';
 import { ActiveFiltersChips } from '@/components/ui/active-filters-chips';
 import { OfferCardVendor } from '@/components/ui/offer-card-vendor';
 import { Button } from '@/components/ui/button';
 import { Loader2, Search, Filter } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { fetchOffersSearch } from '@/lib/offers-search';
 
 export const Route = createFileRoute('/search/')({
     component: RouteComponent,
@@ -43,33 +43,7 @@ function RouteComponent() {
     // Поиск офферов
     const { data: searchData, isLoading, isError, error } = useQuery({
         queryKey: ['offers_search', filters, page],
-        queryFn: async () => {
-            const params = new URLSearchParams();
-            
-            if (filters.q) params.append('q', filters.q);
-            if (filters.lat) params.append('lat', filters.lat.toString());
-            if (filters.lon) params.append('lon', filters.lon.toString());
-            if (filters.radius_km) params.append('radius_km', filters.radius_km.toString());
-            if (filters.pickup_from) params.append('pickup_from', filters.pickup_from);
-            if (filters.pickup_to) params.append('pickup_to', filters.pickup_to);
-            if (filters.price_min) params.append('price_min', filters.price_min.toString());
-            if (filters.price_max) params.append('price_max', filters.price_max.toString());
-            if (filters.cuisines) {
-                filters.cuisines.forEach(c => params.append('cuisines[]', c));
-            }
-            if (filters.diets) {
-                filters.diets.forEach(d => params.append('diets[]', d));
-            }
-            if (filters.allergens) {
-                filters.allergens.forEach(a => params.append('allergens[]', a));
-            }
-            if (filters.sort) params.append('sort', filters.sort);
-            params.append('page', page.toString());
-            params.append('limit', '20');
-
-            const response = await axiosInstance.get(`/offers/search?${params.toString()}`);
-            return response.data.data;
-        },
+        queryFn: () => fetchOffersSearch({ ...filters, page, limit: 20 }),
         staleTime: 60000, // 60 секунд кэш
         retry: 1, // Одна попытка повтора
         retryDelay: 1000,

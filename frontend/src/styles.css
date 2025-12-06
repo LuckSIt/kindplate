@@ -11,8 +11,10 @@
   }
 }
 
-@tailwind components;
-@tailwind utilities;
+/* Footer links - no underline */
+.footer-link {
+  text-decoration: none !important;
+}
 
 @layer components {
   .all-\[unset\] {
@@ -20,6 +22,7 @@
   }
 }
 
+/* Default animation tokens */
 :root {
   --animate-spin: spin 1s linear infinite;
 }
@@ -45,7 +48,8 @@
 }
 
 .animate-spin {
-  animation: var(--animate-spin);
+  animation: var(--animate-spin, spin 1s linear infinite);
+  transform-origin: center;
 }
 
 @keyframes spin {
@@ -129,8 +133,8 @@
 
 /* CSS переменные для шрифтов */
 :root {
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-sans: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-display: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --font-montserrat: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   /* Radii tokens (4px grid) */
   --r-sm: 8px;
@@ -150,14 +154,32 @@
 /* Reset and base styles */
 * {
   box-sizing: border-box;
-  font-family: var(--font-sans) !important;
+  font-family: var(--font-sans);
+}
+
+/* CSS Custom Property для viewport height - обновляется JS для точной высоты на мобильных */
+:root {
+  --app-height: 100vh;
+  --nav-height: 52px;
+  --search-height: 60px;
+}
+
+/* Поддержка dvh для современных браузеров */
+@supports (height: 100dvh) {
+  :root {
+    --app-height: 100dvh;
+  }
 }
 
 html {
   background: #10172A !important;
+  overflow: hidden;
+  /* Используем CSS переменную с fallback */
+  height: var(--app-height);
+  width: 100%;
 }
 
-html, body {
+body {
   margin: 0;
   padding: 0;
   font-family: var(--font-sans) !important;
@@ -166,8 +188,10 @@ html, body {
   background: #10172A !important;
   color: #f8fafc !important;
   line-height: 1.5;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden; /* Предотвращаем любой скролл на body */
+  /* Используем CSS переменную для высоты */
+  height: var(--app-height);
+  width: 100%;
   /* Предотвращаем масштабирование */
   -webkit-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
@@ -175,13 +199,18 @@ html, body {
   text-size-adjust: 100%;
   /* Фиксируем размеры */
   font-size: 16px;
+  /* Предотвращаем overscroll bounce на iOS */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+  /* Для iOS Safari - предотвращает резиновый скролл */
+  touch-action: manipulation;
 }
 
 /* Mobile typography - фиксированные размеры */
 h1 { font-size: 24px !important; line-height: 30px !important; font-weight: 700; color: #f8fafc; }
 h2 { font-size: 20px !important; line-height: 28px !important; font-weight: 700; color: #f8fafc; }
-h3 { font-size: 18px !important; line-height: 26px !important; font-weight: 600; color: #f8fafc; }
-p, span, li { font-size: 14px !important; line-height: 20px !important; color: #e2e8f0; }
+h3:not(.font-montserrat-alt) { font-size: 18px !important; line-height: 26px !important; font-weight: 600; color: #f8fafc; }
+p:not(.font-montserrat-alt):not(.font-ramona), span:not(.font-montserrat-alt):not(.font-ramona), li:not(.font-montserrat-alt):not(.font-ramona) { font-size: 14px !important; line-height: 20px !important; color: #e2e8f0; }
 small, .caption { font-size: 12px !important; line-height: 18px !important; color: #94a3b8; }
 
 /* iOS input zoom prevention */
@@ -218,15 +247,52 @@ input, select, textarea { font-size: 16px; }
   }
 }
 
-/* Специальные шрифты для заголовков */
-h1, h2, h3, h4, h5, h6, .font-bold, .font-semibold, .font-medium, button {
+/* Специальные шрифты для заголовков (исключая font-montserrat-alt) */
+h1:not(.font-montserrat-alt), 
+h2:not(.font-montserrat-alt), 
+h3:not(.font-montserrat-alt), 
+h5:not(.font-montserrat-alt), 
+h6:not(.font-montserrat-alt), 
+.font-bold:not(.font-montserrat-alt), 
+.font-semibold:not(.font-montserrat-alt), 
+.font-medium:not(.font-montserrat-alt), 
+button:not(.font-montserrat-alt) {
   font-family: var(--font-display) !important;
 }
 
-/* Принудительное применение шрифтов к Tailwind классам */
-.font-sans, input, textarea, select, p, span, div {
+/* Исключение для h4 - используется Montserrat Alternates */
+h4 {
+  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-variant-ligatures: normal !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+h4 * {
+  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-variant-ligatures: normal !important;
+}
+
+/* Принудительное применение шрифтов к Tailwind классам (исключая font-montserrat-alt) */
+.font-sans:not(.font-montserrat-alt), 
+input:not(.font-montserrat-alt), 
+textarea:not(.font-montserrat-alt), 
+select:not(.font-montserrat-alt), 
+p:not(.font-montserrat-alt), 
+div:not(.font-montserrat-alt) {
   font-family: var(--font-sans) !important;
 }
+
+/* Разрешаем span'ам иметь собственный шрифт из inline стилей */
+span[style*="fontFamily"] {
+  font-family: inherit !important;
+}
+
+/* Принудительное применение Montserrat Alternates для элементов с inline стилями */
+[style*="Montserrat Alternates"] {
+  font-family: 'Montserrat Alternates', sans-serif !important;
+}
+
 
 .font-display {
   font-family: var(--font-display) !important;
@@ -251,23 +317,21 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-semibold, .font-medium, button {
 }
 
 #app {
-  min-height: 100vh;
+  /* Занимаем ровно весь экран */
+  height: var(--app-height);
+  min-height: var(--app-height);
+  max-height: var(--app-height);
   width: 100%;
-  max-width: 402px !important;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
   position: relative;
-  overflow-x: hidden;
   font-family: var(--font-sans) !important;
   background: #10172A !important;
   color: #f8fafc !important;
-  overflow-y: auto;
-  overflow-x: hidden;
-  /* Предотвращаем масштабирование */
-  transform: scale(1);
-  zoom: 1;
-  -webkit-transform: scale(1);
-  -moz-transform: scale(1);
-  -ms-transform: scale(1);
+  overflow: hidden; /* Контейнер не скроллится, скроллятся только внутренние элементы */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Принудительная темная тема - переопределяем все светлые цвета */
@@ -331,14 +395,19 @@ html {
   font-family: var(--font-sans) !important;
 }
 
-/* Применяем шрифты к React компонентам */
-[class*="font-"], [class*="text-"] {
+/* Применяем шрифты к React компонентам (исключая font-montserrat-alt и font-ramona) */
+[class*="font-"]:not(.font-montserrat-alt):not(.font-ramona), 
+[class*="text-"]:not(.font-montserrat-alt):not(.font-ramona) {
   font-family: var(--font-sans) !important;
 }
 
-/* Специально для заголовков и кнопок */
-[class*="font-bold"], [class*="font-semibold"], [class*="font-medium"], 
-button, .btn-primary, .btn-secondary {
+/* Специально для заголовков и кнопок (исключая font-montserrat-alt) */
+[class*="font-bold"]:not(.font-montserrat-alt), 
+[class*="font-semibold"]:not(.font-montserrat-alt), 
+[class*="font-medium"]:not(.font-montserrat-alt), 
+button:not(.font-montserrat-alt), 
+.btn-primary:not(.font-montserrat-alt), 
+.btn-secondary:not(.font-montserrat-alt) {
   font-family: var(--font-display) !important;
 }
 
@@ -485,7 +554,7 @@ button, .btn-primary, .btn-secondary {
 /* Map container */
 .map-container {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   position: relative;
 }
 
@@ -760,16 +829,28 @@ button, .btn-primary, .btn-secondary {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 100%;
+  height: 100%;
 }
 
-.spinner {
-  width: 3rem;
-  height: 3rem;
-  border: 4px solid #334155;
-  border-top: 4px solid #22c55e;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+.spinner,
+.login-page__spinner,
+.register-page__spinner,
+.vendor-page__spinner,
+.payment-page__spinner {
+  --spinner-size: 3rem;
+  --spinner-stroke: 4px;
+  --spinner-track: rgba(34, 197, 94, 0.25);
+  --spinner-accent: #22c55e;
+  --spinner-animation: spin 0.9s linear infinite;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
+  border-radius: 9999px;
+  border: var(--spinner-stroke) solid var(--spinner-track);
+  border-top-color: var(--spinner-accent);
+  animation: var(--spinner-animation);
+  box-sizing: border-box;
+  display: inline-block;
 }
 
 @keyframes spin {
@@ -777,90 +858,6 @@ button, .btn-primary, .btn-secondary {
   100% { transform: rotate(360deg); }
 }
 
-/* Additional animations from tailwind.css */
-:root {
-  --animate-spin: spin 1s linear infinite;
-}
-
-.animate-spin {
-  animation: var(--animate-spin);
-}
-
-.animate-fade-up {
-  animation: fade-up 1s var(--animation-delay, 0s) ease forwards;
-}
-
-.animate-marquee {
-  animation: marquee var(--duration) infinite linear;
-}
-
-.animate-marquee-vertical {
-  animation: marquee-vertical var(--duration) linear infinite;
-}
-
-.animate-shimmer {
-  animation: shimmer 8s infinite;
-}
-
-@keyframes fade-up {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes image-glow {
-  0% {
-    opacity: 0;
-    animation-timing-function: cubic-bezier(0.74, 0.25, 0.76, 1);
-  }
-  10% {
-    opacity: 0.7;
-    animation-timing-function: cubic-bezier(0.12, 0.01, 0.08, 0.99);
-  }
-  to {
-    opacity: 0.4;
-  }
-}
-
-@keyframes shimmer {
-  0%,
-  90%,
-  to {
-    background-position: calc(-100% - var(--shimmer-width)) 0;
-  }
-  30%,
-  60% {
-    background-position: calc(100% + var(--shimmer-width)) 0;
-  }
-}
-
-@keyframes marquee {
-  0% {
-    transform: translate(0);
-  }
-  to {
-    transform: translateX(calc(-100% - var(--gap)));
-  }
-}
-
-@keyframes marquee-vertical {
-  0% {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(calc(-100% - var(--gap)));
-  }
-}
-
-/* All unset utility */
-.all-\[unset\] {
-  all: unset;
-}
 
 /* Scrollbar hide utility */
 .scrollbar-hide {
@@ -895,12 +892,14 @@ button, .btn-primary, .btn-secondary {
 /* Login Page Styles (BEM naming) */
 
 .login-page {
-  min-height: 100vh;
+  min-height: 100%;
+  height: 100%;
   width: 100%;
   background-color: #10172A;
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .login-page__status-bar {
@@ -930,14 +929,14 @@ button, .btn-primary, .btn-secondary {
 .login-page__container {
   position: relative;
   width: 100%;
-  max-width: 402px;
+  max-width: 100%;
   margin: 0 auto;
   height: calc(100vh - 60px);
   padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   overflow: hidden;
 }
 
@@ -966,22 +965,21 @@ button, .btn-primary, .btn-secondary {
 }
 
 .login-page__card {
-  width: 320px;
+  width: 370px;
   background-color: #2B344D;
   border-radius: 15px;
-  margin-top: 20px;
-  padding: 0;
+  margin-top: 0;
+  padding: 24px 0 36px;
   position: relative;
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 80px);
-  overflow-y: auto;
+  /* max-height и overflow-y убраны - контент адаптивен, скроллинг на html */
 }
 
 .login-page__header {
   text-align: center;
-  margin-top: 60px;
-  margin-bottom: 30px;
+  margin-top: 32px;
+  margin-bottom: 24px;
   padding: 0 20px;
 }
 
@@ -1116,12 +1114,10 @@ button, .btn-primary, .btn-secondary {
 }
 
 .login-page__spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top: 2px solid #FFFFFF;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  --spinner-size: 16px;
+  --spinner-stroke: 2px;
+  --spinner-track: rgba(255, 255, 255, 0.28);
+  --spinner-accent: #FFFFFF;
 }
 
 .login-page__footer-text {
@@ -1145,12 +1141,14 @@ button, .btn-primary, .btn-secondary {
 
 /* Register Page Styles (BEM naming) */
 .register-page {
-  min-height: 100vh;
+  min-height: 100%;
+  height: 100%;
   width: 100%;
   background-color: #10172A;
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .register-page__status-bar {
@@ -1180,14 +1178,14 @@ button, .btn-primary, .btn-secondary {
 .register-page__container {
   position: relative;
   width: 100%;
-  max-width: 402px;
+  max-width: 100%;
   margin: 0 auto;
   height: calc(100vh - 60px);
   padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   overflow: hidden;
 }
 
@@ -1216,22 +1214,21 @@ button, .btn-primary, .btn-secondary {
 }
 
 .register-page__card {
-  width: 320px;
+  width: 368px;
   background-color: #2B344D;
   border-radius: 15px;
-  margin-top: 20px;
+  margin-top: 0;
   padding: 0;
   position: relative;
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 80px);
-  overflow-y: auto;
+  /* max-height и overflow-y убраны - контент адаптивен, скроллинг на html */
 }
 
 .register-page__header {
   text-align: center;
-  margin-top: 60px;
-  margin-bottom: 25px;
+  margin-top: 20px;
+  margin-bottom: 24px;
   padding: 0 20px;
 }
 
@@ -1367,12 +1364,10 @@ button, .btn-primary, .btn-secondary {
 }
 
 .register-page__spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top: 2px solid #FFFFFF;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  --spinner-size: 16px;
+  --spinner-stroke: 2px;
+  --spinner-track: rgba(255, 255, 255, 0.28);
+  --spinner-accent: #FFFFFF;
 }
 
 .register-page__footer-text {
@@ -1396,16 +1391,24 @@ button, .btn-primary, .btn-secondary {
 
 /* Businesses List Page Styles (BEM naming) */
 .businesses-list-page {
-  min-height: 100vh;
+  min-height: 100%;
   width: 100%;
-  max-width: 402px;
+  max-width: 100%;
   margin: 0 auto;
   background-color: #10172A;
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  padding-bottom: 73px;
-  overflow-y: auto;
+  padding-bottom: 0; /* Убираем padding - он уже учтен в main */
   overflow-x: hidden;
+}
+
+.businesses-list-page__green-header {
+  width: 100%;
+  background-color: #35741F;
+  padding: 27px 14px 0;
+  position: relative;
+  overflow: visible;
+  margin-bottom: 40px;
 }
 
 .businesses-list-page__status-bar {
@@ -1435,47 +1438,65 @@ button, .btn-primary, .btn-secondary {
 .businesses-list-page__logo-section {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 15px;
+  gap: 5px;
+  padding: 6px 15px;
   width: 100%;
 }
 
 .businesses-list-page__logo-icon {
-  width: 40px;
-  height: 52px;
+  width: 32px;
+  height: 42px;
   flex-shrink: 0;
 }
 
 .businesses-list-page__logo-text {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 16px;
   color: #FFFFFF;
   text-decoration: underline;
 }
 
 .businesses-list-page__search-container {
-  padding: 0 15px 12px;
+  padding: 0 15px 10px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateY(50%);
+}
+
+.businesses-list-page__search-container--map {
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  padding: 0 15px 10px;
+}
+
+.businesses-list-page__search-container--map .businesses-list-page__search {
   width: 100%;
 }
 
 .businesses-list-page__search {
-  width: 100%;
-  height: 44px;
+  flex: 1;
+  height: 57px;
   background-color: #D9D9D9;
-  border-radius: 12px;
+  border-radius: 15px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 12px;
+  gap: 6px;
+  padding: 0 10px;
   position: relative;
 }
 
 .businesses-list-page__search-icon {
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+  width: 29px;
+  height: 29px;
+  margin-left: 4px;
 }
 
 .businesses-list-page__search-input {
@@ -1485,56 +1506,79 @@ button, .btn-primary, .btn-secondary {
   background: transparent;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 12.1px;
+  line-height: 15.4px;
   color: #757575;
   padding: 0;
 }
 
 .businesses-list-page__search-input::placeholder {
   color: #757575;
-  text-decoration: underline;
+}
+
+.businesses-list-page__cart-button {
+  width: 57px;
+  height: 57px;
+  min-width: 57px;
+  background: #D9D9D9;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.businesses-list-page__cart-button:active {
+  transform: scale(0.95);
+}
+
+.businesses-list-page__cart-button svg {
+  width: 28px;
+  height: 28px;
 }
 
 .businesses-list-page__user-strip {
   width: calc(100% - 30px);
-  height: 44px;
+  height: 38px;
   background-color: #D9D9D9;
-  border-radius: 12px;
-  margin: 0 15px 10px;
-  padding: 0 12px;
+  border-radius: 10px;
+  margin: 0 15px 8px;
+  padding: 0 10px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
 }
 
 .businesses-list-page__user-icon {
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .businesses-list-page__user-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .businesses-list-page__user-name {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 13px;
-  line-height: 15px;
+  font-size: 12px;
+  line-height: 14px;
   color: #10172A;
 }
 
 .businesses-list-page__user-edit {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 400;
-  font-size: 9px;
-  line-height: 11px;
+  font-size: 8px;
+  line-height: 10px;
   color: #757575;
 }
 
@@ -1542,42 +1586,42 @@ button, .btn-primary, .btn-secondary {
   display: flex;
   gap: 8px;
   padding: 0 15px;
-  margin-top: 12px;
-  margin-bottom: 12px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .businesses-list-page__stat-card {
   flex: 1;
-  height: 55px;
-  border-radius: 10px;
+  height: 85px;
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1px solid;
+  padding: 10px 4px;
   position: relative;
 }
 
 .businesses-list-page__stat-card--saved {
   background-color: rgba(53, 116, 31, 0.6);
-  border-color: #35741F;
+  border: 1px solid #35741F;
 }
 
 .businesses-list-page__stat-card--money {
   background-color: rgba(219, 126, 47, 0.6);
-  border-color: #DB7E2F;
+  border: 1px solid #DB7E2F;
 }
 
 .businesses-list-page__stat-card--co2 {
   background-color: rgba(245, 251, 162, 0.6);
-  border-color: #F5FBA2;
+  border: 1px solid #F5FBA2;
 }
 
 .businesses-list-page__stat-value {
   font-family: 'Montserrat Alternates', sans-serif;
-  font-weight: 600;
-  font-size: 15px;
-  line-height: 15px;
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 30px;
   color: #FFFFFF;
   text-align: center;
   margin-bottom: 2px;
@@ -1586,8 +1630,8 @@ button, .btn-primary, .btn-secondary {
 .businesses-list-page__stat-label {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 9px;
-  line-height: 9px;
+  font-size: 11px;
+  line-height: 13px;
   text-align: center;
 }
 
@@ -1608,22 +1652,22 @@ button, .btn-primary, .btn-secondary {
   justify-content: space-between;
   align-items: center;
   padding: 0 15px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .businesses-list-page__available-title {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 15px;
+  line-height: 20px;
   color: #FFFFFF;
 }
 
 .businesses-list-page__available-count {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 11px;
-  line-height: 16px;
+  font-size: 13px;
+  line-height: 18px;
   background: linear-gradient(90deg, rgba(219, 126, 47, 1) 0%, rgba(245, 251, 162, 1) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1649,7 +1693,7 @@ button, .btn-primary, .btn-secondary {
 .businesses-list-page__business-card {
   width: 100%;
   background-color: #2B344D;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
   position: relative;
   cursor: pointer;
@@ -1663,9 +1707,9 @@ button, .btn-primary, .btn-secondary {
 
 .businesses-list-page__business-image {
   width: 100%;
-  height: 120px;
+  height: 200px;
   overflow: hidden;
-  border-radius: 12px 12px 0 0;
+  border-radius: 10px 10px 0 0;
 }
 
 .businesses-list-page__business-image img {
@@ -1678,8 +1722,8 @@ button, .btn-primary, .btn-secondary {
   position: absolute;
   top: 5px;
   right: 5px;
-  width: 28px;
-  height: 28px;
+  width: 31px;
+  height: 31px;
   background: rgba(16, 23, 42, 0.74);
   border: none;
   border-radius: 50%;
@@ -1689,6 +1733,12 @@ button, .btn-primary, .btn-secondary {
   cursor: pointer;
   padding: 0;
   z-index: 10;
+}
+
+.businesses-list-page__favorite-button svg {
+  width: 20px;
+  height: 20px;
+  display: block;
 }
 
 .businesses-list-page__business-info {
@@ -1708,7 +1758,7 @@ button, .btn-primary, .btn-secondary {
   font-size: 14px;
   line-height: 16px;
   color: #FFFFFF;
-  margin: 0 0 4px 0;
+  margin: 0;
 }
 
 .businesses-list-page__business-type {
@@ -1745,26 +1795,32 @@ button, .btn-primary, .btn-secondary {
   color: #DB7E2F;
 }
 
+.businesses-list-page__header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .businesses-list-page__business-meta {
   display: flex;
   gap: 4px;
-  margin-bottom: 12px;
+  margin-bottom: 0;
 }
 
 .businesses-list-page__business-meta-item {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 10px;
-  line-height: 14px;
+  font-size: 8px;
+  line-height: 10px;
   color: #FFFFFF;
 }
 
 .businesses-list-page__business-meta-item svg {
-  width: 18px;
-  height: 18px;
+  width: 12px;
+  height: 12px;
 }
 
 .businesses-list-page__business-offers {
@@ -1790,19 +1846,19 @@ button, .btn-primary, .btn-secondary {
 
 .businesses-list-page__offer-prices {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 8px;
 }
 
 .businesses-list-page__offer-price-old {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 11px;
-  line-height: 14px;
-  color: #767676;
-  text-decoration: line-through;
+  font-size: 13px;
+  line-height: 22px;
+  color: #767676 !important;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
   position: relative;
 }
 
@@ -1812,15 +1868,15 @@ button, .btn-primary, .btn-secondary {
   left: 0;
   top: 50%;
   width: 100%;
-  height: 1px;
-  background-color: #757575;
+  height: 0;
+  border: 1px solid #757575;
 }
 
 .businesses-list-page__offer-price {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 15px;
+  line-height: 22px;
   color: #FFFFFF;
 }
 
@@ -1837,7 +1893,8 @@ button, .btn-primary, .btn-secondary {
   width: 100%;
   height: 1px;
   background-color: rgba(255, 255, 255, 0.4);
-  margin-top: 12px;
+  margin-top: 6px;
+  margin-bottom: 8px;
 }
 
 .businesses-list-page__bottom-nav {
@@ -1846,13 +1903,13 @@ button, .btn-primary, .btn-secondary {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 402px;
-  height: 60px;
+  max-width: 100%;
+  height: 52px;
   background-color: #D9D9D9;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding-top: 8px;
+  padding-top: 6px;
   z-index: 50;
 }
 
@@ -1860,7 +1917,7 @@ button, .btn-primary, .btn-secondary {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -1884,46 +1941,52 @@ button, .btn-primary, .btn-secondary {
 .businesses-list-page__nav-label {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 10px;
-  line-height: 12px;
+  font-size: 9px;
+  line-height: 11px;
   color: #767676;
   text-align: center;
 }
 
 .businesses-list-page__nav-button svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 
 /* Responsive adjustments for businesses list page */
 @media (max-width: 420px) {
   .businesses-list-page {
-    max-width: 402px;
+    max-width: 100%;
     margin: 0 auto;
   }
   
   .businesses-list-page__statistics {
-    gap: 10px;
+    gap: 12px;
     padding: 0 16px;
   }
   
   .businesses-list-page__stat-card {
-    height: 70px;
+    height: 85px;
   }
   
   .businesses-list-page__stat-value {
-    font-size: 20px;
+    font-size: 28px;
+    line-height: 30px;
+  }
+  
+  .businesses-list-page__stat-label {
+    font-size: 11px;
+    line-height: 14px;
   }
 }
 
 /* Pickup Code Page Styles (BEM naming) */
 .pickup-code-page {
-  min-height: 100vh;
+  min-height: 100%;
   width: 100%;
   background-color: #10172A;
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  padding-bottom: 73px;
+  padding-bottom: 0;
 }
 
 .pickup-code-page__status-bar {
@@ -2307,28 +2370,23 @@ button, .btn-primary, .btn-secondary {
 
 @media (min-width: 421px) {
   .pickup-code-page {
-    max-width: 402px;
+    max-width: 100%;
     margin: 0 auto;
   }
 }
 
 /* Vendor Page Styles (BEM naming) */
 .vendor-page {
-  min-height: 100vh;
+  min-height: 100%;
   width: 100%;
   background-color: #10172A;
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  padding-bottom: 73px;
+  padding-bottom: 0;
 }
 
 .vendor-page__status-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 21px 16px 19px;
-  width: 100%;
-  height: 60px;
+  display: none;
 }
 
 .vendor-page__status-bar-time {
@@ -2348,91 +2406,100 @@ button, .btn-primary, .btn-secondary {
 
 .vendor-page__header {
   width: 100%;
-  height: 89px;
   background-color: #35741F;
-  padding: 27px 14px 0;
+  padding: 12px 8px;
   position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: space-between;
+  gap: 6px;
+  overflow: visible;
+  margin-bottom: 40px;
 }
 
 .vendor-page__header-background {
-  position: absolute;
-  top: 62px;
-  left: 14px;
-  right: 14px;
-  height: 59px;
-  background-color: #D9D9D9;
-  border-radius: 15px;
-  z-index: 0;
+  display: none;
 }
 
 .vendor-page__back-button {
-  width: 59px;
-  height: 59px;
-  background: transparent;
+  width: 62px;
+  height: 62px;
+  min-width: 62px;
+  background: #E8E8E8;
   border: none;
   cursor: pointer;
   padding: 0;
-  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border-radius: 18px;
 }
 
 .vendor-page__back-button-icon {
-  width: 39px;
-  height: 39px;
+  width: 24px;
+  height: 24px;
   display: block;
 }
 
 .vendor-page__header-info {
   flex: 1;
-  margin-left: 9px;
-  margin-right: 9px;
-  padding: 13px 12px;
-  z-index: 1;
+  background: #E8E8E8;
+  border-radius: 18px;
+  padding: 8px 12px;
+  height: 62px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #000000;
+  text-align: center;
 }
 
 .vendor-page__header-name {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 21px;
-  line-height: 22px;
-  color: #10172A;
-  margin: 0 0 8px 0;
+  font-size: 8.5px;
+  line-height: 1.2;
+  color: #000000 !important;
+  margin: 0 0 2px 0;
 }
 
 .vendor-page__header-address {
   font-family: 'Montserrat Alternates', sans-serif;
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 22px;
-  color: #10172A;
+  font-weight: 500;
+  font-size: 6px;
+  line-height: 1.3;
+  color: #000000 !important;
   margin: 0;
 }
 
 .vendor-page__favorite-button {
-  width: 59px;
-  height: 59px;
-  background: transparent;
+  width: 62px;
+  height: 62px;
+  min-width: 62px;
+  background: #E8E8E8;
   border: none;
   cursor: pointer;
   padding: 0;
-  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border-radius: 18px;
+}
+
+.vendor-page__back-button,
+.vendor-page__header-info,
+.vendor-page__favorite-button {
+  transform: translateY(40px);
 }
 
 .vendor-page__info-buttons {
   display: flex;
   gap: 12px;
   padding: 0 52px;
-  margin-top: 133px;
+  margin-top: 20px;
   margin-bottom: 19px;
   justify-content: space-between;
 }
@@ -2467,7 +2534,7 @@ button, .btn-primary, .btn-secondary {
 .vendor-page__info-button-label {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 11px;
+  font-size: 9.9px;
   line-height: 22px;
   color: #C1C1C1;
   text-align: center;
@@ -2528,12 +2595,10 @@ button, .btn-primary, .btn-secondary {
 }
 
 .vendor-page__spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid #FFFFFF;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  --spinner-size: 40px;
+  --spinner-stroke: 4px;
+  --spinner-track: rgba(255, 255, 255, 0.28);
+  --spinner-accent: #FFFFFF;
   margin-bottom: 16px;
 }
 
@@ -2575,7 +2640,7 @@ button, .btn-primary, .btn-secondary {
 
 .vendor-page__offer-image {
   width: 100%;
-  height: 190px;
+  height: 210px;
   overflow: hidden;
   border-radius: 20px 20px 0 0;
 }
@@ -2626,9 +2691,9 @@ button, .btn-primary, .btn-secondary {
 
 .vendor-page__offer-prices {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
   margin-left: 16px;
 }
 
@@ -2637,7 +2702,7 @@ button, .btn-primary, .btn-secondary {
   font-weight: 600;
   font-size: 13px;
   line-height: 22px;
-  color: #767676;
+  color: #8C8C8C !important;
   text-decoration: line-through;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   position: relative;
@@ -2663,7 +2728,8 @@ button, .btn-primary, .btn-secondary {
 
 .vendor-page__offer-actions {
   display: flex;
-  align-items: center;
+  align-items: stretch;
+  min-height: 23px;
   gap: 4px;
 }
 
@@ -2740,7 +2806,7 @@ button, .btn-primary, .btn-secondary {
   font-weight: 700;
   font-size: 10px;
   line-height: 9px;
-  color: #10172A;
+  color: #10172A !important;
   text-align: center;
   flex: 1;
   padding: 7px 0;
@@ -2748,18 +2814,19 @@ button, .btn-primary, .btn-secondary {
 }
 
 .vendor-page__add-button {
-  flex: 1;
-  height: 23px;
+  flex: 0 0 auto;
+  width: auto;
+  height: 24px;
   background-color: #10172A;
   border: none;
   border-radius: 5px;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 400;
   font-size: 9px;
-  line-height: 8px;
+  line-height: 23px;
   color: #E3E3E3;
   cursor: pointer;
-  padding: 0 6px;
+  padding: 0 8px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   transition: opacity 0.2s ease, transform 0.1s ease;
   display: flex;
@@ -2810,7 +2877,7 @@ button, .btn-primary, .btn-secondary {
   border: none;
   cursor: pointer;
   padding: 0;
-  text-decoration: none;
+  text-decoration: none !important;
   transition: opacity 0.2s ease;
 }
 
@@ -2833,6 +2900,7 @@ button, .btn-primary, .btn-secondary {
   line-height: 22px;
   color: #767676;
   text-align: center;
+  text-decoration: none !important;
 }
 
 .vendor-page__nav-button svg {
@@ -2859,19 +2927,19 @@ button, .btn-primary, .btn-secondary {
 
 @media (min-width: 421px) {
   .vendor-page {
-    max-width: 402px;
+    max-width: 100%;
     margin: 0 auto;
   }
 }
 
 /* Cart Page Styles (BEM naming) */
 .cart-page {
-  min-height: 100vh;
+  min-height: 100%;
   width: 100%;
   background-color: #10172A;
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  padding-bottom: 73px;
+  padding-bottom: 0;
 }
 
 .cart-page__status-bar {
@@ -2900,34 +2968,33 @@ button, .btn-primary, .btn-secondary {
 
 .cart-page__header {
   width: 100%;
-  height: 89px;
   background-color: #35741F;
   padding: 27px 14px 0;
-  position: relative;
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
+  gap: 10px;
+  position: relative;
+  overflow: visible;
+  margin-bottom: 50px; /* Increased from 32px to 50px */
 }
 
-.cart-page__header-background {
-  position: absolute;
-  top: 62px;
-  left: 14px;
-  right: 14px;
-  height: 59px;
-  background-color: #D9D9D9;
-  border-radius: 15px;
-  z-index: 0;
+.cart-page__header-floating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateY(50%);
+  width: 100%;
 }
 
 .cart-page__back-button {
   width: 59px;
   height: 59px;
-  background: transparent;
+  background-color: #D9D9D9;
+  border-radius: 15px;
   border: none;
   cursor: pointer;
   padding: 0;
-  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2940,11 +3007,14 @@ button, .btn-primary, .btn-secondary {
   display: block;
 }
 
-.cart-page__header-info {
+.cart-page__header-title-container {
   flex: 1;
-  margin-left: 9px;
-  padding: 17px 9px;
-  z-index: 1;
+  height: 59px;
+  background-color: #D9D9D9;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
 }
 
 .cart-page__header-name {
@@ -2952,7 +3022,7 @@ button, .btn-primary, .btn-secondary {
   font-weight: 600;
   font-size: 21px;
   line-height: 22px;
-  color: #10172A;
+  color: #000000 !important;
   margin: 0;
 }
 
@@ -2994,7 +3064,7 @@ button, .btn-primary, .btn-secondary {
 }
 
 .cart-page__pickup-time-badge {
-  width: 130px;
+  width: auto;
   height: 20px;
   background-color: #FFFFFF;
   border-radius: 5px;
@@ -3005,8 +3075,9 @@ button, .btn-primary, .btn-secondary {
   font-weight: 600;
   font-size: 12px;
   line-height: 22px;
-  color: #10172A;
-  padding: 0 9px;
+  color: #000000 !important;
+  padding: 0 12px;
+  white-space: nowrap;
 }
 
 .cart-page__products {
@@ -3018,7 +3089,7 @@ button, .btn-primary, .btn-secondary {
 .cart-page__product {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 0;
   margin: 0;
 }
@@ -3026,7 +3097,7 @@ button, .btn-primary, .btn-secondary {
 .cart-page__product-info {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 6px;
   flex: 1;
 }
 
@@ -3045,8 +3116,7 @@ button, .btn-primary, .btn-secondary {
   font-size: 15px;
   line-height: 22px;
   color: #FFFFFF;
-  margin: 0;
-  margin-left: auto;
+  margin: 4px 0 0 auto;
 }
 
 .cart-page__product-divider {
@@ -3141,7 +3211,7 @@ button, .btn-primary, .btn-secondary {
   width: 100%;
   background-color: #2B344D;
   border-radius: 20px 20px 0 0;
-  padding: 19px 32px 64px;
+  padding: 19px 32px 24px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   z-index: 40;
 }
@@ -3309,19 +3379,19 @@ button, .btn-primary, .btn-secondary {
 
 @media (min-width: 421px) {
   .cart-page {
-    max-width: 402px;
+    max-width: 100%;
     margin: 0 auto;
   }
 }
 
 /* Payment Page Styles (BEM naming) */
 .payment-page {
-  min-height: 100vh;
+  min-height: 100%;
   width: 100%;
   background-color: #10172A;
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  padding-bottom: 20px;
+  padding-bottom: 0;
 }
 
 .payment-page__status-bar {
@@ -3653,12 +3723,10 @@ button, .btn-primary, .btn-secondary {
 }
 
 .payment-page__spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid #FFFFFF;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  --spinner-size: 40px;
+  --spinner-stroke: 4px;
+  --spinner-track: rgba(255, 255, 255, 0.28);
+  --spinner-accent: #FFFFFF;
 }
 
 .payment-page__loading,
@@ -3750,7 +3818,59 @@ button, .btn-primary, .btn-secondary {
 
 @media (min-width: 421px) {
   .payment-page {
-    max-width: 402px;
+    max-width: 100%;
     margin: 0 auto;
   }
+}
+
+/* Ramona helper - high priority for landing hero */
+.font-preload-ramona { font-family: 'Ramona', 'Montserrat Alternates', sans-serif; } /* helper for preloading contexts */
+.font-ramona {
+  font-family: 'Ramona', 'Montserrat Alternates', sans-serif !important;
+  font-weight: 700 !important;
+}
+
+p.font-ramona,
+span.font-ramona,
+div.font-ramona,
+[class*="text-"].font-ramona,
+[class*="leading-"].font-ramona {
+  font-family: 'Ramona', 'Montserrat Alternates', sans-serif !important;
+  font-weight: 700 !important;
+}
+
+/* Local Ramona font faces (served from /fonts) */
+@font-face {
+  font-family: 'Ramona';
+  src: url('/fonts/Ramona-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ramona';
+  src: url('/fonts/Ramona-Light.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* ============================================
+   MONTSERRAT ALTERNATES - ВЫСШИЙ ПРИОРИТЕТ
+   Размещено в конце файла для максимального приоритета
+   ============================================ */
+.font-montserrat-alt {
+  font-family: 'Montserrat Alternates', sans-serif !important;
+}
+
+/* Повышенная специфичность для разных элементов */
+p.font-montserrat-alt,
+span.font-montserrat-alt,
+h3.font-montserrat-alt,
+h4.font-montserrat-alt,
+div.font-montserrat-alt,
+[class*="text-"].font-montserrat-alt,
+[class*="leading-"].font-montserrat-alt {
+  font-family: 'Montserrat Alternates', sans-serif !important;
 }

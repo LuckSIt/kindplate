@@ -8,6 +8,7 @@
     "build": "vite build",
     "serve": "vite preview",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "clear-cache": "node clear-cache.js"
   },
   "overrides": {
@@ -31,12 +32,12 @@
     "dayjs": "^1.11.18",
     "html5-qrcode": "^2.3.8",
     "lucide-react": "^0.540.0",
-    "supercluster": "^8.0.1",
     "postcss": "^8.5.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-helmet-async": "^2.0.5",
     "react-hook-form": "^7.65.0",
+    "supercluster": "^8.0.1",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.16",
     "vaul": "^1.1.2",
@@ -44,6 +45,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.2.0",
     "@types/node": "^24.7.2",

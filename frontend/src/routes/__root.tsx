@@ -77,6 +77,59 @@ function RootRoute() {
     const [_hasShadow, _setHasShadow] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const location = useLocation();
+    const navSafeArea = 'calc(env(safe-area-inset-bottom) + var(--app-bottom-inset, 0px))';
+    // Высота навигации как в макете (73px) + safe-area + динамический inset клавиатуры
+    const navHeight = `calc(73px + env(safe-area-inset-bottom) + var(--app-bottom-inset, 0px))`;
+
+    // Устанавливаем CSS переменную --app-height для точной высоты viewport на мобильных устройствах
+    useEffect(() => {
+        const updateViewportVars = () => {
+            const viewport = window.visualViewport;
+            const vh = viewport?.height ?? window.innerHeight;
+            document.documentElement.style.setProperty('--app-height', `${vh}px`);
+
+            // Смещение снизу нужно только если клавиатура реально поднялась (фокус в инпуте)
+            let bottomInset = 0;
+            if (viewport) {
+                const keyboardHeight = window.innerHeight - (viewport.height + viewport.offsetTop);
+                if (keyboardHeight > 80) {
+                    bottomInset = keyboardHeight;
+                }
+            }
+            document.documentElement.style.setProperty('--app-bottom-inset', `${bottomInset}px`);
+        };
+
+        // Устанавливаем при загрузке
+        updateViewportVars();
+        
+        // Обновляем при изменении размера окна, ориентации и при показе клавиатуры (visualViewport)
+        window.addEventListener('resize', updateViewportVars);
+        window.addEventListener('orientationchange', updateViewportVars);
+        window.visualViewport?.addEventListener('resize', updateViewportVars);
+        window.visualViewport?.addEventListener('scroll', updateViewportVars);
+        
+        // Для iOS Safari - обновляем при скролле (когда адресная строка скрывается/показывается)
+        // Используем throttle через requestAnimationFrame
+        let ticking = false;
+        const handleScroll = () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    updateViewportVars();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        return () => {
+            window.removeEventListener('resize', updateViewportVars);
+            window.removeEventListener('orientationchange', updateViewportVars);
+            window.removeEventListener('scroll', handleScroll);
+            window.visualViewport?.removeEventListener('resize', updateViewportVars);
+            window.visualViewport?.removeEventListener('scroll', updateViewportVars);
+        };
+    }, []);
 
     useEffect(() => {
         const onScroll = () => _setHasShadow(window.scrollY > 2);
@@ -85,18 +138,13 @@ function RootRoute() {
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
-    // Скрываем навигацию и поиск на страницах входа, регистрации, главной странице (лендинг),
-    // списке заведений, корзине, оплате, коде выдачи, странице заведения
-    const hideNav = location.pathname.startsWith('/auth/login') || 
-                    location.pathname.startsWith('/auth/register') || 
-                    location.pathname === '/' ||
-                    location.pathname === '/list' ||
-                    location.pathname.startsWith('/list/') ||
-                    location.pathname === '/cart' ||
-                    location.pathname.startsWith('/cart/') ||
+    // Скрываем навигацию только там, где нужен полный флоу без отвлечений
+    const hideNav = location.pathname === '/' ||
+                    location.pathname.startsWith('/auth') ||
                     location.pathname.startsWith('/payment/') ||
                     location.pathname.startsWith('/pickup-code/') ||
-                    location.pathname.startsWith('/v/');
+                    location.pathname.startsWith('/admin') ||
+                    location.pathname.startsWith('/panel');
     
     // Для главной страницы показываем лендинг без MobileOnly обертки
     const isLandingPage = location.pathname === '/';
@@ -121,7 +169,15 @@ function RootRoute() {
                         </>
                     ) : (
                         <MobileOnly>
-                            <div className="min-h-screen w-full max-w-[402px] mx-auto" style={{ backgroundColor: '#10172A' }}>
+                            <div 
+                                className="w-full flex flex-col"
+                                style={{ 
+                                    backgroundColor: '#10172A',
+                                    height: 'var(--app-height, 100vh)',
+                                    maxHeight: 'var(--app-height, 100vh)',
+                                    overflow: 'hidden'
+                                }}
+                            >
                             {/* Ensure no push subscription without VAPID on mount */}
                             {(() => { 
                                 ensureNoPushWithoutVapid();
@@ -131,39 +187,50 @@ function RootRoute() {
                                 }
                                 return null; 
                             })()}
-                            {/* Search bar - только поисковая строка как на скриншоте */}
-                            {!hideNav && (
-                                <div className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-[402px] pt-safe px-4 pt-4 pb-3">
-                                    <Link to="/search" className="flex items-center gap-3 px-4 py-[14px] rounded-[15px] text-[#757575] w-full" style={{ backgroundColor: '#D9D9D9' }}>
-                                        <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#757575' }}>
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/>
-                                        </svg>
-                                        <span className="text-[15px] font-medium flex-1" style={{ fontFamily: 'Montserrat Alternates', color: '#757575' }}>Найти заведение</span>
-                                    </Link>
-                                </div>
-                            )}
-                            <main className="flex-1 pb-16" style={{ paddingTop: hideNav ? '0' : '76px' }}>
+                            {/* Main content area - fills remaining space */}
+                            <main 
+                                className="flex-1 overflow-y-auto overflow-x-hidden"
+                                style={{ 
+                                    paddingBottom: hideNav ? '0' : navHeight,
+                                    overscrollBehavior: 'contain'
+                                }}
+                            >
                                 <Outlet />
                             </main>
-                            {/* Bottom Tab Bar - скрываем на страницах входа и регистрации */}
+                            {/* Bottom Tab Bar - компактная навигация */}
                             {!hideNav && (
-                                <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 pt-2 pb-safe w-full max-w-[402px]" style={{ backgroundColor: '#D9D9D9' }}>
-                                    <div className="mx-auto px-6 grid grid-cols-3 gap-2">
+                                <nav
+                                    className="fixed bottom-0 left-0 right-0 z-50 w-full flex-shrink-0 flex items-center"
+                                    style={{ 
+                                        backgroundColor: '#D9D9D9', 
+                                        paddingBottom: navSafeArea,
+                                        height: navHeight,
+                                        bottom: 'var(--app-bottom-inset, 0px)'
+                                    }}
+                                >
+                                    <div className="mx-auto px-4 grid grid-cols-3 gap-1 w-full">
                                         <TabLink to="/home" label="Карта" icon={(active) => (
-                                            <svg className={`w-5 h-5`} fill="none" stroke={active ? '#35741F' : '#757575'} viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7L9 4L15 7L21 4V17L15 20L9 17L3 20V7Z" />
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? '#35741F' : '#757575'}>
+                                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                                             </svg>
                                         )} />
                                         <TabLink to="/list" label="Список" icon={(active) => (
-                                            <svg className={`w-5 h-5`} fill="none" stroke={active ? '#35741F' : '#757575'} viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6H20M4 12H20M4 18H20" />
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#35741F' : '#757575'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M4 6h16M4 12h16M4 18h16" />
                                             </svg>
                                         )} />
                                         <TabLink to="/account" label="Профиль" icon={(active) => (
-                                            <svg className={`w-5 h-5`} fill="none" stroke={active ? '#35741F' : '#757575'} viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" />
-                                            </svg>
+                                            active ? (
+                                                <div className="w-[22px] h-[22px] bg-[#35741F] rounded-full flex items-center justify-center">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                                    </svg>
+                                                </div>
+                                            ) : (
+                                                <svg width="22" height="22" viewBox="0 0 24 24" fill="#757575">
+                                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                                </svg>
+                                            )
                                         )} />
                                     </div>
                                 </nav>
@@ -230,7 +297,7 @@ function MobileOnly({ children }: { children: React.ReactNode }) {
 
     if (!isMobile) {
         return (
-            <div className="min-h-screen w-full flex items-center justify-center bg-gray-900 p-6">
+            <div className="h-full w-full flex items-center justify-center bg-gray-900 p-6" style={{ height: 'var(--app-height, 100vh)' }}>
                 <div className="max-w-sm w-full text-center bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-700">
                     <div className="text-5xl mb-4">📱</div>
                     <h1 className="text-xl font-semibold text-white mb-2">Доступно только на мобильных</h1>
@@ -250,13 +317,13 @@ function TabLink({ to, label, icon }: { to: string; label: string; icon: (active
         <Link
             to={to}
             activeOptions={{ exact: to === '/' }}
-            inactiveProps={{ className: "flex flex-col items-center justify-center py-2 transition-transform duration-150 motion-tap" }}
-            activeProps={{ className: "flex flex-col items-center justify-center py-2 transition-transform duration-150 motion-tap" }}
+            inactiveProps={{ className: "flex flex-col items-center justify-center py-1 transition-transform duration-150 motion-tap" }}
+            activeProps={{ className: "flex flex-col items-center justify-center py-1 transition-transform duration-150 motion-tap" }}
         >
             {({ isActive }: { isActive: boolean }) => (
-                <div className="flex flex-col items-center gap-1">
+                <div className="flex flex-col items-center gap-0.5">
                     {icon(isActive)}
-                    <span className="text-[10px] leading-[14px] font-semibold" style={{ 
+                    <span className="text-[9px] leading-[12px] font-semibold" style={{ 
                         color: isActive ? '#35741F' : '#757575',
                         fontFamily: 'Montserrat Alternates'
                     }}>{label}</span>

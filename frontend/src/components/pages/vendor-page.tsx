@@ -4,7 +4,6 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { axiosInstance } from '@/lib/axiosInstance';
 import { notify } from '@/lib/notifications';
 import type { Business, Offer } from '@/lib/types';
-import arrowBackIcon from "@/figma/arrow-back.svg";
 import vendorOffer1 from "@/figma/vendor-offer-1.png";
 import vendorOffer2 from "@/figma/vendor-offer-2.png";
 import businessImage1 from "@/figma/business-image-1.png";
@@ -207,11 +206,9 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
           onClick={() => navigate({ to: "/list" })}
           aria-label="Назад"
         >
-          <img 
-            src={arrowBackIcon} 
-            alt="Назад" 
-            className="vendor-page__back-button-icon"
-          />
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="#10172A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </button>
 
         <div className="vendor-page__header-info">
@@ -224,11 +221,11 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
           onClick={handleFavoriteToggle}
           aria-label={isFavorite ? "Удалить из избранного" : "Добавить в избранное"}
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path 
               d="M12 21.35L10.55 20.03C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5C22 12.27 18.6 15.36 13.45 20.03L12 21.35Z" 
               fill={isFavorite ? "#F5FBA2" : "none"}
-              stroke={isFavorite ? "#F5FBA2" : "#FFFFFF"}
+              stroke={isFavorite ? "#F5FBA2" : "#10172A"}
               strokeWidth="2"
               fillRule="evenodd"
               clipRule="evenodd"
@@ -241,7 +238,7 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
       <div className="vendor-page__info-buttons">
         <button className="vendor-page__info-button" onClick={handleCall}>
           <div className="vendor-page__info-button-icon">
-            <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M6.62 10.79C8.06 13.62 10.38 15.94 13.21 17.38L15.41 15.18C15.69 14.9 16.08 14.82 16.43 14.93C17.55 15.3 18.75 15.5 20 15.5C20.55 15.5 21 15.95 21 16.5V20C21 20.55 20.55 21 20 21C10.61 21 3 13.39 3 4C3 3.45 3.45 3 4 3H7.5C8.05 3 8.5 3.45 8.5 4C8.5 5.25 8.7 6.45 9.07 7.57C9.18 7.92 9.1 8.31 8.82 8.59L6.62 10.79Z" fill="#F5F5F5"/>
             </svg>
           </div>
@@ -251,8 +248,7 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
         <button className="vendor-page__info-button" onClick={handleRoute}>
           <div className="vendor-page__info-button-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M13.5 5.5C14.5 5.5 15.5 6.5 15.5 7.5C15.5 8.5 14.5 9.5 13.5 9.5C12.5 9.5 11.5 8.5 11.5 7.5C11.5 6.5 12.5 5.5 13.5 5.5ZM13.5 1.5C14.5 1.5 15.5 2.5 15.5 3.5C15.5 4.5 14.5 5.5 13.5 5.5C12.5 5.5 11.5 4.5 11.5 3.5C11.5 2.5 12.5 1.5 13.5 1.5Z" fill="#F5F5F5"/>
-              <path d="M13.5 9.5C14.5 9.5 15.5 10.5 15.5 11.5C15.5 12.5 14.5 13.5 13.5 13.5C12.5 13.5 11.5 12.5 11.5 11.5C11.5 10.5 12.5 9.5 13.5 9.5Z" fill="#F5F5F5"/>
+              <path d="M7 23L9.8 8.9L8 9.6V13H6V8.3L11.05 6.15C11.2833 6.05 11.5292 5.99167 11.7875 5.975C12.0458 5.95833 12.2917 5.99167 12.525 6.075C12.7583 6.15833 12.9792 6.275 13.1875 6.425C13.3958 6.575 13.5667 6.76667 13.7 7L14.7 8.6C15.1333 9.3 15.7208 9.875 16.4625 10.325C17.2042 10.775 18.05 11 19 11V13C17.8333 13 16.7917 12.7583 15.875 12.275C14.9583 11.7917 14.175 11.175 13.525 10.425L12.9 13.5L15 15.5V23H13V16.5L10.9 14.9L9.1 23H7ZM13.5 5.5C12.95 5.5 12.4792 5.30417 12.0875 4.9125C11.6958 4.52083 11.5 4.05 11.5 3.5C11.5 2.95 11.6958 2.47917 12.0875 2.0875C12.4792 1.69583 12.95 1.5 13.5 1.5C14.05 1.5 14.5208 1.69583 14.9125 2.0875C15.3042 2.47917 15.5 2.95 15.5 3.5C15.5 4.05 15.3042 4.52083 14.9125 4.9125C14.5208 5.30417 14.05 5.5 13.5 5.5Z" fill="#F5F5F5"/>
             </svg>
         </div>
           <span className="vendor-page__info-button-label">Маршрут</span>
@@ -261,7 +257,11 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
         <button className="vendor-page__info-button" onClick={handleWebsite}>
           <div className="vendor-page__info-button-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 17L6 12L7.41 10.59L11 14.17L16.59 8.58L18 10L11 17Z" fill="#F5F5F5"/>
+              <circle cx="12" cy="12" r="9" stroke="#F5F5F5" strokeWidth="2"/>
+              <path d="M12 3c-3.5 3.5-3.5 14.5 0 18" stroke="#F5F5F5" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M12 3c3.5 3.5 3.5 14.5 0 18" stroke="#F5F5F5" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M4 9h16" stroke="#F5F5F5" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M4 15h16" stroke="#F5F5F5" strokeWidth="2" strokeLinecap="round"/>
             </svg>
           </div>
           <span className="vendor-page__info-button-label">Сайт</span>
@@ -269,8 +269,8 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
 
         <button className="vendor-page__info-button" onClick={handleShare}>
           <div className="vendor-page__info-button-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M18 16.08C17.24 16.08 16.56 16.38 16.04 16.85L8.91 12.7C8.96 12.47 9 12.24 9 12C9 11.76 8.96 11.53 8.91 11.3L15.96 7.19C16.5 7.69 17.21 8 18 8C19.66 8 21 6.66 21 5C21 3.34 19.66 2 18 2C16.34 2 15 3.34 15 5C15 5.24 15.04 5.47 15.09 5.7L8.04 9.81C7.5 9.31 6.79 9 6 9C4.34 9 3 10.34 3 12C3 13.66 4.34 15 6 15C6.79 15 7.5 14.69 8.04 14.19L15.16 18.34C15.11 18.55 15.08 18.77 15.08 19C15.08 20.61 16.39 21.92 18 21.92C19.61 21.92 20.92 20.61 20.92 19C20.92 17.39 19.61 16.08 18 16.08Z" fill="#F5F5F5"/>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M7 12V3.85L4.4 6.45L3 5L8 0L13 5L11.6 6.45L9 3.85V12H7ZM2 16C1.45 16 0.979167 15.8042 0.5875 15.4125C0.195833 15.0208 0 14.55 0 14V11H2V14H14V11H16V14C16 14.55 15.8042 15.0208 15.4125 15.4125C15.0208 15.8042 14.55 16 14 16H2Z" fill="#F5F5F5"/>
             </svg>
           </div>
           <span className="vendor-page__info-button-label">Поделиться</span>

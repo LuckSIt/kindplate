@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useMemo, useCallback, useEffect, useContext } from "react";
-import { axiosInstance } from "@/lib/axiosInstance";
 import { useMapQuery } from "@/lib/hooks/use-optimized-query";
+import { fetchOffersSearch, mapOffersToBusinesses } from "@/lib/offers-search";
 import { authContext } from "@/lib/auth";
 import type { Business } from "@/lib/types";
 import businessImage1 from "@/figma/business-image-1.png";
@@ -46,25 +46,25 @@ function ListPageComponent() {
     const { data: offersData, isLoading, isError, error } = useMapQuery(
         ["offers_search_list", debouncedSearchQuery, userLocation],
         () => {
-            const params = new URLSearchParams();
+            const filters: Parameters<typeof fetchOffersSearch>[0] = {
+                sort: 'distance',
+                page: 1,
+                limit: 100,
+                radius_km: 50,
+            };
             
             if (userLocation) {
-                params.append('lat', userLocation[0].toString());
-                params.append('lon', userLocation[1].toString());
-                params.append('radius_km', '50');
+                filters.lat = userLocation[0];
+                filters.lon = userLocation[1];
             }
             
             if (debouncedSearchQuery) {
-                params.append('q', debouncedSearchQuery);
+                filters.q = debouncedSearchQuery;
             }
             
-            params.append('sort', 'distance');
-            params.append('page', '1');
-            params.append('limit', '100');
-            
-            return axiosInstance.get(`/offers/search?${params.toString()}`, {
+            return fetchOffersSearch(filters, {
                 skipErrorNotification: true // Пропускаем уведомления - они обрабатываются отдельно
-            } as any);
+            });
         },
         {
             enabled: !!userLocation || true, // Включаем только когда есть геолокация или принудительно
@@ -79,45 +79,8 @@ function ListPageComponent() {
 
     // Process businesses data
     const businesses: Business[] = useMemo(() => {
-        if (offersData?.data?.offers) {
-            const businessMap = new Map<number, Business>();
-            
-            offersData.data.offers.forEach((offer: any) => {
-                const businessId = offer.business.id;
-                if (!businessMap.has(businessId)) {
-                    businessMap.set(businessId, {
-                        id: businessId,
-                        name: offer.business.name,
-                        address: offer.business.address,
-                        coords: offer.business.coords,
-                        rating: offer.business.rating,
-                        logo_url: offer.business.logo_url,
-                        phone: null,
-                        offers: []
-                    });
-                }
-                const business = businessMap.get(businessId)!;
-                business.offers.push({
-                    id: offer.id,
-                    title: offer.title,
-                    description: offer.description,
-                    image_url: offer.image_url,
-                    original_price: offer.original_price,
-                    discounted_price: offer.discounted_price,
-                    quantity_available: offer.quantity_available,
-                    pickup_time_start: offer.pickup_time_start,
-                    pickup_time_end: offer.pickup_time_end,
-                    is_active: offer.is_active,
-                    business_id: businessId,
-                    created_at: offer.created_at
-                });
-            });
-            
-            return Array.from(businessMap.values());
-        }
-        
-        return [];
-    }, [offersData?.data?.offers]);
+        return mapOffersToBusinesses(offersData?.offers);
+    }, [offersData?.offers]);
 
     const handleBusinessClick = useCallback((businessId: number) => {
         navigate({ to: '/v/$vendorId', params: { vendorId: businessId.toString() } });
@@ -132,50 +95,35 @@ function ListPageComponent() {
 
     return (
         <div className="businesses-list-page">
-            {/* Logo and Title */}
-            <div className="businesses-list-page__logo-section">
-                <div className="businesses-list-page__logo-icon">
-                    <svg width="100%" height="100%" viewBox="0 0 60 80" fill="none">
-                        {/* Location pin shape */}
-                        <path d="M30 0C18.954 0 10 8.954 10 20C10 35 30 60 30 60C30 60 50 35 50 20C50 8.954 41.046 0 30 0Z" fill="#35741F"/>
-                        {/* Fork */}
-                        <path d="M20 25L20 35L22 35L22 30L25 30L25 35L27 35L27 25L20 25Z" fill="white"/>
-                        <path d="M20 30L22 30L22 28L20 28L20 30Z" fill="white"/>
-                        {/* Knife */}
-                        <path d="M35 25L35 35L37 35L37 28L40 28L40 35L42 35L42 25L35 25Z" fill="white"/>
-                        <path d="M35 28L37 28L37 26L35 26L35 28Z" fill="white"/>
-                    </svg>
-                </div>
-                <span className="businesses-list-page__logo-text">KindPlate</span>
-            </div>
-
-            {/* Search Bar */}
-            <div className="businesses-list-page__search-container">
-                <div className="businesses-list-page__search">
-                    <svg className="businesses-list-page__search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="#757575" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M21 21L16.65 16.65" stroke="#757575" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    <input
-                        type="text"
-                        className="businesses-list-page__search-input"
-                        placeholder="Найти заведение"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+            {/* Green Header Panel with Search Bar */}
+            <div className="businesses-list-page__green-header">
+                <div className="businesses-list-page__search-container">
+                    <div className="businesses-list-page__search">
+                        <svg className="businesses-list-page__search-icon" width="29" height="29" viewBox="0 0 24 24" fill="none">
+                            <path d="M19.6 21L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L21 19.6L19.6 21ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z" fill="#1D1B20"/>
+                        </svg>
+                        <input
+                            type="text"
+                            className="businesses-list-page__search-input"
+                            placeholder="Найти заведение"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                    <Link 
+                        to="/cart" 
+                        className="businesses-list-page__cart-button"
+                        aria-label="Корзина"
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M9 22C9.55228 22 10 21.5523 10 21C10 20.4477 9.55228 20 9 20C8.44772 20 8 20.4477 8 21C8 21.5523 8.44772 22 9 22Z" stroke="#10172A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M20 22C20.5523 22 21 21.5523 21 21C21 20.4477 20.5523 20 20 20C19.4477 20 19 20.4477 19 21C19 21.5523 19.4477 22 20 22Z" stroke="#10172A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M1 1H5L7.68 14.39C7.77144 14.8504 8.02191 15.264 8.38755 15.5583C8.75318 15.8526 9.2107 16.009 9.68 16H19.4C19.8693 16.009 20.3268 15.8526 20.6925 15.5583C21.0581 15.264 21.3086 14.8504 21.4 14.39L23 6H6" stroke="#10172A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </Link>
                 </div>
             </div>
 
-            {/* User Profile Strip */}
-            <div className="businesses-list-page__user-strip" onClick={() => navigate({ to: "/account" })}>
-                <svg className="businesses-list-page__user-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#757575"/>
-                </svg>
-                <div className="businesses-list-page__user-info">
-                    <div className="businesses-list-page__user-name">{user?.name || 'Пользователь'}</div>
-                    <div className="businesses-list-page__user-edit">изменить информацию</div>
-                </div>
-            </div>
 
             {/* Statistics */}
             <div className="businesses-list-page__statistics">
@@ -227,40 +175,6 @@ function ListPageComponent() {
                 )}
             </div>
 
-            {/* Bottom Navigation */}
-            <div className="businesses-list-page__bottom-nav">
-                <Link 
-                    to="/home" 
-                    className="businesses-list-page__nav-button"
-                    aria-label="Карта"
-                >
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                        <path d="M3 7L9 4L15 7L21 4V17L15 20L9 17L3 20V7Z" stroke="#767676" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    <span className="businesses-list-page__nav-label">Карта</span>
-                </Link>
-                <Link 
-                    to="/list" 
-                    className="businesses-list-page__nav-button businesses-list-page__nav-button--active"
-                    aria-label="Список"
-                >
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                        <path d="M4 6H20M4 12H20M4 18H20" stroke="#35741F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    <span className="businesses-list-page__nav-label">Список</span>
-                </Link>
-                <Link 
-                    to="/account" 
-                    className="businesses-list-page__nav-button"
-                    aria-label="Профиль"
-                >
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="#757575" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" stroke="#757575" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    <span className="businesses-list-page__nav-label">Профиль</span>
-                </Link>
-            </div>
         </div>
     );
 }
@@ -289,7 +203,7 @@ function BusinessCard({ business, image, onClick }: BusinessCardProps) {
                 aria-label="Добавить в избранное"
             >
                 <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5C22 12.27 18.6 15.36 13.45 20.03L12 21.35Z" fill="white" fillOpacity="0.74"/>
+                    <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5C22 12.27 18.6 15.36 13.45 20.03L12 21.35Z" fill="none" stroke="white" strokeWidth="1.6"/>
                 </svg>
             </button>
 
@@ -300,28 +214,33 @@ function BusinessCard({ business, image, onClick }: BusinessCardProps) {
                         <h3 className="businesses-list-page__business-name">{business.name}</h3>
                         <p className="businesses-list-page__business-type">Кофейня</p>
                     </div>
-                    <div className="businesses-list-page__rating">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#DB7E2F">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-                        </svg>
-                        <span>{business.rating || 4.8}</span>
+                    
+                    <div className="businesses-list-page__header-right">
+                        <div className="businesses-list-page__business-meta">
+                            <div className="businesses-list-page__business-meta-item">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" fill="#F5FBA2"/>
+                                </svg>
+                                <span>0.8 км</span>
+                            </div>
+                            <div className="businesses-list-page__business-meta-item">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12.5 7V11.25L16.5 13.5L15.75 14.5L11.5 11.75V7H12.5Z" fill="#F5FBA2"/>
+                                </svg>
+                                <span>7:00-22:00</span>
+                            </div>
+                        </div>
+
+                        <div className="businesses-list-page__rating">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="#DB7E2F">
+                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                            </svg>
+                            <span>{business.rating || 4.8}</span>
+                        </div>
                     </div>
                 </div>
 
-                <div className="businesses-list-page__business-meta">
-                    <div className="businesses-list-page__business-meta-item">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" fill="#F5FBA2"/>
-                        </svg>
-                        <span>0.8 км</span>
-                    </div>
-                    <div className="businesses-list-page__business-meta-item">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12.5 7V11.25L16.5 13.5L15.75 14.5L11.5 11.75V7H12.5Z" fill="#F5FBA2"/>
-                        </svg>
-                        <span>7:00-22:00</span>
-                    </div>
-                </div>
+                <div className="businesses-list-page__business-divider"></div>
 
                 {/* Offers */}
                 <div className="businesses-list-page__business-offers">
@@ -342,8 +261,6 @@ function BusinessCard({ business, image, onClick }: BusinessCardProps) {
                         </div>
                     )}
                 </div>
-
-                <div className="businesses-list-page__business-divider"></div>
             </div>
         </div>
     );

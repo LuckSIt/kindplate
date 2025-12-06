@@ -8,6 +8,7 @@ interface MapViewProps {
   selectedBusiness?: Business | null;
   userLocation?: [number, number] | null;
   className?: string;
+  style?: React.CSSProperties;
   onMapClick?: () => void;
 }
 
@@ -19,6 +20,7 @@ export const MapView: React.FC<MapViewProps> = ({
   selectedBusiness,
   userLocation,
   className = '',
+  style,
   onMapClick
 }) => {
   const mapRef = useRef<any>(null);
@@ -26,6 +28,8 @@ export const MapView: React.FC<MapViewProps> = ({
   const [map, setMap] = useState<any>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [userInteracted, setUserInteracted] = useState(false);
+  const [containerReady, setContainerReady] = useState(false);
+  const zeroSizeWarnedRef = useRef(false);
 
   // Initialize Yandex Maps - проверяем загрузку скрипта
   useEffect(() => {
@@ -65,6 +69,48 @@ export const MapView: React.FC<MapViewProps> = ({
     };
   }, []);
 
+  // Track container size and mark ready once it has non-zero dimensions
+  useEffect(() => {
+    const el = mapRef.current;
+    if (!el) return;
+
+    const ensureSize = () => {
+      const rect = el.getBoundingClientRect();
+      if (rect.width === 0) {
+        // fallback ширины, если родитель еще не успел просчитаться
+        el.style.width = '100vw';
+        el.style.minWidth = '320px';
+        el.parentElement && (el.parentElement.style.width = '100%');
+      }
+      if (rect.height === 0) {
+        // fallback высоты
+        el.style.minHeight = '400px';
+        el.style.height = '100%';
+        el.parentElement && (el.parentElement.style.minHeight = '400px');
+      }
+
+      if (rect.width > 0 && rect.height > 0) {
+        zeroSizeWarnedRef.current = false;
+        setContainerReady(true);
+        // При изменении габаритов подгоняем карту
+        if (map && map.container?.fitToViewport) {
+          map.container.fitToViewport();
+        }
+      } else {
+        if (!zeroSizeWarnedRef.current) {
+          zeroSizeWarnedRef.current = true;
+          console.warn('⚠️ Контейнер карты имеет нулевые размеры:', { width: rect.width, height: rect.height });
+        }
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(ensureSize);
+    resizeObserver.observe(el);
+    ensureSize();
+
+    return () => resizeObserver.disconnect();
+  }, [map]);
+
   // Initialize map
   useEffect(() => {
     if (!mapLoaded || !window.ymaps) {
@@ -83,13 +129,14 @@ export const MapView: React.FC<MapViewProps> = ({
       return;
     }
 
-    // Проверяем размеры контейнера
+    // Ждем пока контейнер станет видимым/имеет размер
     const rect = mapRef.current.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) {
-      console.warn('⚠️ Контейнер карты имеет нулевые размеры:', { width: rect.width, height: rect.height });
-      // Пытаемся установить размеры явно
-      mapRef.current.style.width = '100%';
-      mapRef.current.style.height = '100%';
+    if (!containerReady || rect.width === 0 || rect.height === 0) {
+      if (!zeroSizeWarnedRef.current) {
+        zeroSizeWarnedRef.current = true;
+        console.warn('⚠️ Контейнер карты имеет нулевые размеры:', { width: rect.width, height: rect.height });
+      }
+      return;
     }
 
     console.log('🗺️ Инициализация карты...', {
@@ -115,6 +162,8 @@ export const MapView: React.FC<MapViewProps> = ({
         console.log('✅ Карта успешно создана');
         setMap(yandexMap);
         setIsInitialized(true);
+        // Гарантируем растяжение на весь контейнер
+        yandexMap.container.fitToViewport();
 
         // Handle bounds change with rAF throttle
         let pending = false;
@@ -170,7 +219,19 @@ export const MapView: React.FC<MapViewProps> = ({
         map.destroy();
       }
     };
-  }, [mapLoaded, userLocation, onBoundsChange, isInitialized]);
+  }, [mapLoaded, userLocation, onBoundsChange, isInitialized, containerReady]);
+
+  // Подгоняем карту при изменении размеров окна
+  useEffect(() => {
+    if (!map) return;
+    const handleResize = () => {
+      if (map.container?.fitToViewport) {
+        map.container.fitToViewport();
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [map]);
 
   // Add business markers with optimized clusterer
   useEffect(() => {
@@ -207,6 +268,9 @@ export const MapView: React.FC<MapViewProps> = ({
     });
 
     businesses.forEach((business) => {
+      // Пропускаем бизнесы без координат
+      if (!business.coords || business.coords.length < 2) return;
+      
       // Проверяем, есть ли активные заказы (работает и есть активные предложения)
       const hasActiveOffers = business.offers && business.offers.some(offer => 
         offer.is_active && offer.quantity_available > 0
@@ -216,19 +280,12 @@ export const MapView: React.FC<MapViewProps> = ({
       
       const isSelected = selectedBusiness && selectedBusiness.id === business.id;
 
-      // Цвета согласно макету Figma:
-      // Зеленый (#35741F) - заведение работает и есть активные заказы
-      // Серый (#757575) - заведение закрыто или нет активных заказов
-      const color = hasActiveOffers ? '#35741F' : '#757575';
-      // Размеры маркеров согласно макету: обычные 10px, выбранные 12px
-      const r = isSelected ? 12 : 10;
-      const shadow = isSelected ? 'filter="url(#s)"' : '';
-      const svg = `<?xml version="1.0" encoding="UTF-8"?>
-        <svg xmlns="http://www.w3.org/2000/svg" width="${r*2+4}" height="${r*2+4}" viewBox="0 0 ${r*2+4} ${r*2+4}">
-          <defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="${color}" flood-opacity="0.45"/></filter></defs>
-          <circle cx="${r+2}" cy="${r+2}" r="${r}" fill="${color}" ${shadow}/>
-        </svg>`;
-      const dataUrl = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+      // Используем PNG логотип вместо цветных кружков
+      // Размеры маркеров: обычные 96px, выбранные 120px (увеличены в 3 раза)
+      const size = isSelected ? 120 : 96;
+      
+      // Путь к логотипу
+      const iconUrl = '/kandlate.png';
 
       const placemark = new window.ymaps.Placemark(
         coords,
@@ -247,11 +304,12 @@ export const MapView: React.FC<MapViewProps> = ({
         },
         {
           iconLayout: 'default#image',
-          iconImageHref: dataUrl,
-          iconImageSize: [r*2+4, r*2+4],
-          iconImageOffset: [-(r+2), -(r+2)],
+          iconImageHref: iconUrl,
+          iconImageSize: [size, size],
+          iconImageOffset: [-size/2, -size/2],
           balloonCloseButton: true,
           hideIconOnBalloonOpen: false,
+          opacity: hasActiveOffers ? 1 : 0.5, // Полупрозрачный для неактивных
         }
       );
 
@@ -270,14 +328,17 @@ export const MapView: React.FC<MapViewProps> = ({
   // Initial centering on businesses (only once and if user hasn't interacted)
   useEffect(() => {
     if (map && businesses.length > 0 && !userLocation && !userInteracted) {
-      const firstBusinessCoords = [parseFloat(businesses[0].coords[0]), parseFloat(businesses[0].coords[1])];
-      map.setCenter(firstBusinessCoords, 13);
+      const firstBusiness = businesses[0];
+      if (firstBusiness.coords && firstBusiness.coords.length >= 2) {
+        const firstBusinessCoords = [parseFloat(firstBusiness.coords[0]), parseFloat(firstBusiness.coords[1])];
+        map.setCenter(firstBusinessCoords, 13);
+      }
     }
   }, [map, businesses.length, userLocation, userInteracted]);
 
   // Center map on selected business (only when business actually changes)
   useEffect(() => {
-    if (map && selectedBusiness) {
+    if (map && selectedBusiness && selectedBusiness.coords && selectedBusiness.coords.length >= 2) {
       const coords = [parseFloat(selectedBusiness.coords[0]), parseFloat(selectedBusiness.coords[1])];
       const currentCenter = map.getCenter();
       const currentZoom = map.getZoom();
@@ -310,7 +371,7 @@ export const MapView: React.FC<MapViewProps> = ({
   // Убрали ранний return - показываем контейнер всегда
 
   return (
-    <div className={`relative ${className}`} style={{ width: '100%', height: '100%', minHeight: '400px' }}>
+    <div className={`relative ${className}`} style={{ width: '100%', height: '100%', minHeight: '400px', ...style }}>
       <div 
         ref={mapRef} 
         className="w-full h-full" 
@@ -319,7 +380,7 @@ export const MapView: React.FC<MapViewProps> = ({
       {!mapLoaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 z-10">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-2"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-500 border-t-transparent mx-auto mb-2"></div>
             <p className="text-sm text-gray-600 dark:text-gray-300">Загрузка карты...</p>
           </div>
         </div>
@@ -327,7 +388,7 @@ export const MapView: React.FC<MapViewProps> = ({
       {mapLoaded && !isInitialized && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 z-10">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-2"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-500 border-t-transparent mx-auto mb-2"></div>
             <p className="text-sm text-gray-600 dark:text-gray-300">Инициализация карты...</p>
           </div>
         </div>
