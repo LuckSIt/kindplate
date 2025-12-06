@@ -218,7 +218,7 @@ export function LandingPage() {
                 {/* CTA Buttons */}
                 <section className="px-[24px] pb-[40px]">
                     <div className="flex gap-[14px]">
-                        <Link to="/home" className="flex-1">
+                        <Link to="/auth/login" className="flex-1">
                             <button 
                                 className="w-full h-[38px] rounded-[26px] text-[13px] font-bold leading-[1.14] text-center transition-opacity hover:opacity-90 whitespace-nowrap"
                                 style={{ 
@@ -232,7 +232,7 @@ export function LandingPage() {
                                 начать спасать
                             </button>
                         </Link>
-                        <Link to="/auth/register/business" className="flex-1">
+                        <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer">
                             <button 
                                 className="w-full h-[38px] rounded-[26px] border border-white text-[13px] font-bold leading-[1.14] text-center transition-opacity hover:opacity-90 whitespace-nowrap"
                                 style={{ 
@@ -245,7 +245,7 @@ export function LandingPage() {
                             >
                                 начать продавать
                             </button>
-                        </Link>
+                        </a>
                     </div>
                 </section>
 
@@ -734,7 +734,7 @@ export function LandingPage() {
                             </div>
                         </div>
 
-                        <Link to="/auth/register/business">
+                        <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer">
                             <button 
                                 className="w-full h-[31px] rounded-[5px] text-[12px] font-semibold leading-[0.94] transition-opacity hover:opacity-90 font-montserrat-alt"
                                 style={{ 
@@ -745,7 +745,7 @@ export function LandingPage() {
                             >
                                 написать о сотрудничестве
                             </button>
-                        </Link>
+                        </a>
                     </div>
                 </section>
 
@@ -788,8 +788,10 @@ export function LandingPage() {
                                 >
                                     KindPlate
                                 </p>
-                                <Link 
-                                    to="/auth/register/business"
+                                <a 
+                                    href="mailto:kindplate.io@mail.ru"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="block transition-opacity hover:opacity-80 footer-link"
                                     style={{ 
                                         fontFamily: 'Montserrat Alternates, sans-serif',
@@ -801,9 +803,9 @@ export function LandingPage() {
                                     }}
                                 >
                                     Для партнеров
-                                </Link>
+                                </a>
                                 <Link 
-                                    to="/home"
+                                    to="/auth/login"
                                     className="block transition-opacity hover:opacity-80 footer-link"
                                     style={{ 
                                         fontFamily: 'Montserrat Alternates, sans-serif',
