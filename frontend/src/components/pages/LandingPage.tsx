@@ -608,7 +608,7 @@ export function LandingPage() {
                         </div>
                         
                         <div className="flex justify-center">
-                            <Link to="/home">
+                            <Link to="/auth/login">
                                 <button 
                                     className="w-[186px] h-[28px] rounded-[5px] text-[12px] font-semibold leading-[0.94] transition-opacity hover:opacity-90 font-montserrat-alt"
                                     style={{ 
