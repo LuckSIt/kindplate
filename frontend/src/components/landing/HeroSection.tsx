@@ -11,16 +11,16 @@ export function HeroSection() {
                 Соединяем людей с кафе и ресторанами для выгодной и осознанной покупки еды
             </p>
             <div className="flex flex-col gap-3">
-                <Link to="/home">
+                <Link to="/auth/login">
                     <Button className="w-full bg-primary-500 hover:bg-primary-600 text-white rounded-2xl py-3 font-semibold text-base transition-all">
                         начать спасать
                     </Button>
                 </Link>
-                <Link to="/auth/register/business">
+                <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer">
                     <Button variant="outline" className="w-full border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white rounded-2xl py-3 font-semibold text-base bg-slate-800 transition-all">
                         начать продавать
                     </Button>
-                </Link>
+                </a>
             </div>
         </div>
     );

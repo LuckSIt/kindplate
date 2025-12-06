@@ -42,6 +42,8 @@ export function SocialLinks({
         <div className={clsx("flex items-center", className)} style={wrapperStyle}>
             <a
                 href="#"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center justify-center transition-opacity hover:opacity-80"
                 aria-label="VK"
                 style={circleStyle}
@@ -49,7 +51,9 @@ export function SocialLinks({
                 <img src={vkFooterIcon} alt="VK" style={iconStyle} />
             </a>
             <a
-                href="#"
+                href="https://t.me/AkimSat"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center justify-center transition-opacity hover:opacity-80"
                 aria-label="Telegram"
                 style={circleStyle}
@@ -58,6 +62,8 @@ export function SocialLinks({
             </a>
             <a
                 href="#"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center justify-center transition-opacity hover:opacity-80"
                 aria-label="Instagram"
                 style={circleStyle}
@@ -65,7 +71,9 @@ export function SocialLinks({
                 <img src={instagramFooterIcon} alt="Instagram" style={iconStyle} />
             </a>
             <a
-                href="#"
+                href="mailto:kindplate.io@mail.ru"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center justify-center transition-opacity hover:opacity-80"
                 aria-label="Email"
                 style={circleStyle}
