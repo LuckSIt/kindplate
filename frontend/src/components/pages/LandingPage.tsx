@@ -173,7 +173,7 @@ export function LandingPage() {
                             <span
                                 data-testid="hero-profitable"
                                 className="font-ramona inline-flex items-center justify-center rounded-full px-[16px] py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"
-                                style={{ backgroundColor: '#3FA33F' }}
+                                style={{ backgroundColor: '#083608' }}
                             >
                                 Выгодно
                             </span>
@@ -189,7 +189,7 @@ export function LandingPage() {
                             <span
                                 data-testid="hero-useful"
                                 className="font-ramona inline-flex items-center justify-center rounded-full px-[16px] py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"
-                                style={{ backgroundColor: '#3FA33F' }}
+                                style={{ backgroundColor: '#083608' }}
                             >
                                 полезно
                             </span>
@@ -483,7 +483,7 @@ export function LandingPage() {
                             <span 
                                 className="rounded-[8px] px-[12px] py-[5px] text-[22px] font-[600] whitespace-nowrap font-montserrat-alt"
                                 style={{ 
-                                    backgroundColor: '#3FA33F',
+                                    backgroundColor: '#083608',
                                     color: '#FFFFFF'
                                 }}
                             >

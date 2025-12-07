@@ -38,7 +38,7 @@ export function WhyKindPlate() {
         <section
             data-testid="why-kindplate"
             className="relative mx-auto flex h-[383px] w-[344px] flex-col rounded-[15px]"
-            style={{ backgroundColor: "#35741F" }}
+            style={{ backgroundColor: "#083608" }}
         >
             <h3
                 className="absolute left-[39px] top-[4px] text-center font-montserrat-alt"
