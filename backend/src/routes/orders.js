@@ -2,6 +2,7 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const pool = require('../lib/db');
 const { createAccessToken, verifyToken } = require('../lib/jwt');
+const { asyncHandler } = require('../lib/errorHandler');
 const QRCode = require('qrcode');
 const crypto = require('crypto');
 
