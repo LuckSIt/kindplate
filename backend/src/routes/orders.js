@@ -789,6 +789,132 @@ ordersRouter.get("/business", asyncHandler(async (req, res) => {
 }));
 
 // ============================================
+// ПОЛУЧИТЬ ОДИН ЗАКАЗ ПО ID (ДЛЯ СТРАНИЦЫ ОПЛАТЫ)
+// ============================================
+
+ordersRouter.get("/:id", asyncHandler(async (req, res) => {
+    const userId = req.session?.userId;
+    const { id } = req.params;
+
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
+        });
+    }
+
+    const orderId = parseInt(id, 10);
+    if (!orderId || Number.isNaN(orderId)) {
+        return res.status(400).send({
+            success: false,
+            error: "INVALID_ORDER_ID",
+            message: "Некорректный ID заказа"
+        });
+    }
+
+    console.log("🔍 Запрос GET /orders/:id", { orderId, userId });
+
+    // Проверяем наличие таблицы orders
+    const tableCheck = await pool.query(`
+        SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' 
+              AND table_name = 'orders'
+        );
+    `);
+
+    if (!tableCheck.rows[0].exists) {
+        console.log("⚠️ Таблица orders не существует");
+        return res.status(404).send({
+            success: false,
+            error: "ORDER_NOT_FOUND",
+            message: "Заказ не найден"
+        });
+    }
+
+    // Получаем сам заказ
+    const orderResult = await pool.query(`
+        SELECT 
+            o.id,
+            o.user_id,
+            o.business_id,
+            u.name  AS business_name,
+            u.address AS business_address,
+            o.pickup_time_start,
+            o.pickup_time_end,
+            o.subtotal,
+            o.service_fee,
+            o.total,
+            o.status,
+            o.notes,
+            o.created_at,
+            o.confirmed_at
+        FROM orders o
+        JOIN users u ON o.business_id = u.id
+        WHERE o.id = $1 AND o.user_id = $2
+    `, [orderId, userId]);
+
+    if (orderResult.rows.length === 0) {
+        return res.status(404).send({
+            success: false,
+            error: "ORDER_NOT_FOUND",
+            message: "Заказ не найден"
+        });
+    }
+
+    const order = orderResult.rows[0];
+
+    // Получаем позиции заказа
+    let items = [];
+    try {
+        const itemsResult = await pool.query(`
+            SELECT 
+                oi.id,
+                oi.offer_id,
+                oi.quantity,
+                oi.price,
+                oi.title
+            FROM order_items oi
+            WHERE oi.order_id = $1
+        `, [orderId]);
+
+        items = itemsResult.rows.map(item => ({
+            id: item.id,
+            offer_id: item.offer_id,
+            quantity: item.quantity,
+            price: parseFloat(item.price),
+            title: item.title
+        }));
+    } catch (itemError) {
+        console.log("⚠️ Ошибка при получении позиций заказа:", itemError.message);
+        items = [];
+    }
+
+    const orderDetails = {
+        id: order.id,
+        business_id: order.business_id,
+        business_name: order.business_name,
+        business_address: order.business_address,
+        pickup_time_start: order.pickup_time_start,
+        pickup_time_end: order.pickup_time_end,
+        subtotal: parseFloat(order.subtotal),
+        service_fee: parseFloat(order.service_fee || 0),
+        total: parseFloat(order.total),
+        status: order.status,
+        notes: order.notes,
+        items,
+        created_at: order.created_at,
+        confirmed_at: order.confirmed_at
+    };
+
+    res.send({
+        success: true,
+        data: orderDetails
+    });
+}));
+
+// ============================================
 // QR-КОД ДЛЯ ВЫДАЧИ ЗАКАЗА
 // ============================================
 
