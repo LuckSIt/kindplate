@@ -91,7 +91,7 @@ ordersRouter.get("/config", async (req, res) => {
 // Создать черновик заказа
 ordersRouter.post("/draft", asyncHandler(async (req, res) => {
     const { items, pickup_time_start, pickup_time_end, business_id, business_name, business_address, notes } = req.body;
-    const userId = req.session?.userId;
+    const userId = await ensureAuthenticated(req, res);
     
     if (!userId) {
         return res.status(401).send({
@@ -315,7 +315,7 @@ ordersRouter.post("/draft", asyncHandler(async (req, res) => {
 ordersRouter.post("/:id/confirm", asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { pickup_time_start, pickup_time_end, notes } = req.body;
-    const userId = req.session?.userId;
+    const userId = await ensureAuthenticated(req, res);
     
     if (!userId) {
         return res.status(401).send({
@@ -373,7 +373,7 @@ ordersRouter.post("/:id/confirm", asyncHandler(async (req, res) => {
 // Получить заказы пользователя
 // Получить заказы текущего пользователя
 ordersRouter.get("/mine", asyncHandler(async (req, res) => {
-    const userId = req.session?.userId;
+    const userId = await ensureAuthenticated(req, res);
     
     if (!userId) {
         return res.status(401).send({
@@ -616,7 +616,7 @@ ordersRouter.get("/", asyncHandler(async (req, res) => {
 
 // Получить заказы для бизнеса
 ordersRouter.get("/business", asyncHandler(async (req, res) => {
-    const businessId = req.session?.userId;
+    const businessId = await ensureAuthenticated(req, res);
     
     if (!businessId) {
         return res.status(401).send({
@@ -795,7 +795,7 @@ ordersRouter.get("/business", asyncHandler(async (req, res) => {
 // ============================================
 
 ordersRouter.get("/:id", asyncHandler(async (req, res) => {
-    const userId = req.session?.userId;
+    const userId = await ensureAuthenticated(req, res);
     const { id } = req.params;
 
     if (!userId) {
@@ -923,7 +923,7 @@ ordersRouter.get("/:id", asyncHandler(async (req, res) => {
 // Получить QR-код для заказа (клиент видит QR для сканирования продавцом)
 ordersRouter.get("/:id/qr", asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const userId = req.session?.userId;
+    const userId = await ensureAuthenticated(req, res);
     
     if (!userId) {
         return res.status(401).send({
@@ -1190,7 +1190,7 @@ ordersRouter.post("/scan", scanRateLimiter, async (req, res) => {
 ordersRouter.patch("/:id", asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { items, pickup_time_start, pickup_time_end, notes } = req.body;
-    const userId = req.session?.userId;
+    const userId = await ensureAuthenticated(req, res);
     
     if (!userId) {
         return res.status(401).send({

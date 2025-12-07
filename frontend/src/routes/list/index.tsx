@@ -126,7 +126,7 @@ function ListPageComponent() {
 
 
             {/* Statistics */}
-            <div className="businesses-list-page__statistics">
+            {/*<div className="businesses-list-page__statistics">
                 <div className="businesses-list-page__stat-card businesses-list-page__stat-card--saved">
                     <div className="businesses-list-page__stat-value">{stats.savedPortions}</div>
                     <div className="businesses-list-page__stat-label">Порций<br />спасено</div>
@@ -139,7 +139,7 @@ function ListPageComponent() {
                     <div className="businesses-list-page__stat-value">{stats.savedCO2}кг</div>
                     <div className="businesses-list-page__stat-label">CO₂<br />спасено</div>
                 </div>
-            </div>
+            </div>*/}
 
             {/* Available Now Section */}
             <div className="businesses-list-page__available-section">
