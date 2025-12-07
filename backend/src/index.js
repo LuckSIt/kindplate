@@ -61,18 +61,8 @@ const adminRouter = require("./routes/admin");
 const { businessOnly } = require("./lib/auth");
 
 // ============================================
-// БЕЗОПАСНОСТЬ: Helmet и защита заголовков
+// CORS - ДОЛЖЕН БЫТЬ ПЕРВЫМ, ДО ВСЕХ ОСТАЛЬНЫХ MIDDLEWARE
 // ============================================
-
-// Helmet для защиты заголовков HTTP
-app.use(helmet({
-    contentSecurityPolicy: false, // Используем свой CSP
-    crossOriginEmbedderPolicy: false, // Для Yandex Maps
-    crossOriginResourcePolicy: { policy: "cross-origin" }
-}));
-
-// Собственная политика безопасности контента
-app.use(contentSecurityPolicy);
 
 // CORS с ограничениями
 const corsOptions = {
@@ -119,7 +109,11 @@ const corsOptions = {
     optionsSuccessStatus: 204
 };
 
+// Применяем CORS ПЕРВЫМ
 app.use(cors(corsOptions));
+
+// Явная обработка OPTIONS запросов (preflight) для всех маршрутов
+app.options('*', cors(corsOptions));
 
 // Дополнительный middleware для гарантированной отправки CORS заголовков при ошибках
 app.use((req, res, next) => {
@@ -144,6 +138,21 @@ app.use((req, res, next) => {
     }
     next();
 });
+
+// ============================================
+// БЕЗОПАСНОСТЬ: Helmet и защита заголовков
+// ============================================
+
+// Helmet для защиты заголовков HTTP (после CORS, чтобы не блокировать CORS заголовки)
+app.use(helmet({
+    contentSecurityPolicy: false, // Используем свой CSP
+    crossOriginEmbedderPolicy: false, // Для Yandex Maps
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginOpenerPolicy: false // Для корректной работы CORS
+}));
+
+// Собственная политика безопасности контента
+app.use(contentSecurityPolicy);
 
 // OPTIONS запросы обрабатываются автоматически через cors middleware
 
@@ -212,7 +221,7 @@ app.use("/reviews", reviewsRouter);
 app.use("/notifications", notificationsRouter);
 app.use("/subscriptions", subscriptionsRouter);
 
-// Health check endpoint для Docker/Caddy
+// Health check endpoint для Docker/Caddy (должен быть доступен без авторизации)
 app.get("/health", async (req, res) => {
     try {
         // Проверяем подключение к БД
@@ -224,10 +233,13 @@ app.get("/health", async (req, res) => {
         });
     } catch (error) {
         logger.error('Health check failed:', error);
-        res.status(503).json({
-            status: "error",
+        // Даже при ошибке БД возвращаем 200, чтобы Caddy не считал сервис недоступным
+        // (проблема может быть временной)
+        res.status(200).json({
+            status: "degraded",
             database: "disconnected",
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            error: error.message
         });
     }
 });
