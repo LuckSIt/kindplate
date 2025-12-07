@@ -1,15 +1,23 @@
 const express = require('express');
 const pool = require('../lib/db');
+const { authOnly } = require('../lib/auth');
+const { asyncHandler } = require('../lib/errorHandler');
 
 const cartRouter = express.Router();
 
 // Получить корзину пользователя
-cartRouter.get("/cart", async (req, res) => {
-    try {
-        // TODO: Получить user_id из JWT токена
-        const userId = 1; // Временное решение для тестирования
+cartRouter.get("/cart", authOnly, asyncHandler(async (req, res) => {
+    const userId = req.session.userId;
+    
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
+        });
+    }
 
-        console.log("🔍 Запрос /customer/cart", { userId });
+    console.log("🔍 Запрос /customer/cart", { userId });
 
         // Безопасная проверка наличия таблиц
         const tablesCheck = await pool.query(`
@@ -134,24 +142,34 @@ cartRouter.get("/cart", async (req, res) => {
             }
         }));
 
-        res.send({
-            success: true,
-            data: cartItems
-        });
-    } catch (e) {
-        console.error("❌ Ошибка в /customer/cart:", e);
-        return res.send({ success: true, data: [] });
-    }
-});
+    res.send({
+        success: true,
+        data: cartItems
+    });
+}));
 
 // Добавить товар в корзину
-cartRouter.post("/cart", async (req, res) => {
-    try {
-        const { offer_id, quantity } = req.body;
-        // TODO: Получить user_id из JWT токена
-        const userId = 1; // Временное решение для тестирования
+cartRouter.post("/cart", authOnly, asyncHandler(async (req, res) => {
+    const { offer_id, quantity } = req.body;
+    const userId = req.session.userId;
+    
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
+        });
+    }
+    
+    if (!offer_id || !quantity || quantity <= 0) {
+        return res.status(400).send({
+            success: false,
+            error: "INVALID_REQUEST",
+            message: "Необходимо указать offer_id и quantity > 0"
+        });
+    }
 
-        console.log("🔍 Запрос POST /customer/cart", { offer_id, quantity, userId });
+    console.log("🔍 Запрос POST /customer/cart", { offer_id, quantity, userId });
 
         // Проверяем доступные колонки в offers
         const offersColsRes = await pool.query(`
@@ -225,28 +243,34 @@ cartRouter.post("/cart", async (req, res) => {
             [userId, offer_id, quantity]
         );
 
-        res.send({
-            success: true,
-            message: "Товар добавлен в корзину"
-        });
-    } catch (e) {
-        console.error("❌ Ошибка в POST /customer/cart:", e);
-        res.status(500).send({
-            success: false,
-            error: "UNKNOWN_ERROR",
-            message: "Внутренняя ошибка сервера"
-        });
-    }
-});
+    res.send({
+        success: true,
+        message: "Товар добавлен в корзину"
+    });
+}));
 
 // Обновить количество товара в корзине
-cartRouter.put("/cart", async (req, res) => {
-    try {
-        const { offer_id, quantity } = req.body;
-        // TODO: Получить user_id из JWT токена
-        const userId = 1; // Временное решение для тестирования
+cartRouter.put("/cart", authOnly, asyncHandler(async (req, res) => {
+    const { offer_id, quantity } = req.body;
+    const userId = req.session.userId;
+    
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
+        });
+    }
+    
+    if (!offer_id || !quantity || quantity <= 0) {
+        return res.status(400).send({
+            success: false,
+            error: "INVALID_REQUEST",
+            message: "Необходимо указать offer_id и quantity > 0"
+        });
+    }
 
-        console.log("🔍 Запрос PUT /customer/cart", { offer_id, quantity, userId });
+    console.log("🔍 Запрос PUT /customer/cart", { offer_id, quantity, userId });
 
         // Проверяем, есть ли товар в корзине
         const existingItem = await pool.query(
@@ -282,28 +306,26 @@ cartRouter.put("/cart", async (req, res) => {
             [quantity, userId, offer_id]
         );
 
-        res.send({
-            success: true,
-            message: "Количество товара обновлено"
-        });
-    } catch (e) {
-        console.error("❌ Ошибка в PUT /customer/cart:", e);
-        res.status(500).send({
-            success: false,
-            error: "UNKNOWN_ERROR",
-            message: "Внутренняя ошибка сервера"
-        });
-    }
-});
+    res.send({
+        success: true,
+        message: "Количество товара обновлено"
+    });
+}));
 
 // Удалить товар из корзины
-cartRouter.delete("/cart/:offerId", async (req, res) => {
-    try {
-        const { offerId } = req.params;
-        // TODO: Получить user_id из JWT токена
-        const userId = 1; // Временное решение для тестирования
+cartRouter.delete("/cart/:offerId", authOnly, asyncHandler(async (req, res) => {
+    const { offerId } = req.params;
+    const userId = req.session.userId;
+    
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
+        });
+    }
 
-        console.log("🔍 Запрос DELETE /customer/cart/:offerId", { offerId, userId });
+    console.log("🔍 Запрос DELETE /customer/cart/:offerId", { offerId, userId });
 
         const result = await pool.query(
             `DELETE FROM cart_items 
@@ -319,42 +341,32 @@ cartRouter.delete("/cart/:offerId", async (req, res) => {
             });
         }
 
-        res.send({
-            success: true,
-            message: "Товар удален из корзины"
-        });
-    } catch (e) {
-        console.error("❌ Ошибка в DELETE /customer/cart/:offerId:", e);
-        res.status(500).send({
-            success: false,
-            error: "UNKNOWN_ERROR",
-            message: "Внутренняя ошибка сервера"
-        });
-    }
-});
+    res.send({
+        success: true,
+        message: "Товар удален из корзины"
+    });
+}));
 
 // Очистить корзину
-cartRouter.delete("/cart", async (req, res) => {
-    try {
-        // TODO: Получить user_id из JWT токена
-        const userId = 1; // Временное решение для тестирования
-
-        console.log("🔍 Запрос DELETE /customer/cart", { userId });
-
-        await pool.query('DELETE FROM cart_items WHERE user_id = $1', [userId]);
-
-        res.send({
-            success: true,
-            message: "Корзина очищена"
-        });
-    } catch (e) {
-        console.error("❌ Ошибка в DELETE /customer/cart:", e);
-        res.status(500).send({
+cartRouter.delete("/cart", authOnly, asyncHandler(async (req, res) => {
+    const userId = req.session.userId;
+    
+    if (!userId) {
+        return res.status(401).send({
             success: false,
-            error: "UNKNOWN_ERROR",
-            message: "Внутренняя ошибка сервера"
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
         });
     }
-});
+
+    console.log("🔍 Запрос DELETE /customer/cart", { userId });
+
+    await pool.query('DELETE FROM cart_items WHERE user_id = $1', [userId]);
+
+    res.send({
+        success: true,
+        message: "Корзина очищена"
+    });
+}));
 
 module.exports = cartRouter;

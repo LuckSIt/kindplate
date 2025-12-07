@@ -75,38 +75,62 @@ ordersRouter.get("/config", async (req, res) => {
 });
 
 // Создать черновик заказа
-ordersRouter.post("/draft", async (req, res) => {
-    try {
-        const { items, pickup_time_start, pickup_time_end, business_id, business_name, business_address, notes } = req.body;
-        // TODO: Получить user_id из JWT токена
-        const userId = 1; // Временное решение для тестирования
+ordersRouter.post("/draft", asyncHandler(async (req, res) => {
+    const { items, pickup_time_start, pickup_time_end, business_id, business_name, business_address, notes } = req.body;
+    const userId = req.session?.userId;
+    
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
+        });
+    }
 
-        console.log("🔍 Запрос POST /orders/draft", { items: items?.length, business_id, userId });
+    console.log("🔍 Запрос POST /orders/draft", { items: items?.length, business_id, userId });
 
-        // Валидация
-        if (!items || items.length === 0) {
+    // Валидация
+    if (!items || !Array.isArray(items) || items.length === 0) {
+        return res.status(400).send({
+            success: false,
+            error: "INVALID_REQUEST",
+            message: "Заказ должен содержать хотя бы один товар"
+        });
+    }
+
+    if (!business_id || !business_name || !business_address) {
+        return res.status(400).send({
+            success: false,
+            error: "INVALID_REQUEST",
+            message: "Необходима информация о заведении"
+        });
+    }
+
+    if (!pickup_time_start || !pickup_time_end) {
+        return res.status(400).send({
+            success: false,
+            error: "INVALID_REQUEST",
+            message: "Необходимо указать время самовывоза"
+        });
+    }
+
+    // Валидация каждого товара
+    for (const item of items) {
+        if (!item.offer_id || !item.quantity || !item.discounted_price) {
             return res.status(400).send({
                 success: false,
                 error: "INVALID_REQUEST",
-                message: "Заказ должен содержать хотя бы один товар"
+                message: "Каждый товар должен содержать offer_id, quantity и discounted_price"
             });
         }
-
-        if (!business_id || !business_name || !business_address) {
+        if (item.quantity <= 0) {
             return res.status(400).send({
                 success: false,
                 error: "INVALID_REQUEST",
-                message: "Необходима информация о заведении"
+                message: "Количество товара должно быть больше 0"
             });
         }
-
-        if (!pickup_time_start || !pickup_time_end) {
-            return res.status(400).send({
-                success: false,
-                error: "INVALID_REQUEST",
-                message: "Необходимо указать время самовывоза"
-            });
-        }
+    }
 
         // Проверяем, что все товары от одного продавца
         const uniqueBusinessIds = [...new Set(items.map(item => item.business_id))];
@@ -158,37 +182,83 @@ ordersRouter.post("/draft", async (req, res) => {
         const serviceFee = 50; // TODO: Получить из конфигурации
         const total = subtotal + serviceFee;
 
-        // Пока таблица orders не создана правильно, просто возвращаем успех
-        console.log("📦 Создание заказа временно отключено - таблица orders не готова");
-        res.send({
-            success: true,
-            data: {
-                order_id: 1,
-                status: 'draft',
-                subtotal,
-                service_fee: serviceFee,
-                total,
-                message: "Черновик заказа создан (временно отключено)"
-            }
-        });
-        return;
+        // Проверяем существование таблицы orders
+        const tableCheck = await pool.query(`
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_schema = 'public' AND table_name = 'orders'
+            );
+        `);
+
+        if (!tableCheck.rows[0].exists) {
+            // Таблица не существует, создаем её
+            await pool.query(`
+                CREATE TABLE IF NOT EXISTS orders (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER NOT NULL REFERENCES users(id),
+                    business_id INTEGER NOT NULL REFERENCES users(id),
+                    status VARCHAR(50) NOT NULL DEFAULT 'draft',
+                    subtotal DECIMAL(10, 2) NOT NULL,
+                    service_fee DECIMAL(10, 2) NOT NULL DEFAULT 50,
+                    total DECIMAL(10, 2) NOT NULL,
+                    pickup_time_start TIME,
+                    pickup_time_end TIME,
+                    notes TEXT,
+                    pickup_code VARCHAR(255),
+                    pickup_verified_at TIMESTAMP,
+                    confirmed_at TIMESTAMP,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+                
+                CREATE TABLE IF NOT EXISTS order_items (
+                    id SERIAL PRIMARY KEY,
+                    order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+                    offer_id INTEGER NOT NULL REFERENCES offers(id),
+                    quantity INTEGER NOT NULL,
+                    price DECIMAL(10, 2) NOT NULL,
+                    title VARCHAR(255) NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            `);
+        }
+
+        // Создаем заказ
+        const orderResult = await pool.query(
+            `INSERT INTO orders (
+                user_id, business_id, status, subtotal, service_fee, total,
+                pickup_time_start, pickup_time_end, notes
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            RETURNING id, status, subtotal, service_fee, total, created_at`,
+            [userId, business_id, 'draft', subtotal, serviceFee, total, pickup_time_start, pickup_time_end, notes || null]
+        );
 
         const orderId = orderResult.rows[0].id;
 
         // Добавляем позиции заказа
         for (const item of items) {
-            await pool.query(
-                `INSERT INTO order_items (
-                    order_id, offer_id, quantity, price, title
-                ) VALUES ($1, $2, $3, $4, $5)`,
-                [orderId, item.offer_id, item.quantity, item.discounted_price, item.title]
-            );
+            try {
+                await pool.query(
+                    `INSERT INTO order_items (
+                        order_id, offer_id, quantity, price, title
+                    ) VALUES ($1, $2, $3, $4, $5)`,
+                    [orderId, item.offer_id, item.quantity, item.discounted_price, item.title || 'Товар']
+                );
+            } catch (itemError) {
+                console.error("Ошибка при добавлении позиции заказа:", itemError);
+                // Продолжаем, даже если одна позиция не добавилась
+            }
         }
 
         // Очищаем корзину
-        await pool.query('DELETE FROM cart_items WHERE user_id = $1', [userId]);
+        try {
+            await pool.query('DELETE FROM cart_items WHERE user_id = $1', [userId]);
+        } catch (cartError) {
+            console.error("Ошибка при очистке корзины:", cartError);
+            // Не критично, продолжаем
+        }
 
-        res.send({
+        res.status(201).send({
             success: true,
             data: {
                 order_id: orderId,
@@ -225,14 +295,20 @@ ordersRouter.post("/draft", async (req, res) => {
 // PATCH /orders/:id определен ниже после всех специфичных маршрутов
 
 // Подтвердить заказ
-ordersRouter.post("/:id/confirm", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { pickup_time_start, pickup_time_end, notes } = req.body;
-        // TODO: Получить user_id из JWT токена
-        const userId = 1; // Временное решение для тестирования
+ordersRouter.post("/:id/confirm", asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { pickup_time_start, pickup_time_end, notes } = req.body;
+    const userId = req.session?.userId;
+    
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
+        });
+    }
 
-        console.log("🔍 Запрос POST /orders/:id/confirm", { id, userId });
+    console.log("🔍 Запрос POST /orders/:id/confirm", { id, userId });
 
         // Проверяем, что заказ принадлежит пользователю
         const orderResult = await pool.query(
@@ -271,26 +347,24 @@ ordersRouter.post("/:id/confirm", async (req, res) => {
             [pickup_time_start, pickup_time_end, notes, id]
         );
 
-        res.send({
-            success: true,
-            message: "Заказ подтвержден"
-        });
-    } catch (e) {
-        console.error("❌ Ошибка в POST /orders/:id/confirm:", e);
-        res.status(500).send({
-            success: false,
-            error: "UNKNOWN_ERROR",
-            message: "Внутренняя ошибка сервера"
-        });
-    }
-});
+    res.send({
+        success: true,
+        message: "Заказ подтвержден"
+    });
+}));
 
 // Получить заказы пользователя
 // Получить заказы текущего пользователя
-ordersRouter.get("/mine", async (req, res) => {
-    try {
-        // TODO: Получить user_id из JWT токена/сессии
-        const userId = req.session?.userId || 1; // Временное решение для тестирования
+ordersRouter.get("/mine", asyncHandler(async (req, res) => {
+    const userId = req.session?.userId;
+    
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
+        });
+    }
         
         console.log("🔍 Запрос GET /orders/mine", { userId });
 
@@ -390,26 +464,24 @@ ordersRouter.get("/mine", async (req, res) => {
             };
         }));
 
-        res.send({
-            success: true,
-            data: orders
-        });
-    } catch (e) {
-        console.error("❌ Ошибка в /orders/mine:", e);
-        res.status(500).send({
+    res.send({
+        success: true,
+        data: orders
+    });
+}));
+
+ordersRouter.get("/", asyncHandler(async (req, res) => {
+    const userId = req.session?.userId;
+    
+    if (!userId) {
+        return res.status(401).send({
             success: false,
-            error: "UNKNOWN_ERROR",
-            message: "Внутренняя ошибка сервера"
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
         });
     }
-});
 
-ordersRouter.get("/", async (req, res) => {
-    try {
-        // TODO: Получить user_id из JWT токена
-        const userId = 1; // Временное решение для тестирования
-
-        console.log("🔍 Запрос /orders", { userId });
+    console.log("🔍 Запрос /orders", { userId });
 
         try {
             // Сначала проверим, существует ли таблица orders
@@ -476,29 +548,27 @@ ordersRouter.get("/", async (req, res) => {
             success: true,
             data: orders
         });
-        } catch (dbError) {
-            console.error("❌ Ошибка базы данных в /orders:", dbError);
-            res.status(500).send({
-                success: false,
-                error: "DATABASE_ERROR",
-                message: "Ошибка базы данных: " + dbError.message
-            });
-        }
-    } catch (e) {
-        console.error("❌ Ошибка в /orders:", e);
-        res.status(500).send({
+    } catch (dbError) {
+        console.error("❌ Ошибка базы данных в /orders:", dbError);
+        return res.status(500).send({
             success: false,
-            error: "UNKNOWN_ERROR",
-            message: "Внутренняя ошибка сервера"
+            error: "DATABASE_ERROR",
+            message: "Ошибка базы данных: " + dbError.message
         });
     }
-});
+}));
 
 // Получить заказы для бизнеса
-ordersRouter.get("/business", async (req, res) => {
-    try {
-        // TODO: Получить business_id из JWT токена/сессии
-        const businessId = req.session?.userId || 1;
+ordersRouter.get("/business", asyncHandler(async (req, res) => {
+    const businessId = req.session?.userId;
+    
+    if (!businessId) {
+        return res.status(401).send({
+            success: false,
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
+        });
+    }
         
         console.log("🔍 Запрос GET /orders/business", { businessId });
 
@@ -599,30 +669,28 @@ ordersRouter.get("/business", async (req, res) => {
             };
         }));
 
-        res.send({
-            success: true,
-            data: orders
-        });
-    } catch (e) {
-        console.error("❌ Ошибка в /orders/business:", e);
-        res.status(500).send({
-            success: false,
-            error: "UNKNOWN_ERROR",
-            message: "Внутренняя ошибка сервера"
-        });
-    }
-});
+    res.send({
+        success: true,
+        data: orders
+    });
+}));
 
 // ============================================
 // QR-КОД ДЛЯ ВЫДАЧИ ЗАКАЗА
 // ============================================
 
 // Получить QR-код для заказа (клиент видит QR для сканирования продавцом)
-ordersRouter.get("/:id/qr", async (req, res) => {
-    try {
-        const { id } = req.params;
-        // TODO: Получить user_id из JWT токена/сессии
-        const userId = req.session?.userId || 1;
+ordersRouter.get("/:id/qr", asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const userId = req.session?.userId;
+    
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
+        });
+    }
 
         console.log("🔍 Запрос GET /orders/:id/qr", { id, userId });
 
@@ -708,23 +776,15 @@ ordersRouter.get("/:id/qr", async (req, res) => {
             ip: req.ip
         });
 
-        res.send({
-            success: true,
-            data: {
-                qr_code: qrImageBase64, // base64 PNG
-                pickup_code: pickupCode,
-                expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString()
-            }
-        });
-    } catch (e) {
-        console.error("❌ Ошибка в GET /orders/:id/qr:", e);
-        res.status(500).send({
-            success: false,
-            error: "UNKNOWN_ERROR",
-            message: "Внутренняя ошибка сервера"
-        });
-    }
-});
+    res.send({
+        success: true,
+        data: {
+            qr_code: qrImageBase64, // base64 PNG
+            pickup_code: pickupCode,
+            expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString()
+        }
+    });
+}));
 
 // Сканировать QR-код (продавец сканирует код клиента)
 ordersRouter.post("/scan", scanRateLimiter, async (req, res) => {
@@ -886,14 +946,20 @@ ordersRouter.post("/scan", scanRateLimiter, async (req, res) => {
 });
 
 // Обновить заказ (должен быть ПОСЛЕ всех специфичных маршрутов с :id)
-ordersRouter.patch("/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { items, pickup_time_start, pickup_time_end, notes } = req.body;
-        // TODO: Получить user_id из JWT токена
-        const userId = 1; // Временное решение для тестирования
+ordersRouter.patch("/:id", asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { items, pickup_time_start, pickup_time_end, notes } = req.body;
+    const userId = req.session?.userId;
+    
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
+        });
+    }
 
-        console.log("🔍 Запрос PATCH /orders/:id", { id, userId });
+    console.log("🔍 Запрос PATCH /orders/:id", { id, userId });
 
         // Проверяем, что заказ принадлежит пользователю
         const orderResult = await pool.query(
@@ -975,18 +1041,10 @@ ordersRouter.patch("/:id", async (req, res) => {
             );
         }
 
-        res.send({
-            success: true,
-            message: "Заказ обновлен"
-        });
-    } catch (e) {
-        console.error("❌ Ошибка в PATCH /orders/:id:", e);
-        res.status(500).send({
-            success: false,
-            error: "UNKNOWN_ERROR",
-            message: "Внутренняя ошибка сервера"
-        });
-    }
-});
+    res.send({
+        success: true,
+        message: "Заказ обновлен"
+    });
+}));
 
 module.exports = ordersRouter;

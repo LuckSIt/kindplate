@@ -12,6 +12,21 @@ const { asyncHandler } = require("../lib/errorHandler");
 businessLocationsRouter.get("/", asyncHandler(async (req, res) => {
     const businessId = req.session.userId;
 
+    // Проверяем существование таблицы
+    const tableCheck = await pool.query(`
+        SELECT table_name FROM information_schema.tables 
+        WHERE table_schema = 'public' AND table_name = 'business_locations'
+    `);
+
+    if (tableCheck.rows.length === 0) {
+        // Таблица не существует, возвращаем пустой массив
+        logger.warn("Table business_locations does not exist", { businessId });
+        return res.json({
+            success: true,
+            locations: []
+        });
+    }
+
     const result = await pool.query(
         `SELECT 
             id, 
@@ -83,6 +98,20 @@ businessLocationsRouter.get("/:id", asyncHandler(async (req, res) => {
 businessLocationsRouter.post("/", asyncHandler(async (req, res) => {
     const businessId = req.session.userId;
     const { name, address, lat, lon, opening_hours, phone } = req.body;
+
+    // Проверяем существование таблицы
+    const tableCheck = await pool.query(`
+        SELECT table_name FROM information_schema.tables 
+        WHERE table_schema = 'public' AND table_name = 'business_locations'
+    `);
+
+    if (tableCheck.rows.length === 0) {
+        return res.status(503).json({
+            success: false,
+            error: "SERVICE_UNAVAILABLE",
+            message: "Сервис локаций временно недоступен"
+        });
+    }
 
     // Валидация
     if (!name || !address || lat === undefined || lon === undefined) {

@@ -43,8 +43,27 @@ adminRouter.post('/register-business', requireAdmin, asyncHandler(async (req, re
     const passwordHash = await bcrypt.hash(password, 10);
 
     // Используем координаты СПб по умолчанию, если не переданы
-    const latitude = coord_0 || 59.9311;
-    const longitude = coord_1 || 30.3609;
+    // Валидация координат - проверяем, что они не NaN
+    let latitude = coord_0;
+    let longitude = coord_1;
+    
+    if (latitude === undefined || latitude === null || isNaN(parseFloat(latitude))) {
+        latitude = 59.9311; // СПб по умолчанию
+    } else {
+        latitude = parseFloat(latitude);
+        if (isNaN(latitude) || latitude < -90 || latitude > 90) {
+            latitude = 59.9311;
+        }
+    }
+    
+    if (longitude === undefined || longitude === null || isNaN(parseFloat(longitude))) {
+        longitude = 30.3609; // СПб по умолчанию
+    } else {
+        longitude = parseFloat(longitude);
+        if (isNaN(longitude) || longitude < -180 || longitude > 180) {
+            longitude = 30.3609;
+        }
+    }
 
     // Создаем бизнес-аккаунт
     const result = await pool.query(
@@ -75,12 +94,22 @@ adminRouter.post('/register-business', requireAdmin, asyncHandler(async (req, re
 // Получить список всех бизнесов (только для админа)
 adminRouter.get('/businesses', requireAdmin, asyncHandler(async (req, res) => {
     try {
+        // Проверяем наличие колонок is_top и quality_score
+        const columnCheck = await pool.query(`
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_schema = 'public' AND table_name = 'users' 
+            AND column_name IN ('is_top', 'quality_score')
+        `);
+        const availableColumns = columnCheck.rows.map(r => r.column_name);
+        const hasIsTop = availableColumns.includes('is_top');
+        const hasQualityScore = availableColumns.includes('quality_score');
+
         const result = await pool.query(
             `SELECT 
                 id, email, name, address, coord_0, coord_1, 
                 is_business, role, created_at, 
-                COALESCE(is_top, false) as is_top, 
-                COALESCE(quality_score, 0) as quality_score
+                ${hasIsTop ? 'COALESCE(is_top, false) as is_top' : 'false as is_top'}, 
+                ${hasQualityScore ? 'COALESCE(quality_score, 0) as quality_score' : '0 as quality_score'}
             FROM users 
             WHERE is_business = true 
             ORDER BY created_at DESC`

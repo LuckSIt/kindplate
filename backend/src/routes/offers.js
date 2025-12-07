@@ -49,6 +49,32 @@ const upload = multer({
     }
 });
 
+// Middleware для обработки ошибок multer
+const handleMulterError = (err, req, res, next) => {
+    if (err) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({
+                success: false,
+                error: "FILE_TOO_LARGE",
+                message: "Размер файла превышает 5MB"
+            });
+        }
+        if (err.message && err.message.includes('Только изображения')) {
+            return res.status(400).json({
+                success: false,
+                error: "INVALID_FILE_TYPE",
+                message: err.message
+            });
+        }
+        return res.status(400).json({
+            success: false,
+            error: "UPLOAD_ERROR",
+            message: err.message || "Ошибка загрузки файла"
+        });
+    }
+    next();
+};
+
 // ============================================
 // СПЕЦИФИЧНЫЕ МАРШРУТЫ (должны быть ДО маршрутов с параметрами)
 // ============================================
@@ -531,7 +557,7 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
 }));
 
 // POST /offers/upload-photo/:offerId - Загрузить фото для предложения
-offersRouter.post("/upload-photo/:offerId", upload.single("photo"), asyncHandler(async (req, res) => {
+offersRouter.post("/upload-photo/:offerId", upload.single("photo"), handleMulterError, asyncHandler(async (req, res) => {
     const offer_id = req.params.offerId;
     const businessId = req.session.userId;
 
@@ -549,16 +575,17 @@ offersRouter.post("/upload-photo/:offerId", upload.single("photo"), asyncHandler
         throw new AppError("Предложение не найдено", 404, "OFFER_NOT_FOUND");
     }
 
-    // Обновляем image_url
+    // Обновляем image_url (используем относительный путь)
+    const image_url = `/uploads/offers/${req.file.filename}`;
     await pool.query(
         "UPDATE offers SET image_url = $1 WHERE id = $2",
-        [req.file.path, offer_id]
+        [image_url, offer_id]
     );
 
     res.json({
         success: true,
         message: "Фото загружено",
-        image_url: req.file.path
+        image_url: image_url
     });
 }));
 
@@ -729,7 +756,7 @@ offersRouter.get("/mine", asyncHandler(async (req, res) => {
 }));
 
 // Создать новое предложение (с загрузкой фото)
-offersRouter.post("/create", upload.single('image'), sanitizePlainTextFields(['title', 'description']), validateOffer, asyncHandler(async (req, res) => {
+offersRouter.post("/create", upload.single('image'), handleMulterError, sanitizePlainTextFields(['title', 'description']), validateOffer, asyncHandler(async (req, res) => {
     const { 
         title, 
         description, 
@@ -747,17 +774,31 @@ offersRouter.post("/create", upload.single('image'), sanitizePlainTextFields(['t
 
     // Валидация location_id (если указан, проверяем что локация принадлежит бизнесу)
     if (location_id) {
-        const locationCheck = await pool.query(
-            `SELECT id FROM business_locations 
-             WHERE id = $1 AND business_id = $2 AND is_active = true`,
-            [location_id, req.session.userId]
-        );
+        // Проверяем существование таблицы business_locations
+        const tableCheck = await pool.query(`
+            SELECT table_name FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = 'business_locations'
+        `);
 
-        if (locationCheck.rows.length === 0) {
-            return res.status(400).json({
-                success: false,
-                error: "INVALID_LOCATION",
-                message: "Указанная локация не найдена или не принадлежит вашему бизнесу"
+        if (tableCheck.rows.length > 0) {
+            const locationCheck = await pool.query(
+                `SELECT id FROM business_locations 
+                 WHERE id = $1 AND business_id = $2 AND is_active = true`,
+                [location_id, req.session.userId]
+            );
+
+            if (locationCheck.rows.length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    error: "INVALID_LOCATION",
+                    message: "Указанная локация не найдена или не принадлежит вашему бизнесу"
+                });
+            }
+        } else {
+            // Таблица не существует, игнорируем location_id
+            logger.warn("Table business_locations does not exist, ignoring location_id", { 
+                businessId: req.session.userId,
+                location_id 
             });
         }
     }
@@ -819,7 +860,7 @@ offersRouter.post("/create", upload.single('image'), sanitizePlainTextFields(['t
 }));
 
 // Редактировать предложение (с загрузкой фото)
-offersRouter.post("/edit", upload.single('image'), sanitizePlainTextFields(['title', 'description']), asyncHandler(async (req, res) => {
+offersRouter.post("/edit", upload.single('image'), handleMulterError, sanitizePlainTextFields(['title', 'description']), asyncHandler(async (req, res) => {
     const { 
         id, 
         title, 
@@ -929,7 +970,7 @@ offersRouter.post("/edit", upload.single('image'), sanitizePlainTextFields(['tit
 }));
 
 // PATCH endpoint для частичного обновления оффера
-offersRouter.patch("/:id", upload.single('image'), asyncHandler(async (req, res) => {
+offersRouter.patch("/:id", upload.single('image'), handleMulterError, asyncHandler(async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 

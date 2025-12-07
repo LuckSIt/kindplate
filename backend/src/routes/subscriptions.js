@@ -16,6 +16,20 @@ subscriptionsRouter.post("/waitlist", requireAuth, async (req, res) => {
         const { action, scope_type, scope_id, latitude, longitude, radius_km, area_geojson } = req.body;
         const userId = req.session.userId;
 
+        // Проверяем существование таблицы
+        const tableCheck = await pool.query(`
+            SELECT table_name FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = 'waitlist_subscriptions'
+        `);
+
+        if (tableCheck.rows.length === 0) {
+            return res.status(503).send({
+                success: false,
+                error: "SERVICE_UNAVAILABLE",
+                message: "Сервис подписок временно недоступен"
+            });
+        }
+
         if (action === 'subscribe') {
             // Подписка
             if (!scope_type || !['offer', 'category', 'area', 'business'].includes(scope_type)) {
@@ -136,6 +150,20 @@ subscriptionsRouter.post("/waitlist", requireAuth, async (req, res) => {
 subscriptionsRouter.get("/waitlist", requireAuth, async (req, res) => {
     try {
         const userId = req.session.userId;
+
+        // Проверяем существование таблицы
+        const tableCheck = await pool.query(`
+            SELECT table_name FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = 'waitlist_subscriptions'
+        `);
+
+        if (tableCheck.rows.length === 0) {
+            // Таблица не существует, возвращаем пустой массив
+            return res.send({
+                success: true,
+                data: []
+            });
+        }
 
         const result = await pool.query(
             `SELECT id, scope_type, scope_id, latitude, longitude, radius_km, is_active, created_at
