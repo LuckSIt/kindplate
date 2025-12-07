@@ -574,27 +574,39 @@ ordersRouter.get("/business", asyncHandler(async (req, res) => {
         });
     }
         
-        console.log("🔍 Запрос GET /orders/business", { businessId });
+    console.log("🔍 Запрос GET /orders/business", { businessId });
 
-        // Проверяем наличие таблицы orders
-        const tableCheck = await pool.query(`
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_schema = 'public' 
-                AND table_name = 'orders'
-            );
-        `);
+    // Проверяем наличие таблицы orders
+    const tableCheck = await pool.query(`
+        SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' 
+            AND table_name = 'orders'
+        );
+    `);
+    
+    if (!tableCheck.rows[0].exists) {
+        console.log("⚠️ Таблица orders не существует");
+        return res.send({
+            success: true,
+            data: []
+        });
+    }
 
-        if (!tableCheck.rows[0].exists) {
-            console.log("⚠️ Таблица orders не существует");
-            return res.send({
-                success: true,
-                data: []
-            });
-        }
+    // Выясняем, есть ли в таблице orders колонка user_id.
+    // В старых схемах её может не быть, поэтому JOIN с users тогда делать нельзя.
+    const columnsRes = await pool.query(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_schema = 'public' AND table_name = 'orders'
+    `);
+    const orderCols = columnsRes.rows.map(r => r.column_name);
+    const hasUserId = orderCols.includes('user_id');
 
-        let result;
-        try {
+    let result;
+    try {
+        if (hasUserId) {
+            // Современная схема: есть user_id, можно сделать JOIN с users
             result = await pool.query(`
                 SELECT 
                     o.id,
@@ -617,13 +629,33 @@ ordersRouter.get("/business", asyncHandler(async (req, res) => {
                 WHERE o.business_id = $1
                 ORDER BY o.created_at DESC
             `, [businessId]);
-        } catch (queryError) {
-            console.log("⚠️ Ошибка при запросе orders:", queryError.message);
-            return res.send({
-                success: true,
-                data: []
-            });
+        } else {
+            // Упрощённая схема: колонки user_id нет, возвращаем заказы без данных клиента
+            result = await pool.query(`
+                SELECT 
+                    o.id,
+                    o.business_id,
+                    o.pickup_time_start,
+                    o.pickup_time_end,
+                    o.subtotal,
+                    o.service_fee,
+                    o.total,
+                    o.status,
+                    o.notes,
+                    o.created_at,
+                    o.confirmed_at
+                FROM orders o
+                WHERE o.business_id = $1
+                ORDER BY o.created_at DESC
+            `, [businessId]);
         }
+    } catch (queryError) {
+        console.log("⚠️ Ошибка при запросе orders:", queryError.message);
+        return res.send({
+            success: true,
+            data: []
+        });
+    }
 
         console.log(`✅ Найдено заказов для бизнеса: ${result.rows.length}`);
 
@@ -656,10 +688,10 @@ ordersRouter.get("/business", asyncHandler(async (req, res) => {
 
             return {
                 id: order.id,
-                user_id: order.user_id,
-                customer_name: order.customer_name,
-                customer_email: order.customer_email,
-                customer_phone: order.customer_phone,
+                user_id: hasUserId ? order.user_id : null,
+                customer_name: hasUserId ? order.customer_name : null,
+                customer_email: hasUserId ? order.customer_email : null,
+                customer_phone: hasUserId ? order.customer_phone : null,
                 pickup_time_start: order.pickup_time_start,
                 pickup_time_end: order.pickup_time_end,
                 subtotal: parseFloat(order.subtotal),
