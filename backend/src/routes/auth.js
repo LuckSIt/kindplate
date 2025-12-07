@@ -8,22 +8,8 @@ const { AppError, asyncHandler } = require("../lib/errorHandler");
 const { validateRegistration, validateLogin } = require("../lib/validation");
 const { createTokenPair, verifyToken } = require("../lib/jwt");
 
-// Rate limiting для защиты от брутфорса (более мягкий, чтобы не мешать реальным пользователям)
-const authLimiter = rateLimit({
-    windowMs: 5 * 60 * 1000, // 5 минут
-    max: 20, // максимум 20 попыток за 5 минут с одного IP
-// Rate limiting для защиты от брутфорса
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 минут
-    max: 5, // максимум 5 попыток
-    message: {
-        success: false,
-        error: "TOO_MANY_REQUESTS",
-        message: "Слишком много попыток входа. Попробуйте позже."
-    },
-    standardHeaders: true,
-    legacyHeaders: false,
-});
+// ВНИМАНИЕ: rate limiting для логина сейчас отключён, чтобы не мешать реальным пользователям.
+// При необходимости можно вернуть middleware rateLimit сюда.
 
 const registerLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 час
@@ -80,7 +66,7 @@ authRouter.post("/register", registerLimiter, validateRegistration, asyncHandler
     });
 }));
 
-authRouter.post("/login", authLimiter, validateLogin, asyncHandler(async (req, res) => {
+authRouter.post("/login", validateLogin, asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     logger.info("Login attempt", { email });
