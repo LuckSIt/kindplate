@@ -725,34 +725,57 @@ offersRouter.post("/:id/schedule", asyncHandler(async (req, res) => {
 
 // Получить все предложения текущего бизнеса
 offersRouter.get("/mine", asyncHandler(async (req, res) => {
-    const result = await pool.query(
-        `SELECT 
-            id, 
-            title, 
-            description, 
-            image_url,
-            original_price, 
-            discounted_price, 
-            quantity_available,
-            pickup_time_start,
-            pickup_time_end,
-            is_active,
-            created_at
-        FROM offers 
-        WHERE business_id = $1 
-        ORDER BY created_at DESC`,
-        [req.session.userId]
-    );
+    const businessId = req.session?.userId;
+    
+    if (!businessId) {
+        return res.status(401).json({
+            success: false,
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
+        });
+    }
 
-    logger.info("Offers retrieved", { 
-        businessId: req.session.userId, 
-        count: result.rows.length 
-    });
+    try {
+        const result = await pool.query(
+            `SELECT 
+                id, 
+                title, 
+                description, 
+                image_url,
+                original_price, 
+                discounted_price, 
+                quantity_available,
+                pickup_time_start,
+                pickup_time_end,
+                is_active,
+                created_at
+            FROM offers 
+            WHERE business_id = $1 
+            ORDER BY created_at DESC`,
+            [businessId]
+        );
 
-    res.json({
-        success: true,
-        offers: result.rows,
-    });
+        logger.info("Offers retrieved", { 
+            businessId, 
+            count: result.rows.length 
+        });
+
+        res.json({
+            success: true,
+            offers: result.rows,
+        });
+    } catch (error) {
+        logger.error("Error in /business/offers/mine:", {
+            error: error.message,
+            stack: error.stack,
+            businessId
+        });
+        res.status(500).json({
+            success: false,
+            error: "DATABASE_ERROR",
+            message: "Ошибка при получении предложений"
+        });
+    }
 }));
 
 // Создать новое предложение (с загрузкой фото)

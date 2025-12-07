@@ -110,7 +110,15 @@ statsRouter.get("/customer", requireAuth, async (req, res) => {
 // GET /stats/business - Статистика для бизнеса
 statsRouter.get("/business", requireAuth, async (req, res) => {
     try {
-        const business_id = req.session.userId;
+        const business_id = req.session?.userId;
+        
+        if (!business_id) {
+            return res.status(401).json({
+                success: false,
+                error: "NOT_AUTHENTICATED",
+                message: "Необходима авторизация"
+            });
+        }
 
         // Общее количество заказов
         const ordersCount = await pool.query(
@@ -195,8 +203,16 @@ statsRouter.get("/business", requireAuth, async (req, res) => {
             }
         });
     } catch (e) {
-        console.error("❌ Ошибка в /stats/business:", e);
-        res.status(500).send({ success: false, error: "UNKNOWN_ERROR" });
+        logger.error("❌ Ошибка в /stats/business:", {
+            error: e.message,
+            stack: e.stack,
+            business_id: req.session?.userId
+        });
+        res.status(500).json({ 
+            success: false, 
+            error: "UNKNOWN_ERROR",
+            message: "Ошибка при получении статистики"
+        });
     }
 });
 

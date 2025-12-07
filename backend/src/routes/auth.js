@@ -148,15 +148,15 @@ authRouter.get("/logout", (req, res) => {
 });
 
 authRouter.get("/me", asyncHandler(async (req, res) => {
-    try {
     if (req.session.userId === undefined) {
         return res.json({
             user: null,
-                success: true,
+            success: true,
             message: "Пользователь не авторизован"
         });
     }
 
+    try {
         // Проверяем наличие колонок перед запросом
         const columnsCheck = await pool.query(`
             SELECT column_name FROM information_schema.columns 
@@ -175,34 +175,34 @@ authRouter.get("/me", asyncHandler(async (req, res) => {
         if (hasRating) selectFields.push('rating');
         if (hasTotalReviews) selectFields.push('total_reviews');
 
-    const result = await pool.query(
+        const result = await pool.query(
             `SELECT ${selectFields.join(', ')} FROM users WHERE id=$1`,
-        [req.session.userId]
-    );
+            [req.session.userId]
+        );
 
-    if (result.rowCount === 0) {
-        req.session.userId = undefined; // Очищаем сессию если пользователь не найден
-        return res.json({
-            user: null,
+        if (result.rowCount === 0) {
+            req.session.userId = undefined; // Очищаем сессию если пользователь не найден
+            return res.json({
+                user: null,
                 success: true,
-            message: "Пользователь не найден"
+                message: "Пользователь не найден"
+            });
+        }
+
+        const user = result.rows[0];
+        user.coords = [user.coord_0, user.coord_1];
+        delete user.coord_0;
+        delete user.coord_1;
+        
+        // Устанавливаем роль в сессии, если её там нет (для обратной совместимости)
+        if (!req.session.role) {
+            req.session.role = user.role || (user.is_business ? 'business' : 'customer');
+        }
+
+        res.json({
+            user,
+            success: true
         });
-    }
-
-    const user = result.rows[0];
-    user.coords = [user.coord_0, user.coord_1];
-    delete user.coord_0;
-    delete user.coord_1;
-    
-    // Устанавливаем роль в сессии, если её там нет (для обратной совместимости)
-    if (!req.session.role) {
-        req.session.role = user.role || (user.is_business ? 'business' : 'customer');
-    }
-
-    res.json({
-        user,
-        success: true
-    });
     } catch (error) {
         logger.error('Error in /auth/me:', {
             error: error.message,

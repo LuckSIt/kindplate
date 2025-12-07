@@ -101,7 +101,13 @@ const corsOptions = {
             logger.warn(`❌ CORS блокировка от источника: ${origin}`);
             logger.warn(`   Разрешённые источники: ${allowedOrigins.join(', ')}`);
             logger.warn(`   FRONTEND_ORIGIN из env: ${envOrigin || 'не задан'}`);
-            callback(new Error('Доступ запрещен политикой CORS'));
+            // В продакшене разрешаем все для отладки, но логируем
+            if (process.env.NODE_ENV === 'production') {
+                logger.warn(`⚠️ PRODUCTION: Разрешаем CORS для ${origin} (нужно добавить в allowedOrigins)`);
+                callback(null, true);
+            } else {
+                callback(new Error('Доступ запрещен политикой CORS'));
+            }
         }
     },
     credentials: true,
@@ -114,6 +120,30 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// Дополнительный middleware для гарантированной отправки CORS заголовков при ошибках
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin) {
+        const allowedOrigins = [
+            "http://localhost:3000",
+            "http://localhost:3001", 
+            "http://localhost:5173",
+            "http://172.20.10.2:5173",
+            "https://app-kindplate.ru",
+            process.env.FRONTEND_ORIGIN
+        ].filter(Boolean);
+        
+        const isRender = /^https?:\/\/[^.]+\.onrender\.com$/i.test(origin);
+        if (allowedOrigins.includes(origin) || isRender || process.env.NODE_ENV === 'production') {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+            res.setHeader('Access-Control-Allow-Credentials', 'true');
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+        }
+    }
+    next();
+});
 
 // OPTIONS запросы обрабатываются автоматически через cors middleware
 

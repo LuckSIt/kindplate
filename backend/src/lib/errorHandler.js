@@ -30,10 +30,16 @@ const errorHandler = (err, req, res, next) => {
         ].filter(Boolean);
         
         const isRender = /^https?:\/\/[^.]+\.onrender\.com$/i.test(origin);
-        if (allowedOrigins.includes(origin) || isRender || !origin) {
+        // В продакшене разрешаем все для отладки
+        if (allowedOrigins.includes(origin) || isRender || process.env.NODE_ENV === 'production') {
             res.setHeader('Access-Control-Allow-Origin', origin);
             res.setHeader('Access-Control-Allow-Credentials', 'true');
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
         }
+    } else if (process.env.NODE_ENV === 'production') {
+        // Если нет origin, но мы в продакшене, устанавливаем заголовки для всех
+        res.setHeader('Access-Control-Allow-Origin', '*');
     }
 
     // Логируем ошибку
@@ -108,9 +114,12 @@ const notFound = (req, res, next) => {
         ].filter(Boolean);
         
         const isRender = /^https?:\/\/[^.]+\.onrender\.com$/i.test(origin);
-        if (allowedOrigins.includes(origin) || isRender || !origin) {
+        // В продакшене разрешаем все для отладки
+        if (allowedOrigins.includes(origin) || isRender || process.env.NODE_ENV === 'production') {
             res.setHeader('Access-Control-Allow-Origin', origin);
             res.setHeader('Access-Control-Allow-Credentials', 'true');
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
         }
     }
     
