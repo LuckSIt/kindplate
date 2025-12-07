@@ -115,7 +115,7 @@ export function LandingPage() {
         <div 
             className="w-full overflow-y-auto overflow-x-hidden"
             style={{ 
-                backgroundColor: '#10172A',
+                backgroundColor: '#0a0a0a',
                 height: 'var(--app-height, 100vh)',
                 maxHeight: 'var(--app-height, 100vh)',
                 WebkitOverflowScrolling: 'touch',
@@ -649,7 +649,7 @@ export function LandingPage() {
                                 lineHeight: '0.87em'
                             }}
                         >
-                            Экономьте и спасайте еду из любимых заведений
+                            Продавайте больше и привлекайте новых гостей
                         </h4>
                         <p 
                             className="text-[12px] leading-[0.94] mb-[32px] font-montserrat-alt"
@@ -659,7 +659,7 @@ export function LandingPage() {
                                 lineHeight: '0.94em'
                             }}
                         >
-                            Получайте вкусные блюда по отличным ценам и помогайте сокращать пищевые отходы. Смотрите актуальные предложения рядом с вами и бронируйте прямо в KindPlate. Каждый заказ — шаг к более ответственному потреблению и поддержке экологической устойчивости.
+                            Kindplate помогает ресторанам и магазинам продавать непроданные блюда и готовые продукты со скидкой, вместо того чтобы их списывать их. Так вы зарабатываете на том, что раньше отправлялось в отходы, и вносите вклад в осознанное потребление и заботу о планете.
                         </p>
                         
                         {/* Steps */}
@@ -683,7 +683,7 @@ export function LandingPage() {
                                         lineHeight: '0.87em'
                                     }}
                                 >
-                                    Смотри предложения рядом с тобой
+                                    Выкладывайте в личном кабинете блюда и наборы со скидкой.
                                 </p>
                             </div>
                             <div className="w-full h-[1px]" style={{ backgroundColor: '#C4CEE8' }}></div>
@@ -706,7 +706,7 @@ export function LandingPage() {
                                         lineHeight: '0.87em'
                                     }}
                                 >
-                                    Выбирай и оплачивай прямо в приложении
+                                    Получайте предоплаченные заказы от гостей в приложении.
                                 </p>
                             </div>
                             <div className="w-full h-[1px]" style={{ backgroundColor: '#C4CEE8' }}></div>
@@ -729,7 +729,7 @@ export function LandingPage() {
                                         lineHeight: '0.87em'
                                     }}
                                 >
-                                    Забери в заведении и наслаждайся
+                                    Выдавайте заказы в заведении и снижайте потери еды.
                                 </p>
                             </div>
                         </div>
