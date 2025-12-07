@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { HomePageSEO } from "@/components/ui/seo";
 import { useMapQuery } from "@/lib/hooks/use-optimized-query";
 import type { Business, Offer } from "@/lib/types";
+import { useNavigate } from '@tanstack/react-router';
 
 export const Route = createFileRoute("/home/")({
     component: RouteComponent,
@@ -69,6 +70,8 @@ function RouteComponent() {
 
     // Debounced map bounds для уменьшения количества запросов
     const [debouncedMapBounds, setDebouncedMapBounds] = useState(mapBounds);
+
+    
     
     // Debounce для mapBounds - обновляем только через 500ms после последнего изменения
     useEffect(() => {
@@ -241,13 +244,12 @@ function RouteComponent() {
         { value: 'price', label: 'Недавнее', title: 'Недавнее' },
     ];
 
+    const navigate = useNavigate();
     // Event handlers
     const handleBusinessClick = useCallback((business: Business) => {
         // Этап 4: при тапе по пину показываем сниппет (20%), а не сразу список
-        setSelectedBusiness(business);
-        setDrawerOpen(true);
-        setActiveSnap(0.2);
-    }, []);
+        navigate({ to: '/v/$vendorId', params: { vendorId: business.id.toString() } });
+  }, [navigate]);
 
     // Throttled bounds change для оптимизации запросов
     const handleBoundsChange = useCallback((bounds: MapBounds) => {
@@ -436,7 +438,7 @@ function RouteComponent() {
                         modal={false}
                         snapPoints={[0.2, 0.6, 1]}
                         activeSnapPoint={activeSnap}
-                        setActiveSnapPoint={setActiveSnap}
+                        //setActiveSnapPoint={setActiveSnap}
                     >
                         <Drawer.Portal>
                             <Drawer.Content 
