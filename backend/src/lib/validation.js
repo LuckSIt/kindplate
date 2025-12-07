@@ -5,9 +5,10 @@ const validateEmail = (email) => {
 };
 
 const validatePassword = (password) => {
-    // Минимум 8 символов, хотя бы одна буква и одна цифра
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
-    return passwordRegex.test(password);
+    // Минимум 6 символов (выравниваем с фронтендом: customerRegisterSchema, placeholder "Минимум 6 символов")
+    // Дополнительные сложности (буквы/цифры/спецсимволы) сейчас не требуем, чтобы не ломать регистрацию.
+    if (typeof password !== 'string') return false;
+    return password.length >= 6 && password.length <= 100;
 };
 
 const validateCoordinates = (coords) => {
@@ -49,9 +50,9 @@ const validateRegistration = (req, res, next) => {
         errors.push('Некорректный email адрес');
     }
 
-    // Валидация пароля
-    if (!password || typeof password !== 'string' || !validatePassword(password)) {
-        errors.push('Пароль должен содержать минимум 8 символов, включая буквы и цифры');
+    // Валидация пароля (минимум 6 символов, как на фронтенде)
+    if (!password || !validatePassword(password)) {
+        errors.push('Пароль должен содержать минимум 6 символов');
     }
 
     // Валидация данных бизнеса
