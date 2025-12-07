@@ -223,7 +223,7 @@ export function LandingPage() {
                                 className="w-full h-[38px] rounded-[26px] text-[13px] font-bold leading-[1.14] text-center transition-opacity hover:opacity-90 whitespace-nowrap"
                                 style={{ 
                                     backgroundColor: '#FFFFFF',
-                                    border: '1px solid #35741F',
+                                    border: '1px solid #083608',
                                     color: '#35741F',
                                     fontFamily: 'Montserrat Alternates, sans-serif',
                                     lineHeight: '1.14em'
@@ -506,7 +506,7 @@ export function LandingPage() {
                             className="text-[16px] leading-[1.08] mb-0 font-montserrat-alt"
                             style={{ 
                                 fontWeight: 700,
-                                color: '#35741F',
+                                color: '#083608',
                                 lineHeight: '1.08em'
                             }}
                         >
@@ -520,7 +520,7 @@ export function LandingPage() {
                                 lineHeight: '0.87em'
                             }}
                         >
-                            <span className="font-montserrat-alt" style={{ color: '#35741F', fontSize: '22px', fontWeight: 600, display: 'inline' }}>Экономьте и спасайте</span>
+                            <span className="font-montserrat-alt" style={{ color: '#083608', fontSize: '22px', fontWeight: 600, display: 'inline' }}>Экономьте и спасайте</span>
                             {' '}
                             <span className="font-montserrat-alt" style={{ color: '#000000', fontSize: '22px', fontWeight: 600, display: 'inline' }}>еду из любимых заведений</span>
                         </h4>
@@ -542,7 +542,7 @@ export function LandingPage() {
                                     className="text-[12px] leading-[0.87] flex-shrink-0 font-montserrat-alt"
                                     style={{ 
                                         fontWeight: 600,
-                                        color: '#35741F',
+                                        color: '#083608',
                                         lineHeight: '0.87em'
                                     }}
                                 >
@@ -565,7 +565,7 @@ export function LandingPage() {
                                     className="text-[12px] leading-[0.87] flex-shrink-0 font-montserrat-alt"
                                     style={{ 
                                         fontWeight: 600,
-                                        color: '#35741F',
+                                        color: '#083608',
                                         lineHeight: '0.87em'
                                     }}
                                 >
@@ -588,7 +588,7 @@ export function LandingPage() {
                                     className="text-[12px] leading-[0.87] flex-shrink-0 font-montserrat-alt"
                                     style={{ 
                                         fontWeight: 600,
-                                        color: '#35741F',
+                                        color: '#083608',
                                         lineHeight: '0.87em'
                                     }}
                                 >
@@ -612,7 +612,7 @@ export function LandingPage() {
                                 <button 
                                     className="w-[186px] h-[28px] rounded-[5px] text-[12px] font-semibold leading-[0.94] transition-opacity hover:opacity-90 font-montserrat-alt"
                                     style={{ 
-                                        backgroundColor: '#35741F',
+                                        backgroundColor: '#083608',
                                         color: '#FFFFFF',
                                         lineHeight: '0.94em'
                                     }}
@@ -634,7 +634,7 @@ export function LandingPage() {
                             className="text-[16px] leading-[1.08] mb-0 font-montserrat-alt"
                             style={{ 
                                 fontWeight: 700,
-                                color: '#35741F',
+                                color: '#083608',
                                 lineHeight: '1.08em'
                             }}
                         >
