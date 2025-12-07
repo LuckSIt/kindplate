@@ -112,8 +112,10 @@ const corsOptions = {
 // Применяем CORS ПЕРВЫМ
 app.use(cors(corsOptions));
 
-// Явная обработка OPTIONS запросов (preflight) для всех маршрутов
-app.options('*', cors(corsOptions));
+// Явная обработка OPTIONS запросов (preflight) для всех маршрутов.
+// В Express 5 (path-to-regexp v6) нельзя использовать голый '*' и синтаксис '/:path*',
+// поэтому используем корректный wildcard-формат '/*path'.
+app.options('/*path', cors(corsOptions));
 
 // Дополнительный middleware для гарантированной отправки CORS заголовков при ошибках
 app.use((req, res, next) => {
