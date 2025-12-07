@@ -24,6 +24,18 @@ const scanRateLimiter = rateLimit({
 // Функция для логирования событий заказа
 async function logOrderEvent(orderId, eventType, actorId = null, actorType = 'system', metadata = null) {
     try {
+        // В старых/диагностических сценариях orderId может быть null (например, не найден заказ по коду).
+        // Чтобы не ломать NOT NULL constraint в order_events, просто пропускаем такое логирование.
+        if (orderId === null || orderId === undefined) {
+            console.warn('⚠️ Пропускаем logOrderEvent без orderId', {
+                eventType,
+                actorId,
+                actorType,
+                metadata,
+            });
+            return;
+        }
+
         await pool.query(
             `INSERT INTO order_events (order_id, event_type, actor_id, actor_type, metadata)
              VALUES ($1, $2, $3, $4, $5)`,
@@ -487,65 +499,103 @@ ordersRouter.get("/", asyncHandler(async (req, res) => {
 
     console.log("🔍 Запрос /orders", { userId });
 
-        try {
-            // Сначала проверим, существует ли таблица orders
-            const tableExists = await pool.query(
-                `SELECT EXISTS (
-                    SELECT FROM information_schema.tables 
-                    WHERE table_name = 'orders'
-                )`
+    try {
+        // Используем ту же логику, что и в /orders/mine
+
+        // Проверяем наличие таблицы orders
+        const tableCheck = await pool.query(`
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_schema = 'public' 
+                AND table_name = 'orders'
             );
+        `);
 
-            if (!tableExists.rows[0].exists) {
-                console.log("📦 Таблица orders не существует, возвращаем пустой массив");
-                res.send({
-                    success: true,
-                    data: []
-                });
-                return;
-            }
-
-            // Проверим структуру таблицы
-            const columns = await pool.query(
-                `SELECT column_name FROM information_schema.columns 
-                 WHERE table_name = 'orders' ORDER BY ordinal_position`
-            );
-
-            console.log("📦 Столбцы таблицы orders:", columns.rows.map(r => r.column_name));
-
-            // Если таблица пустая или не имеет нужных столбцов, возвращаем пустой массив
-            if (columns.rows.length === 0) {
-                console.log("📦 Таблица orders пустая, возвращаем пустой массив");
-                res.send({
-                    success: true,
-                    data: []
-                });
-                return;
-            }
-
-            // Пока таблица orders не создана правильно, возвращаем пустой массив
-            console.log("📦 Таблица orders не готова, возвращаем пустой массив");
-            res.send({
+        if (!tableCheck.rows[0].exists) {
+            console.log("⚠️ Таблица orders не существует");
+            return res.send({
                 success: true,
                 data: []
             });
-            return;
+        }
 
-        console.log("📦 Результаты запроса:", result.rows.length);
+        let result;
+        try {
+            result = await pool.query(`
+                SELECT 
+                    o.id,
+                    o.user_id,
+                    o.business_id,
+                    u.name as business_name,
+                    u.address as business_address,
+                    o.pickup_time_start,
+                    o.pickup_time_end,
+                    o.subtotal,
+                    o.service_fee,
+                    o.total,
+                    o.status,
+                    o.notes,
+                    o.created_at,
+                    o.confirmed_at
+                FROM orders o
+                JOIN users u ON o.business_id = u.id
+                WHERE o.user_id = $1
+                ORDER BY o.created_at DESC
+            `, [userId]);
+        } catch (queryError) {
+            console.log("⚠️ Ошибка при запросе orders (возможно, неправильная структура таблицы):", queryError.message);
+            return res.send({
+                success: true,
+                data: []
+            });
+        }
 
-        const orders = result.rows.map(row => ({
-            id: row.id,
-            business_name: 'Заведение',
-            business_address: 'Адрес',
-            pickup_time_start: '18:00',
-            pickup_time_end: '20:00',
-            subtotal: 0,
-            service_fee: 0,
-            total: 0,
-            status: 'draft',
-            notes: '',
-            created_at: row.created_at,
-            confirmed_at: null
+        console.log(`✅ Найдено заказов: ${result.rows.length}`);
+
+        const orders = await Promise.all(result.rows.map(async (order) => {
+            // Получаем позиции заказа
+            let items = [];
+            try {
+                const itemsResult = await pool.query(`
+                    SELECT 
+                        oi.id,
+                        oi.offer_id,
+                        oi.quantity,
+                        oi.price,
+                        oi.title
+                    FROM order_items oi
+                    WHERE oi.order_id = $1
+                `, [order.id]);
+                
+                items = itemsResult.rows.map(item => ({
+                    id: item.id,
+                    offer_id: item.offer_id,
+                    quantity: item.quantity,
+                    price: parseFloat(item.price),
+                    title: item.title
+                }));
+            } catch (itemError) {
+                console.log("⚠️ Ошибка при получении позиций заказа:", itemError.message);
+                items = [];
+            }
+
+            return {
+                id: order.id,
+                user_id: order.user_id,
+                business_id: order.business_id,
+                business_name: order.business_name,
+                business_address: order.business_address,
+                pickup_time_start: order.pickup_time_start,
+                pickup_time_end: order.pickup_time_end,
+                subtotal: parseFloat(order.subtotal),
+                service_fee: parseFloat(order.service_fee),
+                total: parseFloat(order.total),
+                status: order.status,
+                notes: order.notes,
+                items: items,
+                created_at: order.created_at,
+                confirmed_at: order.confirmed_at
+            };
         }));
 
         res.send({
@@ -593,8 +643,7 @@ ordersRouter.get("/business", asyncHandler(async (req, res) => {
         });
     }
 
-    // Выясняем, есть ли в таблице orders колонка user_id.
-    // В старых схемах её может не быть, поэтому JOIN с users тогда делать нельзя.
+    // Выясняем структуру таблицы orders
     const columnsRes = await pool.query(`
         SELECT column_name 
         FROM information_schema.columns 
@@ -602,6 +651,34 @@ ordersRouter.get("/business", asyncHandler(async (req, res) => {
     `);
     const orderCols = columnsRes.rows.map(r => r.column_name);
     const hasUserId = orderCols.includes('user_id');
+
+    // Проверяем, что таблица соответствует современной схеме заказов.
+    // Если ключевых колонок нет (как в старой схеме с offer_id/total_price),
+    // считаем, что таблица "не готова" и просто возвращаем пустой список,
+    // чтобы не падать на SELECT с несуществующими полями.
+    const hasModernSchema =
+        orderCols.includes('subtotal') &&
+        orderCols.includes('service_fee') &&
+        orderCols.includes('total') &&
+        orderCols.includes('pickup_time_start') &&
+        orderCols.includes('pickup_time_end');
+
+    if (!hasModernSchema) {
+        console.log("📦 Таблица orders не готова для бизнес-заказов, возвращаем пустой массив");
+        return res.send({
+            success: true,
+            data: []
+        });
+    }
+
+    // Проверяем наличие телефона у пользователей (в старых схемах поля phone может не быть)
+    const usersColsRes = await pool.query(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_schema = 'public' AND table_name = 'users'
+    `);
+    const userCols = usersColsRes.rows.map(r => r.column_name);
+    const userHasPhone = userCols.includes('phone');
 
     let result;
     try {
@@ -614,7 +691,7 @@ ordersRouter.get("/business", asyncHandler(async (req, res) => {
                     o.business_id,
                     u.name as customer_name,
                     u.email as customer_email,
-                    u.phone as customer_phone,
+                    ${userHasPhone ? 'u.phone' : 'NULL::text'} as customer_phone,
                     o.pickup_time_start,
                     o.pickup_time_end,
                     o.subtotal,
