@@ -8,6 +8,10 @@ const { AppError, asyncHandler } = require("../lib/errorHandler");
 const { validateRegistration, validateLogin } = require("../lib/validation");
 const { createTokenPair, verifyToken } = require("../lib/jwt");
 
+// Rate limiting для защиты от брутфорса (более мягкий, чтобы не мешать реальным пользователям)
+const authLimiter = rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 минут
+    max: 20, // максимум 20 попыток за 5 минут с одного IP
 // Rate limiting для защиты от брутфорса
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 минут

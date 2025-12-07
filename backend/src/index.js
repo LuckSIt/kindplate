@@ -175,22 +175,8 @@ app.use(noSqlInjectionProtection);
 // SQL Injection Protection
 app.use(sqlInjectionProtection);
 
-// Rate limiting для защиты от брутфорса
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 минут
-    max: 5, // максимум 5 попыток входа за 15 минут
-    message: {
-        success: false,
-        error: "TOO_MANY_ATTEMPTS",
-        message: "Слишком много попыток входа. Попробуйте позже."
-    },
-    standardHeaders: true,
-    legacyHeaders: false,
-});
-
-// Применяем rate limiting только к auth роутам
-app.use("/auth/login", authLimiter);
-app.use("/auth/register", authLimiter);
+// Rate limiting для защиты от брутфорса теперь настроен непосредственно в маршрутах auth.
+// Здесь дополнительный лимитер НЕ используем, чтобы не дублировать ограничение.
 
 // Раздача статических файлов (фотографии)
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
