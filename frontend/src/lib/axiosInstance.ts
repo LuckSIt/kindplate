@@ -45,6 +45,36 @@ export const getImageURL = (path?: string) => {
     return `${base}${rel}`;
 };
 
+// Ключи для хранения токенов в localStorage
+const ACCESS_TOKEN_KEY = "kp_access_token";
+const REFRESH_TOKEN_KEY = "kp_refresh_token";
+
+export const tokenStorage = {
+    getAccessToken: () => (typeof window === "undefined" ? null : localStorage.getItem(ACCESS_TOKEN_KEY)),
+    setAccessToken: (token?: string | null) => {
+        if (typeof window === "undefined") return;
+        if (!token) {
+            localStorage.removeItem(ACCESS_TOKEN_KEY);
+        } else {
+            localStorage.setItem(ACCESS_TOKEN_KEY, token);
+        }
+    },
+    getRefreshToken: () => (typeof window === "undefined" ? null : localStorage.getItem(REFRESH_TOKEN_KEY)),
+    setRefreshToken: (token?: string | null) => {
+        if (typeof window === "undefined") return;
+        if (!token) {
+            localStorage.removeItem(REFRESH_TOKEN_KEY);
+        } else {
+            localStorage.setItem(REFRESH_TOKEN_KEY, token);
+        }
+    },
+    clear: () => {
+        if (typeof window === "undefined") return;
+        localStorage.removeItem(ACCESS_TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
+    }
+};
+
 const axiosInstance = axios.create({
     baseURL: getBaseURL(),
     withCredentials: true,
@@ -61,6 +91,15 @@ axiosInstance.interceptors.request.use(
                 ...config.params,
                 _t: Date.now()
             };
+        }
+
+        // Если есть accessToken, добавляем его в Authorization
+        const token = tokenStorage.getAccessToken();
+        if (token) {
+            config.headers = config.headers || {};
+            if (!config.headers['Authorization']) {
+                (config.headers as any)['Authorization'] = `Bearer ${token}`;
+            }
         }
         return config;
     },
@@ -129,6 +168,8 @@ axiosInstance.interceptors.response.use(
                     notify.error('Ошибка валидации', data.message || 'Проверьте правильность введенных данных');
                     break;
                 case 401:
+                    // Очищаем токены, чтобы не зациклиться на невалидном accessToken
+                    tokenStorage.clear();
                     notify.error('Ошибка авторизации', 'Необходимо войти в систему');
                     // Перенаправляем на страницу входа
                     window.location.href = '/auth/login';

@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/lib/schema";
-import { axiosInstance } from "@/lib/axiosInstance";
+import { axiosInstance, tokenStorage } from "@/lib/axiosInstance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { notify } from "@/lib/notifications";
 import type { LoginForm } from "@/lib/types";
@@ -24,6 +24,15 @@ function RouteComponent() {
         mutationFn: (data: LoginForm) => axiosInstance.post("/auth/login/", data),
         onSuccess: (res) => {
             if (res.data.success) {
+                // Сохраняем токены, если они есть (для мобильных браузеров без cookie)
+                const tokens = (res.data as any).tokens;
+                if (tokens?.accessToken) {
+                    tokenStorage.setAccessToken(tokens.accessToken);
+                }
+                if (tokens?.refreshToken) {
+                    tokenStorage.setRefreshToken(tokens.refreshToken);
+                }
+
                 notify.success("Успешный вход", "Добро пожаловать!");
                 navigate({ to: "/home" });
                 queryClient.invalidateQueries({ queryKey: ["auth"] });

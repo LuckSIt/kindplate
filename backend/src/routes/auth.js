@@ -108,12 +108,16 @@ authRouter.post("/login", authLimiter, validateLogin, asyncHandler(async (req, r
         req.session.isBusiness = is_business;
         req.session.role = userRole;
 
+        // Создаём пару токенов (access + refresh) для клиентов, у которых могут не работать cookie
+        const tokens = await createTokenPair({ id, email, is_business });
+
         logger.info("User logged in successfully", { userId: id, email, is_business, role: userRole });
 
         res.json({
             success: true,
             message: "Вход выполнен успешно",
-            user: { id, name, email, is_business }
+            user: { id, name, email, is_business },
+            tokens
         });
     } catch (error) {
         // Логируем полную ошибку для отладки
