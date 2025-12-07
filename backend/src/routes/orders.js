@@ -132,151 +132,143 @@ ordersRouter.post("/draft", asyncHandler(async (req, res) => {
         }
     }
 
-        // Проверяем, что все товары от одного продавца
-        const uniqueBusinessIds = [...new Set(items.map(item => item.business_id))];
-        if (uniqueBusinessIds.length > 1) {
-            return res.status(400).send({
+    // Проверяем, что все товары от одного продавца
+    const uniqueBusinessIds = [...new Set(items.map(item => item.business_id))];
+    if (uniqueBusinessIds.length > 1) {
+        return res.status(400).send({
+            success: false,
+            error: "MULTIPLE_VENDORS",
+            message: "Все товары должны быть от одного продавца"
+        });
+    }
+
+    // Проверяем доступность товаров
+    for (const item of items) {
+        const offerResult = await pool.query(
+            `SELECT quantity_available, is_active, title 
+             FROM offers 
+             WHERE id = $1`,
+            [item.offer_id]
+        );
+
+        if (offerResult.rows.length === 0) {
+            return res.status(404).send({
                 success: false,
-                error: "MULTIPLE_VENDORS",
-                message: "Все товары должны быть от одного продавца"
+                error: "OFFER_NOT_FOUND",
+                message: `Товар "${item.title}" не найден`
             });
         }
 
-        // Проверяем доступность товаров
-        for (const item of items) {
-            const offerResult = await pool.query(
-                `SELECT quantity_available, is_active, title 
-                 FROM offers 
-                 WHERE id = $1`,
-                [item.offer_id]
-            );
-
-            if (offerResult.rows.length === 0) {
-                return res.status(404).send({
-                    success: false,
-                    error: "OFFER_NOT_FOUND",
-                    message: `Товар "${item.title}" не найден`
-                });
-            }
-
-            const offer = offerResult.rows[0];
-            if (!offer.is_active) {
-                return res.status(400).send({
-                    success: false,
-                    error: "OFFER_INACTIVE",
-                    message: `Товар "${item.title}" недоступен`
-                });
-            }
-
-            if (offer.quantity_available < item.quantity) {
-                return res.status(400).send({
-                    success: false,
-                    error: "INSUFFICIENT_QUANTITY",
-                    message: `Недостаточно товара "${item.title}" в наличии`
-                });
-            }
+        const offer = offerResult.rows[0];
+        if (!offer.is_active) {
+            return res.status(400).send({
+                success: false,
+                error: "OFFER_INACTIVE",
+                message: `Товар "${item.title}" недоступен`
+            });
         }
 
-        // Рассчитываем суммы
-        const subtotal = items.reduce((sum, item) => sum + (item.discounted_price * item.quantity), 0);
-        const serviceFee = 50; // TODO: Получить из конфигурации
-        const total = subtotal + serviceFee;
+        if (offer.quantity_available < item.quantity) {
+            return res.status(400).send({
+                success: false,
+                error: "INSUFFICIENT_QUANTITY",
+                message: `Недостаточно товара "${item.title}" в наличии`
+            });
+        }
+    }
 
-        // Проверяем существование таблицы orders
-        const tableCheck = await pool.query(`
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_schema = 'public' AND table_name = 'orders'
+    // Рассчитываем суммы
+    const subtotal = items.reduce((sum, item) => sum + (item.discounted_price * item.quantity), 0);
+    const serviceFee = 50; // TODO: Получить из конфигурации
+    const total = subtotal + serviceFee;
+
+    // Проверяем существование таблицы orders
+    const tableCheck = await pool.query(`
+        SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' AND table_name = 'orders'
+        );
+    `);
+
+    if (!tableCheck.rows[0].exists) {
+        // Таблица не существует, создаем её
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS orders (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id),
+                business_id INTEGER NOT NULL REFERENCES users(id),
+                status VARCHAR(50) NOT NULL DEFAULT 'draft',
+                subtotal DECIMAL(10, 2) NOT NULL,
+                service_fee DECIMAL(10, 2) NOT NULL DEFAULT 50,
+                total DECIMAL(10, 2) NOT NULL,
+                pickup_time_start TIME,
+                pickup_time_end TIME,
+                notes TEXT,
+                pickup_code VARCHAR(255),
+                pickup_verified_at TIMESTAMP,
+                confirmed_at TIMESTAMP,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            
+            CREATE TABLE IF NOT EXISTS order_items (
+                id SERIAL PRIMARY KEY,
+                order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+                offer_id INTEGER NOT NULL REFERENCES offers(id),
+                quantity INTEGER NOT NULL,
+                price DECIMAL(10, 2) NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
-
-        if (!tableCheck.rows[0].exists) {
-            // Таблица не существует, создаем её
-            await pool.query(`
-                CREATE TABLE IF NOT EXISTS orders (
-                    id SERIAL PRIMARY KEY,
-                    user_id INTEGER NOT NULL REFERENCES users(id),
-                    business_id INTEGER NOT NULL REFERENCES users(id),
-                    status VARCHAR(50) NOT NULL DEFAULT 'draft',
-                    subtotal DECIMAL(10, 2) NOT NULL,
-                    service_fee DECIMAL(10, 2) NOT NULL DEFAULT 50,
-                    total DECIMAL(10, 2) NOT NULL,
-                    pickup_time_start TIME,
-                    pickup_time_end TIME,
-                    notes TEXT,
-                    pickup_code VARCHAR(255),
-                    pickup_verified_at TIMESTAMP,
-                    confirmed_at TIMESTAMP,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-                
-                CREATE TABLE IF NOT EXISTS order_items (
-                    id SERIAL PRIMARY KEY,
-                    order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-                    offer_id INTEGER NOT NULL REFERENCES offers(id),
-                    quantity INTEGER NOT NULL,
-                    price DECIMAL(10, 2) NOT NULL,
-                    title VARCHAR(255) NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-            `);
-        }
-
-        // Создаем заказ
-        const orderResult = await pool.query(
-            `INSERT INTO orders (
-                user_id, business_id, status, subtotal, service_fee, total,
-                pickup_time_start, pickup_time_end, notes
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-            RETURNING id, status, subtotal, service_fee, total, created_at`,
-            [userId, business_id, 'draft', subtotal, serviceFee, total, pickup_time_start, pickup_time_end, notes || null]
-        );
-
-        const orderId = orderResult.rows[0].id;
-
-        // Добавляем позиции заказа
-        for (const item of items) {
-            try {
-                await pool.query(
-                    `INSERT INTO order_items (
-                        order_id, offer_id, quantity, price, title
-                    ) VALUES ($1, $2, $3, $4, $5)`,
-                    [orderId, item.offer_id, item.quantity, item.discounted_price, item.title || 'Товар']
-                );
-            } catch (itemError) {
-                console.error("Ошибка при добавлении позиции заказа:", itemError);
-                // Продолжаем, даже если одна позиция не добавилась
-            }
-        }
-
-        // Очищаем корзину
-        try {
-            await pool.query('DELETE FROM cart_items WHERE user_id = $1', [userId]);
-        } catch (cartError) {
-            console.error("Ошибка при очистке корзины:", cartError);
-            // Не критично, продолжаем
-        }
-
-        res.status(201).send({
-            success: true,
-            data: {
-                order_id: orderId,
-                status: 'draft',
-                subtotal,
-                service_fee: serviceFee,
-                total,
-                message: "Черновик заказа создан"
-            }
-        });
-    } catch (e) {
-        console.error("❌ Ошибка в POST /orders/draft:", e);
-        res.status(500).send({
-            success: false,
-            error: "UNKNOWN_ERROR",
-            message: "Внутренняя ошибка сервера"
-        });
     }
+
+    // Создаем заказ
+    const orderResult = await pool.query(
+        `INSERT INTO orders (
+            user_id, business_id, status, subtotal, service_fee, total,
+            pickup_time_start, pickup_time_end, notes
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        RETURNING id, status, subtotal, service_fee, total, created_at`,
+        [userId, business_id, 'draft', subtotal, serviceFee, total, pickup_time_start, pickup_time_end, notes || null]
+    );
+
+    const orderId = orderResult.rows[0].id;
+
+    // Добавляем позиции заказа
+    for (const item of items) {
+        try {
+            await pool.query(
+                `INSERT INTO order_items (
+                    order_id, offer_id, quantity, price, title
+                ) VALUES ($1, $2, $3, $4, $5)`,
+                [orderId, item.offer_id, item.quantity, item.discounted_price, item.title || 'Товар']
+            );
+        } catch (itemError) {
+            console.error("Ошибка при добавлении позиции заказа:", itemError);
+            // Продолжаем, даже если одна позиция не добавилась
+        }
+    }
+
+    // Очищаем корзину
+    try {
+        await pool.query('DELETE FROM cart_items WHERE user_id = $1', [userId]);
+    } catch (cartError) {
+        console.error("Ошибка при очистке корзины:", cartError);
+        // Не критично, продолжаем
+    }
+
+    res.status(201).send({
+        success: true,
+        data: {
+            order_id: orderId,
+            status: 'draft',
+            subtotal,
+            service_fee: serviceFee,
+            total,
+            message: "Черновик заказа создан"
+        }
+    });
 });
 
 // ============================================
