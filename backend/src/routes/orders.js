@@ -3,6 +3,7 @@ const rateLimit = require('express-rate-limit');
 const pool = require('../lib/db');
 const { createAccessToken, verifyToken } = require('../lib/jwt');
 const { asyncHandler } = require('../lib/errorHandler');
+const { ensureAuthenticated } = require('../lib/auth');
 const QRCode = require('qrcode');
 const crypto = require('crypto');
 
@@ -487,7 +488,8 @@ ordersRouter.get("/mine", asyncHandler(async (req, res) => {
 }));
 
 ordersRouter.get("/", asyncHandler(async (req, res) => {
-    const userId = req.session?.userId;
+    // Унифицированная аутентификация: пробуем сессию и Bearer-токен.
+    const userId = await ensureAuthenticated(req, res);
     
     if (!userId) {
         return res.status(401).send({
