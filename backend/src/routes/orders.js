@@ -115,6 +115,16 @@ ordersRouter.post("/draft", asyncHandler(async (req, res) => {
         });
     }
 
+    // Нормализуем данные по товарам:
+    // - backend изначально ожидал discounted_price,
+    //   но часть фронтенда отправляет поле price.
+    //   Поддерживаем оба варианта для совместимости.
+    for (const item of items) {
+        if ((item.discounted_price === undefined || item.discounted_price === null) && item.price !== undefined) {
+            item.discounted_price = item.price;
+        }
+    }
+
     // Валидация каждого товара
     for (const item of items) {
         if (!item.offer_id || !item.quantity || !item.discounted_price) {
@@ -262,7 +272,8 @@ ordersRouter.post("/draft", asyncHandler(async (req, res) => {
     res.status(201).send({
         success: true,
         data: {
-            order_id: orderId,
+            id: orderId,          // для совместимости с фронтендом
+            order_id: orderId,    // явное поле с id заказа
             status: 'draft',
             subtotal,
             service_fee: serviceFee,
