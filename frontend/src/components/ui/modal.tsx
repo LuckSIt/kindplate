@@ -172,7 +172,7 @@ export function ConfirmModal({
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <div className="w-4 h-4 animate-spin" style={{ border: '1.5px solid rgba(255,255,255,0.3)', borderTopColor: '#ffffff', borderRadius: '50%' }}></div>
                 <span>Загрузка...</span>
               </div>
             ) : (

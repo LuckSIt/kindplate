@@ -755,7 +755,7 @@ function RouteComponent() {
                     <div className="mt-2">
                     {areOffersLoading && (
                         <div className="text-center py-12">
-                            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                            <div className="w-5 h-5 animate-spin mx-auto mb-4" style={{ border: '2px solid rgba(22, 163, 74, 0.3)', borderTopColor: '#16a34a', borderRadius: '50%' }}></div>
                             <p className="text-gray-600 dark:text-gray-300">Загружаем ваши предложения...</p>
                         </div>
                     )}
@@ -849,7 +849,7 @@ function RouteComponent() {
                         <QRScannerButton onScanSuccess={() => refetchOrders()} />
                         {areOrdersLoading && (
                             <div className="text-center py-12">
-                                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                <div className="w-5 h-5 animate-spin mx-auto mb-4" style={{ border: '2px solid rgba(37, 99, 235, 0.3)', borderTopColor: '#2563eb', borderRadius: '50%' }}></div>
                                 <p className="text-gray-600 dark:text-gray-300">Загружаем заказы...</p>
                             </div>
                         )}
@@ -990,7 +990,7 @@ function RouteComponent() {
                     <div className="mt-2">
                         {areStatsLoading && (
                             <div className="text-center py-12">
-                                <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                <div className="w-5 h-5 animate-spin mx-auto mb-4" style={{ border: '2px solid rgba(147, 51, 234, 0.3)', borderTopColor: '#9333ea', borderRadius: '50%' }}></div>
                                 <p className="text-gray-600 dark:text-gray-300">Загружаем статистику...</p>
                             </div>
                         )}

@@ -1464,7 +1464,7 @@ button:not(.font-montserrat-alt),
   display: flex;
   align-items: center;
   gap: 10px;
-  transform: translateY(50%);
+  transform: translateY(25%);
 }
 
 .businesses-list-page__search-container--map {
@@ -1943,8 +1943,9 @@ button:not(.font-montserrat-alt),
   font-weight: 600;
   font-size: 9px;
   line-height: 11px;
-  color: #767676;
+  color: #000000;
   text-align: center;
+  text-decoration: none !important;
 }
 
 .businesses-list-page__nav-button svg {
@@ -2339,8 +2340,9 @@ button:not(.font-montserrat-alt),
   font-weight: 600;
   font-size: 12px;
   line-height: 22px;
-  color: #767676;
+  color: #000000;
   text-align: center;
+  text-decoration: none !important;
 }
 
 .pickup-code-page__nav-button svg {
@@ -2410,7 +2412,7 @@ button:not(.font-montserrat-alt),
   padding: 12px 8px;
   position: relative;
   display: flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: space-between;
   gap: 6px;
   overflow: visible;
@@ -2447,31 +2449,35 @@ button:not(.font-montserrat-alt),
   background: #E8E8E8;
   border-radius: 18px;
   padding: 8px 12px;
-  height: 62px;
+  min-height: 62px;
+  height: auto;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
   color: #000000;
   text-align: center;
+  min-width: 0; /* Ensures flex child shrinks properly */
 }
 
 .vendor-page__header-name {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 8.5px;
+  font-size: clamp(8px, 2.5vw, 14px);
   line-height: 1.2;
   color: #000000 !important;
   margin: 0 0 2px 0;
+  word-wrap: break-word;
 }
 
 .vendor-page__header-address {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 500;
-  font-size: 6px;
+  font-size: clamp(6px, 2vw, 11px);
   line-height: 1.3;
   color: #000000 !important;
   margin: 0;
+  word-wrap: break-word;
 }
 
 .vendor-page__favorite-button {
@@ -2898,7 +2904,7 @@ button:not(.font-montserrat-alt),
   font-weight: 600;
   font-size: 12px;
   line-height: 22px;
-  color: #767676;
+  color: #000000;
   text-align: center;
   text-decoration: none !important;
 }
@@ -3353,8 +3359,9 @@ button:not(.font-montserrat-alt),
   font-weight: 600;
   font-size: 12px;
   line-height: 22px;
-  color: #767676;
+  color: #000000;
   text-align: center;
+  text-decoration: none !important;
 }
 
 .cart-page__nav-button svg {
@@ -3420,30 +3427,30 @@ button:not(.font-montserrat-alt),
 
 .payment-page__header {
   width: 100%;
-  height: 89px;
   background-color: #35741F;
   padding: 27px 14px 0;
   position: relative;
+  overflow: visible;
+  margin-bottom: 50px;
+}
+
+.payment-page__header-content {
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  transform: translateY(50%);
+  width: 100%;
 }
 
 .payment-page__header-background {
-  position: absolute;
-  top: 62px;
-  left: 14px;
-  right: 14px;
-  height: 59px;
-  background-color: #D9D9D9;
-  border-radius: 15px;
-  z-index: 0;
+  display: none;
 }
 
 .payment-page__back-button {
   width: 59px;
   height: 59px;
-  background: transparent;
+  background-color: #D9D9D9;
+  border-radius: 15px;
   border: none;
   cursor: pointer;
   padding: 0;
@@ -3462,9 +3469,14 @@ button:not(.font-montserrat-alt),
 
 .payment-page__header-info {
   flex: 1;
-  margin-left: 9px;
-  padding: 17px 9px;
+  height: 59px;
+  background-color: #D9D9D9;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
   z-index: 1;
+  margin: 0;
 }
 
 .payment-page__header-name {
@@ -3472,7 +3484,7 @@ button:not(.font-montserrat-alt),
   font-weight: 600;
   font-size: 21px;
   line-height: 22px;
-  color: #10172A;
+  color: #000000 !important;
   margin: 0;
 }
 
@@ -3514,8 +3526,9 @@ button:not(.font-montserrat-alt),
 }
 
 .payment-page__order-time-badge {
-  width: 130px;
-  height: 20px;
+  width: auto;
+  height: auto;
+  min-height: 26px;
   background-color: #FFFFFF;
   border-radius: 5px;
   display: flex;
@@ -3524,9 +3537,10 @@ button:not(.font-montserrat-alt),
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
   font-size: 12px;
-  line-height: 22px;
-  color: #10172A;
-  padding: 0 9px;
+  line-height: 1.2;
+  color: #000000 !important;
+  padding: 6px 12px;
+  white-space: nowrap;
 }
 
 .payment-page__items {

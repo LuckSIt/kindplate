@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { notify } from '@/lib/notifications';
-import { MapPin, Plus, Edit, Trash2, Loader2, X } from 'lucide-react';
+import { MapPin, Plus, Edit, Trash2, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -127,7 +127,7 @@ export function BusinessLocationsManager({
 
             {isLoading ? (
                 <div className="flex items-center justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin text-primary-600" />
+                    <span className="w-5 h-5 animate-spin" style={{ border: '2px solid rgba(22, 163, 74, 0.3)', borderTopColor: '#16a34a', borderRadius: '50%' }} />
                 </div>
             ) : locations.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
@@ -329,7 +329,7 @@ function LocationFormDialog({ isOpen, onClose, location, onSubmit, isLoading }: 
                         <Button type="submit" disabled={isLoading}>
                             {isLoading ? (
                                 <>
-                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    <span className="w-4 h-4 mr-2 animate-spin" style={{ border: '1.5px solid rgba(255,255,255,0.3)', borderTopColor: 'currentColor', borderRadius: '50%' }} />
                                     Сохранение...
                                 </>
                             ) : (

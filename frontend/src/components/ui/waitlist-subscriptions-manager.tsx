@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance } from '@/lib/axiosInstance';
 import { Button } from '@/components/ui/button';
 import { notify } from '@/lib/notifications';
-import { BellOff, MapPin, Building, Package, Trash2, Loader2 } from 'lucide-react';
+import { BellOff, MapPin, Building, Package, Trash2 } from 'lucide-react';
 
 interface Subscription {
     id: number;
@@ -102,7 +102,7 @@ export function WaitlistSubscriptionsManager({ onClose }: WaitlistSubscriptionsM
                 <div className="flex-1 overflow-y-auto p-6">
                     {isLoading ? (
                         <div className="flex flex-col items-center justify-center py-12">
-                            <Loader2 className="w-8 h-8 animate-spin text-primary-600 mb-4" />
+                            <span className="w-5 h-5 animate-spin mb-4" style={{ border: '2px solid rgba(22, 163, 74, 0.3)', borderTopColor: '#16a34a', borderRadius: '50%' }} />
                             <p className="text-gray-600 dark:text-gray-300">Загрузка подписок...</p>
                         </div>
                     ) : subscriptions.length === 0 ? (
@@ -166,7 +166,7 @@ export function WaitlistSubscriptionsManager({ onClose }: WaitlistSubscriptionsM
                                             disabled={unsubscribeMutation.isPending}
                                         >
                                             {unsubscribeMutation.isPending ? (
-                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                <span className="w-4 h-4 animate-spin" style={{ border: '1.5px solid rgba(255,255,255,0.3)', borderTopColor: 'currentColor', borderRadius: '50%' }} />
                                             ) : (
                                                 <>
                                                     <Trash2 className="w-4 h-4 mr-1" />

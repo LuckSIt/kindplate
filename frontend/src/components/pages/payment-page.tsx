@@ -94,10 +94,6 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
   if (orderLoading || !orderDetails) {
     return (
       <div className="payment-page">
-        <div className="payment-page__status-bar">
-          <div className="payment-page__status-bar-time">9:41</div>
-          <div className="payment-page__status-bar-levels"></div>
-        </div>
         <div className="payment-page__loading">
           <div className="payment-page__spinner"></div>
           <p>Загрузка заказа...</p>
@@ -109,13 +105,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
   if (paymentStatus === 'failed') {
     return (
       <div className="payment-page">
-        <div className="payment-page__status-bar">
-          <div className="payment-page__status-bar-time">9:41</div>
-          <div className="payment-page__status-bar-levels"></div>
-        </div>
-        
         <div className="payment-page__header">
-          <div className="payment-page__header-background"></div>
           <button 
             className="payment-page__back-button"
             onClick={() => navigate({ to: "/cart" })}
@@ -157,28 +147,23 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
 
     return (
     <div className="payment-page">
-      {/* Status Bar */}
-      <div className="payment-page__status-bar">
-        <div className="payment-page__status-bar-time">9:41</div>
-        <div className="payment-page__status-bar-levels"></div>
-      </div>
-
       {/* Header */}
       <div className="payment-page__header">
-        <div className="payment-page__header-background"></div>
-        <button 
-          className="payment-page__back-button"
-          onClick={() => navigate({ to: "/cart" })}
-          aria-label="Назад"
-        >
-          <img 
-            src={arrowBackIcon} 
-            alt="Назад" 
-            className="payment-page__back-button-icon"
-          />
-        </button>
-        <div className="payment-page__header-info">
-          <h1 className="payment-page__header-name">Оплата заказа</h1>
+        <div className="payment-page__header-content">
+          <button 
+            className="payment-page__back-button"
+            onClick={() => navigate({ to: "/cart" })}
+            aria-label="Назад"
+          >
+            <img 
+              src={arrowBackIcon} 
+              alt="Назад" 
+              className="payment-page__back-button-icon"
+            />
+          </button>
+          <div className="payment-page__header-info">
+            <h1 className="payment-page__header-name">Оплата заказа</h1>
+          </div>
         </div>
       </div>
 
@@ -216,13 +201,19 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
           <span className="payment-page__summary-label">Подытог</span>
           <span className="payment-page__summary-value">{orderDetails.subtotal}₽</span>
         </div>
-        {orderDetails.service_fee > 0 && (
-          <div className="payment-page__summary-row">
-            <span className="payment-page__summary-label">Сервисный сбор</span>
-            <span className="payment-page__summary-value">{orderDetails.service_fee}₽</span>
-          </div>
+        
+        {orderDetails.service_fee > 0 ? (
+          <>
+            <div className="payment-page__summary-divider"></div>
+            <div className="payment-page__summary-row">
+              <span className="payment-page__summary-label">Сервисный сбор</span>
+              <span className="payment-page__summary-value">{orderDetails.service_fee}₽</span>
+            </div>
+          </>
+        ) : (
+          <div className="payment-page__summary-divider"></div>
         )}
-        <div className="payment-page__summary-divider"></div>
+        
         <div className="payment-page__summary-row payment-page__summary-row--total">
           <span className="payment-page__summary-label">Итого</span>
           <span className="payment-page__summary-value">{orderDetails.total}₽</span>

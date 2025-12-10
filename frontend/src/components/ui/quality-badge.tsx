@@ -72,6 +72,11 @@ export const QualityBadge: React.FC<QualityBadgeProps> = ({
   showTooltip = false,
   className = ''
 }) => {
+  // Защищаемся от некорректных данных, чтобы не падать при отсутствии бейджа
+  if (!badge || !badge.key) {
+    return null;
+  }
+
   const config = BADGE_CONFIG[badge.key];
   
   if (!config) {
@@ -131,11 +136,13 @@ export const QualityBadgesList: React.FC<QualityBadgesListProps> = ({
   return (
     <div className={cn('flex flex-wrap gap-2', className)}>
       {badges.map((badge, index) => {
+        if (!badge || !badge.key) return null;
+
         const config = BADGE_CONFIG[badge.key];
         if (!config) return null;
 
         return (
-          <div key={index} className="relative group">
+          <div key={badge.key || index} className="relative group">
             <QualityBadge
               badge={badge}
               size={size}
@@ -195,7 +202,7 @@ export const QualityBadgeCompact: React.FC<QualityBadgeCompactProps> = ({
       ? { key: 'top_rated' as const } 
       : null;
 
-  if (!firstBadge) {
+  if (!firstBadge || !firstBadge.key) {
     return null;
   }
 

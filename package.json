@@ -1,5 +1,8 @@
 {
   "dependencies": {
+    "@yandex/ymaps3-clusterer": "^0.0.12",
+    "@yandex/ymaps3-default-ui-theme": "^0.0.22",
+    "@yandex/ymaps3-types": "^1.0.18183688",
     "dompurify": "^3.3.0",
     "express-mongo-sanitize": "^2.2.0",
     "express-validator": "^7.3.0",

@@ -3,129 +3,53 @@ import React from 'react';
 interface SpinnerProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   color?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'gray';
-  variant?: 'default' | 'dots' | 'pulse' | 'bounce' | 'fade' | 'scale';
   className?: string;
 }
 
 export function Spinner({
   size = 'md',
   color = 'primary',
-  variant = 'default',
   className = ''
 }: SpinnerProps) {
-  const getSizeClasses = () => {
+  const getSize = () => {
     switch (size) {
-      case 'xs':
-        return 'w-3 h-3';
-      case 'sm':
-        return 'w-4 h-4';
-      case 'md':
-        return 'w-6 h-6';
-      case 'lg':
-        return 'w-8 h-8';
-      case 'xl':
-        return 'w-12 h-12';
-      case '2xl':
-        return 'w-16 h-16';
-      default:
-        return 'w-6 h-6';
+      case 'xs': return { width: 12, height: 12, borderWidth: 1 };
+      case 'sm': return { width: 16, height: 16, borderWidth: 1.5 };
+      case 'md': return { width: 20, height: 20, borderWidth: 2 };
+      case 'lg': return { width: 24, height: 24, borderWidth: 2 };
+      case 'xl': return { width: 32, height: 32, borderWidth: 2 };
+      case '2xl': return { width: 40, height: 40, borderWidth: 3 };
+      default: return { width: 20, height: 20, borderWidth: 2 };
     }
   };
 
-  const getColorClasses = () => {
+  const getColors = () => {
     switch (color) {
-      case 'primary':
-        return 'text-primary-600 dark:text-primary-400';
-      case 'secondary':
-        return 'text-gray-600 dark:text-gray-400';
-      case 'success':
-        return 'text-green-600 dark:text-green-400';
-      case 'warning':
-        return 'text-yellow-600 dark:text-yellow-400';
-      case 'danger':
-        return 'text-red-600 dark:text-red-400';
-      case 'info':
-        return 'text-blue-600 dark:text-blue-400';
-      case 'gray':
-        return 'text-gray-400 dark:text-gray-600';
-      default:
-        return 'text-primary-600 dark:text-primary-400';
+      case 'primary': return { track: 'rgba(22, 163, 74, 0.3)', active: '#16a34a' };
+      case 'secondary': return { track: 'rgba(75, 85, 99, 0.3)', active: '#4b5563' };
+      case 'success': return { track: 'rgba(22, 163, 74, 0.3)', active: '#16a34a' };
+      case 'warning': return { track: 'rgba(202, 138, 4, 0.3)', active: '#ca8a04' };
+      case 'danger': return { track: 'rgba(220, 38, 38, 0.3)', active: '#dc2626' };
+      case 'info': return { track: 'rgba(37, 99, 235, 0.3)', active: '#2563eb' };
+      case 'gray': return { track: 'rgba(156, 163, 175, 0.3)', active: '#9ca3af' };
+      default: return { track: 'rgba(22, 163, 74, 0.3)', active: '#16a34a' };
     }
   };
 
-  const getVariantClasses = () => {
-    switch (variant) {
-      case 'dots':
-        return 'animate-pulse';
-      case 'pulse':
-        return 'animate-pulse';
-      case 'bounce':
-        return 'animate-bounce';
-      case 'fade':
-        return 'animate-pulse';
-      case 'scale':
-        return 'animate-pulse';
-      default:
-        return 'animate-spin';
-    }
-  };
-
-  const renderSpinner = () => {
-    switch (variant) {
-      case 'dots':
-        return (
-          <div className={`flex space-x-1 ${getSizeClasses()}`}>
-            <div className={`w-2 h-2 bg-current rounded-full animate-bounce ${getColorClasses()}`} style={{ animationDelay: '0ms' }} />
-            <div className={`w-2 h-2 bg-current rounded-full animate-bounce ${getColorClasses()}`} style={{ animationDelay: '150ms' }} />
-            <div className={`w-2 h-2 bg-current rounded-full animate-bounce ${getColorClasses()}`} style={{ animationDelay: '300ms' }} />
-          </div>
-        );
-      case 'pulse':
-        return (
-          <div className={`${getSizeClasses()} bg-current rounded-full animate-pulse ${getColorClasses()}`} />
-        );
-      case 'bounce':
-        return (
-          <div className={`${getSizeClasses()} bg-current rounded-full animate-bounce ${getColorClasses()}`} />
-        );
-      case 'fade':
-        return (
-          <div className={`${getSizeClasses()} bg-current rounded-full animate-pulse ${getColorClasses()}`} />
-        );
-      case 'scale':
-        return (
-          <div className={`${getSizeClasses()} bg-current rounded-full animate-pulse ${getColorClasses()}`} />
-        );
-      default:
-        return (
-          <svg
-            className={`${getSizeClasses()} ${getColorClasses()} ${getVariantClasses()}`}
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            />
-          </svg>
-        );
-    }
-  };
+  const sizeStyle = getSize();
+  const colors = getColors();
 
   return (
-    <div className={`inline-block ${className}`}>
-      {renderSpinner()}
-    </div>
+    <div
+      className={`animate-spin ${className}`}
+      style={{
+        width: sizeStyle.width,
+        height: sizeStyle.height,
+        border: `${sizeStyle.borderWidth}px solid ${colors.track}`,
+        borderTopColor: colors.active,
+        borderRadius: '50%'
+      }}
+    />
   );
 }
 

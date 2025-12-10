@@ -4,7 +4,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { Button } from './button';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from './drawer';
 import { FavoriteButton } from './favorite-button';
-import { QualityBadge } from './quality-badge';
+import { QualityBadgeCompact } from './quality-badge';
 import { RouteButton } from './route-button';
 import { OptimizedImage } from './optimized-image';
 import { getBackendURL } from '@/lib/axiosInstance';
@@ -154,7 +154,7 @@ export const BusinessDrawer: React.FC<BusinessDrawerProps> = ({
                   <DrawerTitle className="text-xl font-bold text-gray-900 dark:text-white">
                     {business.name}
                   </DrawerTitle>
-                  <QualityBadge business={business} size="sm" />
+                  <QualityBadgeCompact business={business} />
                 </div>
                 
                 <div className="flex items-center gap-3 mb-2">

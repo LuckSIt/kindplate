@@ -5,7 +5,7 @@ import { SearchFiltersPanel, type SearchFilters } from '@/components/ui/search-f
 import { ActiveFiltersChips } from '@/components/ui/active-filters-chips';
 import { OfferCardVendor } from '@/components/ui/offer-card-vendor';
 import { Button } from '@/components/ui/button';
-import { Loader2, Search, Filter } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { fetchOffersSearch } from '@/lib/offers-search';
 
@@ -126,7 +126,7 @@ function RouteComponent() {
             <div className="max-w-7xl mx-auto px-4 py-6">
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center py-12">
-                        <Loader2 className="w-8 h-8 animate-spin text-primary-600 mb-4" />
+                        <span className="w-5 h-5 animate-spin mb-4" style={{ border: '2px solid rgba(22, 163, 74, 0.3)', borderTopColor: '#16a34a', borderRadius: '50%' }} />
                         <p className="text-gray-600 dark:text-gray-300">Поиск предложений...</p>
                     </div>
                 ) : isError ? (

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Loader2 } from 'lucide-react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success' | 'warning' | 'info';
@@ -75,7 +74,14 @@ export function Button({
       {...props}
     >
       {loading && (
-        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+        <span 
+          className="w-4 h-4 mr-2 animate-spin" 
+          style={{ 
+            border: '2px solid rgba(255,255,255,0.3)', 
+            borderTopColor: 'currentColor',
+            borderRadius: '50%'
+          }} 
+        />
       )}
       {!loading && leftIcon && (
         <span className="mr-2">{leftIcon}</span>

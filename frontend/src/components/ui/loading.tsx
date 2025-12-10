@@ -7,15 +7,25 @@ interface LoadingSpinnerProps {
 }
 
 export function LoadingSpinner({ size = 'md', text, className = '' }: LoadingSpinnerProps) {
-  const sizeClasses = {
-    sm: 'w-4 h-4',
-    md: 'w-8 h-8',
-    lg: 'w-12 h-12'
+  const sizeStyles = {
+    sm: { width: 16, height: 16, borderWidth: 1.5 },
+    md: { width: 20, height: 20, borderWidth: 2 },
+    lg: { width: 24, height: 24, borderWidth: 2 }
   };
+  const s = sizeStyles[size];
 
   return (
     <div className={`flex flex-col items-center justify-center ${className}`}>
-      <div className={`${sizeClasses[size]} border-4 border-primary-200 border-t-primary-500 rounded-full animate-spin`}></div>
+      <div 
+        className="animate-spin"
+        style={{ 
+          width: s.width, 
+          height: s.height, 
+          border: `${s.borderWidth}px solid rgba(22, 163, 74, 0.3)`, 
+          borderTopColor: '#16a34a',
+          borderRadius: '50%'
+        }}
+      ></div>
       {text && (
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{text}</p>
       )}

@@ -207,7 +207,10 @@ function RouteComponent() {
                 <div className="p-4 space-y-4">
                     {ordersLoading && (
                         <div className="text-center py-12">
-                            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                            <svg className="mx-auto mb-4 animate-spin" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" stroke="#16a34a33" strokeWidth="3" />
+                                <path d="M12 2a10 10 0 0 1 10 10" stroke="#16a34a" strokeWidth="3" strokeLinecap="round" />
+                            </svg>
                             <p className="text-gray-600 dark:text-gray-300">Загружаем заказы...</p>
                         </div>
                     )}
@@ -375,7 +378,10 @@ function RouteComponent() {
                 <div className="p-4 space-y-4">
                     {statsLoading && (
                         <div className="text-center py-12">
-                            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                            <svg className="mx-auto mb-4 animate-spin" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" stroke="#2563eb33" strokeWidth="3" />
+                                <path d="M12 2a10 10 0 0 1 10 10" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" />
+                            </svg>
                             <p className="text-gray-600 dark:text-gray-300">Загружаем статистику...</p>
                         </div>
                     )}
@@ -525,7 +531,10 @@ function RouteComponent() {
                 <div className="p-4 space-y-4">
                     {favoritesLoading && (
                         <div className="text-center py-12">
-                            <div className="w-12 h-12 border-4 border-pink-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                            <svg className="mx-auto mb-4 animate-spin" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" stroke="#db277733" strokeWidth="3" />
+                                <path d="M12 2a10 10 0 0 1 10 10" stroke="#db2777" strokeWidth="3" strokeLinecap="round" />
+                            </svg>
                             <p className="text-gray-600 dark:text-gray-300">Загружаем избранное...</p>
                         </div>
                     )}

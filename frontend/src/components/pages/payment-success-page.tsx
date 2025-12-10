@@ -67,7 +67,7 @@ export const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = ({ orderId 
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <div className="w-5 h-5 animate-spin mx-auto mb-4" style={{ border: '2px solid rgba(34, 197, 94, 0.3)', borderTopColor: '#22c55e', borderRadius: '50%' }}></div>
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
             Загрузка деталей заказа...
           </h2>

@@ -164,7 +164,7 @@ function PickupCodePageComponent() {
                     aria-label="Карта"
                 >
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                        <path d="M3 7L9 4L15 7L21 4V17L15 20L9 17L3 20V7Z" stroke="#767676" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M3 7L9 4L15 7L21 4V17L15 20L9 17L3 20V7Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                     <span className="pickup-code-page__nav-label">Карта</span>
                 </Link>
@@ -174,7 +174,7 @@ function PickupCodePageComponent() {
                     aria-label="Список"
                 >
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                        <path d="M4 6H20M4 12H20M4 18H20" stroke="#757575" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M4 6H20M4 12H20M4 18H20" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                     <span className="pickup-code-page__nav-label">Список</span>
                 </Link>
@@ -184,8 +184,8 @@ function PickupCodePageComponent() {
                     aria-label="Профиль"
                 >
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="#757575" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" stroke="#757575" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                     <span className="pickup-code-page__nav-label">Профиль</span>
                 </Link>

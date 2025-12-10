@@ -246,7 +246,7 @@ export const CartPage: React.FC = () => {
           aria-label="Карта"
         >
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-            <path d="M3 7L9 4L15 7L21 4V17L15 20L9 17L3 20V7Z" stroke="#767676" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M3 7L9 4L15 7L21 4V17L15 20L9 17L3 20V7Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           <span className="cart-page__nav-label">Карта</span>
         </Link>
@@ -256,7 +256,7 @@ export const CartPage: React.FC = () => {
           aria-label="Список"
         >
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-            <path d="M4 6H20M4 12H20M4 18H20" stroke="#767676" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M4 6H20M4 12H20M4 18H20" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           <span className="cart-page__nav-label">Список</span>
         </Link>

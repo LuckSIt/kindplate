@@ -92,7 +92,7 @@ export function ConfirmDialog({
           >
             {isLoading ? (
               <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                <div className="w-4 h-4 animate-spin mr-2" style={{ border: '1.5px solid rgba(255,255,255,0.3)', borderTopColor: '#ffffff', borderRadius: '50%' }} />
                 Загрузка...
               </>
             ) : (

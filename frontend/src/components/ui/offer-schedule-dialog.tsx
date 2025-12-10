@@ -206,7 +206,7 @@ export function OfferScheduleDialog({ offerId, open, onClose }: OfferScheduleDia
                         >
                             {createScheduleMutation.isPending ? (
                                 <div className="flex items-center justify-center">
-                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                                    <div className="w-4 h-4 animate-spin mr-2" style={{ border: '1.5px solid rgba(255,255,255,0.3)', borderTopColor: '#ffffff', borderRadius: '50%' }}></div>
                                     Создание...
                                 </div>
                             ) : (
@@ -223,7 +223,7 @@ export function OfferScheduleDialog({ offerId, open, onClose }: OfferScheduleDia
 
                         {isLoading && (
                             <div className="text-center py-8">
-                                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                                <div className="w-5 h-5 animate-spin mx-auto mb-2" style={{ border: '2px solid rgba(22, 163, 74, 0.3)', borderTopColor: '#16a34a', borderRadius: '50%' }}></div>
                                 <p className="text-gray-600 dark:text-gray-300">Загрузка...</p>
                             </div>
                         )}

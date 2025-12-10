@@ -109,7 +109,7 @@ export function WaitlistSubscribeButton({
             }`}
         >
             {subscribeMutation.isPending || unsubscribeMutation.isPending ? (
-                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                <div className="w-4 h-4 animate-spin mr-2" style={{ border: '1.5px solid rgba(255,255,255,0.3)', borderTopColor: 'currentColor', borderRadius: '50%' }} />
             ) : isSubscribedState ? (
                 <>
                     <BellOff className="w-4 h-4 mr-2" />

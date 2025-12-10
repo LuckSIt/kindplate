@@ -95,7 +95,7 @@ export function Avatar({
       <div className={`relative ${baseClasses}`}>
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-full">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
+            <div className="w-4 h-4 animate-spin" style={{ border: '1.5px solid rgba(22, 163, 74, 0.3)', borderTopColor: '#16a34a', borderRadius: '50%' }}></div>
           </div>
         )}
         <img

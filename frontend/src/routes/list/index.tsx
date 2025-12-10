@@ -25,7 +25,11 @@ function ListPageComponent() {
                     setUserLocation([position.coords.latitude, position.coords.longitude]);
                 },
                 (error) => {
-                    console.warn("❌ Ошибка получения местоположения:", error);
+                    if (import.meta.env.DEV) {
+                        // Логируем только в dev, чтобы не считать это ошибкой в проде
+                        const message = (error as GeolocationPositionError)?.message || String(error);
+                        console.info("ℹ️ Геолокация недоступна:", message);
+                    }
                 }
             );
         }

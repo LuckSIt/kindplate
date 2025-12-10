@@ -269,35 +269,37 @@ export function LoadingSpinner({
   color = 'primary',
   className = ''
 }: LoadingSpinnerProps) {
-  const getSizeClasses = () => {
+  const getSize = () => {
     switch (size) {
-      case 'sm':
-        return 'w-4 h-4';
-      case 'md':
-        return 'w-6 h-6';
-      case 'lg':
-        return 'w-8 h-8';
-      case 'xl':
-        return 'w-12 h-12';
-      default:
-        return 'w-6 h-6';
+      case 'sm': return { width: 16, height: 16, borderWidth: 1.5 };
+      case 'md': return { width: 20, height: 20, borderWidth: 2 };
+      case 'lg': return { width: 24, height: 24, borderWidth: 2 };
+      case 'xl': return { width: 32, height: 32, borderWidth: 2 };
+      default: return { width: 20, height: 20, borderWidth: 2 };
     }
   };
 
-  const getColorClasses = () => {
+  const getColors = () => {
     switch (color) {
-      case 'white':
-        return 'text-white';
-      case 'gray':
-        return 'text-gray-500 dark:text-gray-400';
-      default:
-        return 'text-primary-600 dark:text-primary-400';
+      case 'white': return { track: 'rgba(255, 255, 255, 0.3)', active: '#ffffff' };
+      case 'gray': return { track: 'rgba(107, 114, 128, 0.3)', active: '#6b7280' };
+      default: return { track: 'rgba(22, 163, 74, 0.3)', active: '#16a34a' };
     }
   };
+
+  const s = getSize();
+  const colors = getColors();
 
   return (
     <div
-      className={`animate-spin rounded-full border-2 border-gray-300 border-t-transparent ${getSizeClasses()} ${getColorClasses()} ${className}`}
+      className={`animate-spin ${className}`}
+      style={{
+        width: s.width,
+        height: s.height,
+        border: `${s.borderWidth}px solid ${colors.track}`,
+        borderTopColor: colors.active,
+        borderRadius: '50%'
+      }}
     />
   );
 }

@@ -1,398 +1,497 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useCallback, useState, CSSProperties } from 'react';
+import { waitForYmaps } from '@/lib/ymaps';
 import type { Business } from '@/lib/types';
 
-interface MapViewProps {
-  businesses: Business[];
-  onBusinessClick: (business: Business) => void;
-  onBoundsChange: (bounds: any) => void;
-  selectedBusiness?: Business | null;
-  userLocation?: [number, number] | null;
-  className?: string;
-  style?: React.CSSProperties;
-  onMapClick?: () => void;
+declare global {
+    interface Window {
+        ymaps3: any;
+    }
 }
 
+interface MapBounds {
+    north: number;
+    south: number;
+    east: number;
+    west: number;
+}
 
-export const MapView: React.FC<MapViewProps> = ({
-  businesses,
-  onBusinessClick,
-  onBoundsChange,
-  selectedBusiness,
-  userLocation,
-  className = '',
-  style,
-  onMapClick
-}) => {
-  const mapRef = useRef<any>(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const [map, setMap] = useState<any>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [userInteracted, setUserInteracted] = useState(false);
-  const [containerReady, setContainerReady] = useState(false);
-  const zeroSizeWarnedRef = useRef(false);
+interface MapViewProps {
+    businesses: Business[];
+    onBusinessClick: (business: Business) => void;
+    onBoundsChange?: (bounds: MapBounds) => void;
+    selectedBusiness: Business | null;
+    userLocation: [number, number] | null;
+    onMapClick?: () => void;
+    className?: string;
+    style?: CSSProperties;
+}
 
-  // Initialize Yandex Maps - проверяем загрузку скрипта
-  useEffect(() => {
-    const checkYmaps = () => {
-      if (typeof window !== 'undefined' && window.ymaps) {
-        console.log('✅ Yandex Maps API загружен');
-        setMapLoaded(true);
-        return true;
-      }
-      return false;
-    };
+// Default center - Saint Petersburg [lon, lat] for ymaps3
+const DEFAULT_CENTER: [number, number] = [30.3351, 59.9343]; // [lon, lat]
+const DEFAULT_ZOOM = 12;
 
-    // Проверяем сразу
-    if (checkYmaps()) return;
+// Logo URL for markers
+const MARKER_LOGO_URL = '/logo192.png';
 
-    console.log('⏳ Ожидание загрузки Yandex Maps API...');
+// Convert [lat, lon] to [lon, lat] for ymaps3
+function toYmapsCoords(coords: [number, number]): [number, number] {
+    return [coords[1], coords[0]];
+}
 
-    // Если не загружен, проверяем периодически
-    const intervalId = setInterval(() => {
-      if (checkYmaps()) {
-        clearInterval(intervalId);
-      }
-    }, 100);
+// Convert [lon, lat] to [lat, lon] from ymaps3
+function fromYmapsCoords(coords: [number, number]): [number, number] {
+    return [coords[1], coords[0]];
+}
 
-    // Останавливаем проверку через 10 секунд
-    const timeoutId = setTimeout(() => {
-      clearInterval(intervalId);
-      if (!checkYmaps()) {
-        console.error('❌ Яндекс карты не загрузились за 10 секунд. Проверьте скрипт в index.html');
-        console.error('Проверьте наличие: <script src="https://api-maps.yandex.ru/2.1.79/?apikey=..."></script>');
-      }
-    }, 10000);
-
-    return () => {
-      clearInterval(intervalId);
-      clearTimeout(timeoutId);
-    };
-  }, []);
-
-  // Track container size and mark ready once it has non-zero dimensions
-  useEffect(() => {
-    const el = mapRef.current;
-    if (!el) return;
-
-    const ensureSize = () => {
-      const rect = el.getBoundingClientRect();
-      if (rect.width === 0) {
-        // fallback ширины, если родитель еще не успел просчитаться
-        el.style.width = '100vw';
-        el.style.minWidth = '320px';
-        el.parentElement && (el.parentElement.style.width = '100%');
-      }
-      if (rect.height === 0) {
-        // fallback высоты
-        el.style.minHeight = '400px';
-        el.style.height = '100%';
-        el.parentElement && (el.parentElement.style.minHeight = '400px');
-      }
-
-      if (rect.width > 0 && rect.height > 0) {
-        zeroSizeWarnedRef.current = false;
-        setContainerReady(true);
-        // При изменении габаритов подгоняем карту
-        if (map && map.container?.fitToViewport) {
-          map.container.fitToViewport();
-        }
-      } else {
-        if (!zeroSizeWarnedRef.current) {
-          zeroSizeWarnedRef.current = true;
-          console.warn('⚠️ Контейнер карты имеет нулевые размеры:', { width: rect.width, height: rect.height });
-        }
-      }
-    };
-
-    const resizeObserver = new ResizeObserver(ensureSize);
-    resizeObserver.observe(el);
-    ensureSize();
-
-    return () => resizeObserver.disconnect();
-  }, [map]);
-
-  // Initialize map
-  useEffect(() => {
-    if (!mapLoaded || !window.ymaps) {
-      if (!mapLoaded) console.log('⏳ Ожидание загрузки Yandex Maps API...');
-      if (!window.ymaps) console.log('⏳ window.ymaps не доступен');
-      return;
-    }
-
-    if (isInitialized) {
-      console.log('✅ Карта уже инициализирована');
-      return;
-    }
-
-    if (!mapRef.current) {
-      console.error('❌ Map container ref is null');
-      return;
-    }
-
-    // Ждем пока контейнер станет видимым/имеет размер
-    const rect = mapRef.current.getBoundingClientRect();
-    if (!containerReady || rect.width === 0 || rect.height === 0) {
-      if (!zeroSizeWarnedRef.current) {
-        zeroSizeWarnedRef.current = true;
-        console.warn('⚠️ Контейнер карты имеет нулевые размеры:', { width: rect.width, height: rect.height });
-      }
-      return;
-    }
-
-    console.log('🗺️ Инициализация карты...', {
-      containerSize: { width: rect.width, height: rect.height },
-      center: userLocation || [59.92, 30.34]
-    });
-
-    window.ymaps.ready(() => {
-      try {
-        if (!mapRef.current) {
-          console.error('❌ Map container ref is null в ymaps.ready');
-          return;
-        }
-
-        const yandexMap = new window.ymaps.Map(mapRef.current, {
-          center: userLocation || [59.92, 30.34],
-          zoom: userLocation ? 14 : 12,
-          controls: []
-        }, {
-          suppressMapOpenBlock: true // Убираем блокировку карты
-        });
-
-        console.log('✅ Карта успешно создана');
-        setMap(yandexMap);
-        setIsInitialized(true);
-        // Гарантируем растяжение на весь контейнер
-        yandexMap.container.fitToViewport();
-
-        // Handle bounds change with rAF throttle
-        let pending = false;
-        const onBounds = () => {
-          if (pending) return;
-          pending = true;
-          requestAnimationFrame(() => {
-            try {
-              const bounds = yandexMap.getBounds();
-              onBoundsChange({
-                north: bounds[1][0],
-                south: bounds[0][0],
-                east: bounds[1][1],
-                west: bounds[0][1]
-              });
-            } finally {
-              pending = false;
-            }
-          });
-        };
-        yandexMap.events.add('boundschange', onBounds);
-        if (onMapClick) {
-          yandexMap.events.add('click', () => onMapClick());
-        }
-
-        // Track user interaction
-        yandexMap.events.add('actionend', () => {
-          setUserInteracted(true);
-        });
-
-        yandexMap.events.add('wheel', () => {
-          setUserInteracted(true);
-        });
-
-        // Add user location marker
-        if (userLocation) {
-          const userPlacemark = new window.ymaps.Placemark(userLocation, {
-            balloonContent: 'Ваше местоположение'
-          }, {
-            preset: 'islands#blueCircleDotIcon',
-            iconColor: '#3b82f6'
-          });
-          userPlacemark.properties.set('isUserLocation', true);
-          yandexMap.geoObjects.add(userPlacemark);
-        }
-      } catch (error) {
-        console.error('🗺️ Error creating map:', error);
-      }
-    });
-
-    return () => {
-      if (map) {
-        map.destroy();
-      }
-    };
-  }, [mapLoaded, userLocation, onBoundsChange, isInitialized, containerReady]);
-
-  // Подгоняем карту при изменении размеров окна
-  useEffect(() => {
-    if (!map) return;
-    const handleResize = () => {
-      if (map.container?.fitToViewport) {
-        map.container.fitToViewport();
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [map]);
-
-  // Add business markers with optimized clusterer
-  useEffect(() => {
-    if (!map || !window.ymaps) return;
-
-    // Debounce обновления маркеров для производительности
-    const timeoutId = setTimeout(() => {
-      // Clear existing markers/clusterers (but keep user location marker)
-      const toRemove: any[] = [];
-      map.geoObjects.each((obj: any) => {
-        if (obj.properties && obj.properties.get('isUserLocation') === true) return;
-        toRemove.push(obj);
-      });
-      toRemove.forEach((obj) => map.geoObjects.remove(obj));
-
-    const clusterIconContentLayout = window.ymaps.templateLayoutFactory.createClass(
-      '<div style="width:44px;height:44px;border-radius:22px;background:#35741F;box-shadow:0 6px 16px rgba(53,116,31,0.35);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-family:Inter,Arial,sans-serif;font-size:14px;">{{ properties.geoObjects.length }}</div>'
-    );
-
-    // Оптимизированные настройки кластеризации для больших кластеров
-    const clusterer = new window.ymaps.Clusterer({
-      groupByCoordinates: false,
-      clusterDisableClickZoom: false,
-      clusterOpenBalloonOnClick: true,
-      clusterBalloonContentLayoutWidth: 280,
-      clusterBalloonContentLayoutHeight: 180,
-      gridSize: 64, // Размер сетки для кластеризации
-      clusterIcons: [ { href: 'about:blank', size: [44,44], offset: [-22,-22] } ],
-      clusterIconContentLayout,
-      // Оптимизация производительности
-      hasBalloon: true,
-      hasHint: false, // Отключаем подсказки для производительности
-      zoomMargin: 10, // Отступ при зуме к кластеру
-    });
-
-    businesses.forEach((business) => {
-      // Пропускаем бизнесы без координат
-      if (!business.coords || business.coords.length < 2) return;
-      
-      // Проверяем, есть ли активные заказы (работает и есть активные предложения)
-      const hasActiveOffers = business.offers && business.offers.some(offer => 
-        offer.is_active && offer.quantity_available > 0
-      );
-      
-      const coords = [parseFloat(business.coords[0]), parseFloat(business.coords[1])];
-      
-      const isSelected = selectedBusiness && selectedBusiness.id === business.id;
-
-      // Используем PNG логотип вместо цветных кружков
-      // Размеры маркеров: обычные 96px, выбранные 120px (увеличены в 3 раза)
-      const size = isSelected ? 120 : 96;
-      
-      // Путь к логотипу
-      const iconUrl = '/kandlate.png';
-
-      const placemark = new window.ymaps.Placemark(
-        coords,
-        {
-          balloonContent: `
-            <div style="min-width: 200px; text-align: center;">
-              <h3 style="font-size: 16px; margin: 0 0 10px 0; color: #1f2937;">${business.name}</h3>
-              <p style="margin: 0 0 10px 0; color: #6b7280; font-size: 14px;">${business.address}</p>
-              <button 
-                onclick="window.selectBusiness(${business.id})"
-                style="background: linear-gradient(to right, #16a34a, #22c55e); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; width: 100%;">
-                Смотреть предложения
-              </button>
-            </div>
-          `
-        },
-        {
-          iconLayout: 'default#image',
-          iconImageHref: iconUrl,
-          iconImageSize: [size, size],
-          iconImageOffset: [-size/2, -size/2],
-          balloonCloseButton: true,
-          hideIconOnBalloonOpen: false,
-          opacity: hasActiveOffers ? 1 : 0.5, // Полупрозрачный для неактивных
-        }
-      );
-
-      placemark.events.add('click', () => {
-        onBusinessClick(business);
-      });
-      clusterer.add(placemark);
-    });
-
-    map.geoObjects.add(clusterer);
-    }, 100); // Debounce 100ms для оптимизации
+// Create custom marker element with logo
+function createMarkerElement(isSelected: boolean, onClick?: () => void): HTMLElement {
+    const element = document.createElement('div');
+    element.style.cssText = `
+        width: 40px;
+        height: 48px;
+        cursor: pointer;
+        transform: translate(-50%, -100%);
+        filter: ${isSelected ? 'drop-shadow(0 0 8px #f97316) brightness(1.1)' : 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'};
+        transition: filter 0.2s, transform 0.2s;
+    `;
     
-    return () => clearTimeout(timeoutId);
-  }, [map, businesses, onBusinessClick, selectedBusiness?.id]);
-
-  // Initial centering on businesses (only once and if user hasn't interacted)
-  useEffect(() => {
-    if (map && businesses.length > 0 && !userLocation && !userInteracted) {
-      const firstBusiness = businesses[0];
-      if (firstBusiness.coords && firstBusiness.coords.length >= 2) {
-        const firstBusinessCoords = [parseFloat(firstBusiness.coords[0]), parseFloat(firstBusiness.coords[1])];
-        map.setCenter(firstBusinessCoords, 13);
-      }
+    const img = document.createElement('img');
+    img.src = MARKER_LOGO_URL;
+    img.style.cssText = `
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    `;
+    img.alt = 'Marker';
+    element.appendChild(img);
+    
+    if (onClick) {
+        element.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onClick();
+        });
     }
-  }, [map, businesses.length, userLocation, userInteracted]);
+    
+    // Hover effect
+    element.addEventListener('mouseenter', () => {
+        element.style.transform = 'translate(-50%, -100%) scale(1.1)';
+    });
+    element.addEventListener('mouseleave', () => {
+        element.style.transform = 'translate(-50%, -100%)';
+    });
+    
+    return element;
+}
 
-  // Center map on selected business (only when business actually changes)
-  useEffect(() => {
-    if (map && selectedBusiness && selectedBusiness.coords && selectedBusiness.coords.length >= 2) {
-      const coords = [parseFloat(selectedBusiness.coords[0]), parseFloat(selectedBusiness.coords[1])];
-      const currentCenter = map.getCenter();
-      const currentZoom = map.getZoom();
-      
-      // Only center if we're not already close to this location
-      const distance = Math.sqrt(
-        Math.pow(currentCenter[0] - coords[0], 2) + 
-        Math.pow(currentCenter[1] - coords[1], 2)
-      );
-      
-      if (distance > 0.001 || currentZoom < 14) {
-        map.setCenter(coords, 16);
-        // Reset user interaction flag when we programmatically center
-        setUserInteracted(false);
-      }
+// Create cluster element
+function createClusterElement(count: number, onClick?: () => void): HTMLElement {
+    const element = document.createElement('div');
+    element.style.cssText = `
+        width: 48px;
+        height: 48px;
+        cursor: pointer;
+        transform: translate(-50%, -50%);
+        position: relative;
+        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+        transition: transform 0.2s;
+    `;
+    
+    // Background circle
+    const bg = document.createElement('div');
+    bg.style.cssText = `
+        width: 100%;
+        height: 100%;
+        background: #1b5525;
+        border: 3px solid white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+    
+    // Count text
+    const text = document.createElement('span');
+    text.textContent = count > 99 ? '99+' : String(count);
+    text.style.cssText = `
+        color: white;
+        font-size: ${count > 99 ? '12px' : '14px'};
+        font-weight: 700;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    `;
+    
+    bg.appendChild(text);
+    element.appendChild(bg);
+    
+    if (onClick) {
+        element.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onClick();
+        });
     }
-  }, [map, selectedBusiness?.id]); // Only depend on business ID, not the whole object
+    
+    // Hover effect
+    element.addEventListener('mouseenter', () => {
+        element.style.transform = 'translate(-50%, -50%) scale(1.15)';
+    });
+    element.addEventListener('mouseleave', () => {
+        element.style.transform = 'translate(-50%, -50%)';
+    });
+    
+    return element;
+}
 
-  // Add global function for balloon clicks
-  useEffect(() => {
-    (window as any).selectBusiness = (businessId: number) => {
-      const business = businesses.find(b => b.id === businessId);
-      if (business) {
-        onBusinessClick(business);
-      }
-    };
-  }, [businesses, onBusinessClick]);
+// Create user marker element
+function createUserMarkerElement(): HTMLElement {
+    const element = document.createElement('div');
+    element.style.cssText = `
+        width: 20px;
+        height: 20px;
+        background: #3b82f6;
+        border: 3px solid white;
+        border-radius: 50%;
+        box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.3), 0 2px 6px rgba(0,0,0,0.3);
+        transform: translate(-50%, -50%);
+    `;
+    return element;
+}
 
+export function MapView({
+    businesses,
+    onBusinessClick,
+    onBoundsChange,
+    selectedBusiness,
+    userLocation,
+    onMapClick,
+    className = '',
+    style = {}
+}: MapViewProps) {
+    const mapContainerRef = useRef<HTMLDivElement>(null);
+    const mapInstanceRef = useRef<any>(null);
+    const clustererRef = useRef<any>(null);
+    const userMarkerRef = useRef<any>(null);
+    const isInitializedRef = useRef(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    
+    // Store callbacks in refs to avoid recreating clusterer
+    const onBusinessClickRef = useRef(onBusinessClick);
+    const selectedBusinessRef = useRef(selectedBusiness);
+    
+    useEffect(() => {
+        onBusinessClickRef.current = onBusinessClick;
+    }, [onBusinessClick]);
+    
+    useEffect(() => {
+        selectedBusinessRef.current = selectedBusiness;
+    }, [selectedBusiness]);
 
-  // Убрали ранний return - показываем контейнер всегда
+    // Initialize map
+    const initMap = useCallback(async () => {
+        if (!mapContainerRef.current || isInitializedRef.current) return;
+        
+        setIsLoading(true);
+        setError(null);
+        
+        try {
+            const isReady = await waitForYmaps();
+            if (!isReady || !mapContainerRef.current || !window.ymaps3) {
+                setError('Не удалось загрузить карту');
+                setIsLoading(false);
+                return;
+            }
 
-  return (
-    <div className={`relative ${className}`} style={{ width: '100%', height: '100%', minHeight: '400px', ...style }}>
-      <div 
-        ref={mapRef} 
-        className="w-full h-full" 
-        style={{ width: '100%', height: '100%', minHeight: '400px' }}
-      />
-      {!mapLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 z-10">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-500 border-t-transparent mx-auto mb-2"></div>
-            <p className="text-sm text-gray-600 dark:text-gray-300">Загрузка карты...</p>
-          </div>
+            const ymaps3 = window.ymaps3;
+            
+            // Import required modules
+            const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker, YMapListener, YMapControls } = ymaps3;
+            
+            // Import controls and clusterer
+            const { YMapZoomControl, YMapGeolocationControl } = await ymaps3.import('@yandex/ymaps3-controls@0.0.1');
+            
+            // Try to import clusterer
+            let YMapClusterer: any = null;
+            let clusterByGrid: any = null;
+            try {
+                const clustererModule = await ymaps3.import('@yandex/ymaps3-clusterer@0.0.1');
+                YMapClusterer = clustererModule.YMapClusterer;
+                clusterByGrid = clustererModule.clusterByGrid;
+            } catch (e) {
+                console.warn('Clusterer module not available, using simple markers');
+            }
+
+            // Determine initial center
+            let initialCenter: [number, number] = DEFAULT_CENTER;
+            if (userLocation) {
+                initialCenter = toYmapsCoords(userLocation);
+            }
+
+            // Create map with dark theme
+            const map = new YMap(mapContainerRef.current, {
+                location: {
+                    center: initialCenter,
+                    zoom: DEFAULT_ZOOM
+                },
+                theme: 'dark'
+            });
+
+            // Add layers
+            map.addChild(new YMapDefaultSchemeLayer());
+            map.addChild(new YMapDefaultFeaturesLayer());
+
+            // Add controls
+            const controlsContainer = new YMapControls({ position: 'right' });
+            controlsContainer.addChild(new YMapZoomControl({}));
+            controlsContainer.addChild(new YMapGeolocationControl({}));
+            map.addChild(controlsContainer);
+
+            // Add click listener for map
+            if (onMapClick || onBoundsChange) {
+                const listener = new YMapListener({
+                    layer: 'any',
+                    onClick: onMapClick ? () => onMapClick() : undefined,
+                    onUpdate: onBoundsChange ? ({ location }: { location: { bounds: [[number, number], [number, number]] } }) => {
+                        if (location?.bounds) {
+                            const [[west, south], [east, north]] = location.bounds;
+                            onBoundsChange({
+                                south,
+                                west,
+                                north,
+                                east
+                            });
+                        }
+                    } : undefined
+                });
+                map.addChild(listener);
+            }
+
+            mapInstanceRef.current = { map, YMapMarker, YMapClusterer, clusterByGrid };
+            isInitializedRef.current = true;
+            setIsLoading(false);
+
+            // Add business markers/clusterer
+            updateBusinessMarkers(businesses);
+
+            // Add user location marker if available
+            if (userLocation) {
+                addUserLocationMarker(userLocation);
+            }
+
+            // Initial bounds callback
+            if (onBoundsChange) {
+                const bounds = map.bounds;
+                if (bounds) {
+                    const [[west, south], [east, north]] = bounds;
+                    onBoundsChange({ south, west, north, east });
+                }
+            }
+
+        } catch (err) {
+            console.error('Failed to initialize map:', err);
+            setError('Ошибка инициализации карты');
+            setIsLoading(false);
+        }
+    }, [userLocation, onMapClick, onBoundsChange, businesses]);
+
+    // Update business markers with clustering
+    const updateBusinessMarkers = useCallback((businessList: Business[]) => {
+        if (!mapInstanceRef.current) return;
+        
+        const { map, YMapMarker, YMapClusterer, clusterByGrid } = mapInstanceRef.current;
+
+        // Remove old clusterer
+        if (clustererRef.current) {
+            try {
+                map.removeChild(clustererRef.current);
+            } catch (e) {
+                // Clusterer might already be removed
+            }
+            clustererRef.current = null;
+        }
+
+        // Prepare points for clustering
+        const points: Array<{ type: 'Feature'; id: number; geometry: { type: 'Point'; coordinates: [number, number] }; properties: { business: Business } }> = [];
+        
+        businessList.forEach((business) => {
+            if (!business.coords) return;
+
+            // Parse coordinates - they might be strings or numbers
+            const lat = typeof business.coords[0] === 'string' 
+                ? parseFloat(business.coords[0]) 
+                : business.coords[0];
+            const lon = typeof business.coords[1] === 'string' 
+                ? parseFloat(business.coords[1]) 
+                : business.coords[1];
+
+            if (isNaN(lat) || isNaN(lon)) return;
+
+            points.push({
+                type: 'Feature',
+                id: business.id,
+                geometry: {
+                    type: 'Point',
+                    coordinates: [lon, lat] // ymaps3 uses [lon, lat]
+                },
+                properties: {
+                    business
+                }
+            });
+        });
+
+        if (points.length === 0) return;
+
+        // If clusterer is available, use it
+        if (YMapClusterer && clusterByGrid) {
+            const clusterer = new YMapClusterer({
+                method: clusterByGrid({ gridSize: 192 }),
+                features: points,
+                marker: (feature: any) => {
+                    const business = feature.properties.business as Business;
+                    const isSelected = selectedBusinessRef.current?.id === business.id;
+                    const element = createMarkerElement(isSelected, () => {
+                        onBusinessClickRef.current(business);
+                    });
+                    return new YMapMarker(
+                        { coordinates: feature.geometry.coordinates },
+                        element
+                    );
+                },
+                cluster: (coordinates: [number, number], features: any[]) => {
+                    const element = createClusterElement(features.length, () => {
+                        // Zoom in on cluster click
+                        map.setLocation({
+                            center: coordinates,
+                            zoom: map.zoom + 2,
+                            duration: 300
+                        });
+                    });
+                    return new YMapMarker({ coordinates }, element);
+                }
+            });
+
+            map.addChild(clusterer);
+            clustererRef.current = clusterer;
+        } else {
+            // Fallback: use simple markers without clustering
+            points.forEach((point) => {
+                const business = point.properties.business;
+                const isSelected = selectedBusinessRef.current?.id === business.id;
+                const element = createMarkerElement(isSelected, () => {
+                    onBusinessClickRef.current(business);
+                });
+                const marker = new YMapMarker(
+                    { coordinates: point.geometry.coordinates },
+                    element
+                );
+                map.addChild(marker);
+            });
+        }
+    }, []);
+
+    // Add user location marker
+    const addUserLocationMarker = useCallback((location: [number, number]) => {
+        if (!mapInstanceRef.current) return;
+        
+        const { map, YMapMarker } = mapInstanceRef.current;
+
+        // Remove old user marker if exists
+        if (userMarkerRef.current) {
+            try {
+                map.removeChild(userMarkerRef.current);
+            } catch (e) {
+                // Marker might already be removed
+            }
+        }
+
+        const markerElement = createUserMarkerElement();
+        const [lat, lon] = location;
+
+        const marker = new YMapMarker({
+            coordinates: [lon, lat], // ymaps3 uses [lon, lat]
+        }, markerElement);
+
+        map.addChild(marker);
+        userMarkerRef.current = marker;
+    }, []);
+
+    // Initialize map on mount
+    useEffect(() => {
+        initMap();
+
+        return () => {
+            if (mapInstanceRef.current) {
+                try {
+                    mapInstanceRef.current.map.destroy();
+                } catch (e) {
+                    // Map might already be destroyed
+                }
+                mapInstanceRef.current = null;
+                isInitializedRef.current = false;
+            }
+        };
+    }, []);
+
+    // Update markers when businesses or selectedBusiness change
+    useEffect(() => {
+        if (!mapInstanceRef.current) return;
+        updateBusinessMarkers(businesses);
+    }, [businesses, selectedBusiness, updateBusinessMarkers]);
+
+    // Update user location marker
+    useEffect(() => {
+        if (!mapInstanceRef.current || !userLocation) return;
+        addUserLocationMarker(userLocation);
+    }, [userLocation, addUserLocationMarker]);
+
+    // Center map on user location when available
+    useEffect(() => {
+        if (!mapInstanceRef.current || !userLocation) return;
+        
+        const { map } = mapInstanceRef.current;
+        const [lat, lon] = userLocation;
+        
+        map.setLocation({
+            center: [lon, lat],
+            zoom: DEFAULT_ZOOM,
+            duration: 300
+        });
+    }, [userLocation]);
+
+    return (
+        <div className={`relative ${className}`} style={style}>
+            <div 
+                ref={mapContainerRef} 
+                className="w-full h-full"
+                style={{ minHeight: '300px' }}
+            />
+            
+            {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm">
+                    <div className="flex flex-col items-center gap-3">
+                        <div className="w-5 h-5 animate-spin" style={{ border: '2px solid rgba(34, 197, 94, 0.3)', borderTopColor: '#22c55e', borderRadius: '50%' }}></div>
+                        <span className="text-sm text-gray-300">Загрузка карты...</span>
+                    </div>
+                </div>
+            )}
+            
+            {error && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80">
+                    <div className="flex flex-col items-center gap-3 p-6 text-center">
+                        <span className="text-4xl">🗺️</span>
+                        <span className="text-gray-300">{error}</span>
+                        <button
+                            onClick={() => {
+                                isInitializedRef.current = false;
+                                initMap();
+                            }}
+                            className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                        >
+                            Попробовать снова
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
-      )}
-      {mapLoaded && !isInitialized && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 z-10">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-500 border-t-transparent mx-auto mb-2"></div>
-            <p className="text-sm text-gray-600 dark:text-gray-300">Инициализация карты...</p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
+    );
+}
+
+export default MapView;

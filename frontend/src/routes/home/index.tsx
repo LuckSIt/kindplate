@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance, getBackendURL } from "@/lib/axiosInstance";
@@ -13,7 +13,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { HomePageSEO } from "@/components/ui/seo";
 import { useMapQuery } from "@/lib/hooks/use-optimized-query";
 import type { Business, Offer } from "@/lib/types";
-import { useNavigate } from '@tanstack/react-router';
 
 export const Route = createFileRoute("/home/")({
     component: RouteComponent,
@@ -46,6 +45,7 @@ interface OrderData {
 
 function RouteComponent() {
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
     
     // UI State
     const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
@@ -70,8 +70,6 @@ function RouteComponent() {
 
     // Debounced map bounds для уменьшения количества запросов
     const [debouncedMapBounds, setDebouncedMapBounds] = useState(mapBounds);
-
-    
     
     // Debounce для mapBounds - обновляем только через 500ms после последнего изменения
     useEffect(() => {
@@ -198,8 +196,9 @@ function RouteComponent() {
                 },
                 (error) => {
                     // Геолокация не критична, просто не используем её
-                    if (process.env.NODE_ENV === 'development') {
-                        console.warn("⚠️ Геолокация недоступна:", error.message);
+                    if (import.meta.env.DEV) {
+                        // Логируем мягко только в dev, чтобы не засирать консоль ошибками
+                        console.info("⚠️ Геолокация недоступна:", error.message);
                     }
                 }
             );
@@ -244,12 +243,11 @@ function RouteComponent() {
         { value: 'price', label: 'Недавнее', title: 'Недавнее' },
     ];
 
-    const navigate = useNavigate();
     // Event handlers
     const handleBusinessClick = useCallback((business: Business) => {
-        // Этап 4: при тапе по пину показываем сниппет (20%), а не сразу список
-        navigate({ to: '/v/$vendorId', params: { vendorId: business.id.toString() } });
-  }, [navigate]);
+        // Переход на страницу вендора
+        navigate({ to: '/v/$vendorId', params: { vendorId: String(business.id) } });
+    }, [navigate]);
 
     // Throttled bounds change для оптимизации запросов
     const handleBoundsChange = useCallback((bounds: MapBounds) => {
@@ -438,7 +436,7 @@ function RouteComponent() {
                         modal={false}
                         snapPoints={[0.2, 0.6, 1]}
                         activeSnapPoint={activeSnap}
-                        //setActiveSnapPoint={setActiveSnap}
+                        setActiveSnapPoint={setActiveSnap}
                     >
                         <Drawer.Portal>
                             <Drawer.Content 
@@ -531,7 +529,7 @@ function RouteComponent() {
                 {/* Snippet Card (low snack) */}
                 {selectedBusiness && activeSnap <= 0.2 && (
                     <div
-                        className="fixed left-0 right-0 bottom-16 px-4 pb-safe z-40 pointer-events-auto"
+                        className="fixed left-2 right-2 bottom-[68px] z-40 pointer-events-auto animate-in slide-in-from-bottom-4 duration-200"
                         onTouchStart={(e) => {
                             if (e.touches.length > 0) {
                                 setSnippetDragStart(e.touches[0].clientY);
@@ -548,18 +546,32 @@ function RouteComponent() {
                         }}
                         onTouchEnd={() => setSnippetDragStart(null)}
                     >
-                        <div className="kp-card border border-gray-700 p-3 flex items-center gap-3 shadow-lg bg-gray-900 rounded-2xl">
-                            <div className="w-12 h-12 rounded-lg bg-primary-900/20 flex items-center justify-center flex-shrink-0">🏪</div>
-                            <div className="flex-1 min-w-0">
-                                <div className="text-sm font-semibold text-white truncate">{selectedBusiness.name || 'Заведение'}</div>
-                                <div className="text-xs text-gray-300 truncate">{selectedBusiness.address || 'Адрес не указан'}</div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    className="px-3 py-1.5 text-xs rounded-lg bg-primary-500 text-white"
-                                    onClick={() => setActiveSnap(0.6)}
-                                >К офферам</button>
-                                <FavoriteButton businessId={selectedBusiness.id} size="sm" />
+                        <div 
+                            className="p-3 rounded-2xl shadow-2xl"
+                            style={{ backgroundColor: '#0f172a', border: '1px solid #334155' }}
+                        >
+                            <div className="flex items-center gap-3">
+                                {/* Logo */}
+                                <div className="w-12 h-12 rounded-xl bg-primary-600/20 flex items-center justify-center flex-shrink-0 border border-primary-500/30">
+                                    <span className="text-xl">🏪</span>
+                                </div>
+                                
+                                {/* Info */}
+                                <div className="flex-1 min-w-0 overflow-hidden">
+                                    <div className="text-sm font-semibold text-white truncate">{selectedBusiness.name || 'Заведение'}</div>
+                                    <div className="text-xs text-gray-400 truncate">{selectedBusiness.address || 'Адрес не указан'}</div>
+                                </div>
+                                
+                                {/* Actions */}
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                    <button
+                                        className="px-3 py-1.5 text-xs font-medium rounded-lg bg-primary-500 hover:bg-primary-600 text-white transition-colors whitespace-nowrap"
+                                        onClick={() => setActiveSnap(0.6)}
+                                    >
+                                        Офферы
+                                    </button>
+                                    <FavoriteButton businessId={selectedBusiness.id} size="sm" />
+                                </div>
                             </div>
                         </div>
                     </div>

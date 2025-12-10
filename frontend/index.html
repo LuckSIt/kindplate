@@ -22,17 +22,31 @@
             name="description"
             content="Web site created using create-tsrouter-app"
         />
-        <script src="https://api-maps.yandex.ru/2.1.79/?apikey=5389a46e-df33-4fe4-9077-69c18437eec5&lang=ru_RU"></script>
+        <script src="https://api-maps.yandex.ru/v3/?apikey=1f4f3bd3-66fd-4301-ab9d-7727aa0154c3&lang=ru_RU"></script>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat+Alternates:wght@400;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat+Alternates:wght@400;600;700;800&display=swap"></noscript>
         <link rel="preload" href="/fonts/Ramona-Bold.ttf" as="font" type="font/ttf" crossorigin>
         <link rel="preload" href="/fonts/Ramona-Light.ttf" as="font" type="font/ttf" crossorigin>
-        <link rel="apple-touch-icon" sizes="180x180" href="/logo192.png" />
-        <link rel="mask-icon" href="/logo192.png" color="#22c55e" />
+        
+        <!-- Apple Touch Icons для iOS -->
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/icons/apple-touch-icon-167x167.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152x152.png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-touch-icon-120x120.png" />
+        
+        <!-- iOS PWA настройки -->
+        <meta name="apple-mobile-web-app-title" content="KindPlate" />
+        <link rel="mask-icon" href="/icons/icon-512x512.png" color="#22c55e" />
+        
+        <!-- Favicons -->
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+        
         <link rel="manifest" href="/manifest.json" />
-        <title>Create TanStack App - kindplate</title>
+        <title>KindPlate - Спаси еду</title>
     </head>
     <body>
         <div id="app"></div>

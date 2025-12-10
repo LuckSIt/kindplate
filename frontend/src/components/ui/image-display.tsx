@@ -60,7 +60,7 @@ export function ImageDisplay({
     <div className={`relative ${className}`}>
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+          <div className="w-5 h-5 animate-spin" style={{ border: '2px solid rgba(22, 163, 74, 0.3)', borderTopColor: '#16a34a', borderRadius: '50%' }}></div>
         </div>
       )}
       <img

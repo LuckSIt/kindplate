@@ -113,7 +113,7 @@ export function SearchComponent({
         >
           {isLoading ? (
             <div className="p-4 text-center">
-              <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <div className="w-5 h-5 animate-spin mx-auto" style={{ border: '2px solid rgba(34, 197, 94, 0.3)', borderTopColor: '#22c55e', borderRadius: '50%' }}></div>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Поиск...</p>
             </div>
           ) : results.length > 0 ? (

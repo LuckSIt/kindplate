@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { axiosInstance } from '@/lib/axiosInstance';
+import { notify } from '@/lib/notifications';
 import type { Business, Offer } from '@/lib/types';
-import { useCart } from '@/lib/hooks/use-cart';
 import vendorOffer1 from "@/figma/vendor-offer-1.png";
 import vendorOffer2 from "@/figma/vendor-offer-2.png";
 import businessImage1 from "@/figma/business-image-1.png";
@@ -14,10 +14,10 @@ interface VendorPageProps {
 }
 
 export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [offerQuantities, setOfferQuantities] = useState<Map<number, number>>(new Map());
-  const { addToCart, isAddingToCart } = useCart();
 
   // Fetch vendor data
   const { data: vendorData, isLoading: vendorLoading, error: vendorError } = useQuery({
@@ -33,6 +33,28 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     queryFn: () => axiosInstance.get(`/customer/vendors/${vendorId}/offers?active=true`),
     enabled: !!vendorId,
     select: (res) => res.data.data.offers as Offer[]
+  });
+
+  // Create order mutation
+  const createOrderMutation = useMutation({
+    mutationFn: (orderData: any) => {
+      return axiosInstance.post('/orders/draft', orderData);
+    },
+    onSuccess: (response) => {
+      console.log("✅ Заказ создан:", response.data);
+      notify.success("Заказ создан", "Переходим к оплате...");
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      const orderId = response.data?.data?.id || response.data?.id;
+      if (orderId) {
+        navigate({ to: `/payment/${orderId}` });
+      } else {
+        notify.error("Ошибка", "Не удалось получить ID заказа");
+      }
+    },
+    onError: (error: any) => {
+      console.error("❌ Ошибка создания заказа:", error);
+      notify.error("Ошибка создания заказа", error.response?.data?.error || "Не удалось создать заказ");
+    },
   });
 
   // Process data
@@ -88,12 +110,23 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     
     if (!business) return;
 
-    // Добавляем товар в корзину, без немедленного перехода на оплату.
-    // Оформление заказа происходит позже из страницы /cart.
-    addToCart({
-      offer_id: offer.id,
-      quantity,
-    });
+      const orderData = {
+        items: [{
+        offer_id: offer.id,
+        quantity: quantity,
+        business_id: offer.business_id,
+        title: offer.title,
+        price: offer.discounted_price
+        }],
+      business_id: business.id,
+      business_name: business.name,
+      business_address: business.address,
+      pickup_time_start: offer.pickup_time_start,
+      pickup_time_end: offer.pickup_time_end,
+        notes: ""
+      };
+
+      createOrderMutation.mutate(orderData);
   };
 
   const handleCall = () => {
@@ -270,7 +303,7 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
                 onQuantityIncrease={() => handleQuantityChange(offer.id, 1)}
                 onQuantityDecrease={() => handleQuantityChange(offer.id, -1)}
                 onAddToOrder={() => handleAddToOrder(offer)}
-                isAdding={isAddingToCart}
+                isAdding={createOrderMutation.isPending}
               />
             );
           })
@@ -285,7 +318,7 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
           aria-label="Карта"
         >
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-            <path d="M3 7L9 4L15 7L21 4V17L15 20L9 17L3 20V7Z" stroke="#767676" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M3 7L9 4L15 7L21 4V17L15 20L9 17L3 20V7Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           <span className="vendor-page__nav-label">Карта</span>
         </Link>
@@ -305,12 +338,12 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
           aria-label="Профиль"
         >
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-            <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="#757575" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" stroke="#757575" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           <span className="vendor-page__nav-label">Профиль</span>
         </Link>
-                    </div>
+      </div>
                   </div>
   );
 };
