@@ -5,7 +5,7 @@ declare global {
 }
 
 // API key for geocoding requests
-const YMAPS_API_KEY = '1f4f3bd3-66fd-4301-ab9d-7727aa0154c3';
+const YMAPS_API_KEY = 'ec005f34-13ad-4e25-a2b8-45429d60556b';
 
 // Singleton promise for waiting for ymaps3
 let ymapsReadyPromise: Promise<boolean> | null = null;
