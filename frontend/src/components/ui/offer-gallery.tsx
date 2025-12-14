@@ -13,6 +13,7 @@ export function OfferGallery({ images, title, className = '' }: OfferGalleryProp
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [translateX, setTranslateX] = useState(0);
+  const [hasError, setHasError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -56,14 +57,15 @@ export function OfferGallery({ images, title, className = '' }: OfferGalleryProp
     }
   };
 
-  // Auto-advance for single image (show placeholder)
+  // Reset state when список изображений меняется
   useEffect(() => {
-    if (images.length === 0) {
-      setCurrentIndex(0);
-    }
+    setCurrentIndex(0);
+    setTranslateX(0);
+    setHasError(false);
   }, [images.length]);
 
-  if (images.length === 0) {
+  // Плейсхолдер, когда нет фото или произошла ошибка загрузки
+  if (images.length === 0 || hasError) {
     return (
       <div className={`relative w-full aspect-square bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden ${className}`}>
         <div className="w-full h-full flex items-center justify-center text-6xl">
@@ -92,9 +94,9 @@ export function OfferGallery({ images, title, className = '' }: OfferGalleryProp
               src={`${getBackendURL()}${image}`}
               alt={`${title} - фото ${index + 1}`}
               className="w-full h-full object-cover"
-              onError={(e) => {
+              onError={() => {
                 console.error('Ошибка загрузки изображения:', image);
-                e.currentTarget.style.display = 'none';
+                setHasError(true);
               }}
             />
           </div>

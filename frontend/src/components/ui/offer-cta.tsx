@@ -42,13 +42,16 @@ export function OfferCTA({
           >
             {loading ? (
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 animate-spin" style={{ border: '1.5px solid rgba(255,255,255,0.3)', borderTopColor: '#ffffff', borderRadius: '50%' }} />
+                <div
+                  className="w-4 h-4 animate-spin"
+                  style={{ border: '1.5px solid rgba(255,255,255,0.3)', borderTopColor: '#ffffff', borderRadius: '50%' }}
+                />
                 Добавляем...
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 <ShoppingCart className="w-5 h-5" />
-                В корзину
+                Добавить в заказ
               </div>
             )}
           </Button>
