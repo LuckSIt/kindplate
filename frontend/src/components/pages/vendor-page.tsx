@@ -350,9 +350,13 @@ function OfferCard({
   isAdding 
 }: OfferCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const navigate = useNavigate();
 
   return (
-    <div className="vendor-page__offer-card">
+    <div 
+      className="vendor-page__offer-card"
+      onClick={() => navigate({ to: "/offer/$offerId", params: { offerId: String(offer.id) } })}
+    >
       {/* Image */}
       <div className="vendor-page__offer-image">
         <img src={image || offer.image_url} alt={offer.title} />
