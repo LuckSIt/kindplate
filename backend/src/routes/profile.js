@@ -25,26 +25,36 @@ profileRouter.get("/", requireAuth, asyncHandler(async (req, res) => {
 
     logger.info('Fetching profile', { userId });
 
-    const result = await pool.query(
-        `SELECT 
-            id, 
-            name, 
-            email, 
-            phone,
-            is_business, 
-            address, 
-            coord_0, 
-            coord_1, 
-            rating, 
-            total_reviews,
-            terms_accepted,
-            privacy_accepted,
-            profile_updated_at,
-            created_at
-        FROM users 
-        WHERE id=$1`,
-        [userId]
+    // Определяем доступные колонки, чтобы не падать на старой схеме БД
+    const columnsRes = await pool.query(
+        `SELECT column_name 
+         FROM information_schema.columns 
+         WHERE table_schema = 'public' AND table_name = 'users'`
     );
+    const cols = columnsRes.rows.map(r => r.column_name);
+    const has = (c) => cols.includes(c);
+
+    const selectSql = `
+        SELECT 
+            id,
+            name,
+            email,
+            ${has('phone') ? 'phone' : 'NULL::text AS phone'},
+            ${has('is_business') ? 'is_business' : 'false AS is_business'},
+            ${has('address') ? 'address' : 'NULL::text AS address'},
+            ${has('coord_0') ? 'coord_0' : 'NULL::numeric AS coord_0'},
+            ${has('coord_1') ? 'coord_1' : 'NULL::numeric AS coord_1'},
+            ${has('rating') ? 'rating' : '0::numeric AS rating'},
+            ${has('total_reviews') ? 'total_reviews' : '0::integer AS total_reviews'},
+            ${has('terms_accepted') ? 'terms_accepted' : 'false AS terms_accepted'},
+            ${has('privacy_accepted') ? 'privacy_accepted' : 'false AS privacy_accepted'},
+            ${has('profile_updated_at') ? 'profile_updated_at' : 'NULL::timestamp AS profile_updated_at'},
+            ${has('created_at') ? 'created_at' : 'NOW() AS created_at'}
+        FROM users
+        WHERE id = $1
+    `;
+
+    const result = await pool.query(selectSql, [userId]);
 
     if (result.rowCount === 0) {
         throw new AppError('Пользователь не найден', 404, 'USER_NOT_FOUND');

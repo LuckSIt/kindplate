@@ -552,7 +552,7 @@ function RouteComponent() {
 
     // Получаем заказы для бизнеса
     const {
-        data: ordersData,
+        data: businessOrders,
         isLoading: areOrdersLoading,
         isError: areOrdersError,
         error: ordersError,
@@ -563,6 +563,7 @@ function RouteComponent() {
         enabled: activeTab === 'orders',
         retry: 1,
         retryDelay: 1000,
+        select: (res) => res.data.data as Order[],
     });
 
     // Получаем статистику для бизнеса
@@ -580,15 +581,15 @@ function RouteComponent() {
     });
 
     // Mutation для обновления статуса заказа
+    // В новой схеме статусы заказа управляются оплатой и сканированием QR-кода.
+    // Явного эндпоинта /orders/update-status нет, поэтому ручное изменение статуса
+    // со стороны панели временно отключено.
     const { mutate: updateOrderStatus } = useMutation({
-        mutationFn: ({ order_id, status }: OrderStatusPayload) => 
-            axiosInstance.post("/orders/update-status", { order_id, status }),
-        onSuccess: () => {
-            refetchOrders();
+        mutationFn: async (_: OrderStatusPayload) => {
+            throw new Error("MANUAL_STATUS_CHANGE_DISABLED");
         },
-        onError: (error: AxiosError<{ error?: string; message?: string }>) => {
-            const message = error.response?.data?.message || error.response?.data?.error || "Не удалось обновить статус заказа";
-            notify.error("Ошибка обновления статуса", message);
+        onError: () => {
+            notify.info("Статус заказа изменяется автоматически", "Оплата и сканирование QR-кода сами обновляют статус заказа.");
         },
     });
 
@@ -683,18 +684,22 @@ function RouteComponent() {
 
     const getStatusInfo = (status: string) => {
         switch (status) {
-            case 'pending':
-                return { text: 'Новый', color: 'bg-yellow-100 text-yellow-800' };
+            case 'draft':
+                return { text: 'Черновик', color: 'bg-gray-100 text-gray-800' };
             case 'confirmed':
-                return { text: 'Подтвержден', color: 'bg-blue-100 text-blue-800' };
-            case 'ready':
-                return { text: 'Готов', color: 'bg-primary-100 text-primary-800' };
-            case 'completed':
-                return { text: 'Выполнен', color: 'bg-gray-100 text-gray-800' };
+                return { text: 'Подтверждён', color: 'bg-blue-100 text-blue-800' };
+            case 'paid':
+                return { text: 'Оплачен', color: 'bg-emerald-100 text-emerald-800' };
+            case 'ready_for_pickup':
+                return { text: 'Готов к выдаче', color: 'bg-primary-100 text-primary-800' };
+            case 'picked_up':
+                return { text: 'Выдан', color: 'bg-gray-100 text-gray-800' };
             case 'cancelled':
-                return { text: 'Отменен', color: 'bg-red-100 text-red-800' };
+                return { text: 'Отменён', color: 'bg-red-100 text-red-800' };
+            case 'refunded':
+                return { text: 'Возврат', color: 'bg-orange-100 text-orange-800' };
             default:
-                return { text: status, color: 'bg-gray-100 text-gray-800' };
+                return { text: status || 'Неизвестно', color: 'bg-gray-100 text-gray-800' };
         }
     };
 
@@ -867,17 +872,20 @@ function RouteComponent() {
                             </div>
                         )}
 
-                        {!areOrdersLoading && !areOrdersError && ordersData?.data?.orders && (
+                        {!areOrdersLoading && !areOrdersError && businessOrders && (
                             <div className="max-w-4xl mx-auto space-y-4">
-                                {ordersData.data.orders.length === 0 ? (
+                                {businessOrders.length === 0 ? (
                                     <div className="text-center py-12">
                                         <span className="text-5xl block mb-4">📦</span>
                                         <p className="text-gray-500 text-lg mb-4">Заказов пока нет</p>
                                         <p className="text-gray-400">Заказы появятся здесь после того как клиенты оформят их</p>
                                     </div>
                                 ) : (
-                                    ordersData.data.orders.map((order: Order) => {
+                                    businessOrders.map((order: Order & { items?: { quantity: number; title: string }[]; customer_name?: string; pickup_code?: string }) => {
                                         const statusInfo = getStatusInfo(order.status);
+                                        const quantity = Array.isArray(order.items)
+                                            ? order.items.reduce((sum, it) => sum + (it.quantity || 0), 0)
+                                            : 1;
                                         
                                         return (
                                             <div key={order.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 border border-gray-200 dark:border-gray-700">
@@ -886,9 +894,11 @@ function RouteComponent() {
                                                     <div>
                                                         <div className="text-sm text-gray-500">Заказ #{order.id}</div>
                                                         <h3 className="text-xl font-bold text-gray-900 dark:text-white">{order.title}</h3>
-                                                        <div className="text-sm text-gray-600 mt-1">
-                                                            Клиент: {order.customer_name}
-                                                        </div>
+                                                        {order.customer_name && (
+                                                            <div className="text-sm text-gray-600 mt-1">
+                                                                Клиент: {order.customer_name}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                     <span className={`${statusInfo.color} px-3 py-1 rounded-full text-sm font-bold`}>
                                                         {statusInfo.text}
@@ -900,7 +910,7 @@ function RouteComponent() {
                                                     <div className="bg-gray-50 rounded-lg p-3">
                                                         <div className="text-xs text-gray-500 mb-1">Код выдачи</div>
                                                         <div className="text-2xl font-bold text-primary tracking-wider">
-                                                            {order.pickup_code}
+                                                            {order.pickup_code || '—'}
                                                         </div>
                                                     </div>
                                                     <div className="bg-gray-50 rounded-lg p-3">
@@ -914,11 +924,11 @@ function RouteComponent() {
                                                 <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
                                                     <div>
                                                         <span className="text-gray-600 dark:text-gray-300">Количество:</span>
-                                                        <span className="ml-2 font-bold">x{order.quantity}</span>
+                                                        <span className="ml-2 font-bold">x{quantity}</span>
                                                     </div>
                                                     <div>
                                                         <span className="text-gray-600 dark:text-gray-300">Сумма:</span>
-                                                        <span className="ml-2 text-xl font-bold text-primary">{order.total_price}₽</span>
+                                                        <span className="ml-2 text-xl font-bold text-primary">{order.total}₽</span>
                                                     </div>
                                                 </div>
 
@@ -928,44 +938,11 @@ function RouteComponent() {
                                                 </div>
 
                                                 {/* Actions */}
-                                                {order.status === 'pending' && (
-                                                    <div className="flex gap-2">
-                                                        <Button
-                                                            onClick={() => updateOrderStatus({ order_id: order.id, status: 'confirmed' })}
-                                                            className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                                                        >
-                                                            ✓ Подтвердить
-                                                        </Button>
-                                                        <Button
-                                                            onClick={() => updateOrderStatus({ order_id: order.id, status: 'cancelled' })}
-                                                            variant="outline"
-                                                            className="border-red-300 text-red-600 hover:bg-red-50"
-                                                        >
-                                                            ✕ Отменить
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                                {order.status === 'confirmed' && (
-                                                    <Button
-                                                        onClick={() => updateOrderStatus({ order_id: order.id, status: 'ready' })}
-                                                        className="w-full bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary"
-                                                    >
-                                                        ✓✓ Отметить как готовый
-                                                    </Button>
-                                                )}
-                                                {order.status === 'ready' && (
-                                                    <Button
-                                                        onClick={() => updateOrderStatus({ order_id: order.id, status: 'completed' })}
-                                                        className="w-full bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary"
-                                                    >
-                                                        ✅ Выдан клиенту
-                                                    </Button>
-                                                )}
-                                                {(order.status === 'completed' || order.status === 'cancelled') && (
-                                                    <div className="text-center text-gray-500 py-2">
-                                                        {order.status === 'completed' ? '✅ Заказ выполнен' : '❌ Заказ отменен'}
-                                                    </div>
-                                                )}
+                                                {/* Действия по изменению статуса сейчас выполняются автоматически
+                                                    (оплата, сканирование QR). Ручные кнопки временно отключены. */}
+                                                <div className="text-center text-gray-500 py-2 text-sm">
+                                                    Статус обновляется автоматически (оплата и выдача заказа).
+                                                </div>
                                             </div>
                                         );
                                     })

@@ -163,18 +163,22 @@ function RouteComponent() {
 
     const getStatusInfo = (status: string) => {
         switch (status) {
-            case 'pending':
-                return { text: 'Ожидает', color: 'bg-yellow-100 text-yellow-800', icon: '⏳' };
+            case 'draft':
+                return { text: 'Черновик', color: 'bg-gray-100 text-gray-800', icon: '✏️' };
             case 'confirmed':
-                return { text: 'Подтвержден', color: 'bg-blue-100 text-blue-800', icon: '✓' };
-            case 'ready':
-                return { text: 'Готов', color: 'bg-primary-100 text-primary-800', icon: '✓✓' };
-            case 'completed':
-                return { text: 'Выполнен', color: 'bg-gray-100 text-gray-800', icon: '✅' };
+                return { text: 'Подтверждён', color: 'bg-blue-100 text-blue-800', icon: '✓' };
+            case 'paid':
+                return { text: 'Оплачен', color: 'bg-emerald-100 text-emerald-800', icon: '💳' };
+            case 'ready_for_pickup':
+                return { text: 'Готов к выдаче', color: 'bg-primary-100 text-primary-800', icon: '📦' };
+            case 'picked_up':
+                return { text: 'Получен', color: 'bg-gray-100 text-gray-800', icon: '✅' };
             case 'cancelled':
-                return { text: 'Отменен', color: 'bg-red-100 text-red-800', icon: '❌' };
+                return { text: 'Отменён', color: 'bg-red-100 text-red-800', icon: '❌' };
+            case 'refunded':
+                return { text: 'Возврат', color: 'bg-orange-100 text-orange-800', icon: '↩️' };
             default:
-                return { text: status, color: 'bg-gray-100 text-gray-800', icon: '?' };
+                return { text: status || 'Неизвестно', color: 'bg-gray-100 text-gray-800', icon: '❓' };
         }
     };
 
@@ -830,7 +834,7 @@ function RouteComponent() {
             {/* Menu Options */}
             <div className="mt-[27px] flex flex-col items-start w-[350px]">
                 {/* Main Menu Card */}
-                <div className="relative w-[350px] h-[291px] rounded-[15px] border border-white bg-[#2B344D]">
+                <div className="relative w-[350px] h-[360px] rounded-[15px] border border-white bg-[#2B344D]">
                     {/* Избранное */}
                     <button 
                         onClick={() => setShowFavorites(true)}
@@ -914,6 +918,33 @@ function RouteComponent() {
                             </svg>
                         </div>
                     </button>
+
+                    {/* Разделитель перед бизнес-панелью (только для бизнес-пользователя) */}
+                    {user?.is_business && (
+                        <div className="absolute top-[290px] left-[14px] w-[323px] h-px" style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)' }}></div>
+                    )}
+
+                    {/* Панель управления бизнесом (пятая строка) */}
+                    {user?.is_business && (
+                        <button 
+                            onClick={() => navigate({ to: "/panel" })}
+                            className="absolute top-[302px] left-[23px] flex items-center w-[301px] h-[50px]"
+                        >
+                            <div className="w-[40px] h-[40px] rounded-[10px] bg-[#35741F] flex items-center justify-center flex-shrink-0">
+                                <svg className="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M3 11h18M3 15h18M7 7V5a2 2 0 012-2h6a2 2 0 012 2v2" />
+                                </svg>
+                            </div>
+                            <div className="ml-[14px] text-[16px] font-semibold text-white leading-[20px] flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
+                                Панель управления бизнесом
+                            </div>
+                            <div className="w-[30px] h-[30px] ml-auto flex justify-end items-center">
+                                <svg className="w-[15px] h-[30px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </button>
+                    )}
                 </div>
 
                 {/* Служба поддержки */}
@@ -1129,26 +1160,6 @@ function RouteComponent() {
                     
                 </div>
             </footer>
-
-            {/* Business Panel Link (if business user) */}
-            {user?.is_business && (
-                <div className="px-6 mt-4">
-                    <button 
-                        onClick={() => navigate({ to: "/panel" })}
-                        className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-4 flex items-center justify-between hover:from-blue-600 hover:to-blue-700 transition-colors shadow-lg rounded-xl"
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                                <span className="text-2xl">💼</span>
-                            </div>
-                            <span className="text-base font-bold">Панель управления бизнесом</span>
-                        </div>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                </div>
-            )}
 
             {/* Admin Panel Link (if admin) */}
             {user?.role === 'admin' && (
