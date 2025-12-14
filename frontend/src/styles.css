@@ -2408,7 +2408,7 @@ button:not(.font-montserrat-alt),
 
 .vendor-page__header {
   width: 100%;
-  background-color: #35741F;
+  background-color: #083608;
   padding: 12px 8px;
   position: relative;
   display: flex;
@@ -2974,7 +2974,7 @@ button:not(.font-montserrat-alt),
 
 .cart-page__header {
   width: 100%;
-  background-color: #35741F;
+  background-color: #083608;
   padding: 27px 14px 0;
   display: flex;
   align-items: flex-start;
@@ -3427,7 +3427,7 @@ button:not(.font-montserrat-alt),
 
 .payment-page__header {
   width: 100%;
-  background-color: #35741F;
+  background-color: #083608;
   padding: 27px 14px 0;
   position: relative;
   overflow: visible;
