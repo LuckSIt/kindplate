@@ -306,14 +306,27 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
             paramIndex += 3;
         }
 
-        // Поиск по тексту
+        // Поиск по тексту (название оффера, описание, название и адрес заведения, а также название/адрес локации)
         if (q) {
-            whereConditions += ` AND (
-                o.title ILIKE $${paramIndex}
-                OR o.description ILIKE $${paramIndex}
-                OR u.name ILIKE $${paramIndex}
-            )`;
-            params.push(`%${q}%`);
+            const searchParam = `%${q}%`;
+            
+            const textConditions = [
+                `o.title ILIKE $${paramIndex}`,
+                `o.description ILIKE $${paramIndex}`,
+                `u.name ILIKE $${paramIndex}`,
+                `u.address ILIKE $${paramIndex}`
+            ];
+
+            // Если есть таблица business_locations — добавляем поиск по её названию и адресу
+            if (hasBusinessLocations) {
+                textConditions.push(
+                    `bl.name ILIKE $${paramIndex}`,
+                    `bl.address ILIKE $${paramIndex}`
+                );
+            }
+
+            whereConditions += ` AND (${textConditions.join(' OR ')})`;
+            params.push(searchParam);
             paramIndex++;
         }
 
