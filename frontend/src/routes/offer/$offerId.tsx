@@ -6,7 +6,6 @@ import { OfferGallery } from '@/components/ui/offer-gallery';
 import { OfferPriceDisplay } from '@/components/ui/offer-price-display';
 import { QuantityStepper } from '@/components/ui/quantity-stepper';
 import { OfferLocation } from '@/components/ui/offer-location';
-import { OfferCTA } from '@/components/ui/offer-cta';
 import { VendorConflictModal } from '@/components/ui/vendor-conflict-modal';
 import { Button } from '@/components/ui/button';
 import { OfferSkeleton } from '@/components/ui/skeletons';
@@ -161,7 +160,7 @@ function OfferPage() {
   const maxQuantity = Math.min(offer.quantity_available, 99);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-8">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between px-4 py-3">
@@ -227,18 +226,29 @@ function OfferPage() {
           </div>
         )}
 
-        {/* Quantity Selector */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Количество
-          </h3>
-          <QuantityStepper
-            value={quantity}
-            min={1}
-            max={maxQuantity}
-            onChange={setQuantity}
-            className="max-w-xs mx-auto"
-          />
+        {/* Quantity Selector + primary CTA */}
+        <div className="space-y-4">
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Количество
+            </h3>
+            <QuantityStepper
+              value={quantity}
+              min={1}
+              max={maxQuantity}
+              onChange={setQuantity}
+              className="max-w-xs mx-auto"
+            />
+          </div>
+
+          {/* Основная кнопка добавления в заказ (внутри контента) */}
+          <Button
+            onClick={handleAddToCart}
+            disabled={offer.quantity_available === 0 || isAddingToCart}
+            className="w-full bg-primary-500 hover:bg-primary-600 text-white text-lg py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+          >
+            {isAddingToCart ? "Добавляем..." : "Добавить в заказ"}
+          </Button>
         </div>
 
         {/* Location */}
@@ -251,14 +261,6 @@ function OfferPage() {
         )}
       </div>
 
-      {/* Fixed CTA */}
-      <OfferCTA
-        price={offer.discounted_price}
-        quantity={quantity}
-        onAddToCart={handleAddToCart}
-        disabled={offer.quantity_available === 0}
-        loading={isAddingToCart}
-      />
       <VendorConflictModal
         isOpen={vendorConflict.isOpen}
         onClose={() => setVendorConflict(prev => ({ ...prev, isOpen: false }))}
