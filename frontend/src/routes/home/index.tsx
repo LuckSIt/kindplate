@@ -149,10 +149,33 @@ function RouteComponent() {
         }
     );
     
-    // Преобразуем результаты поиска в список бизнесов
+    // Преобразуем результаты поиска в список бизнесов и дополнительно фильтруем по тексту на клиенте
+    const normalizedSearchQuery = debouncedSearchQuery.trim().toLowerCase();
+
     const businessesFromSearch = useMemo(
-        () => mapOffersToBusinesses(offersData?.offers),
-        [offersData]
+        () => {
+            const base = mapOffersToBusinesses(offersData?.offers);
+
+            if (!normalizedSearchQuery) {
+                return base;
+            }
+
+            return base.filter((business) => {
+                const nameMatch = business.name?.toLowerCase().includes(normalizedSearchQuery);
+                const addressMatch = business.address?.toLowerCase().includes(normalizedSearchQuery);
+
+                const offersMatch = (business.offers || []).some((offer) => {
+                    const titleMatch = offer.title?.toLowerCase().includes(normalizedSearchQuery);
+                    const descMatch = offer.description
+                        ? offer.description.toLowerCase().includes(normalizedSearchQuery)
+                        : false;
+                    return titleMatch || descMatch;
+                });
+
+                return nameMatch || addressMatch || offersMatch;
+            });
+        },
+        [offersData, normalizedSearchQuery]
     );
 
     const businessesFromFallback = useMemo(() => {

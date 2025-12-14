@@ -81,10 +81,31 @@ function ListPageComponent() {
         }
     );
 
-    // Process businesses data
+    // Process businesses data и дополнительная фильтрация по тексту на клиенте
+    const normalizedQuery = debouncedSearchQuery.trim().toLowerCase();
+
     const businesses: Business[] = useMemo(() => {
-        return mapOffersToBusinesses(offersData?.offers);
-    }, [offersData?.offers]);
+        const base = mapOffersToBusinesses(offersData?.offers);
+
+        if (!normalizedQuery) {
+            return base;
+        }
+
+        return base.filter((business) => {
+            const nameMatch = business.name?.toLowerCase().includes(normalizedQuery);
+            const addressMatch = business.address?.toLowerCase().includes(normalizedQuery);
+
+            const offersMatch = (business.offers || []).some((offer) => {
+                const titleMatch = offer.title?.toLowerCase().includes(normalizedQuery);
+                const descMatch = offer.description
+                    ? offer.description.toLowerCase().includes(normalizedQuery)
+                    : false;
+                return titleMatch || descMatch;
+            });
+
+            return nameMatch || addressMatch || offersMatch;
+        });
+    }, [offersData?.offers, normalizedQuery]);
 
     const handleBusinessClick = useCallback((businessId: number) => {
         navigate({ to: '/v/$vendorId', params: { vendorId: businessId.toString() } });
