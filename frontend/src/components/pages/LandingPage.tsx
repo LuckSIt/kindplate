@@ -386,8 +386,8 @@ export function LandingPage() {
                                             }}
                                         >
                                             {currentItem.category}
-                                        </div>
-                                    </div>
+                </div>
+            </div>
 
                                 </div>
                                 
@@ -462,7 +462,7 @@ export function LandingPage() {
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                </div>
                         </div>
                     </div>
                 </section>
