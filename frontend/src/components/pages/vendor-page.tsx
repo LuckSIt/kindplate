@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { axiosInstance } from '@/lib/axiosInstance';
 import { notify } from '@/lib/notifications';
 import type { Business, Offer } from '@/lib/types';
+import { useCart } from '@/lib/hooks/use-cart';
 import vendorOffer1 from "@/figma/vendor-offer-1.png";
 import vendorOffer2 from "@/figma/vendor-offer-2.png";
 import businessImage1 from "@/figma/business-image-1.png";
@@ -14,10 +15,14 @@ interface VendorPageProps {
 }
 
 export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [offerQuantities, setOfferQuantities] = useState<Map<number, number>>(new Map());
+  const {
+    addToCart,
+    hasDifferentBusiness,
+    isAddingToCart,
+  } = useCart();
 
   // Fetch vendor data
   const { data: vendorData, isLoading: vendorLoading, error: vendorError } = useQuery({
@@ -33,28 +38,6 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     queryFn: () => axiosInstance.get(`/customer/vendors/${vendorId}/offers?active=true`),
     enabled: !!vendorId,
     select: (res) => res.data.data.offers as Offer[]
-  });
-
-  // Create order mutation
-  const createOrderMutation = useMutation({
-    mutationFn: (orderData: any) => {
-      return axiosInstance.post('/orders/draft', orderData);
-    },
-    onSuccess: (response) => {
-      console.log("✅ Заказ создан:", response.data);
-      notify.success("Заказ создан", "Переходим к оплате...");
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
-      const orderId = response.data?.data?.id || response.data?.id;
-      if (orderId) {
-        navigate({ to: `/payment/${orderId}` });
-      } else {
-        notify.error("Ошибка", "Не удалось получить ID заказа");
-      }
-    },
-    onError: (error: any) => {
-      console.error("❌ Ошибка создания заказа:", error);
-      notify.error("Ошибка создания заказа", error.response?.data?.error || "Не удалось создать заказ");
-    },
   });
 
   // Process data
@@ -110,23 +93,20 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     
     if (!business) return;
 
-      const orderData = {
-        items: [{
-        offer_id: offer.id,
-        quantity: quantity,
-        business_id: offer.business_id,
-        title: offer.title,
-        price: offer.discounted_price
-        }],
-      business_id: business.id,
-      business_name: business.name,
-      business_address: business.address,
-      pickup_time_start: offer.pickup_time_start,
-      pickup_time_end: offer.pickup_time_end,
-        notes: ""
-      };
+    // Если в корзине уже есть товары другого заведения — не даём смешивать
+    if (hasDifferentBusiness(business.id)) {
+      notify.error(
+        "Другой продавец в корзине",
+        "Очистите корзину, чтобы добавить товары из этого заведения"
+      );
+      return;
+    }
 
-      createOrderMutation.mutate(orderData);
+    // Добавляем товар в корзину (без перехода на оплату)
+    addToCart({
+      offer_id: offer.id,
+      quantity,
+    });
   };
 
   const handleCall = () => {
@@ -303,7 +283,7 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
                 onQuantityIncrease={() => handleQuantityChange(offer.id, 1)}
                 onQuantityDecrease={() => handleQuantityChange(offer.id, -1)}
                 onAddToOrder={() => handleAddToOrder(offer)}
-                isAdding={createOrderMutation.isPending}
+                isAdding={isAddingToCart}
               />
             );
           })

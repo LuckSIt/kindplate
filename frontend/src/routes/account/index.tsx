@@ -671,7 +671,7 @@ function RouteComponent() {
                         onClick={() => setShowFavorites(true)}
                         className="absolute top-[12px] left-[23px] flex items-center w-[301px] h-[50px]"
                     >
-                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#DB7E2F] flex items-center justify-center flex-shrink-0">
+                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#35741F] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[20px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>
@@ -713,7 +713,7 @@ function RouteComponent() {
                         onClick={() => {}}
                         className="absolute top-[158px] left-[23px] flex items-center w-[301px] h-[50px]"
                     >
-                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#AEB26B] flex items-center justify-center flex-shrink-0">
+                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#35741F] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
@@ -737,7 +737,7 @@ function RouteComponent() {
                         onClick={() => setShowSubscriptions(true)}
                         className="absolute top-[230px] left-[23px] flex items-center w-[301px] h-[50px]"
                     >
-                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#AEC2A6] flex items-center justify-center flex-shrink-0">
+                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#35741F] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[16px] h-[20px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>

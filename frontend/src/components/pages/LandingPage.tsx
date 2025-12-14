@@ -224,7 +224,7 @@ export function LandingPage() {
                                 style={{ 
                                     backgroundColor: '#FFFFFF',
                                     border: '1px solid #083608',
-                                    color: '#35741F',
+                                    color: '#083608',
                                     fontFamily: 'Montserrat Alternates, sans-serif',
                                     lineHeight: '1.14em'
                                 }}
