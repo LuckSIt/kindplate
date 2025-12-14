@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { OffersSearchFilters } from '@/lib/offers-search';
 import { X, Filter, SlidersHorizontal } from 'lucide-react';
+import { CUISINE_OPTIONS, DIET_OPTIONS, ALLERGEN_OPTIONS, loadDietPreferences } from '@/lib/diet-preferences';
 
 export type SearchFilters = OffersSearchFilters;
 
@@ -13,29 +14,33 @@ interface SearchFiltersPanelProps {
     userLocation?: [number, number] | null;
 }
 
-// Предопределенные варианты
-const CUISINE_OPTIONS = [
-    'итальянская', 'японская', 'русская', 'китайская', 'грузинская',
-    'европейская', 'американская', 'мексиканская', 'индийская', 'французская'
-];
-
-const DIET_OPTIONS = [
-    'веган', 'вегетарианское', 'безглютен', 'кето', 'палео',
-    'халяль', 'кошерное', 'низкоуглеводное', 'безлактозное'
-];
-
-const ALLERGEN_OPTIONS = [
-    'орехи', 'молочное', 'глютен', 'яйца', 'рыба',
-    'морепродукты', 'соя', 'арахис', 'сельдерей'
-];
-
 export function SearchFiltersPanel({ 
     filters, 
     onFiltersChange, 
     onClose,
     userLocation 
 }: SearchFiltersPanelProps) {
-    const [localFilters, setLocalFilters] = useState<SearchFilters>(filters);
+    const [localFilters, setLocalFilters] = useState<SearchFilters>(() => {
+        // Стартуем с переданных фильтров
+        const initial = { ...filters };
+
+        // Если пользователь ещё не выбрал фильтры, подтянем сохранённые пищевые предпочтения
+        const hasAnyDietFilter =
+            (initial.cuisines && initial.cuisines.length > 0) ||
+            (initial.diets && initial.diets.length > 0) ||
+            (initial.allergens && initial.allergens.length > 0);
+
+        if (!hasAnyDietFilter) {
+            const prefs = loadDietPreferences();
+            if (prefs) {
+                if (prefs.cuisines.length) initial.cuisines = prefs.cuisines;
+                if (prefs.diets.length) initial.diets = prefs.diets;
+                if (prefs.allergens.length) initial.allergens = prefs.allergens;
+            }
+        }
+
+        return initial;
+    });
     const [showAdvanced, setShowAdvanced] = useState(false);
 
     const updateFilter = <K extends keyof SearchFilters>(key: K, value: SearchFilters[K]) => {

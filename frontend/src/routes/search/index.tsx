@@ -8,13 +8,23 @@ import { Button } from '@/components/ui/button';
 import { Search, Filter } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { fetchOffersSearch } from '@/lib/offers-search';
+import { loadDietPreferences } from '@/lib/diet-preferences';
 
 export const Route = createFileRoute('/search/')({
     component: RouteComponent,
 });
 
 function RouteComponent() {
-    const [filters, setFilters] = useState<SearchFilters>({ sort: 'distance' });
+    const [filters, setFilters] = useState<SearchFilters>(() => {
+        const base: SearchFilters = { sort: 'distance' };
+        const prefs = loadDietPreferences();
+        if (prefs) {
+            if (prefs.cuisines.length) base.cuisines = prefs.cuisines;
+            if (prefs.diets.length) base.diets = prefs.diets;
+            if (prefs.allergens.length) base.allergens = prefs.allergens;
+        }
+        return base;
+    });
     const [showFilters, setShowFilters] = useState(false);
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
     const [page, setPage] = useState(1);

@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { HomePageSEO } from "@/components/ui/seo";
 import { useMapQuery } from "@/lib/hooks/use-optimized-query";
 import type { Business, Offer } from "@/lib/types";
+import { loadDietPreferences } from "@/lib/diet-preferences";
 
 export const Route = createFileRoute("/home/")({
     component: RouteComponent,
@@ -109,6 +110,20 @@ function RouteComponent() {
 
             if (debouncedSearchQuery) {
                 filters.q = debouncedSearchQuery;
+            }
+
+            // Применяем сохранённые пищевые предпочтения как дополнительные фильтры
+            const prefs = loadDietPreferences();
+            if (prefs) {
+                if (prefs.cuisines.length) {
+                    filters.cuisines = prefs.cuisines;
+                }
+                if (prefs.diets.length) {
+                    filters.diets = prefs.diets;
+                }
+                if (prefs.allergens.length) {
+                    filters.allergens = prefs.allergens;
+                }
             }
             
             // Приводим ответ к формату { offers, meta }, чтобы не таскать лишнюю обёртку AxiosResponse

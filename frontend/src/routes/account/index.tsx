@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axiosInstance";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { authContext } from "@/lib/auth";
 import { notify } from "@/lib/notifications";
@@ -11,6 +11,7 @@ import { CartSheet } from "@/components/ui/cart-sheet";
 import { WaitlistSubscriptionsManager } from "@/components/ui/waitlist-subscriptions-manager";
 import { SocialLinks } from "@/components/landing/SocialLinks";
 import { QRCodeDisplay } from "@/components/ui/qr-code-display";
+import { loadDietPreferences, saveDietPreferences, DIET_OPTIONS, CUISINE_OPTIONS, ALLERGEN_OPTIONS } from "@/lib/diet-preferences";
 
 export const Route = createFileRoute("/account/")({
     component: RouteComponent,
@@ -23,6 +24,7 @@ function RouteComponent() {
     const [showStats, setShowStats] = useState(false);
     const [showFavorites, setShowFavorites] = useState(false);
     const [showSubscriptions, setShowSubscriptions] = useState(false);
+    const [showDietPrefs, setShowDietPrefs] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
     const [selectedOrderForReview, setSelectedOrderForReview] = useState<any>(null);
@@ -49,13 +51,14 @@ function RouteComponent() {
         },
     });
 
-    // Получаем заказы клиента
+    // Получаем заказы клиента (новый API /orders)
     const { data: ordersData, isLoading: ordersLoading, refetch: refetchOrders } = useQuery({
         queryKey: ["my_orders"],
-        queryFn: () => axiosInstance.get("/orders/mine"),
+        queryFn: () => axiosInstance.get("/orders"),
         enabled: showOrders,
         retry: 1,
         retryDelay: 1000,
+        select: (res) => res.data.data as any[],
     });
 
     // Получаем статистику клиента
@@ -84,7 +87,6 @@ function RouteComponent() {
         description?: string;
         quantity: number;
         total_price: number;
-        pickup_code: string;
         pickup_time_start: string;
         pickup_time_end: string;
         business_address: string;
@@ -176,9 +178,55 @@ function RouteComponent() {
         }
     };
 
+    // Локальное состояние для пищевых предпочтений
+    const [dietCuisines, setDietCuisines] = useState<string[]>([]);
+    const [dietDiets, setDietDiets] = useState<string[]>([]);
+    const [dietAllergens, setDietAllergens] = useState<string[]>([]);
+
+    // Загружаем сохранённые пищевые предпочтения при первом показе раздела
+    useEffect(() => {
+        if (!showDietPrefs) return;
+        const prefs = loadDietPreferences();
+        if (prefs) {
+            setDietCuisines(prefs.cuisines || []);
+            setDietDiets(prefs.diets || []);
+            setDietAllergens(prefs.allergens || []);
+        }
+    }, [showDietPrefs]);
+
+    const toggleInArray = (arr: string[], value: string): string[] =>
+        arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value];
+
+    const handleSaveDietPrefs = () => {
+        saveDietPreferences({
+            cuisines: dietCuisines,
+            diets: dietDiets,
+            allergens: dietAllergens,
+        });
+        setShowDietPrefs(false);
+    };
+
     // Если показываем заказы
     if (showOrders) {
-        const orders = ordersData?.data?.orders || [];
+        const apiOrders = ordersData || [];
+        const orders: Order[] = apiOrders.map((o: any) => {
+            const items = Array.isArray(o.items) ? o.items : [];
+            const firstItem = items[0];
+            const quantity = items.reduce((sum: number, it: any) => sum + (it.quantity || 0), 0) || 1;
+            return {
+                id: o.id,
+                status: o.status,
+                business_name: o.business_name,
+                title: firstItem?.title || "Заказ",
+                description: undefined,
+                quantity,
+                total_price: o.total,
+                pickup_time_start: o.pickup_time_start,
+                pickup_time_end: o.pickup_time_end,
+                business_address: o.business_address,
+                created_at: o.created_at,
+            };
+        });
         
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-50 to-primary-50 pb-20">
@@ -271,17 +319,11 @@ function RouteComponent() {
                                         </div>
                                     </div>
 
-                                    {/* Pickup Code */}
+                                    {/* Время самовывоза */}
                                     <div className="bg-gradient-to-br from-primary-50 to-primary-100 border-2 border-primary-200 rounded-xl p-3">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <div className="text-xs text-gray-600 dark:text-gray-300 mb-1">Код выдачи</div>
-                                                <div className="text-3xl font-bold text-primary tracking-wider">
-                                                    {order.pickup_code}
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <div className="text-xs text-gray-600 dark:text-gray-300 mb-1">Время</div>
+                                                <div className="text-xs text-gray-600 dark:text-gray-300 mb-1">Время самовывоза</div>
                                                 <div className="text-sm font-semibold text-blue-600">
                                                     {order.pickup_time_start} - {order.pickup_time_end}
                                                 </div>
@@ -633,6 +675,123 @@ function RouteComponent() {
         );
     }
 
+    // Если показываем пищевые предпочтения
+    if (showDietPrefs) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-lime-100 pb-20">
+                <div className="bg-gradient-to-r from-emerald-600 to-lime-600 text-white px-4 py-6 shadow-lg sticky top-0 z-10">
+                    <div className="flex items-center gap-3 mb-2">
+                        <button
+                            onClick={() => setShowDietPrefs(false)}
+                            className="p-2 hover:bg-white/20 rounded-full transition-colors"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <div>
+                            <h1 className="text-2xl font-bold flex items-center gap-2">
+                                <span>🥗</span>
+                                Пищевые предпочтения
+                            </h1>
+                            <p className="text-emerald-100 text-sm">Мы будем подбирать более подходящие предложения</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="p-4 space-y-6 max-w-md mx-auto">
+                    {/* Кухни */}
+                    <section className="bg-white rounded-2xl p-4 shadow-sm border border-emerald-100">
+                        <h2 className="text-lg font-semibold mb-2">Любимые кухни</h2>
+                        <p className="text-xs text-gray-500 mb-3">
+                            Отметьте кухни, которые вам нравятся
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {CUISINE_OPTIONS.map((cuisine) => {
+                                const active = dietCuisines.includes(cuisine);
+                                return (
+                                    <button
+                                        key={cuisine}
+                                        type="button"
+                                        onClick={() => setDietCuisines(prev => toggleInArray(prev, cuisine))}
+                                        className={`px-3 py-1 rounded-full text-xs border transition ${
+                                            active
+                                                ? "bg-emerald-500 text-white border-emerald-500"
+                                                : "bg-white text-gray-700 border-gray-300"
+                                        }`}
+                                    >
+                                        {cuisine}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </section>
+
+                    {/* Диеты */}
+                    <section className="bg-white rounded-2xl p-4 shadow-sm border border-emerald-100">
+                        <h2 className="text-lg font-semibold mb-2">Диеты</h2>
+                        <p className="text-xs text-gray-500 mb-3">
+                            Выберите подходящие варианты питания
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {DIET_OPTIONS.map((diet) => {
+                                const active = dietDiets.includes(diet);
+                                return (
+                                    <button
+                                        key={diet}
+                                        type="button"
+                                        onClick={() => setDietDiets(prev => toggleInArray(prev, diet))}
+                                        className={`px-3 py-1 rounded-full text-xs border transition ${
+                                            active
+                                                ? "bg-emerald-500 text-white border-emerald-500"
+                                                : "bg-white text-gray-700 border-gray-300"
+                                        }`}
+                                    >
+                                        {diet}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </section>
+
+                    {/* Аллергены */}
+                    <section className="bg-white rounded-2xl p-4 shadow-sm border border-emerald-100">
+                        <h2 className="text-lg font-semibold mb-2">Исключить аллергены</h2>
+                        <p className="text-xs text-gray-500 mb-3">
+                            Мы постараемся не показывать предложения с этими аллергенами
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {ALLERGEN_OPTIONS.map((allergen) => {
+                                const active = dietAllergens.includes(allergen);
+                                return (
+                                    <button
+                                        key={allergen}
+                                        type="button"
+                                        onClick={() => setDietAllergens(prev => toggleInArray(prev, allergen))}
+                                        className={`px-3 py-1 rounded-full text-xs border transition ${
+                                            active
+                                                ? "bg-red-500 text-white border-red-500"
+                                                : "bg-white text-gray-700 border-gray-300"
+                                        }`}
+                                    >
+                                        {allergen}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </section>
+
+                    <Button
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                        onClick={handleSaveDietPrefs}
+                    >
+                        Сохранить предпочтения
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
     // Если показываем подписки
     if (showSubscriptions) {
         return (
@@ -658,7 +817,13 @@ function RouteComponent() {
                     <div className="text-[16px] font-semibold leading-[20px]" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#000000' }}>
                         {user?.name || 'Пользователь'}
                     </div>
-                    <button className="text-[10px] font-semibold text-[#767676] leading-[14px] mt-[2px] text-left p-0 m-0 border-0 bg-transparent" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>изменить информацию</button>
+                    <button
+                        className="text-[10px] font-semibold text-[#767676] leading-[14px] mt-[2px] text-left p-0 m-0 border-0 bg-transparent"
+                        style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}
+                        onClick={() => navigate({ to: "/profile" })}
+                    >
+                        изменить информацию
+                    </button>
                 </div>
             </div>
 
@@ -710,7 +875,7 @@ function RouteComponent() {
 
                     {/* Пищевые предпочтения */}
                     <button 
-                        onClick={() => {}}
+                        onClick={() => setShowDietPrefs(true)}
                         className="absolute top-[158px] left-[23px] flex items-center w-[301px] h-[50px]"
                     >
                         <div className="w-[40px] h-[40px] rounded-[10px] bg-[#35741F] flex items-center justify-center flex-shrink-0">

@@ -1,20 +1,14 @@
 const express = require("express");
 const favoritesRouter = express.Router();
 const pool = require("../lib/db");
-
-// Middleware для проверки авторизации
-const requireAuth = (req, res, next) => {
-    if (!req.session.userId) {
-        return res.status(401).send({ success: false, error: "NOT_AUTHENTICATED" });
-    }
-    next();
-};
+const { authOnly, ensureAuthenticated } = require("../lib/auth");
 
 // POST /favorites/add - Добавить в избранное
-favoritesRouter.post("/add", requireAuth, async (req, res) => {
+favoritesRouter.post("/add", authOnly, async (req, res) => {
     try {
         const { business_id } = req.body;
-        const user_id = req.session.userId;
+        // Унифицированная аутентификация (cookie-сессия + Bearer-токен)
+        const user_id = await ensureAuthenticated(req, res);
 
         if (!business_id) {
             return res.status(400).send({ success: false, error: "MISSING_BUSINESS_ID" });
@@ -45,10 +39,10 @@ favoritesRouter.post("/add", requireAuth, async (req, res) => {
 });
 
 // POST /favorites/remove - Удалить из избранного
-favoritesRouter.post("/remove", requireAuth, async (req, res) => {
+favoritesRouter.post("/remove", authOnly, async (req, res) => {
     try {
         const { business_id } = req.body;
-        const user_id = req.session.userId;
+        const user_id = await ensureAuthenticated(req, res);
 
         if (!business_id) {
             return res.status(400).send({ success: false, error: "MISSING_BUSINESS_ID" });
@@ -67,9 +61,9 @@ favoritesRouter.post("/remove", requireAuth, async (req, res) => {
 });
 
 // GET /favorites/mine - Получить список избранных заведений
-favoritesRouter.get("/mine", requireAuth, async (req, res) => {
+favoritesRouter.get("/mine", authOnly, async (req, res) => {
     try {
-        const user_id = req.session.userId;
+        const user_id = await ensureAuthenticated(req, res);
 
         const result = await pool.query(
             `SELECT 
@@ -96,7 +90,7 @@ favoritesRouter.get("/mine", requireAuth, async (req, res) => {
 });
 
 // GET /favorites/check/:businessId - Проверить наличие в избранном
-favoritesRouter.get("/check/:businessId", requireAuth, async (req, res) => {
+favoritesRouter.get("/check/:businessId", authOnly, async (req, res) => {
     try {
         const business_id = req.params.businessId;
         const user_id = req.session.userId;

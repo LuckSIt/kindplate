@@ -6,6 +6,7 @@ import { authContext } from "@/lib/auth";
 import type { Business } from "@/lib/types";
 import businessImage1 from "@/figma/business-image-1.png";
 import businessImage2 from "@/figma/business-image-2.png";
+import { loadDietPreferences } from "@/lib/diet-preferences";
 
 export const Route = createFileRoute("/list/")({
     component: ListPageComponent,
@@ -64,6 +65,20 @@ function ListPageComponent() {
             
             if (debouncedSearchQuery) {
                 filters.q = debouncedSearchQuery;
+            }
+
+            // Применяем сохранённые пищевые предпочтения
+            const prefs = loadDietPreferences();
+            if (prefs) {
+                if (prefs.cuisines.length) {
+                    filters.cuisines = prefs.cuisines;
+                }
+                if (prefs.diets.length) {
+                    filters.diets = prefs.diets;
+                }
+                if (prefs.allergens.length) {
+                    filters.allergens = prefs.allergens;
+                }
             }
             
             return fetchOffersSearch(filters, {
