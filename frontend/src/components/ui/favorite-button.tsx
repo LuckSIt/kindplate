@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { notify } from '@/lib/notifications';
 import { axiosInstance } from '@/lib/axiosInstance';
-import { useFavoriteCheck } from '@/lib/hooks/use-favorites';
 
 type FavoriteButtonProps = {
   businessId: number;
@@ -19,27 +18,11 @@ export function FavoriteButton({
   className,
   size = 'md'
 }: FavoriteButtonProps) {
-  const { data: serverIsFavorite, isLoading: isChecking } = useFavoriteCheck(businessId);
-
+  // Локальное состояние избранного – по умолчанию берём из пропа, 
+  // серверную истину получаем через отдельные запросы (например, /favorites/mine)
   const [isFavorite, setIsFavorite] = useState<boolean>(!!propIsFavorite);
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
-
-  // Синхронизируем локальное состояние с сервером / внешним пропом
-  useEffect(() => {
-    // Приоритет: явно переданный проп -> состояние с сервера -> не в избранном
-    if (typeof propIsFavorite === 'boolean') {
-      setIsFavorite(propIsFavorite);
-      return;
-    }
-
-    if (typeof serverIsFavorite === 'boolean') {
-      setIsFavorite(serverIsFavorite);
-      return;
-    }
-
-    setIsFavorite(false);
-  }, [propIsFavorite, serverIsFavorite]);
 
   const toggleFavoriteMutation = useMutation({
     mutationFn: async (favorite: boolean) => {
@@ -65,7 +48,7 @@ export function FavoriteButton({
   });
 
   const handleToggle = async () => {
-    if (isLoading || isChecking) return;
+    if (isLoading) return;
     
     setIsLoading(true);
     try {
@@ -84,13 +67,13 @@ export function FavoriteButton({
   return (
     <button
       onClick={handleToggle}
-      disabled={isLoading || isChecking}
+      disabled={isLoading}
       className={cn(
         'transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded-full p-1',
         isFavorite 
           ? 'text-red-500 hover:text-red-600' 
           : 'text-gray-400 hover:text-red-500',
-        (isLoading || isChecking) && 'opacity-50 cursor-not-allowed',
+        isLoading && 'opacity-50 cursor-not-allowed',
         className
       )}
       aria-label={isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
