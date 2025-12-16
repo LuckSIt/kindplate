@@ -53,8 +53,9 @@ export function FavoriteButton({
       setIsFavorite(favorite);
       notify.success(favorite ? 'Добавлено в избранное' : 'Удалено из избранного');
       
-      // Инвалидируем кэш избранного
+      // Инвалидируем кэш избранного в разных местах
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['my_favorites'] });
       queryClient.invalidateQueries({ queryKey: ['favorites', 'check', businessId] });
     },
     onError: (error) => {
