@@ -15,27 +15,31 @@ type FavoriteButtonProps = {
 
 export function FavoriteButton({ 
   businessId, 
-  isFavorite: initialIsFavorite = false, 
+  isFavorite: propIsFavorite,
   className,
   size = 'md'
 }: FavoriteButtonProps) {
   const { data: serverIsFavorite, isLoading: isChecking } = useFavoriteCheck(businessId);
 
-  const [isFavorite, setIsFavorite] = useState<boolean>(initialIsFavorite);
+  const [isFavorite, setIsFavorite] = useState<boolean>(!!propIsFavorite);
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
 
   // Синхронизируем локальное состояние с сервером / внешним пропом
   useEffect(() => {
-    // Приоритет: проп -> сервер -> false
-    if (typeof initialIsFavorite === 'boolean') {
-      setIsFavorite(initialIsFavorite);
-    } else if (typeof serverIsFavorite === 'boolean') {
-      setIsFavorite(serverIsFavorite);
-    } else {
-      setIsFavorite(false);
+    // Приоритет: явно переданный проп -> состояние с сервера -> не в избранном
+    if (typeof propIsFavorite === 'boolean') {
+      setIsFavorite(propIsFavorite);
+      return;
     }
-  }, [initialIsFavorite, serverIsFavorite]);
+
+    if (typeof serverIsFavorite === 'boolean') {
+      setIsFavorite(serverIsFavorite);
+      return;
+    }
+
+    setIsFavorite(false);
+  }, [propIsFavorite, serverIsFavorite]);
 
   const toggleFavoriteMutation = useMutation({
     mutationFn: async (favorite: boolean) => {
