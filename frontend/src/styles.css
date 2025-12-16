@@ -1469,11 +1469,14 @@ button:not(.font-montserrat-alt),
 
 .businesses-list-page__search-container--map {
   position: absolute;
-  top: 64px;
+  /* Поднимаем поиск выше и учитываем safe-area для выреза на iPhone */
+  top: calc(12px + env(safe-area-inset-top));
   left: 0;
   right: 0;
   z-index: 5;
   padding: 0 15px 10px;
+  /* На карте не нужно дополнительное смещение вниз как в списке */
+  transform: none;
 }
 
 .businesses-list-page__search-container--map .businesses-list-page__search {

@@ -64,15 +64,10 @@ export function OfferGallery({ images, title, className = '' }: OfferGalleryProp
     setHasError(false);
   }, [images.length]);
 
-  // Плейсхолдер, когда нет фото или произошла ошибка загрузки
+  // Если нет фото или произошла ошибка загрузки — просто не показываем галерею,
+  // чтобы не занимать место странным плейсхолдером
   if (images.length === 0 || hasError) {
-    return (
-      <div className={`relative w-full aspect-square bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden ${className}`}>
-        <div className="w-full h-full flex items-center justify-center text-6xl">
-          🍱
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

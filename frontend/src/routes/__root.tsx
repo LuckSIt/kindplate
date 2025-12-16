@@ -78,8 +78,8 @@ function RootRoute() {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const location = useLocation();
     const navSafeArea = 'calc(env(safe-area-inset-bottom) + var(--app-bottom-inset, 0px))';
-    // Высота навигации как в макете (73px) + safe-area + динамический inset клавиатуры
-    const navHeight = `calc(73px + env(safe-area-inset-bottom) + var(--app-bottom-inset, 0px))`;
+    // Чуть более компактная навигация (56px) + safe-area + динамический inset клавиатуры
+    const navHeight = `calc(56px + env(safe-area-inset-bottom) + var(--app-bottom-inset, 0px))`;
 
     // Устанавливаем CSS переменную --app-height для точной высоты viewport на мобильных устройствах
     useEffect(() => {

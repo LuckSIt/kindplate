@@ -399,8 +399,8 @@ function RouteComponent() {
         return () => observer.disconnect();
     }, []);
 
-    // Высота навигации (52px + safe area)
-    const navHeight = 'calc(52px + env(safe-area-inset-bottom))';
+    // Высота навигации должна совпадать с __root.tsx (56px + safe area)
+    const navHeight = 'calc(56px + env(safe-area-inset-bottom))';
 
     return (
         <>

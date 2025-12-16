@@ -634,7 +634,7 @@ export function LandingPage() {
                             className="text-[16px] leading-[1.08] mb-0 font-montserrat-alt"
                             style={{ 
                                 fontWeight: 700,
-                                color: '#083608',
+                                color: '#35741F',
                                 lineHeight: '1.08em'
                             }}
                         >

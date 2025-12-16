@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { notify } from '@/lib/notifications';
 import { axiosInstance } from '@/lib/axiosInstance';
+import { useFavoriteCheck } from '@/lib/hooks/use-favorites';
 
 type FavoriteButtonProps = {
   businessId: number;
@@ -18,14 +19,23 @@ export function FavoriteButton({
   className,
   size = 'md'
 }: FavoriteButtonProps) {
-  const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
+  const { data: serverIsFavorite, isLoading: isChecking } = useFavoriteCheck(businessId);
+
+  const [isFavorite, setIsFavorite] = useState<boolean>(initialIsFavorite);
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
 
-  // Синхронизируем с внешним состоянием
+  // Синхронизируем локальное состояние с сервером / внешним пропом
   useEffect(() => {
-    setIsFavorite(initialIsFavorite);
-  }, [initialIsFavorite]);
+    // Приоритет: проп -> сервер -> false
+    if (typeof initialIsFavorite === 'boolean') {
+      setIsFavorite(initialIsFavorite);
+    } else if (typeof serverIsFavorite === 'boolean') {
+      setIsFavorite(serverIsFavorite);
+    } else {
+      setIsFavorite(false);
+    }
+  }, [initialIsFavorite, serverIsFavorite]);
 
   const toggleFavoriteMutation = useMutation({
     mutationFn: async (favorite: boolean) => {
@@ -50,7 +60,7 @@ export function FavoriteButton({
   });
 
   const handleToggle = async () => {
-    if (isLoading) return;
+    if (isLoading || isChecking) return;
     
     setIsLoading(true);
     try {
@@ -69,13 +79,13 @@ export function FavoriteButton({
   return (
     <button
       onClick={handleToggle}
-      disabled={isLoading}
+      disabled={isLoading || isChecking}
       className={cn(
         'transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded-full p-1',
         isFavorite 
           ? 'text-red-500 hover:text-red-600' 
           : 'text-gray-400 hover:text-red-500',
-        isLoading && 'opacity-50 cursor-not-allowed',
+        (isLoading || isChecking) && 'opacity-50 cursor-not-allowed',
         className
       )}
       aria-label={isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
