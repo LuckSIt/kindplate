@@ -93,7 +93,18 @@ favoritesRouter.get("/mine", authOnly, async (req, res) => {
 favoritesRouter.get("/check/:businessId", authOnly, async (req, res) => {
     try {
         const business_id = req.params.businessId;
-        const user_id = req.session.userId;
+
+        // Используем универсальную аутентификацию (session + Bearer),
+        // а не только req.session.userId, чтобы корректно работать с JWT
+        const user_id = await ensureAuthenticated(req, res);
+
+        if (!user_id) {
+            return res.status(401).send({
+                success: false,
+                error: "NOT_AUTHENTICATED",
+                message: "Необходима авторизация",
+            });
+        }
 
         const result = await pool.query(
             `SELECT id FROM favorites WHERE user_id=$1 AND business_id=$2`,

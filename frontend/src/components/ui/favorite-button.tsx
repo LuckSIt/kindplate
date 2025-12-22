@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { notify } from '@/lib/notifications';
-import { axiosInstance } from '@/lib/axiosInstance';
+import { useToggleFavorite, useFavoriteCheck } from '@/lib/hooks/use-favorites';
 
 type FavoriteButtonProps = {
   businessId: number;
@@ -18,43 +16,36 @@ export function FavoriteButton({
   className,
   size = 'md'
 }: FavoriteButtonProps) {
-  // Локальное состояние избранного – по умолчанию берём из пропа, 
-  // серверную истину получаем через отдельные запросы (например, /favorites/mine)
+  // Локальное состояние: стартуем из пропа, дальше синхронизируем с сервером
   const [isFavorite, setIsFavorite] = useState<boolean>(!!propIsFavorite);
-  const [isLoading, setIsLoading] = useState(false);
-  const queryClient = useQueryClient();
 
-  const toggleFavoriteMutation = useMutation({
-    mutationFn: async (favorite: boolean) => {
-      const endpoint = favorite ? '/favorites/add' : '/favorites/remove';
-      const response = await axiosInstance.post(endpoint, {
-        business_id: businessId
-      });
-      return response.data;
-    },
-    onSuccess: (data, favorite) => {
-      setIsFavorite(favorite);
-      notify.success(favorite ? 'Добавлено в избранное' : 'Удалено из избранного');
-      
-      // Инвалидируем кэш избранного в разных местах
-      queryClient.invalidateQueries({ queryKey: ['favorites'] });
-      queryClient.invalidateQueries({ queryKey: ['my_favorites'] });
-      queryClient.invalidateQueries({ queryKey: ['favorites', 'check', businessId] });
-    },
-    onError: (error) => {
-      console.error('Error toggling favorite:', error);
-      notify.error('Ошибка при изменении избранного');
-    },
-  });
+  // Если проп приходит/меняется (например, из /favorites), доверяем ему в первую очередь
+  useEffect(() => {
+    if (typeof propIsFavorite === 'boolean') {
+      setIsFavorite(propIsFavorite);
+    }
+  }, [propIsFavorite]);
+
+  // Для карточек без пропа подтягиваем состояние избранного с сервера
+  const { data: isFavoriteFromServer } = useFavoriteCheck(businessId);
+
+  useEffect(() => {
+    if (propIsFavorite === undefined && typeof isFavoriteFromServer === 'boolean') {
+      setIsFavorite(isFavoriteFromServer);
+    }
+  }, [isFavoriteFromServer, propIsFavorite]);
+
+  const toggleFavoriteMutation = useToggleFavorite();
+  const isLoading = toggleFavoriteMutation.isPending;
 
   const handleToggle = async () => {
     if (isLoading) return;
     
-    setIsLoading(true);
     try {
-      await toggleFavoriteMutation.mutateAsync(!isFavorite);
+      await toggleFavoriteMutation.mutateAsync({ businessId, isFavorite });
+      setIsFavorite(!isFavorite);
     } finally {
-      setIsLoading(false);
+      // isLoading берём из toggleFavoriteMutation, поэтому здесь ничего не делаем
     }
   };
 
