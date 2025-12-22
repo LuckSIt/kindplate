@@ -1,11 +1,17 @@
 const express = require("express");
 const notificationsRouter = express.Router();
 const pool = require("../lib/db");
+const { ensureAuthenticated } = require("../lib/auth");
 
-// Middleware для проверки авторизации
-const requireAuth = (req, res, next) => {
-    if (!req.session.userId) {
-        return res.status(401).send({ success: false, error: "NOT_AUTHENTICATED" });
+// Middleware для проверки авторизации (cookie-сессия + Bearer JWT)
+const requireAuth = async (req, res, next) => {
+    const userId = await ensureAuthenticated(req, res);
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация",
+        });
     }
     next();
 };
@@ -14,6 +20,7 @@ const requireAuth = (req, res, next) => {
 notificationsRouter.post("/subscribe", requireAuth, async (req, res) => {
     try {
         const { subscription, userAgent } = req.body;
+        // ensureAuthenticated уже установил req.session.userId при необходимости
         const userId = req.session.userId;
 
         console.log("🔔 Push subscription request:", { userId, userAgent });
