@@ -111,109 +111,118 @@ export function AddToHomeScreenPrompt({ className }: AddToHomeScreenPromptProps)
   }
 
   return (
-    <div
-      className={cn(
-        'fixed bottom-4 left-4 right-4 z-50 animate-in slide-in-from-bottom-5 duration-300',
-        'md:left-auto md:right-4 md:max-w-md',
-        className
-      )}
-    >
-      <div className="bg-gradient-to-br from-primary-500 to-primary-600 dark:from-primary-600 dark:to-primary-700 rounded-xl shadow-2xl border border-primary-400/20 p-4 text-white">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-3 flex-1">
-            <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Smartphone className="w-5 h-5" />
+    <>
+      {/* Backdrop для затемнения фона */}
+      <div 
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in duration-300"
+        onClick={handleDismiss}
+        aria-hidden="true"
+      />
+      
+      <div
+        className={cn(
+          'fixed bottom-4 left-4 right-4 z-50 animate-in slide-in-from-bottom-5 duration-300',
+          'md:left-auto md:right-4 md:max-w-md',
+          className
+        )}
+      >
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-200 dark:border-gray-700 p-5">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                <Smartphone className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg leading-tight text-gray-900 dark:text-white">
+                  Добавьте KindPlate на главный экран
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-0.5">
+                  Быстрый доступ без браузера
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-bold text-base leading-tight">
-                Добавьте KindPlate на главный экран
-              </h3>
-              <p className="text-sm text-primary-100 mt-0.5">
-                Быстрый доступ без браузера
-              </p>
-            </div>
+            <button
+              onClick={handleDismiss}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-1 -mt-1 -mr-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              aria-label="Закрыть"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
-          <button
-            onClick={handleDismiss}
-            className="text-white/80 hover:text-white transition-colors p-1 -mt-1 -mr-1"
-            aria-label="Закрыть"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
 
-        {/* Instructions */}
-        <div className="bg-white/10 rounded-lg p-3 mb-3">
-          {isIOS ? (
-            <div className="space-y-2 text-sm">
-              <div className="flex items-start gap-2">
-                <span className="font-semibold text-white flex-shrink-0">1.</span>
-                <span className="text-primary-50">
-                  Нажмите кнопку <Share2 className="w-4 h-4 inline-block mx-1" /> внизу экрана
-                </span>
+          {/* Instructions */}
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4 border border-gray-200 dark:border-gray-700">
+            {isIOS ? (
+              <div className="space-y-3 text-sm">
+                <div className="flex items-start gap-3">
+                  <span className="font-bold text-green-600 dark:text-green-400 flex-shrink-0 text-base">1.</span>
+                  <span className="text-gray-700 dark:text-gray-200 leading-relaxed">
+                    Нажмите кнопку <Share2 className="w-4 h-4 inline-block mx-1 text-gray-600 dark:text-gray-400" /> внизу экрана
+                  </span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="font-bold text-green-600 dark:text-green-400 flex-shrink-0 text-base">2.</span>
+                  <span className="text-gray-700 dark:text-gray-200 leading-relaxed">
+                    Выберите <strong className="text-gray-900 dark:text-white font-semibold">«На экран "Домой"»</strong>
+                  </span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="font-bold text-green-600 dark:text-green-400 flex-shrink-0 text-base">3.</span>
+                  <span className="text-gray-700 dark:text-gray-200 leading-relaxed">
+                    Нажмите <strong className="text-gray-900 dark:text-white font-semibold">«Добавить»</strong>
+                  </span>
+                </div>
               </div>
-              <div className="flex items-start gap-2">
-                <span className="font-semibold text-white flex-shrink-0">2.</span>
-                <span className="text-primary-50">
-                  Выберите <strong className="text-white">«На экран "Домой"»</strong>
-                </span>
+            ) : isAndroid ? (
+              <div className="space-y-3 text-sm">
+                <div className="flex items-start gap-3">
+                  <span className="font-bold text-green-600 dark:text-green-400 flex-shrink-0 text-base">1.</span>
+                  <span className="text-gray-700 dark:text-gray-200 leading-relaxed">
+                    Нажмите меню <span className="text-gray-900 dark:text-white font-bold text-lg">⋮</span> в правом верхнем углу браузера
+                  </span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="font-bold text-green-600 dark:text-green-400 flex-shrink-0 text-base">2.</span>
+                  <span className="text-gray-700 dark:text-gray-200 leading-relaxed">
+                    Выберите <strong className="text-gray-900 dark:text-white font-semibold">«Добавить на главный экран»</strong> или <strong className="text-gray-900 dark:text-white font-semibold">«Установить приложение»</strong>
+                  </span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="font-bold text-green-600 dark:text-green-400 flex-shrink-0 text-base">3.</span>
+                  <span className="text-gray-700 dark:text-gray-200 leading-relaxed">
+                    Подтвердите установку
+                  </span>
+                </div>
               </div>
-              <div className="flex items-start gap-2">
-                <span className="font-semibold text-white flex-shrink-0">3.</span>
-                <span className="text-primary-50">
-                  Нажмите <strong className="text-white">«Добавить»</strong>
-                </span>
+            ) : (
+              <div className="text-sm text-gray-700 dark:text-gray-200">
+                Откройте меню браузера и выберите <strong className="text-gray-900 dark:text-white font-semibold">«Добавить на главный экран»</strong>
               </div>
-            </div>
-          ) : isAndroid ? (
-            <div className="space-y-2 text-sm">
-              <div className="flex items-start gap-2">
-                <span className="font-semibold text-white flex-shrink-0">1.</span>
-                <span className="text-primary-50">
-                  Нажмите меню <span className="text-white">⋮</span> в правом верхнем углу браузера
-                </span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="font-semibold text-white flex-shrink-0">2.</span>
-                <span className="text-primary-50">
-                  Выберите <strong className="text-white">«Добавить на главный экран»</strong> или <strong className="text-white">«Установить приложение»</strong>
-                </span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="font-semibold text-white flex-shrink-0">3.</span>
-                <span className="text-primary-50">
-                  Подтвердите установку
-                </span>
-              </div>
-            </div>
-          ) : (
-            <div className="text-sm text-primary-50">
-              Откройте меню браузера и выберите <strong className="text-white">«Добавить на главный экран»</strong>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
 
-        {/* Actions */}
-        <div className="flex gap-2">
-          <Button
-            onClick={handleInstall}
-            className="flex-1 bg-white text-primary-600 hover:bg-primary-50 font-semibold"
-            size="sm"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            {isAndroid ? 'Установить' : 'Понятно'}
-          </Button>
-          <Button
-            onClick={handleDismiss}
-            variant="ghost"
-            className="text-white hover:bg-white/20 border-white/20"
-            size="sm"
-          >
-            Позже
-          </Button>
+          {/* Actions */}
+          <div className="flex gap-3">
+            <Button
+              onClick={handleInstall}
+              className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 font-semibold shadow-lg"
+              size="sm"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {isAndroid ? 'Установить' : 'Понятно'}
+            </Button>
+            <Button
+              onClick={handleDismiss}
+              variant="outline"
+              className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium"
+              size="sm"
+            >
+              Позже
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

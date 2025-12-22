@@ -29,11 +29,6 @@ export function Footer() {
                                     FAQ
                                 </a>
                             </li>
-                            <li>
-                                <a href="/legal/refund-policy" className="hover:text-green-500 transition-colors">
-                                    Возвраты
-                                </a>
-                            </li>
                         </ul>
                     </div>
 

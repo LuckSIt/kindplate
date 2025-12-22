@@ -219,27 +219,7 @@ function AboutPage() {
                         <p className="text-xl text-green-50 mb-8 max-w-2xl mx-auto">
                             Станьте частью сообщества, которое заботится о еде, людях и планете
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Button
-                                asChild
-                                size="lg"
-                                className="bg-white text-green-600 hover:bg-green-50"
-                            >
-                                <Link to="/auth/register/customer">
-                                    Стать покупателем
-                                </Link>
-                            </Button>
-                            <Button
-                                asChild
-                                size="lg"
-                                variant="outline"
-                                className="border-white text-white hover:bg-white/10"
-                            >
-                                <Link to="/auth/register/business">
-                                    Стать партнером
-                                </Link>
-                            </Button>
-                        </div>
+                        
                     </div>
                 </section>
 
@@ -254,10 +234,10 @@ function AboutPage() {
                                 <div>
                                     <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Email</h3>
                                     <a
-                                        href="mailto:support@kindplate.ru"
+                                        href="mailto:kindplate.io@mail.ru"
                                         className="text-green-600 dark:text-green-400 hover:underline"
                                     >
-                                        support@kindplate.ru
+                                        kindplate.io@mail.ru
                                     </a>
                                 </div>
                                 <div>
@@ -282,15 +262,11 @@ function AboutPage() {
                         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                             <div>© 2025 KindPlate. Все права защищены.</div>
                             <div className="flex gap-4">
-                                <Link to="/legal/refund-policy" className="hover:text-green-600 dark:hover:text-green-400">
-                                    Возвраты
-                                </Link>
+                                
                                 <Link to="/legal/privacy" className="hover:text-green-600 dark:hover:text-green-400">
                                     Конфиденциальность
                                 </Link>
-                                <Link to="/legal/terms" className="hover:text-green-600 dark:hover:text-green-400">
-                                    Условия использования
-                                </Link>
+                        
                             </div>
                         </div>
                     </div>

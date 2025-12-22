@@ -375,7 +375,10 @@ function OfferCard({
       {/* Favorite Button */}
                   <button
         className="vendor-page__offer-favorite"
-        onClick={() => setIsFavorite(!isFavorite)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsFavorite(!isFavorite);
+        }}
         aria-label={isFavorite ? "Удалить из избранного" : "Добавить в избранное"}
       >
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
@@ -404,25 +407,34 @@ function OfferCard({
               </div>
               
         {/* Quantity Selector and Add Button */}
-        <div className="vendor-page__offer-actions">
+        <div className="vendor-page__offer-actions" onClick={(e) => e.stopPropagation()}>
           {showQuantitySelector ? (
             <>
               <div className="vendor-page__quantity-selector">
                 <button 
                   className="vendor-page__quantity-button vendor-page__quantity-button--minus"
-                  onClick={onQuantityDecrease}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onQuantityDecrease();
+                  }}
                   aria-label="Уменьшить количество"
                 ></button>
                 <div className="vendor-page__quantity-value">{quantity}</div>
                 <button 
                   className="vendor-page__quantity-button vendor-page__quantity-button--plus"
-                  onClick={onQuantityIncrease}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onQuantityIncrease();
+                  }}
                   aria-label="Увеличить количество"
                 ></button>
               </div>
             <button
                 className="vendor-page__add-button"
-                onClick={onAddToOrder}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddToOrder();
+                }}
                 disabled={isAdding}
             >
                 {isAdding ? "Добавление..." : "добавить в заказ"}
@@ -431,7 +443,8 @@ function OfferCard({
           ) : (
             <button
               className="vendor-page__add-button vendor-page__add-button--full"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 onQuantityIncrease();
                 onAddToOrder();
               }}
