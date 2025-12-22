@@ -1017,21 +1017,22 @@ function RouteComponent() {
                             >
                                 KindPlate
                             </p>
-                            <Link 
-                                to="/auth/register/business"
-                                className="block transition-opacity hover:opacity-80 no-underline"
-                                style={{ 
-                                    fontFamily: 'Montserrat Alternates, sans-serif',
-                                    fontWeight: 600,
-                                    fontSize: "11px",
-                                    lineHeight: "22px",
-                                    color: '#FFFFFF',
-                                    textAlign: "left",
-                                    textDecoration: "none"
-                                }}
-                            >
-                                Для партнеров
-                            </Link>
+                            <a 
+                                    href="https://t.me/kindplatesupportbot"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block transition-opacity hover:opacity-80 footer-link"
+                                    style={{ 
+                                        fontFamily: 'Montserrat Alternates, sans-serif',
+                                        fontWeight: 600,
+                                        fontSize: "11px",
+                                        lineHeight: "22px",
+                                        color: '#FFFFFF',
+                                        textAlign: "left"
+                                    }}
+                                >
+                                    Для партнеров
+                            </a>
                             <Link 
                                 to="/home"
                                 className="block transition-opacity hover:opacity-80 no-underline"

@@ -1,12 +1,20 @@
 const express = require("express");
 const subscriptionsRouter = express.Router();
 const pool = require("../lib/db");
+const { ensureAuthenticated } = require("../lib/auth");
 
-// Middleware для проверки авторизации
-const requireAuth = (req, res, next) => {
-    if (!req.session.userId) {
-        return res.status(401).send({ success: false, error: "NOT_AUTHENTICATED" });
+// Middleware для проверки авторизации (cookie-сессия + Bearer JWT)
+const requireAuth = async (req, res, next) => {
+    const userId = await ensureAuthenticated(req, res);
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: "NOT_AUTHENTICATED",
+            message: "Необходима авторизация"
+        });
     }
+    // Сохраняем userId в req для использования в роутах
+    req.userId = userId;
     next();
 };
 
@@ -14,7 +22,7 @@ const requireAuth = (req, res, next) => {
 subscriptionsRouter.post("/waitlist", requireAuth, async (req, res) => {
     try {
         const { action, scope_type, scope_id, latitude, longitude, radius_km, area_geojson } = req.body;
-        const userId = req.session.userId;
+        const userId = req.userId || req.session?.userId;
 
         // Проверяем существование таблицы
         const tableCheck = await pool.query(`
@@ -149,7 +157,7 @@ subscriptionsRouter.post("/waitlist", requireAuth, async (req, res) => {
 // GET /subscriptions/waitlist - Получить мои подписки
 subscriptionsRouter.get("/waitlist", requireAuth, async (req, res) => {
     try {
-        const userId = req.session.userId;
+        const userId = req.userId || req.session?.userId;
 
         // Проверяем существование таблицы
         const tableCheck = await pool.query(`
