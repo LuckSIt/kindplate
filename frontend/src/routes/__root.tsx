@@ -16,6 +16,7 @@ import { NotificationContainer } from "@/components/ui/notification";
 import { NetworkStatus } from "@/components/ui/install-prompt";
 import { ensureNoPushWithoutVapid, unregisterServiceWorker } from "@/lib/pwa";
 import { PushOnboarding } from "@/components/ui/push-onboarding";
+import { AddToHomeScreenPrompt } from "@/components/ui/add-to-home-screen-prompt";
 import { CartSheet } from "@/components/ui/cart-sheet";
 import { useLocation } from "@tanstack/react-router";
 
@@ -262,6 +263,7 @@ function RootRoute() {
                     {/* InstallPrompt removed per request to hide floating icon */}
                     <NetworkStatus />
                     <PushOnboarding />
+                    <AddToHomeScreenPrompt />
                 </AuthProvider>
             </ThemeProvider>
         </QueryClientProvider>

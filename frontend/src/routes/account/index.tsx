@@ -971,7 +971,7 @@ function RouteComponent() {
 
                 {/* О нас */}
                 <button 
-                    onClick={() => {}}
+                    onClick={() => navigate({ to: "/about" })}
                     className="mt-[9px] flex items-center justify-between w-[324px] h-[24px]"
                 >
                     <div className="text-[15px] font-semibold text-white flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>О нас</div>
