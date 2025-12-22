@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { axiosInstance } from '@/lib/axiosInstance';
@@ -9,6 +9,7 @@ import vendorOffer1 from "@/figma/vendor-offer-1.png";
 import vendorOffer2 from "@/figma/vendor-offer-2.png";
 import businessImage1 from "@/figma/business-image-1.png";
 import businessImage2 from "@/figma/business-image-2.png";
+import { useFavoriteCheck, useToggleFavorite } from '@/lib/hooks/use-favorites';
 
 interface VendorPageProps {
   vendorId: string;
@@ -16,13 +17,25 @@ interface VendorPageProps {
 
 export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
   const navigate = useNavigate();
-  const [favorites, setFavorites] = useState<Set<number>>(new Set());
+  // Избранное: один бизнес на странице, поэтому достаточно булевого флага
+  const numericVendorId = Number(vendorId);
+  const [isFavorite, setIsFavorite] = useState(false);
   const [offerQuantities, setOfferQuantities] = useState<Map<number, number>>(new Map());
   const {
     addToCart,
     hasDifferentBusiness,
     isAddingToCart,
   } = useCart();
+
+  // Подтягиваем текущее состояние избранного с сервера
+  const { data: isFavoriteFromServer } = useFavoriteCheck(numericVendorId || 0);
+  const toggleFavoriteMutation = useToggleFavorite();
+
+  useEffect(() => {
+    if (typeof isFavoriteFromServer === 'boolean') {
+      setIsFavorite(isFavoriteFromServer);
+    }
+  }, [isFavoriteFromServer]);
 
   // Fetch vendor data
   const { data: vendorData, isLoading: vendorLoading, error: vendorError } = useQuery({
@@ -61,17 +74,15 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
 
   // Handlers
   const handleFavoriteToggle = () => {
-    if (business) {
-      setFavorites(prev => {
-        const newFavorites = new Set(prev);
-        if (newFavorites.has(business.id)) {
-          newFavorites.delete(business.id);
-        } else {
-          newFavorites.add(business.id);
-        }
-        return newFavorites;
-      });
-    }
+    if (!numericVendorId || toggleFavoriteMutation.isPending) return;
+
+    toggleFavoriteMutation.mutate({
+      businessId: numericVendorId,
+      isFavorite,
+    });
+
+    // Оптимистично переключаем цвет иконки
+    setIsFavorite(prev => !prev);
   };
 
   const handleQuantityChange = (offerId: number, delta: number) => {
@@ -167,7 +178,6 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     );
   }
 
-  const isFavorite = favorites.has(business.id);
   const offerImages = [vendorOffer1, vendorOffer2, businessImage1, businessImage2];
 
   return (
