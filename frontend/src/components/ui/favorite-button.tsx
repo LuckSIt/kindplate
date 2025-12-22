@@ -40,7 +40,14 @@ export function FavoriteButton({
 
   const handleToggle = async () => {
     if (isLoading) return;
-    
+
+    // Временный лог для прод‑отладки: проверяем, что хэндлер реально вызывается
+    // и видим текущее состояние избранного/ID заведения.
+    console.log('[FavoriteButton] click', {
+      businessId,
+      isFavoriteBefore: isFavorite,
+    });
+
     try {
       await toggleFavoriteMutation.mutateAsync({ businessId, isFavorite });
       setIsFavorite(!isFavorite);

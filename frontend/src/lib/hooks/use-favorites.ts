@@ -105,9 +105,25 @@ export function useToggleFavorite() {
   return useMutation({
     mutationFn: async ({ businessId, isFavorite }: { businessId: number; isFavorite: boolean }) => {
       const endpoint = isFavorite ? '/favorites/remove' : '/favorites/add';
-      const response = await axiosInstance.post(endpoint, {
-        business_id: businessId
+
+      // Подробный лог для диагностики в проде:
+      console.log('[useToggleFavorite] mutation start', {
+        businessId,
+        isFavoriteBefore: isFavorite,
+        endpoint,
       });
+
+      const response = await axiosInstance.post(endpoint, {
+        business_id: businessId,
+      });
+
+      console.log('[useToggleFavorite] mutation success', {
+        businessId,
+        isFavoriteBefore: isFavorite,
+        endpoint,
+        response: response.data,
+      });
+
       return response.data;
     },
     onSuccess: (data, { businessId, isFavorite }) => {
