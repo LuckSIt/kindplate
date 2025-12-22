@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { notify } from '@/lib/notifications';
 import { notificationService } from '@/lib/services/notification-service';
+import { axiosInstance } from '@/lib/axiosInstance';
 import { z } from 'zod';
 
 const notificationSettingsSchema = z.object({
@@ -58,30 +59,47 @@ export function NotificationSettings({ userId, onClose }: NotificationSettingsPr
 
   const loadSettings = async () => {
     try {
-      // TODO: Загрузить настройки с сервера
-      console.log('Loading notification settings for user:', userId);
+      const response = await axiosInstance.get('/notifications/settings');
+      if (response.data.success && response.data.data) {
+        const settings = response.data.data;
+        setValue('web_push_enabled', settings.web_push_enabled || false);
+        setValue('email_enabled', settings.email_enabled || false);
+        setValue('email_address', settings.email_address || '');
+        setValue('new_offers_enabled', settings.new_offers_enabled !== false);
+        setValue('window_start_enabled', settings.window_start_enabled !== false);
+        setValue('window_end_enabled', settings.window_end_enabled !== false);
+      }
     } catch (error) {
       console.error('Error loading settings:', error);
+      // Не показываем ошибку, если просто нет настроек
     }
   };
 
   const saveSettings = async (data: NotificationSettingsData) => {
     setIsLoading(true);
     try {
-      // TODO: Сохранить настройки на сервер
-      console.log('Saving notification settings:', data);
-      
       // Если включены web-push уведомления, запрашиваем разрешение
       if (data.web_push_enabled && webPushSupported) {
         await requestNotificationPermission();
       }
       
+      // Сохраняем настройки на сервер
+      await axiosInstance.put('/notifications/settings', {
+        web_push_enabled: data.web_push_enabled,
+        email_enabled: data.email_enabled,
+        email_address: data.email_address || '',
+        new_offers_enabled: data.new_offers_enabled,
+        window_start_enabled: data.window_start_enabled,
+        window_end_enabled: data.window_end_enabled,
+      });
+      
       notify.success('Настройки уведомлений сохранены');
       setIsOpen(false);
       onClose?.();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving settings:', error);
-      notify.error('Ошибка при сохранении настроек');
+      const message = error?.response?.data?.message || 'Ошибка при сохранении настроек';
+      notify.error('Ошибка при сохранении настроек', message);
     } finally {
       setIsLoading(false);
     }

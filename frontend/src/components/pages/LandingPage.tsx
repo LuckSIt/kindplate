@@ -734,7 +734,7 @@ export function LandingPage() {
                             </div>
                         </div>
 
-                        <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer">
+                        <a href="https://t.me/kindplatesupportbot" target="_blank" rel="noopener noreferrer">
                             <button 
                                 className="w-full h-[31px] rounded-[5px] text-[12px] font-semibold leading-[0.94] transition-opacity hover:opacity-90 font-montserrat-alt"
                                 style={{ 
@@ -789,7 +789,7 @@ export function LandingPage() {
                                     KindPlate
                                 </p>
                                 <a 
-                                    href="mailto:kindplate.io@mail.ru"
+                                    href="https://t.me/kindplatesupportbot"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="block transition-opacity hover:opacity-80 footer-link"

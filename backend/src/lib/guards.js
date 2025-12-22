@@ -4,13 +4,19 @@
  */
 
 const { AppError } = require('./errorHandler');
+const { ensureAuthenticated } = require('./auth');
 
 /**
- * Проверка, что пользователь аутентифицирован
+ * Проверка, что пользователь аутентифицирован (cookie-сессия + Bearer JWT)
  */
-const requireAuth = (req, res, next) => {
-    if (!req.session || !req.session.userId) {
-        throw new AppError('Необходима авторизация', 401, 'UNAUTHORIZED');
+const requireAuth = async (req, res, next) => {
+    const userId = await ensureAuthenticated(req, res);
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: 'UNAUTHORIZED',
+            message: 'Необходима авторизация'
+        });
     }
     next();
 };
@@ -18,13 +24,23 @@ const requireAuth = (req, res, next) => {
 /**
  * Проверка, что пользователь - администратор
  */
-const requireAdmin = (req, res, next) => {
-    if (!req.session || !req.session.userId) {
-        throw new AppError('Необходима авторизация', 401, 'UNAUTHORIZED');
+const requireAdmin = async (req, res, next) => {
+    const userId = await ensureAuthenticated(req, res);
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: 'UNAUTHORIZED',
+            message: 'Необходима авторизация'
+        });
     }
     
+    // Проверяем роль из сессии (после ensureAuthenticated она должна быть установлена)
     if (req.session.role !== 'admin') {
-        throw new AppError('Доступ запрещен. Требуется роль администратора', 403, 'FORBIDDEN_ADMIN');
+        return res.status(403).send({
+            success: false,
+            error: 'FORBIDDEN_ADMIN',
+            message: 'Доступ запрещен. Требуется роль администратора'
+        });
     }
     
     next();
@@ -33,13 +49,22 @@ const requireAdmin = (req, res, next) => {
 /**
  * Проверка, что пользователь - бизнес или админ
  */
-const requireBusinessOrAdmin = (req, res, next) => {
-    if (!req.session || !req.session.userId) {
-        throw new AppError('Необходима авторизация', 401, 'UNAUTHORIZED');
+const requireBusinessOrAdmin = async (req, res, next) => {
+    const userId = await ensureAuthenticated(req, res);
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: 'UNAUTHORIZED',
+            message: 'Необходима авторизация'
+        });
     }
     
     if (req.session.role !== 'business' && req.session.role !== 'admin') {
-        throw new AppError('Доступ только для бизнеса или администратора', 403, 'FORBIDDEN');
+        return res.status(403).send({
+            success: false,
+            error: 'FORBIDDEN',
+            message: 'Доступ только для бизнеса или администратора'
+        });
     }
     
     next();
@@ -49,14 +74,23 @@ const requireBusinessOrAdmin = (req, res, next) => {
  * Проверка, что пользователь - бизнес
  * @deprecated Используйте requireBusinessOrAdmin для совместимости с админом
  */
-const requireBusiness = (req, res, next) => {
-    if (!req.session || !req.session.userId) {
-        throw new AppError('Необходима авторизация', 401, 'UNAUTHORIZED');
+const requireBusiness = async (req, res, next) => {
+    const userId = await ensureAuthenticated(req, res);
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: 'UNAUTHORIZED',
+            message: 'Необходима авторизация'
+        });
     }
     
     // Разрешаем доступ админу тоже
     if (req.session.role !== 'business' && req.session.role !== 'admin') {
-        throw new AppError('Доступ только для бизнеса', 403, 'FORBIDDEN');
+        return res.status(403).send({
+            success: false,
+            error: 'FORBIDDEN',
+            message: 'Доступ только для бизнеса'
+        });
     }
     
     next();
@@ -65,13 +99,22 @@ const requireBusiness = (req, res, next) => {
 /**
  * Проверка, что пользователь - клиент (не бизнес)
  */
-const requireCustomer = (req, res, next) => {
-    if (!req.session || !req.session.userId) {
-        throw new AppError('Необходима авторизация', 401, 'UNAUTHORIZED');
+const requireCustomer = async (req, res, next) => {
+    const userId = await ensureAuthenticated(req, res);
+    if (!userId) {
+        return res.status(401).send({
+            success: false,
+            error: 'UNAUTHORIZED',
+            message: 'Необходима авторизация'
+        });
     }
     
     if (req.session.isBusiness) {
-        throw new AppError('Доступ только для клиентов', 403, 'FORBIDDEN');
+        return res.status(403).send({
+            success: false,
+            error: 'FORBIDDEN',
+            message: 'Доступ только для клиентов'
+        });
     }
     
     next();

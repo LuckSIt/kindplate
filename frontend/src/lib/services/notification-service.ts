@@ -107,18 +107,13 @@ class NotificationService {
   // Отправляем подписку на сервер
   async sendSubscriptionToServer(subscription: PushSubscription): Promise<void> {
     try {
-      const response = await fetch('/api/notifications/subscribe', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          subscription: subscription.toJSON(),
-          userAgent: navigator.userAgent,
-        }),
+      const { axiosInstance } = await import('@/lib/axiosInstance');
+      const response = await axiosInstance.post('/notifications/subscribe', {
+        subscription: subscription.toJSON(),
+        userAgent: navigator.userAgent,
       });
 
-      if (!response.ok) {
+      if (!response.data.success) {
         throw new Error('Failed to send subscription to server');
       }
 

@@ -70,7 +70,7 @@ export function Footer() {
                             </li>
                             <li>
                                 <a 
-                                    href="https://t.me/kindplate_support" 
+                                    href="https://t.me/kindplatesupportbot" 
                                     className="hover:text-green-500 transition-colors"
                                     target="_blank"
                                     rel="noopener noreferrer"

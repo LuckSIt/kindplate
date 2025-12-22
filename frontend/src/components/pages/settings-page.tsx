@@ -4,9 +4,12 @@ import { useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { NotificationSettings } from '@/components/ui/notification-settings';
 import { NotificationHistory } from '@/components/ui/notification-history';
+import { useProfile } from '@/lib/hooks/use-profile';
 
 export function SettingsPage() {
   const navigate = useNavigate();
+  const { data: profile } = useProfile();
+  const userId = profile?.id;
 
   const handleBack = () => {
     navigate({ to: '/home' });
@@ -58,7 +61,7 @@ export function SettingsPage() {
                   Уведомления
                 </h2>
               </div>
-              <NotificationSettings userId={1} />
+              {userId && <NotificationSettings userId={userId} />}
             </div>
             <p className="text-gray-600 dark:text-gray-300">
               Настройте получение уведомлений о новых предложениях и изменениях в избранных заведениях
