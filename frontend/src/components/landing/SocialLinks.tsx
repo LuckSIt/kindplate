@@ -51,7 +51,7 @@ export function SocialLinks({
                 <img src={vkFooterIcon} alt="VK" style={iconStyle} />
             </a>
             <a
-                href="https://t.me/AkimSat"
+                href="https://t.me/kindplatesupportbot" 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center transition-opacity hover:opacity-80"

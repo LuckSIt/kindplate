@@ -13,6 +13,8 @@ const requireAuth = async (req, res, next) => {
             message: "Необходима авторизация",
         });
     }
+    // Сохраняем userId в req для использования в роутах
+    req.userId = userId;
     next();
 };
 
@@ -20,8 +22,8 @@ const requireAuth = async (req, res, next) => {
 notificationsRouter.post("/subscribe", requireAuth, async (req, res) => {
     try {
         const { subscription, userAgent } = req.body;
-        // ensureAuthenticated уже установил req.session.userId при необходимости
-        const userId = req.session.userId;
+        // requireAuth уже установил req.userId через ensureAuthenticated
+        const userId = req.userId || req.session?.userId;
 
         console.log("🔔 Push subscription request:", { userId, userAgent });
 
@@ -65,7 +67,7 @@ notificationsRouter.post("/subscribe", requireAuth, async (req, res) => {
 // POST /notifications/unsubscribe - Отписаться от push-уведомлений
 notificationsRouter.post("/unsubscribe", requireAuth, async (req, res) => {
     try {
-        const userId = req.session.userId;
+        const userId = req.userId || req.session?.userId;
 
         console.log("🔕 Push unsubscription request:", { userId });
 
@@ -87,7 +89,7 @@ notificationsRouter.post("/unsubscribe", requireAuth, async (req, res) => {
 // GET /notifications/settings - Получить настройки уведомлений
 notificationsRouter.get("/settings", requireAuth, async (req, res) => {
     try {
-        const userId = req.session.userId;
+        const userId = req.userId || req.session?.userId;
 
         console.log("🔍 Запрос /notifications/settings", { userId });
 
@@ -176,7 +178,7 @@ notificationsRouter.put("/settings", requireAuth, async (req, res) => {
             window_start_enabled, 
             window_end_enabled 
         } = req.body;
-        const userId = req.session.userId;
+        const userId = req.userId || req.session?.userId;
 
         console.log("🔧 Updating notification settings:", { userId, web_push_enabled, email_enabled });
 
@@ -209,7 +211,7 @@ notificationsRouter.put("/settings", requireAuth, async (req, res) => {
 notificationsRouter.post("/send", requireAuth, async (req, res) => {
     try {
         const { title, body, type, businessId } = req.body;
-        const userId = req.session.userId;
+        const userId = req.userId || req.session?.userId;
 
         console.log("📨 Sending notification:", { userId, title, body, type });
 
@@ -238,7 +240,7 @@ notificationsRouter.post("/send", requireAuth, async (req, res) => {
 notificationsRouter.post("/waitlist/subscribe", requireAuth, async (req, res) => {
     try {
         const { scope_type, scope_id, latitude, longitude, radius_km, area_geojson } = req.body;
-        const userId = req.session.userId;
+        const userId = req.userId || req.session?.userId;
 
         if (!scope_type || !['offer', 'category', 'area', 'business'].includes(scope_type)) {
             return res.status(400).send({
@@ -319,7 +321,7 @@ notificationsRouter.post("/waitlist/subscribe", requireAuth, async (req, res) =>
 notificationsRouter.post("/waitlist/unsubscribe", requireAuth, async (req, res) => {
     try {
         const { subscription_id, scope_type, scope_id } = req.body;
-        const userId = req.session.userId;
+        const userId = req.userId || req.session?.userId;
 
         if (subscription_id) {
             // Удаляем конкретную подписку
@@ -362,7 +364,7 @@ notificationsRouter.post("/waitlist/unsubscribe", requireAuth, async (req, res) 
 // Получить мои подписки
 notificationsRouter.get("/waitlist/mine", requireAuth, async (req, res) => {
     try {
-        const userId = req.session.userId;
+        const userId = req.userId || req.session?.userId;
 
         const result = await pool.query(
             `SELECT id, scope_type, scope_id, latitude, longitude, radius_km, is_active, created_at
@@ -389,7 +391,7 @@ notificationsRouter.get("/waitlist/mine", requireAuth, async (req, res) => {
 // GET /notifications/history - Получить историю уведомлений
 notificationsRouter.get("/history", requireAuth, async (req, res) => {
     try {
-        const userId = req.session.userId;
+        const userId = req.userId || req.session?.userId;
         const { limit = 50, offset = 0 } = req.query;
 
         console.log("🔍 Запрос /notifications/history", { userId, limit, offset });
@@ -437,7 +439,7 @@ notificationsRouter.get("/history", requireAuth, async (req, res) => {
 notificationsRouter.post("/mark-read", requireAuth, async (req, res) => {
     try {
         const { notificationId } = req.body;
-        const userId = req.session.userId;
+        const userId = req.userId || req.session?.userId;
 
         await pool.query(
             `UPDATE notifications 

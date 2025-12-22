@@ -42,7 +42,7 @@ export function Footer() {
                         <h3 className="font-semibold text-gray-100 mb-2 text-sm">Продавцам</h3>
                         <ul className="space-y-1 text-xs text-gray-400">
                             <li>
-                                <a href="/auth/register/business" className="hover:text-green-500 transition-colors">
+                                <a href="https://t.me/kindplatesupportbot" className="hover:text-green-500 transition-colors">
                                     Стать партнером
                                 </a>
                             </li>
