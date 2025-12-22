@@ -92,8 +92,8 @@ function RouteComponent() {
             const filters: Parameters<typeof fetchOffersSearch>[0] = {
                 sort: sortBy,
                 page: 1,
-                limit: 100,
-                radius_km: 50,
+                limit: 10000,
+                radius_km: 5000,
             };
             
             // Геолокация
