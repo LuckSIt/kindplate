@@ -43,8 +43,8 @@ function CheckoutPage() {
     () => (cartData || []).reduce((s: number, it: CartItem) => s + it.offer.discounted_price * it.quantity, 0),
     [cartData]
   );
-  const serviceFee = Math.round(subtotal * 0.05);
-  const total = Math.round(subtotal + serviceFee);
+  const serviceFee = 0; // Сервисный сбор отключен
+  const total = Math.round(subtotal);
 
   // Avoid iOS zoom: base text size >= 16px
   useEffect(() => {
@@ -127,10 +127,6 @@ function CheckoutPage() {
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600 dark:text-gray-400">Товары</span>
             <span className="text-gray-900 dark:text-white">{Math.round(subtotal)}₽</span>
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600 dark:text-gray-400">Сервисный сбор</span>
-            <span className="text-gray-900 dark:text-white">{serviceFee}₽</span>
           </div>
           <div className="flex items-center justify-between text-lg font-semibold">
             <span className="text-gray-900 dark:text-white">Итого</span>

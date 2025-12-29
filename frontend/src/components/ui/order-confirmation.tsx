@@ -238,10 +238,6 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
               <span className="text-gray-600 dark:text-gray-400">Товары:</span>
               <span className="text-gray-900 dark:text-white">{subtotal}₽</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600 dark:text-gray-400">Сервисный сбор:</span>
-              <span className="text-gray-900 dark:text-white">{serviceFee}₽</span>
-            </div>
             <div className="flex justify-between text-lg font-semibold border-t border-gray-200 dark:border-gray-700 pt-2">
               <span className="text-gray-900 dark:text-white">Итого:</span>
               <span className="text-primary-600">{total}₽</span>

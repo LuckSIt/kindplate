@@ -202,17 +202,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
           <span className="payment-page__summary-value">{orderDetails.subtotal}₽</span>
         </div>
         
-        {orderDetails.service_fee > 0 ? (
-          <>
-            <div className="payment-page__summary-divider"></div>
-            <div className="payment-page__summary-row">
-              <span className="payment-page__summary-label">Сервисный сбор</span>
-              <span className="payment-page__summary-value">{orderDetails.service_fee}₽</span>
-            </div>
-          </>
-        ) : (
-          <div className="payment-page__summary-divider"></div>
-        )}
+        <div className="payment-page__summary-divider"></div>
         
         <div className="payment-page__summary-row payment-page__summary-row--total">
           <span className="payment-page__summary-label">Итого</span>

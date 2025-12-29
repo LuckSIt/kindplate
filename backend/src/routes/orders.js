@@ -67,7 +67,7 @@ ordersRouter.get("/config", async (req, res) => {
         console.log("🔍 Запрос /orders/config");
 
         // TODO: Получить из таблицы конфигурации
-        const serviceFee = 50; // Временное значение
+        const serviceFee = 0; // Сервисный сбор отключен
         const promocodeEnabled = true;
 
         res.send({
@@ -203,7 +203,7 @@ ordersRouter.post("/draft", asyncHandler(async (req, res) => {
 
     // Рассчитываем суммы
     const subtotal = items.reduce((sum, item) => sum + (item.discounted_price * item.quantity), 0);
-    const serviceFee = 50; // TODO: Получить из конфигурации
+    const serviceFee = 0; // Сервисный сбор отключен
     const total = subtotal + serviceFee;
 
     // Проверяем существование таблицы orders
@@ -223,7 +223,7 @@ ordersRouter.post("/draft", asyncHandler(async (req, res) => {
                 business_id INTEGER NOT NULL REFERENCES users(id),
                 status VARCHAR(50) NOT NULL DEFAULT 'draft',
                 subtotal DECIMAL(10, 2) NOT NULL,
-                service_fee DECIMAL(10, 2) NOT NULL DEFAULT 50,
+                service_fee DECIMAL(10, 2) NOT NULL DEFAULT 0,
                 total DECIMAL(10, 2) NOT NULL,
                 pickup_time_start TIME,
                 pickup_time_end TIME,
@@ -1272,7 +1272,7 @@ ordersRouter.patch("/:id", asyncHandler(async (req, res) => {
 
             // Пересчитываем суммы
             const subtotal = items.reduce((sum, item) => sum + (item.discounted_price * item.quantity), 0);
-            const serviceFee = 50; // TODO: Получить из конфигурации
+            const serviceFee = 0; // Сервисный сбор отключен
             const total = subtotal + serviceFee;
 
             await pool.query(

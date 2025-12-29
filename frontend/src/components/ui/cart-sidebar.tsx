@@ -52,8 +52,8 @@ export const CartSidebar: React.FC<CartSidebarProps> = ({
   };
 
   const subtotal = getTotalPrice();
-  const serviceFee = 50; // TODO: Получать с бэкенда
-  const total = subtotal + serviceFee;
+  const serviceFee = 0; // Сервисный сбор отключен
+  const total = subtotal;
 
   // Проверяем, есть ли товары от разных продавцов
   const businessIds = [...new Set(cartItems.map(item => item.business_id))];
@@ -232,10 +232,6 @@ export const CartSidebar: React.FC<CartSidebarProps> = ({
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600 dark:text-gray-400">Товары:</span>
                   <span className="text-gray-900 dark:text-white">{subtotal}₽</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400">Сервисный сбор:</span>
-                  <span className="text-gray-900 dark:text-white">{serviceFee}₽</span>
                 </div>
                 <div className="flex justify-between text-lg font-semibold border-t border-gray-200 dark:border-gray-700 pt-2">
                   <span className="text-gray-900 dark:text-white">Итого:</span>

@@ -81,8 +81,8 @@ export function CartSheet({
   // Process cart data
   const cartItems: CartItemData[] = cartData || [];
   const subtotal = cartItems.reduce((sum, item) => sum + (item.offer.discounted_price * item.quantity), 0);
-  const serviceFee = subtotal * 0.05; // 5% service fee
-  const total = subtotal + serviceFee;
+  const serviceFee = 0; // Сервисный сбор отключен
+  const total = subtotal;
   const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   // Handle quantity change

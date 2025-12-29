@@ -142,11 +142,6 @@ export const PaymentSuccessPage: React.FC<PaymentSuccessPageProps> = ({ orderId 
               <span className="font-medium">{orderDetails.subtotal} ₽</span>
             </div>
             
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Сервисный сбор:</span>
-              <span className="font-medium">{orderDetails.service_fee} ₽</span>
-            </div>
-            
             <div className="flex justify-between text-lg font-bold border-t pt-2">
               <span>Итого:</span>
               <span className="text-primary-600">{orderDetails.total} ₽</span>

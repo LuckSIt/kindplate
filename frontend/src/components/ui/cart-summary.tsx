@@ -33,15 +33,6 @@ export function CartSummary({
           </span>
         </div>
         
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600 dark:text-gray-400">
-            Сервисный сбор
-          </span>
-          <span className="text-gray-900 dark:text-white">
-            {Math.round(serviceFee)}₽
-          </span>
-        </div>
-        
         <div className="border-t border-gray-200 dark:border-gray-700 pt-2">
           <div className="flex justify-between text-lg font-semibold">
             <span className="text-gray-900 dark:text-white">Итого</span>

@@ -58,9 +58,9 @@ export const CartPage: React.FC = () => {
       business_name: currentBusiness.name,
       business_address: currentBusiness.address,
       subtotal,
-        service_fee: config?.service_fee || 0,
+        service_fee: 0, // Сервисный сбор отключен
         promocode_discount: 0,
-        total: subtotal + (config?.service_fee || 0),
+        total: subtotal,
         notes: ""
     };
 

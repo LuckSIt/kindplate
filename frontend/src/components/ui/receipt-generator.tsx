@@ -155,10 +155,6 @@ export const ReceiptGenerator: React.FC<ReceiptGeneratorProps> = ({
             <span>Подытог:</span>
             <span>${receiptData.subtotal} ₽</span>
           </div>
-          <div class="total-line">
-            <span>Сервисный сбор:</span>
-            <span>${receiptData.serviceFee} ₽</span>
-          </div>
           <div class="total-line total-final">
             <span>Итого к оплате:</span>
             <span>${receiptData.total} ₽</span>
