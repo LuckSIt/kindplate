@@ -335,11 +335,12 @@ export function LandingPage() {
                                         <div
                                             className="transition-opacity duration-300"
                                             style={{
-                                                width: 160.5,
+                                                width: 187.5,
                                                 height: 10.5,
-                                                left: 107,
+                                                left: 101,
                                                 top: 347,
                                                 position: "absolute",
+                                                textAlign: "center",
                                                 color: "#10172A",
                                                 fontSize: 12,
                                                 fontFamily: "Montserrat Alternates, sans-serif",
@@ -353,12 +354,12 @@ export function LandingPage() {
                                         <div
                                             className="transition-opacity duration-300"
                                             style={{
-                                                width: 40,
+                                                width: 187.5,
                                                 height: 10.5,
-                                                left: 243,
+                                                left: 101,
                                                 top: 345,
                                                 position: "absolute",
-                                                textAlign: "right",
+                                                textAlign: "center",
                                                 color: "#35741F",
                                                 fontSize: 13.5,
                                                 fontFamily: "Montserrat Alternates, sans-serif",
