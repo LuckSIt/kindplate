@@ -3628,9 +3628,10 @@ button:not(.font-montserrat-alt),
 }
 
 .payment-page__summary-row--total {
-  margin-top: 8px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+  border-bottom: none;
 }
 
 .payment-page__summary-row--total .payment-page__summary-label {
