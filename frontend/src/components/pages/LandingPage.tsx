@@ -324,28 +324,27 @@ export function LandingPage() {
                                             style={{
                                                 width: 187.5,
                                                 height: 39,
-                                                left: 60,
+                                                left: 101,
                                                 top: 329,
                                                 position: "absolute",
                                                 background: "#FFFFFF",
                                                 boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
                                                 borderRadius: 7.5,
                                             }}
-                                        />
+        />
                                         <div
                                             className="transition-opacity duration-300"
                                             style={{
-                                                width: 187.5,
+                                                width: 160.5,
                                                 height: 10.5,
-                                                left: 60,
+                                                left: 107,
                                                 top: 347,
                                                 position: "absolute",
-                                                textAlign: "center",
                                                 color: "#10172A",
-                                                fontSize: 13.5,
+                                                fontSize: 12,
                                                 fontFamily: "Montserrat Alternates, sans-serif",
                                                 fontWeight: 600,
-                                                lineHeight: "11.745px",
+                                                lineHeight: "10.44px",
                                                 wordWrap: "break-word",
                                             }}
                                         >
@@ -354,12 +353,12 @@ export function LandingPage() {
                                         <div
                                             className="transition-opacity duration-300"
                                             style={{
-                                                width: 187.5,
+                                                width: 40,
                                                 height: 10.5,
-                                                left: 60,
+                                                left: 243,
                                                 top: 345,
                                                 position: "absolute",
-                                                textAlign: "center",
+                                                textAlign: "right",
                                                 color: "#35741F",
                                                 fontSize: 13.5,
                                                 fontFamily: "Montserrat Alternates, sans-serif",
@@ -373,12 +372,11 @@ export function LandingPage() {
                                         <div
                                             className="transition-opacity duration-300"
                                             style={{
-                                                width: 187.5,
+                                                width: 160.5,
                                                 height: 10.5,
-                                                left: 60,
+                                                left: 107,
                                                 top: 336,
                                                 position: "absolute",
-                                                textAlign: "center",
                                                 color: "#757575",
                                                 fontSize: 7.5,
                                                 fontFamily: "Montserrat Alternates, sans-serif",
