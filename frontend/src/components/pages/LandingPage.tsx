@@ -322,10 +322,10 @@ export function LandingPage() {
                                         {/* Подпись под продуктом */}
                                         <div
                                             style={{
-                                                width: 144,
-                                                height: 30,
-                                                left: 78,
-                                                top: 253,
+                                                width: 187.5,
+                                                height: 39,
+                                                left: 101,
+                                                top: 329,
                                                 position: "absolute",
                                                 background: "#FFFFFF",
                                                 boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
@@ -335,10 +335,10 @@ export function LandingPage() {
                                         <div
                                             className="transition-opacity duration-300"
                                             style={{
-                                                width: 123,
+                                                width: 160.5,
                                                 height: 10.5,
-                                                left: 82,
-                                                top: 267,
+                                                left: 107,
+                                                top: 347,
                                                 position: "absolute",
                                                 color: "#10172A",
                                                 fontSize: 12,
@@ -355,8 +355,8 @@ export function LandingPage() {
                                             style={{
                                                 width: 40,
                                                 height: 10.5,
-                                                left: 187,
-                                                top: 265,
+                                                left: 243,
+                                                top: 345,
                                                 position: "absolute",
                                                 textAlign: "right",
                                                 color: "#35741F",
