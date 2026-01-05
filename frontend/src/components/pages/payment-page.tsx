@@ -201,6 +201,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
           <span className="payment-page__summary-label">Итого</span>
           <span className="payment-page__summary-value">{orderDetails.total}₽</span>
         </div>
+        <div className="payment-page__summary-row payment-page__summary-row--total"></div>
       </div>
 
       {/* Payment Status */}
