@@ -324,7 +324,7 @@ export function LandingPage() {
                                             style={{
                                                 width: 187.5,
                                                 height: 39,
-                                                left: 101,
+                                                left: 60,
                                                 top: 329,
                                                 position: "absolute",
                                                 background: "#FFFFFF",
@@ -337,7 +337,7 @@ export function LandingPage() {
                                             style={{
                                                 width: 160.5,
                                                 height: 10.5,
-                                                left: 107,
+                                                left: 66,
                                                 top: 347,
                                                 position: "absolute",
                                                 color: "#10172A",
@@ -355,7 +355,7 @@ export function LandingPage() {
                                             style={{
                                                 width: 40,
                                                 height: 10.5,
-                                                left: 243,
+                                                left: 202,
                                                 top: 345,
                                                 position: "absolute",
                                                 textAlign: "right",
@@ -374,7 +374,7 @@ export function LandingPage() {
                                             style={{
                                                 width: 160.5,
                                                 height: 10.5,
-                                                left: 107,
+                                                left: 66,
                                                 top: 336,
                                                 position: "absolute",
                                                 color: "#757575",
