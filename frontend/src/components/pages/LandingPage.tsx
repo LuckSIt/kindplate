@@ -324,7 +324,7 @@ export function LandingPage() {
                                             style={{
                                                 width: 187.5,
                                                 height: 39,
-                                                left: 101,
+                                                left: 60,
                                                 top: 329,
                                                 position: "absolute",
                                                 background: "#FFFFFF",
@@ -337,7 +337,7 @@ export function LandingPage() {
                                             style={{
                                                 width: 187.5,
                                                 height: 10.5,
-                                                left: 101,
+                                                left: 60,
                                                 top: 347,
                                                 position: "absolute",
                                                 textAlign: "center",
@@ -356,7 +356,7 @@ export function LandingPage() {
                                             style={{
                                                 width: 187.5,
                                                 height: 10.5,
-                                                left: 101,
+                                                left: 60,
                                                 top: 345,
                                                 position: "absolute",
                                                 textAlign: "center",
@@ -375,7 +375,7 @@ export function LandingPage() {
                                             style={{
                                                 width: 187.5,
                                                 height: 10.5,
-                                                left: 101,
+                                                left: 60,
                                                 top: 336,
                                                 position: "absolute",
                                                 textAlign: "center",
