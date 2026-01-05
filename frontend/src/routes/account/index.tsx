@@ -945,7 +945,10 @@ function RouteComponent() {
 
                 {/* Служба поддержки */}
                 <button 
-                    onClick={() => {}}
+                    onClick={() => {
+                        const telegramBotUrl = 'https://t.me/kindplatesupportbot';
+                        window.open(telegramBotUrl, '_blank');
+                    }}
                     className="mt-[19px] flex items-center justify-between w-[324px] h-[24px]"
                 >
                     <div className="text-[15px] font-semibold text-white flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Служба поддержки</div>

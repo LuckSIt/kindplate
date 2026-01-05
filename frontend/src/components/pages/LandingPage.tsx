@@ -292,9 +292,9 @@ export function LandingPage() {
                                             position: "absolute",
                                             left: "50%",
                                             top: "50%",
-                                            transform: "translate(-50%, -50%) translateY(45px) scale(1.1)",
-                                            width: 390,
-                                            height: 390,
+                                            transform: "translate(-50%, -50%) translateY(45px) scale(0.85)",
+                                            width: 300,
+                                            height: 300,
                                             cursor: "grab"
                                         }}
                                     >
@@ -307,8 +307,8 @@ export function LandingPage() {
                                                     alt={item.name}
                                                     className="absolute inset-0 transition-all duration-500 ease-in-out"
                                                     style={{
-                                                        width: 390,
-                                                        height: 390,
+                                                        width: 300,
+                                                        height: 300,
                                                         borderRadius: "0",
                                                         objectFit: "cover",
                                                         opacity: index === currentSlide ? 1 : 0,
@@ -335,11 +335,12 @@ export function LandingPage() {
                                         <div
                                             className="transition-opacity duration-300"
                                             style={{
-                                                width: 160.5,
+                                                width: 187.5,
                                                 height: 10.5,
-                                                left: 107,
+                                                left: 101,
                                                 top: 347,
                                                 position: "absolute",
+                                                textAlign: "center",
                                                 color: "#10172A",
                                                 fontSize: 12,
                                                 fontFamily: "Montserrat Alternates, sans-serif",
@@ -353,12 +354,12 @@ export function LandingPage() {
                                         <div
                                             className="transition-opacity duration-300"
                                             style={{
-                                                width: 40,
+                                                width: 187.5,
                                                 height: 10.5,
-                                                left: 243,
+                                                left: 101,
                                                 top: 345,
                                                 position: "absolute",
-                                                textAlign: "right",
+                                                textAlign: "center",
                                                 color: "#35741F",
                                                 fontSize: 13.5,
                                                 fontFamily: "Montserrat Alternates, sans-serif",
@@ -833,7 +834,7 @@ export function LandingPage() {
                                     Документы
                                 </Link>
                                 <a 
-                                    href="#"
+                                    href="https://t.me/kindplate"
                                     className="block transition-opacity hover:opacity-80 footer-link"
                                     style={{ 
                                         fontFamily: 'Montserrat Alternates, sans-serif',
@@ -883,7 +884,7 @@ export function LandingPage() {
                                     Ответы на вопросы
                                 </Link>
                                 <a 
-                                    href="#"
+                                    href="https://t.me/kindplatesupportbot"
                                     className="block transition-opacity hover:opacity-80 footer-link"
                                     style={{ 
                                         fontFamily: 'Montserrat Alternates, sans-serif',
