@@ -140,8 +140,8 @@ function FAQPage() {
                     <p className="text-gray-600 text-lg">
                         Здесь вы найдете ответы на самые популярные вопросы о работе платформы KindPlate.
                         Если вы не нашли ответ на свой вопрос, напишите нам на{" "}
-                        <a href="mailto:support@kindplate.ru" className="text-green-600 hover:text-green-700 font-medium">
-                            support@kindplate.ru
+                        <a href="mailto:kindplate.io@mail.ru" className="text-green-600 hover:text-green-700 font-medium">
+                            kindplate.io@mail.ru
                         </a>
                     </p>
                 </div>
