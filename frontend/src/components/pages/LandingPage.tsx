@@ -373,11 +373,12 @@ export function LandingPage() {
                                         <div
                                             className="transition-opacity duration-300"
                                             style={{
-                                                width: 160.5,
+                                                width: 187.5,
                                                 height: 10.5,
-                                                left: 107,
+                                                left: 101,
                                                 top: 336,
                                                 position: "absolute",
+                                                textAlign: "center",
                                                 color: "#757575",
                                                 fontSize: 7.5,
                                                 fontFamily: "Montserrat Alternates, sans-serif",
