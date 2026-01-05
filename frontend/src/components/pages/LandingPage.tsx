@@ -342,10 +342,10 @@ export function LandingPage() {
                                                 position: "absolute",
                                                 textAlign: "center",
                                                 color: "#10172A",
-                                                fontSize: 12,
+                                                fontSize: 13.5,
                                                 fontFamily: "Montserrat Alternates, sans-serif",
                                                 fontWeight: 600,
-                                                lineHeight: "10.44px",
+                                                lineHeight: "11.745px",
                                                 wordWrap: "break-word",
                                             }}
                                         >
