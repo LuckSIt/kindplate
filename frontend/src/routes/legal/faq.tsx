@@ -140,8 +140,8 @@ function FAQPage() {
                     <p className="text-gray-600 text-lg">
                         Здесь вы найдете ответы на самые популярные вопросы о работе платформы KindPlate.
                         Если вы не нашли ответ на свой вопрос, напишите нам на{" "}
-                        <a href="mailto:support@kindplate.ru" className="text-green-600 hover:text-green-700 font-medium">
-                            support@kindplate.ru
+                        <a href="mailto:kindplate.io@mail.ru" className="text-green-600 hover:text-green-700 font-medium">
+                            kindplate.io@mail.ru
                         </a>
                     </p>
                 </div>
@@ -178,8 +178,8 @@ function FAQPage() {
                         Мы всегда готовы помочь! Свяжитесь с нами удобным способом:
                     </p>
                     <ul className="space-y-2 text-gray-700">
-                        <li>📧 Email: <a href="mailto:support@kindplate.ru" className="text-green-600 hover:text-green-700 font-medium">support@kindplate.ru</a></li>
-                        <li>📱 Telegram: <a href="https://t.me/kindplate_support" className="text-green-600 hover:text-green-700 font-medium">@kindplate_support</a></li>
+                        <li>📧 Email: <a href="mailto:kindplate.io@mail.ru" className="text-green-600 hover:text-green-700 font-medium">kindplate.io@mail.ru</a></li>
+                        <li>📱 Telegram: <a href="https://t.me/kindplatesupportbot" className="text-green-600 hover:text-green-700 font-medium">@kindplatesupportbot</a></li>
                         <li>⏰ Время работы: Пн-Пт, 9:00-21:00 МСК</li>
                     </ul>
                 </div>
@@ -201,9 +201,7 @@ function FAQPage() {
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600">
                         <div>© 2025 KindPlate. Все права защищены.</div>
                         <div className="flex gap-4">
-                            <a href="/legal/refund-policy" className="hover:text-green-600">Возвраты</a>
                             <a href="/legal/privacy" className="hover:text-green-600">Конфиденциальность</a>
-                            <a href="/legal/terms" className="hover:text-green-600">Условия использования</a>
                         </div>
                     </div>
                 </div>
