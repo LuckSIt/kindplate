@@ -322,29 +322,6 @@ export function ProfilePage() {
           </button>
         </div>
 
-        {/* Согласия */}
-        <div className="profile-page__section">
-          <h2 className="profile-page__section-title">
-            <Shield className="profile-page__section-icon" />
-            Согласия
-          </h2>
-          <div className="profile-page__agreements">
-            <div className="profile-page__agreement-item">
-              <span className="profile-page__agreement-label">Оферта</span>
-              <span className={`profile-page__agreement-status ${profile.terms_accepted ? 'profile-page__agreement-status--accepted' : ''}`}>
-                {profile.terms_accepted ? '✓ Принято' : '✗ Не принято'}
-              </span>
-            </div>
-            <div className="profile-page__agreement-divider"></div>
-            <div className="profile-page__agreement-item">
-              <span className="profile-page__agreement-label">Обработка персональных данных</span>
-              <span className={`profile-page__agreement-status ${profile.privacy_accepted ? 'profile-page__agreement-status--accepted' : ''}`}>
-                {profile.privacy_accepted ? '✓ Принято' : '✗ Не принято'}
-              </span>
-            </div>
-          </div>
-        </div>
-
         {/* Опасная зона */}
         <div className="profile-page__section profile-page__section--danger">
           <h2 className="profile-page__section-title profile-page__section-title--danger">

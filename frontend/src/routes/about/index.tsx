@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Heart, Leaf, Users, Target, Shield, Award } from "lucide-react";
+import { Heart, Leaf, Users, Target, Shield, Award } from "lucide-react";
 import { LegalPageSEO } from "@/components/ui/seo";
-import { Button } from "@/components/ui/button";
+import arrowBackIcon from "@/figma/arrow-back.svg";
 
 export const Route = createFileRoute("/about/")({
     component: AboutPage,
@@ -56,50 +56,46 @@ function AboutPage() {
                 title="О нас - KindPlate" 
                 description="Узнайте больше о KindPlate — платформе для спасения еды и борьбы с пищевыми потерями. Наша миссия, ценности и команда."
             />
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            <div className="about-page">
                 {/* Header */}
-                <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
-                    <div className="max-w-6xl mx-auto px-4 py-4">
-                        <div className="flex items-center gap-4">
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => navigate({ to: "/account" })}
-                                className="flex items-center gap-2"
-                            >
-                                <ArrowLeft className="w-4 h-4" />
-                                Назад
-                            </Button>
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                О нас
-                            </h1>
+                <div className="about-page__header">
+                    <div className="about-page__header-floating">
+                        <button 
+                            className="about-page__back-button"
+                            onClick={() => navigate({ to: "/account" })}
+                            aria-label="Назад"
+                        >
+                            <img 
+                                src={arrowBackIcon} 
+                                alt="Назад" 
+                                className="about-page__back-button-icon"
+                            />
+                        </button>
+                        <div className="about-page__header-title-container">
+                            <h1 className="about-page__header-name">О НАС</h1>
                         </div>
                     </div>
-                </header>
+                </div>
 
                 {/* Hero Section */}
-                <section className="bg-gradient-to-br from-green-500 to-green-600 text-white py-16">
-                    <div className="max-w-6xl mx-auto px-4">
-                        <div className="text-center">
-                            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                                KindPlate
-                            </h2>
-                            <p className="text-xl md:text-2xl text-green-50 max-w-3xl mx-auto">
-                                Платформа, которая помогает заведениям продавать нераспроданную еду, 
-                                а покупателям — получать качественные продукты по выгодным ценам
-                            </p>
-                        </div>
-                    </div>
-                </section>
+                <div className="about-page__content">
+                    <section className="about-page__hero">
+                        <h2 className="about-page__hero-title">
+                            KindPlate
+                        </h2>
+                        <p className="about-page__hero-description">
+                            Платформа, которая помогает заведениям продавать нераспроданную еду, 
+                            а покупателям — получать качественные продукты по выгодным ценам
+                        </p>
+                    </section>
 
-                {/* Mission Section */}
-                <section className="py-16 bg-white dark:bg-gray-800">
-                    <div className="max-w-6xl mx-auto px-4">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                    {/* Mission Section */}
+                    <section className="about-page__section">
+                        <div className="about-page__section-header">
+                            <h2 className="about-page__section-title">
                                 Наша миссия
                             </h2>
-                            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                            <p className="about-page__section-description">
                                 Мы верим, что еда не должна выбрасываться. Наша цель — создать экосистему, 
                                 где каждый может внести вклад в сокращение пищевых потерь, получая при этом 
                                 качественную еду по доступным ценам.
@@ -107,170 +103,151 @@ function AboutPage() {
                         </div>
 
                         {/* Stats */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
+                        <div className="about-page__stats">
                             {stats.map((stat, index) => (
                                 <div
                                     key={index}
-                                    className="text-center p-6 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                                    className="about-page__stat-card"
                                 >
-                                    <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
+                                    <div className="about-page__stat-number">
                                         {stat.number}
                                     </div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-300">
+                                    <div className="about-page__stat-label">
                                         {stat.label}
                                     </div>
                                 </div>
                             ))}
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                {/* Values Section */}
-                <section className="py-16 bg-gray-50 dark:bg-gray-900">
-                    <div className="max-w-6xl mx-auto px-4">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                    {/* Values Section */}
+                    <section className="about-page__section">
+                        <div className="about-page__section-header">
+                            <h2 className="about-page__section-title">
                                 Наши ценности
                             </h2>
-                            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                            <p className="about-page__section-subtitle">
                                 Принципы, которыми мы руководствуемся в работе
                             </p>
                         </div>
 
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="about-page__values">
                             {values.map((value, index) => (
                                 <div
                                     key={index}
-                                    className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow"
+                                    className="about-page__value-card"
                                 >
-                                    <div className="text-green-600 dark:text-green-400 mb-4">
+                                    <div className="about-page__value-icon">
                                         {value.icon}
                                     </div>
-                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                                    <h3 className="about-page__value-title">
                                         {value.title}
                                     </h3>
-                                    <p className="text-gray-600 dark:text-gray-300">
+                                    <p className="about-page__value-description">
                                         {value.description}
                                     </p>
                                 </div>
                             ))}
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                {/* How It Works Section */}
-                <section className="py-16 bg-white dark:bg-gray-800">
-                    <div className="max-w-6xl mx-auto px-4">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                    {/* How It Works Section */}
+                    <section className="about-page__section">
+                        <div className="about-page__section-header">
+                            <h2 className="about-page__section-title">
                                 Как это работает
                             </h2>
                         </div>
 
-                        <div className="grid md:grid-cols-3 gap-8">
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <span className="text-2xl font-bold text-green-600 dark:text-green-400">1</span>
-                                </div>
-                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                        <div className="about-page__how-it-works">
+                            <div className="about-page__how-item">
+                                <div className="about-page__how-number">1</div>
+                                <h3 className="about-page__how-title">
                                     Для покупателей
                                 </h3>
-                                <p className="text-gray-600 dark:text-gray-300">
+                                <p className="about-page__how-description">
                                     Найдите на карте заведения с предложениями, выберите понравившееся блюдо, 
                                     оформите заказ и заберите еду в указанное время.
                                 </p>
                             </div>
 
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <span className="text-2xl font-bold text-green-600 dark:text-green-400">2</span>
-                                </div>
-                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                            <div className="about-page__how-item">
+                                <div className="about-page__how-number">2</div>
+                                <h3 className="about-page__how-title">
                                     Для продавцов
                                 </h3>
-                                <p className="text-gray-600 dark:text-gray-300">
+                                <p className="about-page__how-description">
                                     Зарегистрируйтесь, создайте предложение на нераспроданную еду, 
                                     получите заказы и найдите новых постоянных клиентов.
                                 </p>
                             </div>
 
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <span className="text-2xl font-bold text-green-600 dark:text-green-400">3</span>
-                                </div>
-                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                            <div className="about-page__how-item">
+                                <div className="about-page__how-number">3</div>
+                                <h3 className="about-page__how-title">
                                     Результат
                                 </h3>
-                                <p className="text-gray-600 dark:text-gray-300">
+                                <p className="about-page__how-description">
                                     Меньше потерь, больше довольных клиентов, чище планета. 
                                     Все выигрывают!
                                 </p>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                {/* CTA Section */}
-                <section className="py-16 bg-gradient-to-br from-green-500 to-green-600 text-white">
-                    <div className="max-w-6xl mx-auto px-4 text-center">
-                        <h2 className="text-3xl font-bold mb-4">
+                    {/* CTA Section */}
+                    <section className="about-page__cta">
+                        <h2 className="about-page__cta-title">
                             Присоединяйтесь к нам!
                         </h2>
-                        <p className="text-xl text-green-50 mb-8 max-w-2xl mx-auto">
+                        <p className="about-page__cta-description">
                             Станьте частью сообщества, которое заботится о еде, людях и планете
                         </p>
-                        
-                    </div>
-                </section>
+                    </section>
 
-                {/* Contact Section */}
-                <section className="py-16 bg-gray-50 dark:bg-gray-900">
-                    <div className="max-w-6xl mx-auto px-4">
-                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+                    {/* Contact Section */}
+                    <section className="about-page__section">
+                        <div className="about-page__contact">
+                            <h2 className="about-page__contact-title">
                                 Свяжитесь с нами
                             </h2>
-                            <div className="grid md:grid-cols-2 gap-6 text-center">
-                                <div>
-                                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Email</h3>
+                            <div className="about-page__contact-info">
+                                <div className="about-page__contact-item">
+                                    <h3 className="about-page__contact-label">Email</h3>
                                     <a
                                         href="mailto:kindplate.io@mail.ru"
-                                        className="text-green-600 dark:text-green-400 hover:underline"
+                                        className="about-page__contact-link"
                                     >
                                         kindplate.io@mail.ru
                                     </a>
                                 </div>
-                                <div>
-                                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Telegram</h3>
+                                <div className="about-page__contact-item">
+                                    <h3 className="about-page__contact-label">Telegram</h3>
                                     <a
                                         href="https://t.me/kindplatesupportbot"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-green-600 dark:text-green-400 hover:underline"
+                                        className="about-page__contact-link"
                                     >
                                         @kindplatesupportbot
                                     </a>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                {/* Footer */}
-                <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-                    <div className="max-w-6xl mx-auto px-4 py-6">
-                        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                            <div>© 2025 KindPlate. Все права защищены.</div>
-                            <div className="flex gap-4">
-                                
-                                <Link to="/legal/privacy" className="hover:text-green-600 dark:hover:text-green-400">
+                    {/* Footer */}
+                    <footer className="about-page__footer">
+                        <div className="about-page__footer-content">
+                            <div className="about-page__footer-text">© 2025 KindPlate. Все права защищены.</div>
+                            <div className="about-page__footer-links">
+                                <Link to="/legal/privacy" className="about-page__footer-link">
                                     Конфиденциальность
                                 </Link>
-                        
                             </div>
                         </div>
-                    </div>
-                </footer>
+                    </footer>
+                </div>
             </div>
         </>
     );
