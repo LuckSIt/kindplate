@@ -5298,3 +5298,546 @@ div.font-montserrat-alt,
     transform: rotate(360deg);
   }
 }
+
+/* Profile Page Styles (same as cart-page) */
+.profile-page {
+  min-height: 100%;
+  width: 100%;
+  background-color: #000019;
+  position: relative;
+  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  padding-bottom: 100px;
+}
+
+.profile-page__header {
+  width: 100%;
+  background-color: #001900;
+  padding: 27px 14px 0;
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  overflow: visible;
+  margin-bottom: 50px;
+}
+
+.profile-page__header-floating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateY(50%);
+  width: 100%;
+}
+
+.profile-page__back-button {
+  width: 59px;
+  height: 59px;
+  background-color: #D9D9D9;
+  border-radius: 15px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.profile-page__back-button:hover {
+  opacity: 0.9;
+}
+
+.profile-page__back-button-icon {
+  width: 39px;
+  height: 39px;
+  display: block;
+}
+
+.profile-page__header-title-container {
+  flex: 1;
+  height: 59px;
+  background-color: #D9D9D9;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.profile-page__header-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 22px;
+  color: #000000 !important;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-page__content {
+  padding: 14px;
+  padding-top: 0;
+}
+
+.profile-page__section {
+  background-color: #000019;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.profile-page__section--danger {
+  border-color: rgba(255, 107, 53, 0.3);
+  background-color: rgba(255, 107, 53, 0.05);
+}
+
+.profile-page__user-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.profile-page__user-avatar {
+  width: 64px;
+  height: 64px;
+  background-color: #001900;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile-page__user-icon {
+  width: 32px;
+  height: 32px;
+  color: #FFFFFF;
+}
+
+.profile-page__user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-page__user-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 24px;
+  color: #FFFFFF;
+  margin: 0 0 4px 0;
+}
+
+.profile-page__user-email {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FFFFFF;
+  opacity: 0.8;
+  margin: 0;
+}
+
+.profile-page__business-badge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background-color: #001900;
+  border-radius: 12px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: #FFFFFF;
+}
+
+.profile-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-page__field-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 18px;
+  color: #FFFFFF;
+}
+
+.profile-page__field-icon {
+  width: 16px;
+  height: 16px;
+  color: #FFFFFF;
+}
+
+.profile-page__input {
+  width: 100%;
+  padding: 12px 14px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FFFFFF;
+  transition: all 0.2s ease;
+}
+
+.profile-page__input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.profile-page__input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.profile-page__input--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.profile-page__field-hint {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: #FFFFFF;
+  opacity: 0.6;
+  margin: 0;
+}
+
+.profile-page__error-message {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: #FF6B35;
+  margin: 0;
+}
+
+.profile-page__save-button {
+  width: 100%;
+  height: 50px;
+  background-color: #D9D9D9;
+  border: none;
+  border-radius: 15px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: #000000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.profile-page__save-button:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.profile-page__save-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile-page__save-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.profile-page__section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: #FFFFFF;
+  margin: 0 0 16px 0;
+}
+
+.profile-page__section-title--danger {
+  color: #FF6B35;
+}
+
+.profile-page__section-icon {
+  width: 20px;
+  height: 20px;
+  color: #FFFFFF;
+}
+
+.profile-page__section-title--danger .profile-page__section-icon {
+  color: #FF6B35;
+}
+
+.profile-page__action-button {
+  width: 100%;
+  padding: 12px 14px;
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 20px;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-page__action-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.profile-page__agreements {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.profile-page__agreement-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+.profile-page__agreement-divider {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.profile-page__agreement-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FFFFFF;
+}
+
+.profile-page__agreement-status {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.profile-page__agreement-status--accepted {
+  color: #FFFFFF;
+}
+
+.profile-page__danger-text {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FFFFFF;
+  opacity: 0.8;
+  margin: 0 0 16px 0;
+}
+
+.profile-page__danger-button {
+  width: 100%;
+  padding: 12px 14px;
+  background-color: transparent;
+  border: 1px solid rgba(255, 107, 53, 0.5);
+  border-radius: 10px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 20px;
+  color: #FF6B35;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.profile-page__danger-button:hover {
+  background-color: rgba(255, 107, 53, 0.1);
+  border-color: #FF6B35;
+}
+
+.profile-page__danger-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.profile-page__loading,
+.profile-page__error,
+.profile-page__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 14px;
+  text-align: center;
+}
+
+.profile-page__spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+
+.profile-page__loading-text,
+.profile-page__error-text,
+.profile-page__empty-text {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FFFFFF;
+  opacity: 0.8;
+  margin: 0 0 16px 0;
+}
+
+.profile-page__error-text {
+  color: #FF6B35;
+}
+
+.profile-page__error-button,
+.profile-page__empty-button {
+  padding: 12px 24px;
+  background-color: #D9D9D9;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  color: #000000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-page__error-button:hover,
+.profile-page__empty-button:hover {
+  opacity: 0.9;
+}
+
+/* Dialog Styles */
+.profile-page__dialog {
+  background-color: #000019 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 15px !important;
+  padding: 20px !important;
+  max-width: 90vw !important;
+  width: 100% !important;
+}
+
+.profile-page__dialog-title {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 24px;
+  color: #FFFFFF !important;
+  margin: 0 0 8px 0 !important;
+}
+
+.profile-page__dialog-title--danger {
+  color: #FF6B35 !important;
+}
+
+.profile-page__dialog-description {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FFFFFF !important;
+  opacity: 0.8;
+  margin: 0 0 20px 0 !important;
+}
+
+.profile-page__dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-page__dialog-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.profile-page__dialog-button {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.profile-page__dialog-button--cancel {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+}
+
+.profile-page__dialog-button--cancel:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.profile-page__dialog-button--submit {
+  background-color: #D9D9D9;
+  color: #000000;
+}
+
+.profile-page__dialog-button--submit:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.profile-page__dialog-button--submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile-page__dialog-button--danger {
+  background-color: #FF6B35;
+  color: #FFFFFF;
+}
+
+.profile-page__dialog-button--danger:hover:not(:disabled) {
+  background-color: #ff8555;
+}
+
+.profile-page__dialog-button--danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

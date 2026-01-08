@@ -6,15 +6,13 @@
 import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft, User, Lock, Shield, Trash2, Save, Phone, Mail, MapPin } from 'lucide-react';
+import { User, Lock, Shield, Trash2, Save, Phone, Mail, MapPin } from 'lucide-react';
 import { useNavigate } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useProfile, useUpdateProfile, useChangePassword, useDeleteAccount } from '@/lib/hooks/use-profile';
 import { profileUpdateSchema, changePasswordSchema } from '@/lib/schemas/profile';
 import type { ProfileUpdateFormData, ChangePasswordFormData } from '@/lib/schemas/profile';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import arrowBackIcon from '@/figma/arrow-back.svg';
 
 export function ProfilePage() {
   const navigate = useNavigate();
@@ -79,17 +77,30 @@ export function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-4 max-w-4xl">
-        <div className="flex items-center gap-4 mb-6">
-          <Button variant="ghost" size="icon" onClick={handleBack}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Профиль</h1>
+      <div className="profile-page">
+        <div className="profile-page__header">
+          <div className="profile-page__header-floating">
+            <button 
+              className="profile-page__back-button"
+              onClick={handleBack}
+              aria-label="Назад"
+            >
+              <img 
+                src={arrowBackIcon} 
+                alt="Назад" 
+                className="profile-page__back-button-icon"
+              />
+            </button>
+            <div className="profile-page__header-title-container">
+              <h1 className="profile-page__header-name">Профиль</h1>
+            </div>
+          </div>
         </div>
-        <div className="space-y-6">
-          {[...Array(3)].map((_, i) => (
-            <Skeleton key={i} className="h-32 w-full rounded-lg" />
-          ))}
+        <div className="profile-page__content">
+          <div className="profile-page__loading">
+            <span className="profile-page__spinner" />
+            <p className="profile-page__loading-text">Загрузка профиля...</p>
+          </div>
         </div>
       </div>
     );
@@ -97,271 +108,339 @@ export function ProfilePage() {
 
   if (error) {
     return (
-      <div className="container mx-auto p-4 max-w-4xl text-center text-red-500">
-        <p>Ошибка загрузки профиля: {error.message}</p>
-        <Button onClick={handleBack} className="mt-4">
-          Вернуться назад
-        </Button>
+      <div className="profile-page">
+        <div className="profile-page__header">
+          <div className="profile-page__header-floating">
+            <button 
+              className="profile-page__back-button"
+              onClick={handleBack}
+              aria-label="Назад"
+            >
+              <img 
+                src={arrowBackIcon} 
+                alt="Назад" 
+                className="profile-page__back-button-icon"
+              />
+            </button>
+            <div className="profile-page__header-title-container">
+              <h1 className="profile-page__header-name">Профиль</h1>
+            </div>
+          </div>
+        </div>
+        <div className="profile-page__content">
+          <div className="profile-page__error">
+            <p className="profile-page__error-text">Ошибка загрузки профиля: {error.message}</p>
+            <button 
+              className="profile-page__error-button"
+              onClick={handleBack}
+            >
+              Вернуться назад
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="container mx-auto p-4 max-w-4xl text-center">
-        <p className="text-gray-600 dark:text-gray-400">Профиль не найден</p>
-        <Button onClick={handleBack} className="mt-4">
-          Вернуться назад
-        </Button>
+      <div className="profile-page">
+        <div className="profile-page__header">
+          <div className="profile-page__header-floating">
+            <button 
+              className="profile-page__back-button"
+              onClick={handleBack}
+              aria-label="Назад"
+            >
+              <img 
+                src={arrowBackIcon} 
+                alt="Назад" 
+                className="profile-page__back-button-icon"
+              />
+            </button>
+            <div className="profile-page__header-title-container">
+              <h1 className="profile-page__header-name">Профиль</h1>
+            </div>
+          </div>
+        </div>
+        <div className="profile-page__content">
+          <div className="profile-page__empty">
+            <p className="profile-page__empty-text">Профиль не найден</p>
+            <button 
+              className="profile-page__empty-button"
+              onClick={handleBack}
+            >
+              Вернуться назад
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl pb-20">
+    <div className="profile-page">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="icon" onClick={handleBack}>
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Профиль</h1>
-      </div>
-
-      {/* Основная информация */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center">
-            <User className="w-8 h-8 text-white" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{profile.name}</h2>
-            <p className="text-gray-600 dark:text-gray-400">{profile.email}</p>
-            {profile.is_business && (
-              <span className="inline-block mt-1 px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 text-xs rounded-full">
-                Бизнес-аккаунт
-              </span>
-            )}
+      <div className="profile-page__header">
+        <div className="profile-page__header-floating">
+          <button 
+            className="profile-page__back-button"
+            onClick={handleBack}
+            aria-label="Назад"
+          >
+            <img 
+              src={arrowBackIcon} 
+              alt="Назад" 
+              className="profile-page__back-button-icon"
+            />
+          </button>
+          <div className="profile-page__header-title-container">
+            <h1 className="profile-page__header-name">Профиль</h1>
           </div>
         </div>
+      </div>
 
-        <FormProvider {...profileMethods}>
-          <form onSubmit={profileMethods.handleSubmit(onProfileSubmit)} className="space-y-4">
-            {/* Имя */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                <User className="w-4 h-4 inline mr-2" />
-                Имя
-              </label>
-              <Input
-                {...profileMethods.register('name')}
-                placeholder="Ваше имя"
-                className="w-full"
-              />
-              {profileMethods.formState.errors.name && (
-                <p className="text-red-500 text-sm mt-1">
-                  {profileMethods.formState.errors.name.message}
-                </p>
+      {/* Content */}
+      <div className="profile-page__content">
+        {/* Основная информация */}
+        <div className="profile-page__section">
+          <div className="profile-page__user-info">
+            <div className="profile-page__user-avatar">
+              <User className="profile-page__user-icon" />
+            </div>
+            <div className="profile-page__user-details">
+              <h2 className="profile-page__user-name">{profile.name}</h2>
+              <p className="profile-page__user-email">{profile.email}</p>
+              {profile.is_business && (
+                <span className="profile-page__business-badge">
+                  Бизнес-аккаунт
+                </span>
               )}
             </div>
+          </div>
 
-            {/* Email (только для отображения) */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                <Mail className="w-4 h-4 inline mr-2" />
-                Email
-              </label>
-              <Input
-                value={profile.email}
-                disabled
-                className="w-full bg-gray-100 dark:bg-gray-700"
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Email нельзя изменить
-              </p>
-            </div>
-
-            {/* Телефон */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                <Phone className="w-4 h-4 inline mr-2" />
-                Телефон
-              </label>
-              <Input
-                {...profileMethods.register('phone')}
-                type="tel"
-                placeholder="+7 (999) 123-45-67"
-                className="w-full"
-              />
-              {profileMethods.formState.errors.phone && (
-                <p className="text-red-500 text-sm mt-1">
-                  {profileMethods.formState.errors.phone.message}
-                </p>
-              )}
-            </div>
-
-            {/* Адрес */}
-            {profile.is_business && (
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  <MapPin className="w-4 h-4 inline mr-2" />
-                  Адрес
+          <FormProvider {...profileMethods}>
+            <form onSubmit={profileMethods.handleSubmit(onProfileSubmit)} className="profile-page__form">
+              {/* Имя */}
+              <div className="profile-page__field">
+                <label className="profile-page__field-label">
+                  <User className="profile-page__field-icon" />
+                  Имя
                 </label>
-                <Input
-                  {...profileMethods.register('address')}
-                  placeholder="Адрес вашего заведения"
-                  className="w-full"
+                <input
+                  {...profileMethods.register('name')}
+                  type="text"
+                  placeholder="Ваше имя"
+                  className="profile-page__input"
                 />
-                {profileMethods.formState.errors.address && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {profileMethods.formState.errors.address.message}
+                {profileMethods.formState.errors.name && (
+                  <p className="profile-page__error-message">
+                    {profileMethods.formState.errors.name.message}
                   </p>
                 )}
               </div>
-            )}
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={updateProfileMutation.isPending}
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {updateProfileMutation.isPending ? 'Сохранение...' : 'Сохранить изменения'}
-            </Button>
-          </form>
-        </FormProvider>
-      </div>
+              {/* Email (только для отображения) */}
+              <div className="profile-page__field">
+                <label className="profile-page__field-label">
+                  <Mail className="profile-page__field-icon" />
+                  Email
+                </label>
+                <input
+                  value={profile.email}
+                  disabled
+                  className="profile-page__input profile-page__input--disabled"
+                />
+                <p className="profile-page__field-hint">
+                  Email нельзя изменить
+                </p>
+              </div>
 
-      {/* Безопасность */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-          <Lock className="w-5 h-5 mr-2" />
-          Безопасность
-        </h2>
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={() => setShowPasswordDialog(true)}
-        >
-          Изменить пароль
-        </Button>
-      </div>
+              {/* Телефон */}
+              <div className="profile-page__field">
+                <label className="profile-page__field-label">
+                  <Phone className="profile-page__field-icon" />
+                  Телефон
+                </label>
+                <input
+                  {...profileMethods.register('phone')}
+                  type="tel"
+                  placeholder="+7 (999) 123-45-67"
+                  className="profile-page__input"
+                />
+                {profileMethods.formState.errors.phone && (
+                  <p className="profile-page__error-message">
+                    {profileMethods.formState.errors.phone.message}
+                  </p>
+                )}
+              </div>
 
-      {/* Согласия */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-          <Shield className="w-5 h-5 mr-2" />
-          Согласия
-        </h2>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <span className="text-sm text-gray-700 dark:text-gray-300">Оферта</span>
-            <span className={`text-sm font-semibold ${profile.terms_accepted ? 'text-green-600' : 'text-gray-400'}`}>
-              {profile.terms_accepted ? '✓ Принято' : '✗ Не принято'}
-            </span>
-          </div>
-          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <span className="text-sm text-gray-700 dark:text-gray-300">Обработка персональных данных</span>
-            <span className={`text-sm font-semibold ${profile.privacy_accepted ? 'text-green-600' : 'text-gray-400'}`}>
-              {profile.privacy_accepted ? '✓ Принято' : '✗ Не принято'}
-            </span>
+              {/* Адрес */}
+              {profile.is_business && (
+                <div className="profile-page__field">
+                  <label className="profile-page__field-label">
+                    <MapPin className="profile-page__field-icon" />
+                    Адрес
+                  </label>
+                  <input
+                    {...profileMethods.register('address')}
+                    type="text"
+                    placeholder="Адрес вашего заведения"
+                    className="profile-page__input"
+                  />
+                  {profileMethods.formState.errors.address && (
+                    <p className="profile-page__error-message">
+                      {profileMethods.formState.errors.address.message}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="profile-page__save-button"
+                disabled={updateProfileMutation.isPending}
+              >
+                <Save className="profile-page__save-icon" />
+                {updateProfileMutation.isPending ? 'Сохранение...' : 'Сохранить изменения'}
+              </button>
+            </form>
+          </FormProvider>
+        </div>
+
+        {/* Безопасность */}
+        <div className="profile-page__section">
+          <h2 className="profile-page__section-title">
+            <Lock className="profile-page__section-icon" />
+            Безопасность
+          </h2>
+          <button
+            className="profile-page__action-button"
+            onClick={() => setShowPasswordDialog(true)}
+          >
+            Изменить пароль
+          </button>
+        </div>
+
+        {/* Согласия */}
+        <div className="profile-page__section">
+          <h2 className="profile-page__section-title">
+            <Shield className="profile-page__section-icon" />
+            Согласия
+          </h2>
+          <div className="profile-page__agreements">
+            <div className="profile-page__agreement-item">
+              <span className="profile-page__agreement-label">Оферта</span>
+              <span className={`profile-page__agreement-status ${profile.terms_accepted ? 'profile-page__agreement-status--accepted' : ''}`}>
+                {profile.terms_accepted ? '✓ Принято' : '✗ Не принято'}
+              </span>
+            </div>
+            <div className="profile-page__agreement-divider"></div>
+            <div className="profile-page__agreement-item">
+              <span className="profile-page__agreement-label">Обработка персональных данных</span>
+              <span className={`profile-page__agreement-status ${profile.privacy_accepted ? 'profile-page__agreement-status--accepted' : ''}`}>
+                {profile.privacy_accepted ? '✓ Принято' : '✗ Не принято'}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Опасная зона */}
-      <div className="bg-red-50 dark:bg-red-900/20 rounded-2xl p-6 border border-red-200 dark:border-red-800">
-        <h2 className="text-lg font-bold text-red-700 dark:text-red-400 mb-4 flex items-center">
-          <Trash2 className="w-5 h-5 mr-2" />
-          Опасная зона
-        </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          Удаление аккаунта необратимо. Все ваши данные будут удалены безвозвратно.
-        </p>
-        <Button
-          variant="outline"
-          className="w-full border-red-300 dark:border-red-700 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50"
-          onClick={() => setShowDeleteDialog(true)}
-        >
-          <Trash2 className="w-4 h-4 mr-2" />
-          Удалить аккаунт
-        </Button>
+        {/* Опасная зона */}
+        <div className="profile-page__section profile-page__section--danger">
+          <h2 className="profile-page__section-title profile-page__section-title--danger">
+            <Trash2 className="profile-page__section-icon" />
+            Опасная зона
+          </h2>
+          <p className="profile-page__danger-text">
+            Удаление аккаунта необратимо. Все ваши данные будут удалены безвозвратно.
+          </p>
+          <button
+            className="profile-page__danger-button"
+            onClick={() => setShowDeleteDialog(true)}
+          >
+            <Trash2 className="profile-page__danger-icon" />
+            Удалить аккаунт
+          </button>
+        </div>
       </div>
 
       {/* Dialog: Изменение пароля */}
       <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-        <DialogContent>
+        <DialogContent className="profile-page__dialog">
           <DialogHeader>
-            <DialogTitle>Изменить пароль</DialogTitle>
-            <DialogDescription id="dialog-description">
+            <DialogTitle className="profile-page__dialog-title">Изменить пароль</DialogTitle>
+            <DialogDescription className="profile-page__dialog-description">
               Введите текущий пароль и новый пароль
             </DialogDescription>
           </DialogHeader>
           <FormProvider {...passwordMethods}>
-            <form onSubmit={passwordMethods.handleSubmit(onPasswordSubmit)} className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            <form onSubmit={passwordMethods.handleSubmit(onPasswordSubmit)} className="profile-page__dialog-form">
+              <div className="profile-page__field">
+                <label className="profile-page__field-label">
                   Текущий пароль
                 </label>
-                <Input
+                <input
                   {...passwordMethods.register('currentPassword')}
                   type="password"
                   placeholder="Введите текущий пароль"
+                  className="profile-page__input"
                 />
                 {passwordMethods.formState.errors.currentPassword && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="profile-page__error-message">
                     {passwordMethods.formState.errors.currentPassword.message}
                   </p>
                 )}
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <div className="profile-page__field">
+                <label className="profile-page__field-label">
                   Новый пароль
                 </label>
-                <Input
+                <input
                   {...passwordMethods.register('newPassword')}
                   type="password"
                   placeholder="Введите новый пароль"
+                  className="profile-page__input"
                 />
                 {passwordMethods.formState.errors.newPassword && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="profile-page__error-message">
                     {passwordMethods.formState.errors.newPassword.message}
                   </p>
                 )}
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <div className="profile-page__field">
+                <label className="profile-page__field-label">
                   Подтвердите новый пароль
                 </label>
-                <Input
+                <input
                   {...passwordMethods.register('confirmPassword')}
                   type="password"
                   placeholder="Введите новый пароль еще раз"
+                  className="profile-page__input"
                 />
                 {passwordMethods.formState.errors.confirmPassword && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="profile-page__error-message">
                     {passwordMethods.formState.errors.confirmPassword.message}
                   </p>
                 )}
               </div>
 
-              <div className="flex gap-3">
-                <Button
+              <div className="profile-page__dialog-actions">
+                <button
                   type="button"
-                  variant="outline"
-                  className="flex-1"
+                  className="profile-page__dialog-button profile-page__dialog-button--cancel"
                   onClick={() => setShowPasswordDialog(false)}
                 >
                   Отмена
-                </Button>
-                <Button
+                </button>
+                <button
                   type="submit"
-                  className="flex-1"
+                  className="profile-page__dialog-button profile-page__dialog-button--submit"
                   disabled={changePasswordMutation.isPending}
                 >
                   {changePasswordMutation.isPending ? 'Сохранение...' : 'Изменить'}
-                </Button>
+                </button>
               </div>
             </form>
           </FormProvider>
@@ -370,48 +449,48 @@ export function ProfilePage() {
 
       {/* Dialog: Удаление аккаунта */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent>
+        <DialogContent className="profile-page__dialog">
           <DialogHeader>
-            <DialogTitle className="text-red-700 dark:text-red-400">
+            <DialogTitle className="profile-page__dialog-title profile-page__dialog-title--danger">
               Удалить аккаунт?
             </DialogTitle>
-            <DialogDescription id="dialog-description-delete">
+            <DialogDescription className="profile-page__dialog-description">
               Это действие необратимо. Все ваши данные будут удалены безвозвратно.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          <div className="profile-page__dialog-form">
+            <div className="profile-page__field">
+              <label className="profile-page__field-label">
                 Введите ваш пароль для подтверждения
               </label>
-              <Input
+              <input
                 type="password"
                 placeholder="Пароль"
                 value={deletePassword}
                 onChange={(e) => setDeletePassword(e.target.value)}
+                className="profile-page__input"
               />
             </div>
 
-            <div className="flex gap-3">
-              <Button
+            <div className="profile-page__dialog-actions">
+              <button
                 type="button"
-                variant="outline"
-                className="flex-1"
+                className="profile-page__dialog-button profile-page__dialog-button--cancel"
                 onClick={() => {
                   setShowDeleteDialog(false);
                   setDeletePassword('');
                 }}
               >
                 Отмена
-              </Button>
-              <Button
+              </button>
+              <button
                 type="button"
-                className="flex-1 bg-red-600 hover:bg-red-700"
+                className="profile-page__dialog-button profile-page__dialog-button--danger"
                 onClick={handleDeleteAccount}
                 disabled={!deletePassword || deleteAccountMutation.isPending}
               >
                 {deleteAccountMutation.isPending ? 'Удаление...' : 'Удалить'}
-              </Button>
+              </button>
             </div>
           </div>
         </DialogContent>
