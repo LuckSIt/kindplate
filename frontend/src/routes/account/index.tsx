@@ -12,6 +12,7 @@ import { WaitlistSubscriptionsManager } from "@/components/ui/waitlist-subscript
 import { SocialLinks } from "@/components/landing/SocialLinks";
 import { QRCodeDisplay } from "@/components/ui/qr-code-display";
 import { loadDietPreferences, saveDietPreferences, DIET_OPTIONS, CUISINE_OPTIONS, ALLERGEN_OPTIONS } from "@/lib/diet-preferences";
+import arrowBackIcon from "@/figma/arrow-back.svg";
 
 export const Route = createFileRoute("/account/")({
     component: RouteComponent,
@@ -233,161 +234,132 @@ function RouteComponent() {
         });
         
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-primary-50 pb-20">
+            <div className="orders-page">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-primary to-primary-light text-white px-4 py-6 shadow-lg sticky top-0 z-10">
-                    <div className="flex items-center gap-3 mb-2">
+                <div className="orders-page__header">
+                    <div className="orders-page__header-floating">
                         <button 
+                            className="orders-page__back-button"
                             onClick={() => setShowOrders(false)}
-                            className="p-2 hover:bg-white/20 rounded-full transition-colors"
+                            aria-label="Назад"
                         >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
+                            <img 
+                                src={arrowBackIcon} 
+                                alt="Назад" 
+                                className="orders-page__back-button-icon"
+                            />
                         </button>
-                        <div>
-                            <h1 className="text-2xl font-bold flex items-center gap-2">
-                                <span>📋</span>
-                                Мои заказы
-                            </h1>
-                            <p className="text-primary-100 text-sm">{orders.length} заказов</p>
+                        <div className="orders-page__header-title-container">
+                            <h1 className="orders-page__header-name">Мои заказы</h1>
                         </div>
                     </div>
                 </div>
 
-                {/* Orders List */}
-                <div className="p-4 space-y-4">
+                {/* Content */}
+                <div className="orders-page__content">
+                    <div className="orders-page__count">
+                        {orders.length} {orders.length === 1 ? 'заказ' : orders.length < 5 ? 'заказа' : 'заказов'}
+                    </div>
+
                     {ordersLoading && (
-                        <div className="text-center py-12">
-                            <svg className="mx-auto mb-4 animate-spin" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="#00190033" strokeWidth="3" />
-                                <path d="M12 2a10 10 0 0 1 10 10" stroke="#001900" strokeWidth="3" strokeLinecap="round" />
-                            </svg>
-                            <p className="text-gray-600 dark:text-gray-300">Загружаем заказы...</p>
+                        <div className="orders-page__loading">
+                            <div className="w-5 h-5 animate-spin" style={{ 
+                                border: '2px solid rgba(217, 217, 217, 0.3)', 
+                                borderTopColor: '#D9D9D9', 
+                                borderRadius: '50%' 
+                            }}></div>
+                            <p>Загружаем заказы...</p>
                         </div>
                     )}
 
                     {!ordersLoading && orders.length === 0 && (
-                        <div className="text-center py-12">
-                            <span className="text-6xl block mb-4">🛒</span>
-                            <p className="text-gray-600 dark:text-gray-300 text-lg mb-2">Заказов пока нет</p>
-                            <p className="text-gray-400 mb-6">Создайте первый заказ на карте!</p>
-                            <Button
+                        <div className="orders-page__empty">
+                            <p>Заказов пока нет</p>
+                            <p className="orders-page__empty-subtitle">Создайте первый заказ на карте!</p>
+                            <button 
+                                className="orders-page__empty-button"
                                 onClick={() => navigate({ to: "/home" })}
-                                className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary"
                             >
                                 Перейти к карте
-                            </Button>
+                            </button>
                         </div>
                     )}
 
-                    {orders.map((order: Order) => {
-                        const statusInfo = getStatusInfo(order.status);
-                        const canCancel = order.status === 'pending' || order.status === 'confirmed';
-                        
-                        return (
-                            <div key={order.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-                                {/* Header */}
-                                <div className="bg-gradient-to-r from-primary to-primary-light text-white px-4 py-3">
-                                    <div className="flex justify-between items-center">
-                                        <div>
-                                            <div className="text-xs opacity-90">Заказ #{order.id}</div>
-                                            <div className="font-bold text-lg">{order.business_name}</div>
-                                        </div>
-                                        <span className={`${statusInfo.color} px-3 py-1 rounded-full text-xs font-bold`}>
-                                            {statusInfo.icon} {statusInfo.text}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Content */}
-                                <div className="p-4 space-y-3">
-                                    {/* Offer Info */}
-                                    <div className="flex gap-3">
-                                        <div className="w-20 h-20 bg-gradient-to-br from-primary-200 to-primary-300 rounded-xl flex items-center justify-center text-4xl flex-shrink-0">
-                                            🍽️
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h3 className="font-bold text-gray-900 dark:text-white mb-1">{order.title}</h3>
-                                            {order.description && (
-                                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{order.description}</p>
-                                            )}
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                                                    x{order.quantity}
-                                                </span>
-                                                <span className="text-lg font-bold text-primary">
-                                                    {order.total_price}₽
-                                                </span>
+                    {!ordersLoading && orders.length > 0 && (
+                        <div className="orders-page__list">
+                            {orders.map((order: Order) => {
+                                const statusInfo = getStatusInfo(order.status);
+                                const canCancel = order.status === 'pending' || order.status === 'confirmed';
+                                
+                                return (
+                                    <div key={order.id} className="orders-page__order-card">
+                                        <div className="orders-page__order-header">
+                                            <div className="orders-page__order-number">Заказ #{order.id}</div>
+                                            <div className="orders-page__order-status" style={{ 
+                                                color: order.status === 'draft' ? '#FF6B35' : '#FFFFFF' 
+                                            }}>
+                                                {statusInfo.icon} {statusInfo.text}
                                             </div>
                                         </div>
-                                    </div>
+                                        
+                                        <div className="orders-page__order-business">
+                                            {order.business_name}
+                                        </div>
 
-                                    {/* Время самовывоза */}
-                                    <div className="bg-gradient-to-br from-primary-50 to-primary-100 border-2 border-primary-200 rounded-xl p-3">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <div className="text-xs text-gray-600 dark:text-gray-300 mb-1">Время самовывоза</div>
-                                                <div className="text-sm font-semibold text-blue-600">
+                                        <div className="orders-page__order-item">
+                                            <div className="orders-page__order-item-name">{order.title}</div>
+                                            <div className="orders-page__order-item-quantity">
+                                                x{order.quantity} {order.total_price}₽
+                                            </div>
+                                        </div>
+
+                                        {order.pickup_time_start && order.pickup_time_end && (
+                                            <div className="orders-page__pickup-window">
+                                                <div className="orders-page__pickup-window-label">Время самовывоза</div>
+                                                <div className="orders-page__pickup-window-time">
                                                     {order.pickup_time_start} - {order.pickup_time_end}
                                                 </div>
                                             </div>
+                                        )}
+
+                                        {/* QR Code Display */}
+                                        {['paid', 'ready_for_pickup'].includes(order.status) && (
+                                            <div className="orders-page__qr-section">
+                                                <QRCodeDisplay 
+                                                    orderId={order.id} 
+                                                    orderStatus={order.status}
+                                                />
+                                            </div>
+                                        )}
+
+                                        {/* Actions */}
+                                        <div className="orders-page__actions">
+                                            {canCancel && (
+                                                <button
+                                                    className="orders-page__cancel-button"
+                                                    onClick={() => {
+                                                        if (confirm('Вы уверены что хотите отменить заказ?')) {
+                                                            cancelOrder(order.id);
+                                                        }
+                                                    }}
+                                                >
+                                                    Отменить заказ
+                                                </button>
+                                            )}
+                                            {order.status === 'completed' && (
+                                                <button
+                                                    className="orders-page__review-button"
+                                                    onClick={() => handleOpenReviewDialog(order)}
+                                                >
+                                                    ⭐ Оставить отзыв
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
-
-                                    {/* Address */}
-                                    <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
-                                        <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                        <span>{order.business_address}</span>
-                                    </div>
-
-                                    {/* Date */}
-                                    <div className="text-xs text-gray-500">
-                                        Создан: {new Date(order.created_at).toLocaleString('ru-RU')}
-                                    </div>
-
-                                    {/* QR Code Display */}
-                                    {['paid', 'ready_for_pickup'].includes(order.status) && (
-                                        <div className="mt-4">
-                                            <QRCodeDisplay 
-                                                orderId={order.id} 
-                                                orderStatus={order.status}
-                                            />
-                                        </div>
-                                    )}
-
-                                    {/* Actions */}
-                                    <div className="flex gap-2">
-                                        {canCancel && (
-                                            <Button
-                                                onClick={() => {
-                                                    if (confirm('Вы уверены что хотите отменить заказ?')) {
-                                                        cancelOrder(order.id);
-                                                    }
-                                                }}
-                                                variant="outline"
-                                                className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
-                                            >
-                                                Отменить заказ
-                                            </Button>
-                                        )}
-                                        {order.status === 'completed' && (
-                                            <Button
-                                                onClick={() => handleOpenReviewDialog(order)}
-                                                variant="outline"
-                                                className="flex-1 border-yellow-300 text-yellow-600 hover:bg-yellow-50"
-                                            >
-                                                ⭐ Оставить отзыв
-                                            </Button>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
             </div>
         );
