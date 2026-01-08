@@ -246,18 +246,16 @@ function OfferSummary({
         : 0;
     
     return (
-        <div className={`bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border ${
-            is_active ? 'border-gray-100 hover:border-primary-200' : 'border-gray-300 bg-gray-50'
-        }`}>
-            <div className="flex items-start gap-4">
+        <div className={`panel-page__offer-card ${!is_active ? 'panel-page__offer-card--inactive' : ''}`}>
+            <div className="panel-page__offer-content">
                 {/* Photo */}
-                <div className="flex-shrink-0">
+                <div className="panel-page__offer-photo">
                     {image_url ? (
-                        <div className="relative w-24 h-24 rounded-lg overflow-hidden">
+                        <div className="panel-page__offer-photo-container">
                             <img 
                                 src={`${getBackendURL()}${image_url}`} 
                                 alt={title}
-                                className="w-full h-full object-cover"
+                                className="panel-page__offer-photo-img"
                                 onError={(e) => {
                                     console.error('Ошибка загрузки изображения:', image_url);
                                     e.currentTarget.style.display = 'none';
@@ -265,9 +263,9 @@ function OfferSummary({
                             />
                             <label 
                                 htmlFor={`photo-${id}`}
-                                className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
+                                className="panel-page__offer-photo-overlay"
                             >
-                                <span className="text-white text-xs">Изменить</span>
+                                <span className="panel-page__offer-photo-overlay-text">Изменить</span>
                             </label>
                             <input 
                                 id={`photo-${id}`}
@@ -280,10 +278,10 @@ function OfferSummary({
                     ) : (
                         <label 
                             htmlFor={`photo-${id}`}
-                            className="w-24 h-24 rounded-lg bg-gradient-to-br from-primary-100 to-primary-200 flex flex-col items-center justify-center cursor-pointer hover:from-primary-200 hover:to-primary-300 transition-all border-2 border-dashed border-primary-300"
+                            className="panel-page__offer-photo-placeholder"
                         >
-                            <span className="text-2xl mb-1">📸</span>
-                            <span className="text-xs text-gray-600 dark:text-gray-300">Добавить</span>
+                            <span className="panel-page__offer-photo-placeholder-icon">📸</span>
+                            <span className="panel-page__offer-photo-placeholder-text">Добавить</span>
                             <input 
                                 id={`photo-${id}`}
                                 type="file"
@@ -295,81 +293,69 @@ function OfferSummary({
                     )}
                 </div>
                 
-                <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2 flex-wrap">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
+                <div className="panel-page__offer-info">
+                    <div className="panel-page__offer-header">
+                        <h3 className="panel-page__offer-title">{title}</h3>
                         {discount > 0 && (
-                            <span className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
+                            <span className="panel-page__offer-discount">
                                 -{discount}%
                             </span>
                         )}
                         <button
                             onClick={onToggleActive}
-                            className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold transition-all ${
-                                is_active 
-                                    ? 'bg-primary-100 text-primary-700 hover:bg-primary-200' 
-                                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                            }`}
+                            className={`panel-page__offer-status ${is_active ? 'panel-page__offer-status--active' : ''}`}
                             title={is_active ? "Деактивировать" : "Активировать"}
                         >
-                            <Power className="w-3 h-3" />
+                            <Power className="panel-page__offer-status-icon" />
                             {is_active ? 'Активно' : 'Неактивно'}
                         </button>
                     </div>
                     {description && (
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">{description}</p>
+                        <p className="panel-page__offer-description">{description}</p>
                     )}
-                    <div className="flex items-baseline gap-2 mb-3">
-                        <span className="text-xl font-bold text-primary">{discounted_price}₽</span>
-                        <span className="text-sm text-gray-400 line-through">{original_price}₽</span>
+                    <div className="panel-page__offer-price">
+                        <span className="panel-page__offer-price-current">{discounted_price}₽</span>
+                        <span className="panel-page__offer-price-old">{original_price}₽</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                        <Clock className="w-4 h-4 text-blue-600" />
+                    <div className="panel-page__offer-time">
+                        <Clock className="panel-page__offer-time-icon" />
                         <span>Самовывоз: {pickup_time_start} - {pickup_time_end}</span>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Button 
+                <div className="panel-page__offer-actions">
+                    <button 
+                        className="panel-page__offer-action-button panel-page__offer-action-button--decrease"
                         onClick={onDecreaseQuantity} 
                         disabled={quantity_available === 0 || !is_active}
-                        size="sm"
-                        variant="outline"
-                        className="hover:bg-red-50 hover:text-red-600 hover:border-red-300"
                     >
-                        <Minus className="w-4 h-4" />
-                    </Button>
-                    <div className="flex flex-col items-center justify-center w-16 px-2 py-1 bg-gray-100 rounded-lg">
-                        <span className="text-xs text-gray-500">порций</span>
-                        <span className="font-semibold text-gray-800">{quantity_available}</span>
+                        <Minus className="panel-page__offer-action-icon" />
+                    </button>
+                    <div className="panel-page__offer-quantity">
+                        <span className="panel-page__offer-quantity-label">порций</span>
+                        <span className="panel-page__offer-quantity-value">{quantity_available}</span>
                     </div>
-                    <Button 
+                    <button 
+                        className="panel-page__offer-action-button panel-page__offer-action-button--increase"
                         onClick={onIncreaseQuantity}
                         disabled={!is_active}
-                        size="sm"
-                        variant="outline"
-                        className="hover:bg-primary-50 hover:text-primary hover:border-primary-300"
                     >
-                        <Plus className="w-4 h-4" />
-                    </Button>
-                    <Button 
+                        <Plus className="panel-page__offer-action-icon" />
+                    </button>
+                    <button 
+                        className="panel-page__offer-action-button panel-page__offer-action-button--edit"
                         onClick={onEdit}
-                        size="sm"
-                        variant="ghost"
-                        className="ml-2 hover:bg-blue-50 hover:text-blue-600"
                         title="Редактировать"
                     >
-                        <Edit className="w-4 h-4" />
-                    </Button>
+                        <Edit className="panel-page__offer-action-icon" />
+                    </button>
                     {onSchedule && (
-                        <Button 
+                        <button 
+                            className="panel-page__offer-action-button panel-page__offer-action-button--schedule"
                             onClick={onSchedule}
-                            size="sm"
-                            variant="ghost"
-                            className="hover:bg-purple-50 hover:text-purple-600"
                             title="Расписание публикации"
                         >
                             📅
-                        </Button>
+                        </button>
                     )}
                 </div>
             </div>
@@ -389,31 +375,27 @@ interface OfferListProps {
 
 function OfferList({ offers, onIncrement, onDecrement, onEdit, onToggleActive, onPhotoUpload, onSchedule }: OfferListProps) {
     return (
-        <>
-            <div className="max-w-4xl mx-auto">
-                <div className="grid gap-4">
-                    {(offers || []).map((offer: Offer, i: number) => (
-                        <OfferSummary
-                            key={offer.id}
-                            {...offer}
-                            onIncreaseQuantity={() => onIncrement(i)}
-                            onDecreaseQuantity={() => onDecrement(i)}
-                            onEdit={() => onEdit(i)}
-                            onToggleActive={() => onToggleActive(i)}
-                            onPhotoUpload={(event) => onPhotoUpload(offer.id, event)}
-                            onSchedule={onSchedule ? () => onSchedule(offer.id) : undefined}
-                        />
-                    ))}
+        <div className="panel-page__offers-list">
+            {(offers || []).map((offer: Offer, i: number) => (
+                <OfferSummary
+                    key={offer.id}
+                    {...offer}
+                    onIncreaseQuantity={() => onIncrement(i)}
+                    onDecreaseQuantity={() => onDecrement(i)}
+                    onEdit={() => onEdit(i)}
+                    onToggleActive={() => onToggleActive(i)}
+                    onPhotoUpload={(event) => onPhotoUpload(offer.id, event)}
+                    onSchedule={onSchedule ? () => onSchedule(offer.id) : undefined}
+                />
+            ))}
+            {(!offers || offers.length === 0) && (
+                <div className="panel-page__empty">
+                    <span className="panel-page__empty-icon">📦</span>
+                    <p className="panel-page__empty-title">Предложений пока нет</p>
+                    <p className="panel-page__empty-subtitle">Добавьте первое предложение, чтобы начать привлекать клиентов!</p>
                 </div>
-                {(!offers || offers.length === 0) && (
-                    <div className="text-center py-12">
-                        <span className="text-5xl block mb-4">📦</span>
-                        <p className="text-gray-500 text-lg mb-4">Предложений пока нет</p>
-                        <p className="text-gray-400">Добавьте первое предложение, чтобы начать привлекать клиентов!</p>
-                    </div>
-                )}
-            </div>
-        </>
+            )}
+        </div>
     );
 }
 
@@ -472,19 +454,19 @@ function QRScannerButton({ onScanSuccess }: { onScanSuccess?: () => void }) {
 
     return (
         <>
-            <div className="mb-4 flex justify-center">
-                <Button
+            <div className="panel-page__qr-button-container">
+                <button
+                    className="panel-page__qr-button"
                     onClick={() => setIsOpen(true)}
-                    className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold px-6 py-3 text-lg"
                 >
                     📱 Сканировать QR-код для выдачи
-                </Button>
+                </button>
             </div>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent className="max-w-md">
+                <DialogContent className="panel-page__dialog">
                     <DialogHeader>
-                        <DialogTitle>Сканирование QR-кода</DialogTitle>
-                        <DialogDescription>
+                        <DialogTitle className="panel-page__dialog-title">Сканирование QR-кода</DialogTitle>
+                        <DialogDescription className="panel-page__dialog-description">
                             Отсканируйте QR-код клиента или введите код вручную
                         </DialogDescription>
                     </DialogHeader>
@@ -705,82 +687,73 @@ function RouteComponent() {
 
     return (
         <>
-            <div className="mb-8">
-                <div className="flex items-center gap-3 mb-4">
-                    <span className="text-4xl">🏪</span>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Панель управления</h1>
+        <div className="panel-page">
+            <div className="panel-page__header">
+                <div className="panel-page__header-content">
+                    <div className="panel-page__header-icon">🏪</div>
+                    <h1 className="panel-page__header-title">Панель управления</h1>
                 </div>
                 
                 {/* Tabs */}
-                <div className="grid grid-cols-4 gap-2 mb-6">
+                <div className="panel-page__tabs">
                     <button
                         onClick={() => setActiveTab('offers')}
-                        className={`py-3 px-4 rounded-xl font-bold transition-all ${
-                            activeTab === 'offers'
-                                ? 'bg-gradient-to-r from-primary to-primary-light text-white shadow-lg'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
+                        className={`panel-page__tab ${activeTab === 'offers' ? 'panel-page__tab--active' : ''}`}
                     >
                         🍽️ Предложения
                     </button>
                     <button
                         onClick={() => setActiveTab('orders')}
-                        className={`py-3 px-4 rounded-xl font-bold transition-all ${
-                            activeTab === 'orders'
-                                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
+                        className={`panel-page__tab ${activeTab === 'orders' ? 'panel-page__tab--active' : ''}`}
                     >
                         📋 Заказы
                     </button>
                     <button
                         onClick={() => setActiveTab('locations')}
-                        className={`py-3 px-4 rounded-xl font-bold transition-all ${
-                            activeTab === 'locations'
-                                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
+                        className={`panel-page__tab ${activeTab === 'locations' ? 'panel-page__tab--active' : ''}`}
                     >
                         📍 Локации
                     </button>
                     <button
                         onClick={() => setActiveTab('stats')}
-                        className={`py-3 px-4 rounded-xl font-bold transition-all ${
-                            activeTab === 'stats'
-                                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
+                        className={`panel-page__tab ${activeTab === 'stats' ? 'panel-page__tab--active' : ''}`}
                     >
                         📊 Статистика
                     </button>
                 </div>
+            </div>
+
+            <div className="panel-page__content">
 
                 {/* Offers Tab */}
                 {activeTab === 'offers' && (
-                    <div className="mt-2">
+                    <div className="panel-page__tab-content">
                     {areOffersLoading && (
-                        <div className="text-center py-12">
-                            <div className="w-5 h-5 animate-spin mx-auto mb-4" style={{ border: '2px solid rgba(22, 163, 74, 0.3)', borderTopColor: '#001900', borderRadius: '50%' }}></div>
-                            <p className="text-gray-600 dark:text-gray-300">Загружаем ваши предложения...</p>
+                        <div className="panel-page__loading">
+                            <span className="panel-page__spinner" />
+                            <p className="panel-page__loading-text">Загружаем ваши предложения...</p>
                         </div>
                     )}
                     {areOffersError && (
-                        <div className="text-center py-12">
-                            <span className="text-5xl block mb-4">❌</span>
-                            <p className="text-red-600 text-lg mb-2">Ошибка загрузки предложений</p>
-                            <p className="text-gray-500 mb-4">
+                        <div className="panel-page__error">
+                            <span className="panel-page__error-icon">❌</span>
+                            <p className="panel-page__error-title">Ошибка загрузки предложений</p>
+                            <p className="panel-page__error-message">
                                 {(offersError as AxiosError<{ message?: string }>)?.response?.data?.message || "Проверьте соединение и попробуйте обновить страницу"}
                             </p>
-                            <Button onClick={() => refetchOffers()} variant="outline">
+                            <button 
+                                className="panel-page__error-button"
+                                onClick={() => refetchOffers()}
+                            >
                                 Обновить
-                            </Button>
+                            </button>
                         </div>
                     )}
                     {!areOffersLoading && !areOffersError && !areOffersSuccessfullyLoaded && (
-                        <div className="text-center py-12">
-                            <span className="text-5xl block mb-4">❌</span>
-                            <p className="text-red-600 text-lg mb-2">Ошибка загрузки предложений</p>
-                            <p className="text-gray-500">Проверьте соединение и попробуйте обновить страницу</p>
+                        <div className="panel-page__error">
+                            <span className="panel-page__error-icon">❌</span>
+                            <p className="panel-page__error-title">Ошибка загрузки предложений</p>
+                            <p className="panel-page__error-message">Проверьте соединение и попробуйте обновить страницу</p>
                         </div>
                     )}
                     {areOffersSuccessfullyLoaded && (
@@ -826,8 +799,9 @@ function RouteComponent() {
                                     setScheduleDialogOpen(true);
                                 }}
                             />
-                            <div className="flex justify-center mt-8">
-                                <Button
+                            <div className="panel-page__add-button-container">
+                                <button
+                                    className="panel-page__add-button"
                                     onClick={() => {
                                         setDialogTargets({
                                             ...dialogTargets,
@@ -835,12 +809,10 @@ function RouteComponent() {
                                         });
                                         setDialogMode(DialogMode.CREATE);
                                     }}
-                                    size="lg"
-                                    className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3"
                                 >
-                                    <Plus className="w-5 h-5 mr-2" />
+                                    <Plus className="panel-page__add-button-icon" />
                                     Добавить новое предложение
-                                </Button>
+                                </button>
                             </div>
                         </>
                     )}
@@ -849,36 +821,39 @@ function RouteComponent() {
 
                 {/* Orders Tab */}
                 {activeTab === 'orders' && (
-                    <div className="mt-2">
+                    <div className="panel-page__tab-content">
                         {/* QR Scanner Button */}
                         <QRScannerButton onScanSuccess={() => refetchOrders()} />
                         {areOrdersLoading && (
-                            <div className="text-center py-12">
-                                <div className="w-5 h-5 animate-spin mx-auto mb-4" style={{ border: '2px solid rgba(37, 99, 235, 0.3)', borderTopColor: '#2563eb', borderRadius: '50%' }}></div>
-                                <p className="text-gray-600 dark:text-gray-300">Загружаем заказы...</p>
+                            <div className="panel-page__loading">
+                                <span className="panel-page__spinner" />
+                                <p className="panel-page__loading-text">Загружаем заказы...</p>
                             </div>
                         )}
 
                         {areOrdersError && (
-                            <div className="text-center py-12">
-                                <span className="text-5xl block mb-4">❌</span>
-                                <p className="text-red-600 text-lg mb-2">Ошибка загрузки заказов</p>
-                                <p className="text-gray-500 mb-4">
+                            <div className="panel-page__error">
+                                <span className="panel-page__error-icon">❌</span>
+                                <p className="panel-page__error-title">Ошибка загрузки заказов</p>
+                                <p className="panel-page__error-message">
                                     {(ordersError as AxiosError<{ message?: string }>)?.response?.data?.message || "Проверьте соединение и попробуйте обновить страницу"}
                                 </p>
-                                <Button onClick={() => refetchOrders()} variant="outline">
+                                <button 
+                                    className="panel-page__error-button"
+                                    onClick={() => refetchOrders()}
+                                >
                                     Обновить
-                                </Button>
+                                </button>
                             </div>
                         )}
 
                         {!areOrdersLoading && !areOrdersError && businessOrders && (
-                            <div className="max-w-4xl mx-auto space-y-4">
+                            <div className="panel-page__orders-list">
                                 {businessOrders.length === 0 ? (
-                                    <div className="text-center py-12">
-                                        <span className="text-5xl block mb-4">📦</span>
-                                        <p className="text-gray-500 text-lg mb-4">Заказов пока нет</p>
-                                        <p className="text-gray-400">Заказы появятся здесь после того как клиенты оформят их</p>
+                                    <div className="panel-page__empty">
+                                        <span className="panel-page__empty-icon">📦</span>
+                                        <p className="panel-page__empty-title">Заказов пока нет</p>
+                                        <p className="panel-page__empty-subtitle">Заказы появятся здесь после того как клиенты оформят их</p>
                                     </div>
                                 ) : (
                                     businessOrders.map((order: Order & { items?: { quantity: number; title: string }[]; customer_name?: string; pickup_code?: string }) => {
@@ -888,59 +863,57 @@ function RouteComponent() {
                                             : 1;
                                         
                                         return (
-                                            <div key={order.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 border border-gray-200 dark:border-gray-700">
+                                            <div key={order.id} className="panel-page__order-card">
                                                 {/* Header */}
-                                                <div className="flex justify-between items-start mb-4">
+                                                <div className="panel-page__order-header">
                                                     <div>
-                                                        <div className="text-sm text-gray-500">Заказ #{order.id}</div>
-                                                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">{order.title}</h3>
+                                                        <div className="panel-page__order-id">Заказ #{order.id}</div>
+                                                        <h3 className="panel-page__order-title">{order.title}</h3>
                                                         {order.customer_name && (
-                                                            <div className="text-sm text-gray-600 mt-1">
+                                                            <div className="panel-page__order-customer">
                                                                 Клиент: {order.customer_name}
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <span className={`${statusInfo.color} px-3 py-1 rounded-full text-sm font-bold`}>
+                                                    <span className={`panel-page__order-status panel-page__order-status--${order.status}`}>
                                                         {statusInfo.text}
                                                     </span>
                                                 </div>
 
                                                 {/* Order Details */}
-                                                <div className="grid grid-cols-2 gap-4 mb-4">
-                                                    <div className="bg-gray-50 rounded-lg p-3">
-                                                        <div className="text-xs text-gray-500 mb-1">Код выдачи</div>
-                                                        <div className="text-2xl font-bold text-primary tracking-wider">
+                                                <div className="panel-page__order-details">
+                                                    <div className="panel-page__order-detail-card">
+                                                        <div className="panel-page__order-detail-label">Код выдачи</div>
+                                                        <div className="panel-page__order-detail-code">
                                                             {order.pickup_code || '—'}
                                                         </div>
                                                     </div>
-                                                    <div className="bg-gray-50 rounded-lg p-3">
-                                                        <div className="text-xs text-gray-500 mb-1">Время самовывоза</div>
-                                                        <div className="text-base font-bold text-blue-600">
+                                                    <div className="panel-page__order-detail-card">
+                                                        <div className="panel-page__order-detail-label">Время самовывоза</div>
+                                                        <div className="panel-page__order-detail-time">
                                                             {order.pickup_time_start} - {order.pickup_time_end}
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                                                <div className="panel-page__order-summary">
                                                     <div>
-                                                        <span className="text-gray-600 dark:text-gray-300">Количество:</span>
-                                                        <span className="ml-2 font-bold">x{quantity}</span>
+                                                        <span className="panel-page__order-summary-label">Количество:</span>
+                                                        <span className="panel-page__order-summary-value">x{quantity}</span>
                                                     </div>
                                                     <div>
-                                                        <span className="text-gray-600 dark:text-gray-300">Сумма:</span>
-                                                        <span className="ml-2 text-xl font-bold text-primary">{order.total}₽</span>
+                                                        <span className="panel-page__order-summary-label">Сумма:</span>
+                                                        <span className="panel-page__order-summary-total">{(order as any).total || (order as any).discounted_price || 0}₽</span>
                                                     </div>
                                                 </div>
 
                                                 {/* Time */}
-                                                <div className="text-xs text-gray-500 mb-4">
+                                                <div className="panel-page__order-date">
                                                     Создан: {new Date(order.created_at).toLocaleString('ru-RU')}
                                                 </div>
 
                                                 {/* Actions */}
-                                                {/* Действия по изменению статуса сейчас выполняются автоматически
-                                                    (оплата, сканирование QR). Ручные кнопки временно отключены. */}
-                                                <div className="text-center text-gray-500 py-2 text-sm">
+                                                <div className="panel-page__order-note">
                                                     Статус обновляется автоматически (оплата и выдача заказа).
                                                 </div>
                                             </div>
@@ -964,88 +937,88 @@ function RouteComponent() {
                 )}
 
                 {activeTab === 'stats' && (
-                    <div className="mt-2">
+                    <div className="panel-page__tab-content">
                         {areStatsLoading && (
-                            <div className="text-center py-12">
-                                <div className="w-5 h-5 animate-spin mx-auto mb-4" style={{ border: '2px solid rgba(147, 51, 234, 0.3)', borderTopColor: '#9333ea', borderRadius: '50%' }}></div>
-                                <p className="text-gray-600 dark:text-gray-300">Загружаем статистику...</p>
+                            <div className="panel-page__loading">
+                                <span className="panel-page__spinner" />
+                                <p className="panel-page__loading-text">Загружаем статистику...</p>
                             </div>
                         )}
 
                         {areStatsError && (
-                            <div className="text-center py-12">
-                                <span className="text-5xl block mb-4">❌</span>
-                                <p className="text-red-600 text-lg mb-2">Ошибка загрузки статистики</p>
-                                <p className="text-gray-500">
+                            <div className="panel-page__error">
+                                <span className="panel-page__error-icon">❌</span>
+                                <p className="panel-page__error-title">Ошибка загрузки статистики</p>
+                                <p className="panel-page__error-message">
                                     {(statsError as AxiosError<{ message?: string }>)?.response?.data?.message || "Проверьте соединение и попробуйте обновить страницу"}
                                 </p>
                             </div>
                         )}
 
                         {!areStatsLoading && !areStatsError && statsData?.data?.stats && (
-                            <div className="max-w-4xl mx-auto space-y-6">
+                            <div className="panel-page__stats">
                                 {/* Main Stats Cards */}
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="panel-page__stats-grid">
                                     {/* Total Revenue */}
-                                    <div className="bg-gradient-to-br from-primary to-primary-light text-white rounded-2xl p-5 shadow-lg">
-                                        <div className="text-3xl mb-2">💰</div>
-                                        <div className="text-2xl font-bold">{statsData.data.stats.total_revenue}₽</div>
-                                        <div className="text-sm opacity-90">Общий доход</div>
+                                    <div className="panel-page__stat-card panel-page__stat-card--revenue">
+                                        <div className="panel-page__stat-icon">💰</div>
+                                        <div className="panel-page__stat-value">{statsData.data.stats.total_revenue}₽</div>
+                                        <div className="panel-page__stat-label">Общий доход</div>
                                     </div>
 
                                     {/* Total Orders */}
-                                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-5 shadow-lg">
-                                        <div className="text-3xl mb-2">📦</div>
-                                        <div className="text-2xl font-bold">{statsData.data.stats.orders_count}</div>
-                                        <div className="text-sm opacity-90">Всего заказов</div>
+                                    <div className="panel-page__stat-card panel-page__stat-card--orders">
+                                        <div className="panel-page__stat-icon">📦</div>
+                                        <div className="panel-page__stat-value">{statsData.data.stats.orders_count}</div>
+                                        <div className="panel-page__stat-label">Всего заказов</div>
                                     </div>
 
                                     {/* Completed Orders */}
-                                    <div className="bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-2xl p-5 shadow-lg">
-                                        <div className="text-3xl mb-2">✅</div>
-                                        <div className="text-2xl font-bold">{statsData.data.stats.completed_orders}</div>
-                                        <div className="text-sm opacity-90">Выполнено</div>
+                                    <div className="panel-page__stat-card panel-page__stat-card--completed">
+                                        <div className="panel-page__stat-icon">✅</div>
+                                        <div className="panel-page__stat-value">{statsData.data.stats.completed_orders}</div>
+                                        <div className="panel-page__stat-label">Выполнено</div>
                                     </div>
 
                                     {/* Unique Customers */}
-                                    <div className="bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-2xl p-5 shadow-lg">
-                                        <div className="text-3xl mb-2">👥</div>
-                                        <div className="text-2xl font-bold">{statsData.data.stats.unique_customers}</div>
-                                        <div className="text-sm opacity-90">Клиентов</div>
+                                    <div className="panel-page__stat-card panel-page__stat-card--customers">
+                                        <div className="panel-page__stat-icon">👥</div>
+                                        <div className="panel-page__stat-value">{statsData.data.stats.unique_customers}</div>
+                                        <div className="panel-page__stat-label">Клиентов</div>
                                     </div>
                                 </div>
 
                                 {/* Avg Check */}
-                                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-                                    <div className="flex items-center justify-between">
+                                <div className="panel-page__stats-section">
+                                    <div className="panel-page__avg-check">
                                         <div>
-                                            <div className="text-gray-600 dark:text-gray-300 mb-1">Средний чек</div>
-                                            <div className="text-4xl font-bold text-primary">{statsData.data.stats.avg_check}₽</div>
+                                            <div className="panel-page__avg-check-label">Средний чек</div>
+                                            <div className="panel-page__avg-check-value">{statsData.data.stats.avg_check}₽</div>
                                         </div>
-                                        <div className="text-6xl">💳</div>
+                                        <div className="panel-page__avg-check-icon">💳</div>
                                     </div>
                                 </div>
 
                                 {/* Top Offers */}
                                 {statsData.data.stats.top_offers.length > 0 && (
-                                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-                                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                                    <div className="panel-page__stats-section">
+                                        <h3 className="panel-page__stats-section-title">
                                             <span>🏆</span>
                                             Топ предложений
                                         </h3>
-                                        <div className="space-y-3">
+                                        <div className="panel-page__top-offers">
                                             {statsData.data.stats.top_offers.map((offer: any, index: number) => (
-                                                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className={`text-2xl ${index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}`}>
+                                                <div key={index} className="panel-page__top-offer-item">
+                                                    <div className="panel-page__top-offer-info">
+                                                        <div className="panel-page__top-offer-medal">
                                                             {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
                                                         </div>
                                                         <div>
-                                                            <div className="font-bold text-gray-900 dark:text-white">{offer.title}</div>
-                                                            <div className="text-sm text-gray-600 dark:text-gray-300">{offer.orders_count} заказов</div>
+                                                            <div className="panel-page__top-offer-title">{offer.title}</div>
+                                                            <div className="panel-page__top-offer-count">{offer.orders_count} заказов</div>
                                                         </div>
                                                     </div>
-                                                    <div className="text-lg font-bold text-primary">{offer.revenue}₽</div>
+                                                    <div className="panel-page__top-offer-revenue">{offer.revenue}₽</div>
                                                 </div>
                                             ))}
                                         </div>
@@ -1054,19 +1027,17 @@ function RouteComponent() {
 
                                 {/* Status Stats */}
                                 {statsData.data.stats.status_stats.length > 0 && (
-                                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-                                        <h3 className="text-xl font-bold mb-4">📊 Статусы заказов</h3>
-                                        <div className="space-y-2">
+                                    <div className="panel-page__stats-section">
+                                        <h3 className="panel-page__stats-section-title">📊 Статусы заказов</h3>
+                                        <div className="panel-page__status-stats">
                                             {statsData.data.stats.status_stats.map((stat: any) => {
                                                 const statusInfo = getStatusInfo(stat.status);
                                                 return (
-                                                    <div key={stat.status} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                                        <div className="flex items-center gap-2">
-                                                            <span className={`${statusInfo.color} px-3 py-1 rounded-full text-xs font-bold`}>
-                                                                {statusInfo.text}
-                                                            </span>
-                                                        </div>
-                                                        <div className="text-lg font-bold text-gray-700">{stat.count}</div>
+                                                    <div key={stat.status} className="panel-page__status-stat-item">
+                                                        <span className={`panel-page__status-stat-badge panel-page__status-stat-badge--${stat.status}`}>
+                                                            {statusInfo.text}
+                                                        </span>
+                                                        <div className="panel-page__status-stat-count">{stat.count}</div>
                                                     </div>
                                                 );
                                             })}
@@ -1076,26 +1047,26 @@ function RouteComponent() {
 
                                 {/* Chart - Last 7 Days */}
                                 {statsData.data.stats.chart_data.length > 0 && (
-                                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-                                        <h3 className="text-xl font-bold mb-4">📈 Продажи за неделю</h3>
-                                        <div className="space-y-3">
+                                    <div className="panel-page__stats-section">
+                                        <h3 className="panel-page__stats-section-title">📈 Продажи за неделю</h3>
+                                        <div className="panel-page__chart">
                                             {statsData.data.stats.chart_data.map((day: any, index: number) => {
                                                 const maxRevenue = Math.max(...statsData.data.stats.chart_data.map((d: any) => parseFloat(d.revenue)));
                                                 const width = maxRevenue > 0 ? (parseFloat(day.revenue) / maxRevenue) * 100 : 0;
                                                 
                                                 return (
-                                                    <div key={index}>
-                                                        <div className="flex justify-between text-sm mb-1">
-                                                            <span className="font-medium text-gray-700">{day.day}</span>
-                                                            <span className="text-gray-600 dark:text-gray-300">{day.orders} заказов • {day.revenue}₽</span>
+                                                    <div key={index} className="panel-page__chart-item">
+                                                        <div className="panel-page__chart-header">
+                                                            <span className="panel-page__chart-day">{day.day}</span>
+                                                            <span className="panel-page__chart-info">{day.orders} заказов • {day.revenue}₽</span>
                                                         </div>
-                                                        <div className="bg-gray-100 rounded-full h-8 overflow-hidden">
+                                                        <div className="panel-page__chart-bar">
                                                             <div 
-                                                                className="bg-gradient-to-r from-primary to-primary-light h-full rounded-full flex items-center justify-end pr-2 transition-all duration-500"
+                                                                className="panel-page__chart-bar-fill"
                                                                 style={{ width: `${width}%` }}
                                                             >
                                                                 {width > 20 && (
-                                                                    <span className="text-white text-xs font-bold">{day.revenue}₽</span>
+                                                                    <span className="panel-page__chart-bar-text">{day.revenue}₽</span>
                                                                 )}
                                                             </div>
                                                         </div>
@@ -1110,6 +1081,7 @@ function RouteComponent() {
                     </div>
                 )}
             </div>
+        </div>
 
             <CreateOfferDialog
                 open={dialogMode === DialogMode.CREATE}
@@ -1145,9 +1117,9 @@ function RouteComponent() {
             />
 
             {/* Диалог расписания оффера */}
-            {selectedOfferIdForSchedule && (
+            {selectedOfferIdForSchedule !== null && selectedOfferIdForSchedule !== undefined && (
                 <OfferScheduleDialog
-                    offerId={selectedOfferIdForSchedule}
+                    offerId={selectedOfferIdForSchedule as number}
                     open={scheduleDialogOpen}
                     onClose={() => {
                         setScheduleDialogOpen(false);
@@ -1155,6 +1127,7 @@ function RouteComponent() {
                     }}
                 />
             )}
+        </div>
         </>
     );
 }
