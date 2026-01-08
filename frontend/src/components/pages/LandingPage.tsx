@@ -115,7 +115,7 @@ export function LandingPage() {
         <div 
             className="w-full overflow-y-auto overflow-x-hidden"
             style={{ 
-                backgroundColor: '#0a0a0a',
+                backgroundColor: '#000019',
                 height: 'var(--app-height, 100vh)',
                 maxHeight: 'var(--app-height, 100vh)',
                 WebkitOverflowScrolling: 'touch',
