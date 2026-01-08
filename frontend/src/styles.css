@@ -7209,3 +7209,200 @@ div.font-montserrat-alt,
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+/* Panel Form Styles */
+.panel-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel-page__form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.panel-page__form-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 18px;
+  color: #FFFFFF;
+}
+
+.panel-page__form-input,
+.panel-page__form-textarea,
+.panel-page__form-select {
+  width: 100%;
+  padding: 12px 14px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FFFFFF;
+  transition: all 0.2s ease;
+}
+
+.panel-page__form-input::placeholder,
+.panel-page__form-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.panel-page__form-input:focus,
+.panel-page__form-textarea:focus,
+.panel-page__form-select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.panel-page__form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.panel-page__form-select {
+  cursor: pointer;
+}
+
+.panel-page__form-select option {
+  background-color: #000019;
+  color: #FFFFFF;
+}
+
+.panel-page__form-error {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: #FF6B35;
+  margin: 0;
+}
+
+.panel-page__form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.panel-page__form-section {
+  padding-top: 16px;
+  margin-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.panel-page__form-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.panel-page__form-section-icon {
+  width: 16px;
+  height: 16px;
+  color: #001900;
+}
+
+.panel-page__form-section-title {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 18px;
+  color: #FFFFFF;
+}
+
+.panel-page__form-hint {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 8px 0 0 0;
+}
+
+.panel-page__form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.panel-page__form-submit-button {
+  flex: 1;
+  padding: 12px 14px;
+  background-color: #D9D9D9;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  color: #000000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.panel-page__form-submit-button:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.panel-page__form-submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.panel-page__form-cancel-button {
+  padding: 12px 24px;
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.panel-page__form-cancel-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.panel-page__form-delete-button {
+  padding: 12px 24px;
+  background-color: transparent;
+  border: 1px solid rgba(255, 107, 53, 0.5);
+  border-radius: 10px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  color: #FF6B35;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.panel-page__form-delete-button:hover {
+  background-color: rgba(255, 107, 53, 0.1);
+  border-color: #FF6B35;
+}
+
+.panel-page__dialog--large {
+  max-width: 90vw !important;
+  width: 100% !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+}
+
+@media (min-width: 768px) {
+  .panel-page__dialog--large {
+    max-width: 600px !important;
+  }
+}

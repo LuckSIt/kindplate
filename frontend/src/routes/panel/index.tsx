@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { Minus, Plus, Edit, Clock, Power, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
     Dialog,
     DialogContent,
@@ -10,7 +8,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import InputWrapper from "@/components/form/inputWrapper";
 import { z } from "zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -113,57 +110,98 @@ function OfferPropertiesForm({ offer, onSave, children }: OfferPropertiesFormPro
         onSave(data);
     };
 
+    const { formState: { errors } } = methods;
+
     return (
         <FormProvider {...methods}>
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="flex flex-col gap-3"
+                className="panel-page__form"
             >
-                <InputWrapper title="Название предложения *" name="title">
-                    <Input {...register("title")} type="text" placeholder="Набор готовых блюд" />
-                </InputWrapper>
-                
-                <InputWrapper title="Описание" name="description">
-                    <Input 
-                        {...register("description")} 
-                        type="text" 
-                        placeholder="Свежие блюда с нашей кухни"
+                <div className="panel-page__form-field">
+                    <label className="panel-page__form-label">
+                        Название предложения *
+                    </label>
+                    <input
+                        {...register("title")}
+                        type="text"
+                        placeholder="Набор готовых блюд"
+                        className="panel-page__form-input"
                     />
-                </InputWrapper>
+                    {errors.title && (
+                        <p className="panel-page__form-error">{errors.title.message as string}</p>
+                    )}
+                </div>
+                
+                <div className="panel-page__form-field">
+                    <label className="panel-page__form-label">
+                        Описание
+                    </label>
+                    <textarea
+                        {...register("description")}
+                        placeholder="Свежие блюда с нашей кухни"
+                        className="panel-page__form-textarea"
+                        rows={3}
+                    />
+                    {errors.description && (
+                        <p className="panel-page__form-error">{errors.description.message as string}</p>
+                    )}
+                </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                    <InputWrapper title="Обычная цена *" name="original_price">
-                        <Input
+                <div className="panel-page__form-row">
+                    <div className="panel-page__form-field">
+                        <label className="panel-page__form-label">
+                            Обычная цена *
+                        </label>
+                        <input
                             {...register("original_price", { valueAsNumber: true })}
                             type="number"
                             placeholder="500"
+                            className="panel-page__form-input"
                         />
-                    </InputWrapper>
-                    <InputWrapper title="Цена со скидкой *" name="discounted_price">
-                        <Input
+                        {errors.original_price && (
+                            <p className="panel-page__form-error">{errors.original_price.message as string}</p>
+                        )}
+                    </div>
+                    <div className="panel-page__form-field">
+                        <label className="panel-page__form-label">
+                            Цена со скидкой *
+                        </label>
+                        <input
                             {...register("discounted_price", { valueAsNumber: true })}
                             type="number"
                             placeholder="200"
+                            className="panel-page__form-input"
                         />
-                    </InputWrapper>
+                        {errors.discounted_price && (
+                            <p className="panel-page__form-error">{errors.discounted_price.message as string}</p>
+                        )}
+                    </div>
                 </div>
 
-                <InputWrapper title="Количество порций *" name="quantity_available">
-                    <Input
+                <div className="panel-page__form-field">
+                    <label className="panel-page__form-label">
+                        Количество порций *
+                    </label>
+                    <input
                         {...register("quantity_available", { valueAsNumber: true })}
                         type="number"
                         placeholder="5"
+                        className="panel-page__form-input"
                     />
-                </InputWrapper>
+                    {errors.quantity_available && (
+                        <p className="panel-page__form-error">{errors.quantity_available.message as string}</p>
+                    )}
+                </div>
 
-                <div className="border-t pt-3 mt-2">
-                    <div className="flex items-center gap-2 mb-3">
-                        <MapPin className="w-4 h-4 text-green-600" />
-                        <span className="font-semibold text-sm text-gray-700">Локация</span>
+                <div className="panel-page__form-section">
+                    <div className="panel-page__form-section-header">
+                        <MapPin className="panel-page__form-section-icon" />
+                        <span className="panel-page__form-section-title">Локация</span>
                     </div>
                     <select
                         {...register("location_id", { valueAsNumber: true })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="panel-page__form-select"
                     >
                         <option value="">Основная локация (координаты бизнеса)</option>
                         {locations.map((loc: any) => (
@@ -172,29 +210,43 @@ function OfferPropertiesForm({ offer, onSave, children }: OfferPropertiesFormPro
                             </option>
                         ))}
                     </select>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="panel-page__form-hint">
                         Выберите локацию для этого оффера. Если не выбрано, будет использована основная локация бизнеса.
                     </p>
                 </div>
 
-                <div className="border-t pt-3 mt-2">
-                    <div className="flex items-center gap-2 mb-3">
-                        <Clock className="w-4 h-4 text-blue-600" />
-                        <span className="font-semibold text-sm text-gray-700">Время самовывоза</span>
+                <div className="panel-page__form-section">
+                    <div className="panel-page__form-section-header">
+                        <Clock className="panel-page__form-section-icon" />
+                        <span className="panel-page__form-section-title">Время самовывоза</span>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                        <InputWrapper title="С (время) *" name="pickup_time_start">
-                            <Input
+                    <div className="panel-page__form-row">
+                        <div className="panel-page__form-field">
+                            <label className="panel-page__form-label">
+                                С (время) *
+                            </label>
+                            <input
                                 {...register("pickup_time_start")}
                                 type="time"
+                                className="panel-page__form-input"
                             />
-                        </InputWrapper>
-                        <InputWrapper title="До (время) *" name="pickup_time_end">
-                            <Input
+                            {errors.pickup_time_start && (
+                                <p className="panel-page__form-error">{errors.pickup_time_start.message as string}</p>
+                            )}
+                        </div>
+                        <div className="panel-page__form-field">
+                            <label className="panel-page__form-label">
+                                До (время) *
+                            </label>
+                            <input
                                 {...register("pickup_time_end")}
                                 type="time"
+                                className="panel-page__form-input"
                             />
-                        </InputWrapper>
+                            {errors.pickup_time_end && (
+                                <p className="panel-page__form-error">{errors.pickup_time_end.message as string}</p>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -390,7 +442,7 @@ function OfferList({ offers, onIncrement, onDecrement, onEdit, onToggleActive, o
             ))}
             {(!offers || offers.length === 0) && (
                 <div className="panel-page__empty">
-                    <span className="panel-page__empty-icon">📦</span>
+                    <span className="panel-page__empty-icon"></span>
                     <p className="panel-page__empty-title">Предложений пока нет</p>
                     <p className="panel-page__empty-subtitle">Добавьте первое предложение, чтобы начать привлекать клиентов!</p>
                 </div>
@@ -414,25 +466,28 @@ function CreateOfferDialog({ open, defaultValues, onCreate, onCancel }: CreateOf
                 if (!open) onCancel();
             }}
         >
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="panel-page__dialog panel-page__dialog--large">
                 <DialogHeader>
-                    <DialogTitle>Создать новое предложение</DialogTitle>
-                    <DialogDescription>
+                    <DialogTitle className="panel-page__dialog-title">Создать новое предложение</DialogTitle>
+                    <DialogDescription className="panel-page__dialog-description">
                         Заполните информацию о предложении. Клиенты увидят его на карте.
                     </DialogDescription>
                 </DialogHeader>
                 <OfferPropertiesForm offer={defaultValues} onSave={onCreate}>
-                    <div className="flex gap-2 mt-4">
-                        <Button variant="primary" type="submit" className="flex-1">
+                    <div className="panel-page__form-actions">
+                        <button
+                            type="submit"
+                            className="panel-page__form-submit-button"
+                        >
                             Создать предложение
-                        </Button>
-                        <Button
-                            variant="outline"
+                        </button>
+                        <button
                             type="button"
+                            className="panel-page__form-cancel-button"
                             onClick={onCancel}
                         >
                             Отмена
-                        </Button>
+                        </button>
                     </div>
                 </OfferPropertiesForm>
             </DialogContent>
@@ -493,21 +548,28 @@ function EditOfferDialog({ open, currentOffer, onSave, onDelete, onCancel }: Edi
                 if (!open) onCancel();
             }}
         >
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="panel-page__dialog panel-page__dialog--large">
                 <DialogHeader>
-                    <DialogTitle>Редактировать предложение</DialogTitle>
-                    <DialogDescription>
+                    <DialogTitle className="panel-page__dialog-title">Редактировать предложение</DialogTitle>
+                    <DialogDescription className="panel-page__dialog-description">
                         Измените информацию о предложении
                     </DialogDescription>
                 </DialogHeader>
                 <OfferPropertiesForm offer={currentOffer} onSave={onSave}>
-                    <div className="flex gap-2 mt-4">
-                        <Button variant="primary" type="submit" className="flex-1">
+                    <div className="panel-page__form-actions">
+                        <button
+                            type="submit"
+                            className="panel-page__form-submit-button"
+                        >
                             Сохранить изменения
-                        </Button>
-                        <Button variant="danger" onClick={onDelete} type="button">
+                        </button>
+                        <button
+                            type="button"
+                            className="panel-page__form-delete-button"
+                            onClick={onDelete}
+                        >
                             Удалить
-                        </Button>
+                        </button>
                     </div>
                 </OfferPropertiesForm>
             </DialogContent>
@@ -690,7 +752,6 @@ function RouteComponent() {
         <div className="panel-page">
             <div className="panel-page__header">
                 <div className="panel-page__header-content">
-                    <div className="panel-page__header-icon">🏪</div>
                     <h1 className="panel-page__header-title">Панель управления</h1>
                 </div>
                 
@@ -700,26 +761,26 @@ function RouteComponent() {
                         onClick={() => setActiveTab('offers')}
                         className={`panel-page__tab ${activeTab === 'offers' ? 'panel-page__tab--active' : ''}`}
                     >
-                        🍽️ Предложения
+                        Предложения
                     </button>
                     <button
                         onClick={() => setActiveTab('orders')}
                         className={`panel-page__tab ${activeTab === 'orders' ? 'panel-page__tab--active' : ''}`}
                     >
-                        📋 Заказы
+                        Заказы
                     </button>
                     <button
                         onClick={() => setActiveTab('locations')}
                         className={`panel-page__tab ${activeTab === 'locations' ? 'panel-page__tab--active' : ''}`}
                     >
-                        📍 Локации
+                        Локации
                     </button>
-                    <button
+                    {/*<button
                         onClick={() => setActiveTab('stats')}
                         className={`panel-page__tab ${activeTab === 'stats' ? 'panel-page__tab--active' : ''}`}
                     >
                         📊 Статистика
-                    </button>
+                    </button>*/}
                 </div>
             </div>
 
