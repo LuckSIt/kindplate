@@ -169,7 +169,7 @@ function OfferPage() {
             Возможно, оно было удалено или больше не доступно
           </p>
           <button
-            onClick={() => navigate({ to: '/home' })}
+            onClick={() => navigate({ to: '/list' })}
             style={{
               padding: '12px 24px',
               backgroundColor: '#D9D9D9',
@@ -204,7 +204,7 @@ function OfferPage() {
         <div className="offer-page__header-floating">
           <button 
             className="offer-page__back-button"
-            onClick={() => navigate({ to: '/home' })}
+            onClick={() => navigate({ to: '/list' })}
             aria-label="Назад"
           >
             <img 
@@ -224,19 +224,19 @@ function OfferPage() {
             >
               <Share2 />
             </button>
-            <button
+            {/*<button
               className="offer-page__action-button"
               aria-label="В избранное"
             >
               <Heart />
-            </button>
+            </button>*/}
           </div>
         </div>
       </div>
 
       {/* Content */}
       <div className="offer-page__content">
-        {/* Gallery */}
+        {/* Gallery 
         {images.length > 0 && (
           <div className="offer-page__gallery">
             <img
@@ -250,7 +250,7 @@ function OfferPage() {
               }}
             />
           </div>
-        )}
+        )}*/}
 
         {/* Price and Info Card */}
         <div className="offer-page__info-card">

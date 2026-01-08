@@ -15,55 +15,121 @@ const icons = {
   info: Info,
 };
 
-const colors = {
-  success: 'bg-green-50 border-green-200 text-green-800',
-  error: 'bg-red-50 border-red-200 text-red-800',
-  warning: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-  info: 'bg-blue-50 border-blue-200 text-blue-800',
-};
-
-const iconColors = {
-  success: 'text-green-400',
-  error: 'text-red-400',
-  warning: 'text-yellow-400',
-  info: 'text-blue-400',
-};
-
 export function NotificationComponent({ notification, onRemove }: NotificationProps) {
   const Icon = icons[notification.type];
-  const colorClass = colors[notification.type];
-  const iconColorClass = iconColors[notification.type];
 
   return (
-    <div className={`max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden border ${colorClass}`}>
-      <div className="p-4">
-        <div className="flex items-start">
-          <div className="flex-shrink-0">
-            <Icon className={`h-6 w-6 ${iconColorClass}`} />
+    <div 
+      className="notification-toast"
+      style={{
+        maxWidth: '400px',
+        width: '100%',
+        backgroundColor: '#000019',
+        borderRadius: '12px',
+        padding: '16px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+        pointerEvents: 'auto',
+        fontFamily: "'Montserrat Alternates', sans-serif",
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+        {/* Icon */}
+        <div style={{ 
+          flexShrink: 0,
+          width: '24px',
+          height: '24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <div style={{
+            width: '20px',
+            height: '20px',
+            borderRadius: '50%',
+            border: '2px solid #FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'transparent'
+          }}>
+            <Icon 
+              style={{ 
+                width: '12px', 
+                height: '12px', 
+                color: '#FFFFFF',
+                strokeWidth: '3'
+              }} 
+            />
           </div>
-          <div className="ml-3 w-0 flex-1 pt-0.5">
-            <p className="text-sm font-medium">{notification.title}</p>
-            <p className="mt-1 text-sm opacity-90">{notification.message}</p>
-            {notification.action && (
-              <div className="mt-3">
-                <button
-                  onClick={notification.action.onClick}
-                  className="text-sm font-medium underline hover:no-underline"
-                >
-                  {notification.action.label}
-                </button>
-              </div>
-            )}
-          </div>
-          <div className="ml-4 flex-shrink-0 flex">
-            <button
-              className="rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={() => onRemove(notification.id)}
-            >
-              <span className="sr-only">Закрыть</span>
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+        </div>
+        
+        {/* Content */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{
+            fontSize: '15px',
+            fontWeight: 600,
+            lineHeight: '20px',
+            color: '#FFFFFF',
+            margin: 0,
+            marginBottom: '4px'
+          }}>
+            {notification.title}
+          </p>
+          <p style={{
+            fontSize: '14px',
+            fontWeight: 400,
+            lineHeight: '18px',
+            color: '#FFFFFF',
+            opacity: 0.9,
+            margin: 0
+          }}>
+            {notification.message}
+          </p>
+          {notification.action && (
+            <div style={{ marginTop: '12px' }}>
+              <button
+                onClick={notification.action.onClick}
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: '#FFFFFF',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  padding: 0
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+              >
+                {notification.action.label}
+              </button>
+            </div>
+          )}
+        </div>
+        
+        {/* Close Button */}
+        <div style={{ flexShrink: 0, marginLeft: '8px' }}>
+          <button
+            onClick={() => onRemove(notification.id)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              opacity: 0.8
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}
+            aria-label="Закрыть"
+          >
+            <X style={{ width: '18px', height: '18px' }} />
+          </button>
         </div>
       </div>
     </div>
@@ -78,17 +144,27 @@ export function NotificationContainer() {
   return (
     <div
       aria-live="assertive"
-      className="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start z-50"
+      style={{
+        position: 'fixed',
+        top: '16px',
+        left: '16px',
+        right: '16px',
+        zIndex: 9999,
+        pointerEvents: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px',
+        alignItems: 'flex-start',
+        maxWidth: '400px'
+      }}
     >
-      <div className="w-full flex flex-col items-center space-y-4 sm:items-end">
-        {notifications.map((notification) => (
-          <NotificationComponent
-            key={notification.id}
-            notification={notification}
-            onRemove={removeNotification}
-          />
-        ))}
-      </div>
+      {notifications.map((notification) => (
+        <NotificationComponent
+          key={notification.id}
+          notification={notification}
+          onRemove={removeNotification}
+        />
+      ))}
     </div>
   );
 }

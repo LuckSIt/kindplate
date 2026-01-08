@@ -3893,6 +3893,26 @@ div.font-montserrat-alt,
   font-family: 'Montserrat Alternates', sans-serif !important;
 }
 
+/* Notification Toast Styles */
+.notification-toast {
+  animation: notificationSlideIn 0.3s ease-out;
+}
+
+@keyframes notificationSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.notification-toast:last-child {
+  animation: notificationSlideIn 0.3s ease-out;
+}
+
 /* Offer Page Styles (same as cart-page) */
 .offer-page {
   min-height: 100%;
