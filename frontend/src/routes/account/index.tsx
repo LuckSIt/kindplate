@@ -643,35 +643,40 @@ function RouteComponent() {
     // Если показываем пищевые предпочтения
     if (showDietPrefs) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-lime-100 pb-20">
-                <div className="bg-gradient-to-r from-emerald-600 to-lime-600 text-white px-4 py-6 shadow-lg sticky top-0 z-10">
-                    <div className="flex items-center gap-3 mb-2">
-                        <button
+            <div className="diet-prefs-page">
+                {/* Header */}
+                <div className="diet-prefs-page__header">
+                    <div className="diet-prefs-page__header-floating">
+                        <button 
+                            className="diet-prefs-page__back-button"
                             onClick={() => setShowDietPrefs(false)}
-                            className="p-2 hover:bg-white/20 rounded-full transition-colors"
+                            aria-label="Назад"
                         >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
+                            <img 
+                                src={arrowBackIcon} 
+                                alt="Назад" 
+                                className="diet-prefs-page__back-button-icon"
+                            />
                         </button>
-                        <div>
-                            <h1 className="text-2xl font-bold flex items-center gap-2">
-                                <span>🥗</span>
-                                Пищевые предпочтения
-                            </h1>
-                            <p className="text-emerald-100 text-sm">Мы будем подбирать более подходящие предложения</p>
+                        <div className="diet-prefs-page__header-title-container">
+                            <h1 className="diet-prefs-page__header-name">Пищевые предпочтения</h1>
                         </div>
                     </div>
                 </div>
 
-                <div className="p-4 space-y-6 max-w-md mx-auto">
+                {/* Content */}
+                <div className="diet-prefs-page__content">
+                    <div className="diet-prefs-page__subtitle">
+                        Мы будем подбирать более подходящие предложения
+                    </div>
+
                     {/* Кухни */}
-                    <section className="bg-white rounded-2xl p-4 shadow-sm border border-emerald-100">
-                        <h2 className="text-lg font-semibold mb-2">Любимые кухни</h2>
-                        <p className="text-xs text-gray-500 mb-3">
+                    <section className="diet-prefs-page__section">
+                        <h2 className="diet-prefs-page__section-title">Любимые кухни</h2>
+                        <p className="diet-prefs-page__section-subtitle">
                             Отметьте кухни, которые вам нравятся
                         </p>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="diet-prefs-page__tags">
                             {CUISINE_OPTIONS.map((cuisine) => {
                                 const active = dietCuisines.includes(cuisine);
                                 return (
@@ -679,11 +684,7 @@ function RouteComponent() {
                                         key={cuisine}
                                         type="button"
                                         onClick={() => setDietCuisines(prev => toggleInArray(prev, cuisine))}
-                                        className={`px-3 py-1 rounded-full text-xs border transition ${
-                                            active
-                                                ? "bg-emerald-500 text-white border-emerald-500"
-                                                : "bg-white text-gray-700 border-gray-300"
-                                        }`}
+                                        className={`diet-prefs-page__tag ${active ? 'diet-prefs-page__tag--active' : ''}`}
                                     >
                                         {cuisine}
                                     </button>
@@ -693,12 +694,12 @@ function RouteComponent() {
                     </section>
 
                     {/* Диеты */}
-                    <section className="bg-white rounded-2xl p-4 shadow-sm border border-emerald-100">
-                        <h2 className="text-lg font-semibold mb-2">Диеты</h2>
-                        <p className="text-xs text-gray-500 mb-3">
+                    <section className="diet-prefs-page__section">
+                        <h2 className="diet-prefs-page__section-title">Диеты</h2>
+                        <p className="diet-prefs-page__section-subtitle">
                             Выберите подходящие варианты питания
                         </p>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="diet-prefs-page__tags">
                             {DIET_OPTIONS.map((diet) => {
                                 const active = dietDiets.includes(diet);
                                 return (
@@ -706,11 +707,7 @@ function RouteComponent() {
                                         key={diet}
                                         type="button"
                                         onClick={() => setDietDiets(prev => toggleInArray(prev, diet))}
-                                        className={`px-3 py-1 rounded-full text-xs border transition ${
-                                            active
-                                                ? "bg-emerald-500 text-white border-emerald-500"
-                                                : "bg-white text-gray-700 border-gray-300"
-                                        }`}
+                                        className={`diet-prefs-page__tag ${active ? 'diet-prefs-page__tag--active' : ''}`}
                                     >
                                         {diet}
                                     </button>
@@ -720,12 +717,12 @@ function RouteComponent() {
                     </section>
 
                     {/* Аллергены */}
-                    <section className="bg-white rounded-2xl p-4 shadow-sm border border-emerald-100">
-                        <h2 className="text-lg font-semibold mb-2">Исключить аллергены</h2>
-                        <p className="text-xs text-gray-500 mb-3">
+                    <section className="diet-prefs-page__section">
+                        <h2 className="diet-prefs-page__section-title">Исключить аллергены</h2>
+                        <p className="diet-prefs-page__section-subtitle">
                             Мы постараемся не показывать предложения с этими аллергенами
                         </p>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="diet-prefs-page__tags">
                             {ALLERGEN_OPTIONS.map((allergen) => {
                                 const active = dietAllergens.includes(allergen);
                                 return (
@@ -733,11 +730,7 @@ function RouteComponent() {
                                         key={allergen}
                                         type="button"
                                         onClick={() => setDietAllergens(prev => toggleInArray(prev, allergen))}
-                                        className={`px-3 py-1 rounded-full text-xs border transition ${
-                                            active
-                                                ? "bg-red-500 text-white border-red-500"
-                                                : "bg-white text-gray-700 border-gray-300"
-                                        }`}
+                                        className={`diet-prefs-page__tag diet-prefs-page__tag--allergen ${active ? 'diet-prefs-page__tag--active' : ''}`}
                                     >
                                         {allergen}
                                     </button>
@@ -746,12 +739,12 @@ function RouteComponent() {
                         </div>
                     </section>
 
-                    <Button
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                    <button
+                        className="diet-prefs-page__save-button"
                         onClick={handleSaveDietPrefs}
                     >
                         Сохранить предпочтения
-                    </Button>
+                    </button>
                 </div>
             </div>
         );

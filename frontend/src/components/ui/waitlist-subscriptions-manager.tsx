@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance } from '@/lib/axiosInstance';
-import { Button } from '@/components/ui/button';
 import { notify } from '@/lib/notifications';
 import { BellOff, MapPin, Building, Package, Trash2 } from 'lucide-react';
+import arrowBackIcon from '@/assets/arrow-back.png';
 
 interface Subscription {
     id: number;
@@ -82,111 +82,112 @@ export function WaitlistSubscriptionsManager({ onClose }: WaitlistSubscriptionsM
     const subscriptions = subscriptionsData || [];
 
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-                {/* Header */}
-                <div className="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-6 py-4 flex items-center justify-between">
-                    <div>
-                        <h2 className="text-xl font-bold">🔔 Мои подписки</h2>
-                        <p className="text-primary-100 text-sm mt-1">Управление уведомлениями о новых предложениях</p>
-                    </div>
-                    <button
+        <div className="subscriptions-page">
+            {/* Header */}
+            <div className="subscriptions-page__header">
+                <div className="subscriptions-page__header-floating">
+                    <button 
+                        className="subscriptions-page__back-button"
                         onClick={onClose}
-                        className="text-white/80 hover:text-white transition-colors"
+                        aria-label="Назад"
                     >
-                        ✕
+                        <img 
+                            src={arrowBackIcon} 
+                            alt="Назад" 
+                            className="subscriptions-page__back-button-icon"
+                        />
                     </button>
+                    <div className="subscriptions-page__header-title-container">
+                        <div className="subscriptions-page__header-icon">🔔</div>
+                        <h1 className="subscriptions-page__header-name">Мои подписки</h1>
+                    </div>
+                </div>
+            </div>
+
+            {/* Content */}
+            <div className="subscriptions-page__content">
+                <div className="subscriptions-page__subtitle">
+                    Управление уведомлениями о новых предложениях
                 </div>
 
-                {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6">
-                    {isLoading ? (
-                        <div className="flex flex-col items-center justify-center py-12">
-                            <span className="w-5 h-5 animate-spin mb-4" style={{ border: '2px solid rgba(0, 25, 0, 0.3)', borderTopColor: '#001900', borderRadius: '50%' }} />
-                            <p className="text-gray-600 dark:text-gray-300">Загрузка подписок...</p>
-                        </div>
-                    ) : subscriptions.length === 0 ? (
-                        <div className="text-center py-12">
-                            <BellOff className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                                Нет активных подписок
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400 mb-6">
-                                Подпишитесь на уведомления о новых предложениях на карточках офферов
-                            </p>
-                            <Button onClick={onClose} variant="outline">
-                                Закрыть
-                            </Button>
-                        </div>
-                    ) : (
-                        <div className="space-y-3">
-                            {subscriptions.map((subscription) => (
-                                <div
-                                    key={subscription.id}
-                                    className="border-2 border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:border-primary-300 dark:hover:border-primary-700 transition-colors"
-                                >
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex items-start gap-3 flex-1">
-                                            <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center text-primary-600 dark:text-primary-400 flex-shrink-0">
-                                                {getScopeTypeIcon(subscription.scope_type)}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className="font-semibold text-gray-900 dark:text-white">
-                                                        {getScopeTypeLabel(subscription.scope_type)}
-                                                    </span>
-                                                    {subscription.scope_id && (
-                                                        <span className="text-sm text-gray-500 dark:text-gray-400">
-                                                            #{subscription.scope_id}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                {subscription.scope_type === 'area' && subscription.latitude && subscription.longitude && (
-                                                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                                                        📍 {subscription.latitude.toFixed(4)}, {subscription.longitude.toFixed(4)}
-                                                        {subscription.radius_km && (
-                                                            <span className="ml-2">• Радиус: {subscription.radius_km} км</span>
-                                                        )}
-                                                    </div>
-                                                )}
-                                                <div className="text-xs text-gray-500 dark:text-gray-500">
-                                                    Подписка создана: {new Date(subscription.created_at).toLocaleDateString('ru-RU')}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <Button
-                                            onClick={() => {
-                                                if (confirm('Вы уверены, что хотите отписаться от этих уведомлений?')) {
-                                                    unsubscribeMutation.mutate(subscription.id);
-                                                }
-                                            }}
-                                            variant="outline"
-                                            size="sm"
-                                            className="border-red-300 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex-shrink-0"
-                                            disabled={unsubscribeMutation.isPending}
-                                        >
-                                            {unsubscribeMutation.isPending ? (
-                                                <span className="w-4 h-4 animate-spin" style={{ border: '1.5px solid rgba(255,255,255,0.3)', borderTopColor: 'currentColor', borderRadius: '50%' }} />
-                                            ) : (
-                                                <>
-                                                    <Trash2 className="w-4 h-4 mr-1" />
-                                                    Отписаться
-                                                </>
+                {isLoading ? (
+                    <div className="subscriptions-page__loading">
+                        <span className="subscriptions-page__spinner" />
+                        <p className="subscriptions-page__loading-text">Загрузка подписок...</p>
+                    </div>
+                ) : subscriptions.length === 0 ? (
+                    <div className="subscriptions-page__empty">
+                        <BellOff className="subscriptions-page__empty-icon" />
+                        <h3 className="subscriptions-page__empty-title">
+                            Нет активных подписок
+                        </h3>
+                        <p className="subscriptions-page__empty-subtitle">
+                            Подпишитесь на уведомления о новых предложениях на карточках офферов
+                        </p>
+                        <button 
+                            className="subscriptions-page__empty-button"
+                            onClick={onClose}
+                        >
+                            Закрыть
+                        </button>
+                    </div>
+                ) : (
+                    <div className="subscriptions-page__list">
+                        {subscriptions.map((subscription) => (
+                            <div
+                                key={subscription.id}
+                                className="subscriptions-page__card"
+                            >
+                                <div className="subscriptions-page__card-content">
+                                    <div className="subscriptions-page__card-icon">
+                                        {getScopeTypeIcon(subscription.scope_type)}
+                                    </div>
+                                    <div className="subscriptions-page__card-info">
+                                        <div className="subscriptions-page__card-header">
+                                            <span className="subscriptions-page__card-type">
+                                                {getScopeTypeLabel(subscription.scope_type)}
+                                            </span>
+                                            {subscription.scope_id && (
+                                                <span className="subscriptions-page__card-id">
+                                                    #{subscription.scope_id}
+                                                </span>
                                             )}
-                                        </Button>
+                                        </div>
+                                        {subscription.scope_type === 'area' && subscription.latitude && subscription.longitude && (
+                                            <div className="subscriptions-page__card-location">
+                                                📍 {subscription.latitude.toFixed(4)}, {subscription.longitude.toFixed(4)}
+                                                {subscription.radius_km && (
+                                                    <span> • Радиус: {subscription.radius_km} км</span>
+                                                )}
+                                            </div>
+                                        )}
+                                        <div className="subscriptions-page__card-date">
+                                            Подписка создана: {new Date(subscription.created_at).toLocaleDateString('ru-RU')}
+                                        </div>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                {/* Footer */}
-                <div className="border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-end">
-                    <Button onClick={onClose} variant="outline">
-                        Закрыть
-                    </Button>
-                </div>
+                                <button
+                                    onClick={() => {
+                                        if (confirm('Вы уверены, что хотите отписаться от этих уведомлений?')) {
+                                            unsubscribeMutation.mutate(subscription.id);
+                                        }
+                                    }}
+                                    className="subscriptions-page__unsubscribe-button"
+                                    disabled={unsubscribeMutation.isPending}
+                                >
+                                    {unsubscribeMutation.isPending ? (
+                                        <span className="subscriptions-page__spinner-small" />
+                                    ) : (
+                                        <>
+                                            <Trash2 className="subscriptions-page__unsubscribe-icon" />
+                                            Отписаться
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
