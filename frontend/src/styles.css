@@ -3892,3 +3892,317 @@ div.font-montserrat-alt,
 [class*="leading-"].font-montserrat-alt {
   font-family: 'Montserrat Alternates', sans-serif !important;
 }
+
+/* Offer Page Styles (same as cart-page) */
+.offer-page {
+  min-height: 100%;
+  width: 100%;
+  background-color: #000019;
+  position: relative;
+  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  padding-bottom: 100px;
+}
+
+.offer-page__header {
+  width: 100%;
+  background-color: #001900;
+  padding: 27px 14px 0;
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  overflow: visible;
+  margin-bottom: 50px;
+}
+
+.offer-page__header-floating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateY(50%);
+  width: 100%;
+}
+
+.offer-page__back-button {
+  width: 59px;
+  height: 59px;
+  background-color: #D9D9D9;
+  border-radius: 15px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.offer-page__back-button:hover {
+  opacity: 0.9;
+}
+
+.offer-page__back-button-icon {
+  width: 39px;
+  height: 39px;
+  display: block;
+}
+
+.offer-page__header-title-container {
+  flex: 1;
+  height: 59px;
+  background-color: #D9D9D9;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.offer-page__header-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 22px;
+  color: #000000 !important;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.offer-page__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 10px;
+}
+
+.offer-page__action-button {
+  width: 59px;
+  height: 59px;
+  background-color: #D9D9D9;
+  border-radius: 15px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.offer-page__action-button:hover {
+  opacity: 0.9;
+}
+
+.offer-page__action-button svg {
+  width: 24px;
+  height: 24px;
+  color: #000000;
+}
+
+.offer-page__content {
+  padding: 14px;
+  padding-top: 0;
+}
+
+.offer-page__gallery {
+  margin-bottom: 20px;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.offer-page__info-card {
+  margin: 14px;
+  padding: 10px 13px 10px 12px;
+  background-color: #000019;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.offer-page__price-section {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.offer-page__price {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 36px;
+  color: #FFFFFF;
+}
+
+.offer-page__price-old {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: #FFFFFF;
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.offer-page__discount-badge {
+  background-color: #D9D9D9;
+  color: #000000;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.offer-page__info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FFFFFF;
+}
+
+.offer-page__pickup-window {
+  background-color: #000019;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.offer-page__pickup-window-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.offer-page__pickup-window-time {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FFFFFF;
+}
+
+.offer-page__description-section {
+  margin: 14px;
+  padding: 0;
+}
+
+.offer-page__description-title {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.offer-page__description-text {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 22px;
+  color: #FFFFFF;
+  opacity: 0.8;
+}
+
+.offer-page__quantity-section {
+  margin: 14px;
+  padding: 0;
+}
+
+.offer-page__quantity-title {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+}
+
+.offer-page__quantity-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.offer-page__quantity-button {
+  width: 40px;
+  height: 40px;
+  background-color: #D9D9D9;
+  border-radius: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 28px;
+  color: #000000;
+}
+
+.offer-page__quantity-button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.offer-page__quantity-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.offer-page__quantity-value {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  color: #FFFFFF;
+  min-width: 60px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.offer-page__add-button {
+  width: 100%;
+  height: 50px;
+  background-color: #D9D9D9;
+  border: none;
+  border-radius: 15px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: #000000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 20px;
+}
+
+.offer-page__add-button:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.offer-page__add-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.offer-page__add-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.offer-page__location-section {
+  margin: 14px;
+  padding: 0;
+}

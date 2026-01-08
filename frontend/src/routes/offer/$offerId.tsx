@@ -1,17 +1,15 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { axiosInstance } from '@/lib/axiosInstance';
-import { OfferGallery } from '@/components/ui/offer-gallery';
-import { OfferPriceDisplay } from '@/components/ui/offer-price-display';
-import { QuantityStepper } from '@/components/ui/quantity-stepper';
+import { axiosInstance, getBackendURL } from '@/lib/axiosInstance';
 import { OfferLocation } from '@/components/ui/offer-location';
 import { VendorConflictModal } from '@/components/ui/vendor-conflict-modal';
-import { Button } from '@/components/ui/button';
 import { OfferSkeleton } from '@/components/ui/skeletons';
-import { ArrowLeft, Heart, Share2 } from 'lucide-react';
+import { Heart, Share2 } from 'lucide-react';
 import { notify } from '@/lib/notifications';
+import { formatTimeLeft } from '@/lib/utils';
 import type { Business } from '@/lib/types';
+import arrowBackIcon from "@/figma/arrow-back.svg";
 
 export const Route = createFileRoute("/offer/$offerId")({
   component: OfferPage,
@@ -140,17 +138,53 @@ function OfferPage() {
 
   if (offerError || !offer) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <div className="offer-page">
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          minHeight: '100vh',
+          padding: '40px 20px',
+          textAlign: 'center'
+        }}>
+          <h1 style={{ 
+            fontFamily: 'Montserrat Alternates, sans-serif',
+            fontWeight: 600,
+            fontSize: '24px',
+            lineHeight: '28px',
+            color: '#FFFFFF',
+            marginBottom: '12px'
+          }}>
             Предложение не найдено
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+          <p style={{ 
+            fontFamily: 'Montserrat Alternates, sans-serif',
+            fontSize: '16px',
+            lineHeight: '22px',
+            color: '#FFFFFF',
+            opacity: 0.8,
+            marginBottom: '24px'
+          }}>
             Возможно, оно было удалено или больше не доступно
           </p>
-          <Button onClick={() => navigate({ to: '/home' })}>
+          <button
+            onClick={() => navigate({ to: '/home' })}
+            style={{
+              padding: '12px 24px',
+              backgroundColor: '#D9D9D9',
+              border: 'none',
+              borderRadius: '15px',
+              fontFamily: 'Montserrat Alternates, sans-serif',
+              fontWeight: 600,
+              fontSize: '16px',
+              lineHeight: '22px',
+              color: '#000000',
+              cursor: 'pointer'
+            }}
+          >
             Вернуться на главную
-          </Button>
+          </button>
         </div>
       </div>
     );
@@ -158,106 +192,146 @@ function OfferPage() {
 
   const images = offer.image_url ? [offer.image_url] : [];
   const maxQuantity = Math.min(offer.quantity_available, 99);
+  const discountPercent = offer.original_price > 0 
+    ? Math.round((1 - offer.discounted_price / offer.original_price) * 100) 
+    : 0;
+  const timeLeft = formatTimeLeft(offer.pickup_time_end);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-8">
+    <div className="offer-page">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between px-4 py-3">
-          <Button
-            variant="ghost"
-            size="sm"
+      <div className="offer-page__header">
+        <div className="offer-page__header-floating">
+          <button 
+            className="offer-page__back-button"
             onClick={() => navigate({ to: '/home' })}
-            className="p-2"
+            aria-label="Назад"
           >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-white truncate flex-1 mx-4">
-            {offer.title}
-          </h1>
-          
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
+            <img 
+              src={arrowBackIcon} 
+              alt="Назад" 
+              className="offer-page__back-button-icon"
+            />
+          </button>
+          <div className="offer-page__header-title-container">
+            <h1 className="offer-page__header-name">{offer.title}</h1>
+          </div>
+          <div className="offer-page__header-actions">
+            <button
+              className="offer-page__action-button"
               onClick={handleShare}
-              className="p-2"
+              aria-label="Поделиться"
             >
-              <Share2 className="w-5 h-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2"
+              <Share2 />
+            </button>
+            <button
+              className="offer-page__action-button"
+              aria-label="В избранное"
             >
-              <Heart className="w-5 h-5" />
-            </Button>
+              <Heart />
+            </button>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="space-y-6 p-4">
+      <div className="offer-page__content">
         {/* Gallery */}
-        <OfferGallery
-          images={images}
-          title={offer.title}
-        />
-
-        {/* Price and Info */}
-        <OfferPriceDisplay
-          originalPrice={offer.original_price}
-          discountedPrice={offer.discounted_price}
-          quantityAvailable={offer.quantity_available}
-          pickupTimeStart={offer.pickup_time_start}
-          pickupTimeEnd={offer.pickup_time_end}
-        />
-
-        {/* Description */}
-        {offer.description && (
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Описание
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-              {offer.description}
-            </p>
+        {images.length > 0 && (
+          <div className="offer-page__gallery">
+            <img
+              src={`${getBackendURL()}${images[0]}`}
+              alt={offer.title}
+              style={{
+                width: '100%',
+                height: 'auto',
+                display: 'block',
+                borderRadius: '15px'
+              }}
+            />
           </div>
         )}
 
-        {/* Quantity Selector + primary CTA */}
-        <div className="space-y-4">
-          <div className="space-y-3">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Количество
-            </h3>
-            <QuantityStepper
-              value={quantity}
-              min={1}
-              max={maxQuantity}
-              onChange={setQuantity}
-              className="max-w-xs mx-auto"
-            />
+        {/* Price and Info Card */}
+        <div className="offer-page__info-card">
+          <div className="offer-page__price-section">
+            <span className="offer-page__price">{Math.round(offer.discounted_price)}₽</span>
+            {offer.original_price > offer.discounted_price && (
+              <>
+                <span className="offer-page__price-old">{Math.round(offer.original_price)}₽</span>
+                <span className="offer-page__discount-badge">-{discountPercent}%</span>
+              </>
+            )}
           </div>
 
-          {/* Основная кнопка добавления в заказ (внутри контента) */}
-          <Button
+          <div className="offer-page__info-row">
+            <div>
+              <span style={{ opacity: 0.8 }}>Осталось: </span>
+              <span style={{ fontWeight: 600 }}>{offer.quantity_available} шт.</span>
+            </div>
+            <div>
+              <span style={{ opacity: 0.8 }}>До конца: </span>
+              <span style={{ fontWeight: 600 }}>{timeLeft}</span>
+            </div>
+          </div>
+
+          <div className="offer-page__pickup-window">
+            <div className="offer-page__pickup-window-label">Окно самовывоза</div>
+            <div className="offer-page__pickup-window-time">
+              {offer.pickup_time_start} - {offer.pickup_time_end}
+            </div>
+          </div>
+        </div>
+
+        {/* Description */}
+        {offer.description && (
+          <div className="offer-page__description-section">
+            <h3 className="offer-page__description-title">Описание</h3>
+            <p className="offer-page__description-text">{offer.description}</p>
+          </div>
+        )}
+
+        {/* Quantity Section */}
+        <div className="offer-page__quantity-section">
+          <h3 className="offer-page__quantity-title">Количество</h3>
+          <div className="offer-page__quantity-selector">
+            <button
+              className="offer-page__quantity-button"
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              disabled={quantity <= 1}
+            >
+              −
+            </button>
+            <div className="offer-page__quantity-value">
+              <div style={{ fontSize: '24px', lineHeight: '28px' }}>{quantity}</div>
+              <div style={{ fontSize: '12px', lineHeight: '14px', opacity: 0.8, marginTop: '2px' }}>шт.</div>
+            </div>
+            <button
+              className="offer-page__quantity-button"
+              onClick={() => setQuantity(Math.min(maxQuantity, quantity + 1))}
+              disabled={quantity >= maxQuantity}
+            >
+              +
+            </button>
+          </div>
+          <button
+            className="offer-page__add-button"
             onClick={handleAddToCart}
             disabled={offer.quantity_available === 0 || isAddingToCart}
-            className="w-full bg-primary-500 hover:bg-primary-600 text-white text-lg py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
           >
             {isAddingToCart ? "Добавляем..." : "Добавить в заказ"}
-          </Button>
+          </button>
         </div>
 
         {/* Location */}
         {business && (
-          <OfferLocation
-            address={business.address}
-            coords={business.coords}
-            businessName={business.name}
-          />
+          <div className="offer-page__location-section">
+            <OfferLocation
+              address={business.address}
+              coords={business.coords}
+              businessName={business.name}
+            />
+          </div>
         )}
       </div>
 
