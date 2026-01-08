@@ -1127,7 +1127,6 @@ function RouteComponent() {
                     }}
                 />
             )}
-        </div>
         </>
     );
 }
