@@ -70,7 +70,7 @@
   "display_override": ["standalone", "fullscreen", "minimal-ui"],
   "orientation": "portrait",
   "theme_color": "#22c55e",
-  "background_color": "#0f172a",
+  "background_color": "#ffffff",
   "categories": ["food", "lifestyle", "shopping"],
   "gcm_sender_id": "103953800507"
 }
