@@ -708,7 +708,12 @@ function HomeBusinessCard({ business, onClick }: { business: Business; onClick: 
             {/* Image */}
             <div className="businesses-list-page__business-image">
                 {image ? (
-                    <img src={image} alt={business.name} onError={(e) => e.currentTarget.style.display = 'none'} />
+                    <img 
+                        src={image} 
+                        alt={business.name} 
+                        key={activeOffers[0]?.image_url || business.logo_url}
+                        onError={(e) => e.currentTarget.style.display = 'none'} 
+                    />
                 ) : (
                     <div className="w-full h-full bg-gray-700 flex items-center justify-center text-3xl">🏪</div>
                 )}

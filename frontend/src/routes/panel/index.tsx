@@ -11,7 +11,7 @@ import {
 import { z } from "zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance, getBackendURL } from "@/lib/axiosInstance";
 import { AxiosError } from "axios";
 import { notify } from "@/lib/notifications";
@@ -308,6 +308,7 @@ function OfferSummary({
                                 src={`${getBackendURL()}${image_url}`} 
                                 alt={title}
                                 className="panel-page__offer-photo-img"
+                                key={`${id}-${image_url}`}
                                 onError={(e) => {
                                     console.error('Ошибка загрузки изображения:', image_url);
                                     e.currentTarget.style.display = 'none';
@@ -400,7 +401,7 @@ function OfferSummary({
                     >
                         <Edit className="panel-page__offer-action-icon" />
                     </button>
-                    {onSchedule && (
+                    {/*{onSchedule && (
                         <button 
                             className="panel-page__offer-action-button panel-page__offer-action-button--schedule"
                             onClick={onSchedule}
@@ -408,7 +409,7 @@ function OfferSummary({
                         >
                             📅
                         </button>
-                    )}
+                    )}*/}
                 </div>
             </div>
         </div>
@@ -578,6 +579,7 @@ function EditOfferDialog({ open, currentOffer, onSave, onDelete, onCancel }: Edi
 }
 
 function RouteComponent() {
+    const queryClient = useQueryClient();
     const [activeTab, setActiveTab] = useState('offers'); // 'offers', 'orders', or 'stats'
 
     const {
@@ -648,8 +650,21 @@ function RouteComponent() {
                 },
             });
         },
-        onSuccess: () => {
-            refetchOffers();
+        onSuccess: async () => {
+            // Сначала обновляем данные в панели
+            await refetchOffers();
+            
+            // Инвалидируем все связанные запросы для обновления изображений на карте и в других местах
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ["mine_offers"] }),
+                queryClient.invalidateQueries({ queryKey: ["offer"] }), // Инвалидируем все запросы offer
+                queryClient.invalidateQueries({ queryKey: ["offers_search"] }),
+                queryClient.invalidateQueries({ queryKey: ["businesses_map"] }),
+                queryClient.invalidateQueries({ queryKey: ["businesses_fallback"] }),
+                queryClient.invalidateQueries({ queryKey: ["customer/offers"] }),
+                queryClient.invalidateQueries({ queryKey: ["customer/sellers"] }),
+            ]);
+            
             notify.success("Фото загружено", "Фото успешно загружено! 📸");
         },
         onError: (error: AxiosError<{ error?: string; message?: string }>) => {

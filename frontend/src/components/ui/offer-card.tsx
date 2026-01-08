@@ -74,6 +74,7 @@ export function OfferCard({ offer, onClick }: { offer: Offer; onClick?: () => vo
             src={`${getBackendURL()}${offer.image_url}`} 
             alt={offer.title} 
             className="w-full h-full object-cover"
+            key={offer.image_url}
             onError={(e) => {
               // Скрываем изображение при ошибке загрузки
               e.currentTarget.style.display = 'none';

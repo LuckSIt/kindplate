@@ -43,6 +43,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ offer, onOrder }) => {
             sizes="(max-width: 768px) 100vw, 384px"
             className="w-full h-full object-cover"
             fallback="/placeholder.png"
+            key={offer.image_url}
           />
         ) : (
           <span className="text-3xl">🍽️</span>
