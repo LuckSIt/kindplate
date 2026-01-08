@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance } from '@/lib/axiosInstance';
 import { notify } from '@/lib/notifications';
 import { BellOff, MapPin, Building, Package, Trash2 } from 'lucide-react';
-import arrowBackIcon from '@/assets/arrow-back.png';
+import arrowBackIcon from '@/figma/arrow-back.svg';
 
 interface Subscription {
     id: number;
