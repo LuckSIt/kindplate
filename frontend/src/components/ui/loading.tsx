@@ -22,7 +22,7 @@ export function LoadingSpinner({ size = 'md', text, className = '' }: LoadingSpi
           width: s.width, 
           height: s.height, 
           border: `${s.borderWidth}px solid rgba(22, 163, 74, 0.3)`, 
-          borderTopColor: '#16a34a',
+          borderTopColor: '#001900',
           borderRadius: '50%'
         }}
       ></div>

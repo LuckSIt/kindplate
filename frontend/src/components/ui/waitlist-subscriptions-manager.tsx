@@ -102,7 +102,7 @@ export function WaitlistSubscriptionsManager({ onClose }: WaitlistSubscriptionsM
                 <div className="flex-1 overflow-y-auto p-6">
                     {isLoading ? (
                         <div className="flex flex-col items-center justify-center py-12">
-                            <span className="w-5 h-5 animate-spin mb-4" style={{ border: '2px solid rgba(22, 163, 74, 0.3)', borderTopColor: '#16a34a', borderRadius: '50%' }} />
+                            <span className="w-5 h-5 animate-spin mb-4" style={{ border: '2px solid rgba(0, 25, 0, 0.3)', borderTopColor: '#001900', borderRadius: '50%' }} />
                             <p className="text-gray-600 dark:text-gray-300">Загрузка подписок...</p>
                         </div>
                     ) : subscriptions.length === 0 ? (

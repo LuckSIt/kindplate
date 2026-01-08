@@ -14,7 +14,7 @@ function AboutPage() {
         {
             icon: <Leaf className="w-8 h-8" />,
             title: "Экологичность",
-            description: "Мы помогаем сократить пищевые отходы и заботимся об окружающей среде. Каждый спасенный продукт — это вклад в будущее нашей планеты."
+            description: "Мы помогаем сократить пищевые потери и заботимся об окружающей среде. Каждый спасенный продукт — это вклад в будущее нашей планеты."
         },
         {
             icon: <Heart className="w-8 h-8" />,
@@ -54,7 +54,7 @@ function AboutPage() {
         <>
             <LegalPageSEO 
                 title="О нас - KindPlate" 
-                description="Узнайте больше о KindPlate — платформе для спасения еды и борьбы с пищевыми отходами. Наша миссия, ценности и команда."
+                description="Узнайте больше о KindPlate — платформе для спасения еды и борьбы с пищевыми потерями. Наша миссия, ценности и команда."
             />
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
                 {/* Header */}
@@ -82,7 +82,7 @@ function AboutPage() {
                     <div className="max-w-6xl mx-auto px-4">
                         <div className="text-center">
                             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                                KindPlate — Спаси еду
+                                KindPlate
                             </h2>
                             <p className="text-xl md:text-2xl text-green-50 max-w-3xl mx-auto">
                                 Платформа, которая помогает заведениям продавать нераспроданную еду, 
@@ -101,7 +101,7 @@ function AboutPage() {
                             </h2>
                             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
                                 Мы верим, что еда не должна выбрасываться. Наша цель — создать экосистему, 
-                                где каждый может внести вклад в сокращение пищевых отходов, получая при этом 
+                                где каждый может внести вклад в сокращение пищевых потерь, получая при этом 
                                 качественную еду по доступным ценам.
                             </p>
                         </div>
@@ -202,7 +202,7 @@ function AboutPage() {
                                     Результат
                                 </h3>
                                 <p className="text-gray-600 dark:text-gray-300">
-                                    Меньше отходов, больше довольных клиентов, чище планета. 
+                                    Меньше потерь, больше довольных клиентов, чище планета. 
                                     Все выигрывают!
                                 </p>
                             </div>

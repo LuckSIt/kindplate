@@ -54,7 +54,7 @@ export function ProfilePage() {
   }, [profile, profileMethods]);
 
   const handleBack = () => {
-    navigate({ to: '/' });
+    navigate({ to: '/account' });
   };
 
   const onProfileSubmit = (data: ProfileUpdateFormData) => {

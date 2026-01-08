@@ -408,7 +408,7 @@ function RouteComponent() {
             <div 
                 className="flex flex-col"
                 style={{ 
-                    backgroundColor: '#10172A',
+                    backgroundColor: '#000019',
                     height: '100%',
                     minHeight: '100%',
                     position: 'relative',
@@ -510,7 +510,7 @@ function RouteComponent() {
                                                             isActive ? 'text-white' : 'text-neutral-500'
                                                         } ${isDisabled ? 'opacity-50' : ''}`}
                                                         style={isActive
-                                                            ? { backgroundColor: '#35741F' }
+                                                            ? { backgroundColor: '#001900' }
                                                             : { backgroundColor: '#D9D9D9' }}
                                                         title={title}
                                                         disabled={isDisabled}
@@ -586,7 +586,7 @@ function RouteComponent() {
                     >
                         <div 
                             className="p-3 rounded-2xl shadow-2xl"
-                            style={{ backgroundColor: '#0f172a', border: '1px solid #334155' }}
+                            style={{ backgroundColor: '#000019', border: '1px solid #334155' }}
                         >
                             <div className="flex items-center gap-3">
                                 {/* Logo */}

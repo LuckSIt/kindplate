@@ -467,7 +467,7 @@ export function MapView({
             {isLoading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm">
                     <div className="flex flex-col items-center gap-3">
-                        <div className="w-5 h-5 animate-spin" style={{ border: '2px solid rgba(34, 197, 94, 0.3)', borderTopColor: '#22c55e', borderRadius: '50%' }}></div>
+                        <div className="w-5 h-5 animate-spin" style={{ border: '2px solid rgba(0, 25, 0, 0.3)', borderTopColor: '#001900', borderRadius: '50%' }}></div>
                         <span className="text-sm text-gray-300">Загрузка карты...</span>
                     </div>
                 </div>

@@ -260,8 +260,8 @@ function RouteComponent() {
                     {ordersLoading && (
                         <div className="text-center py-12">
                             <svg className="mx-auto mb-4 animate-spin" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="#16a34a33" strokeWidth="3" />
-                                <path d="M12 2a10 10 0 0 1 10 10" stroke="#16a34a" strokeWidth="3" strokeLinecap="round" />
+                                <circle cx="12" cy="12" r="10" stroke="#00190033" strokeWidth="3" />
+                                <path d="M12 2a10 10 0 0 1 10 10" stroke="#001900" strokeWidth="3" strokeLinecap="round" />
                             </svg>
                             <p className="text-gray-600 dark:text-gray-300">Загружаем заказы...</p>
                         </div>
@@ -803,12 +803,12 @@ function RouteComponent() {
 
     // Основной экран аккаунта
     return (
-        <div className="w-full mx-auto bg-[#10172A] flex flex-col items-center" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
+        <div className="w-full mx-auto bg-[#000019] flex flex-col items-center" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
             {/* Информация о клиенте */}
             <div className="w-[350px] h-[50px] rounded-[15px] bg-[#D9D9D9] flex items-center mt-[64px] px-[14px] py-[7px]">
                 {/* Avatar */}
                 <div className="w-[40px] h-[40px] overflow-hidden flex items-center justify-center flex-shrink-0">
-                    <svg className="w-[32px] h-[32px] text-[#10172A]" fill="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-[32px] h-[32px] text-[#000019]" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                     </svg>
                 </div>
@@ -830,13 +830,13 @@ function RouteComponent() {
             {/* Menu Options */}
             <div className="mt-[27px] flex flex-col items-start w-[350px]">
                 {/* Main Menu Card */}
-                <div className="relative w-[350px] h-[360px] rounded-[15px] border border-white bg-[#2B344D]">
+                <div className="relative w-[350px] h-[360px] rounded-[15px] border border-white bg-[#000019]">
                     {/* Избранное */}
                     <button 
                         onClick={() => setShowFavorites(true)}
                         className="absolute top-[12px] left-[23px] flex items-center w-[301px] h-[50px]"
                     >
-                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#35741F] flex items-center justify-center flex-shrink-0">
+                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[20px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>
@@ -857,7 +857,7 @@ function RouteComponent() {
                         onClick={() => setShowOrders(true)}
                         className="absolute top-[85px] left-[23px] flex items-center w-[301px] h-[50px]"
                     >
-                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#35741F] flex items-center justify-center flex-shrink-0">
+                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[20px] h-[20px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -878,7 +878,7 @@ function RouteComponent() {
                         onClick={() => setShowDietPrefs(true)}
                         className="absolute top-[158px] left-[23px] flex items-center w-[301px] h-[50px]"
                     >
-                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#35741F] flex items-center justify-center flex-shrink-0">
+                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
@@ -902,7 +902,7 @@ function RouteComponent() {
                         onClick={() => setShowSubscriptions(true)}
                         className="absolute top-[230px] left-[23px] flex items-center w-[301px] h-[50px]"
                     >
-                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#35741F] flex items-center justify-center flex-shrink-0">
+                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[16px] h-[20px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
@@ -926,7 +926,7 @@ function RouteComponent() {
                             onClick={() => navigate({ to: "/panel" })}
                             className="absolute top-[302px] left-[23px] flex items-center w-[301px] h-[50px]"
                         >
-                            <div className="w-[40px] h-[40px] rounded-[10px] bg-[#35741F] flex items-center justify-center flex-shrink-0">
+                            <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
                                 <svg className="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M3 11h18M3 15h18M7 7V5a2 2 0 012-2h6a2 2 0 012 2v2" />
                                 </svg>
@@ -993,7 +993,7 @@ function RouteComponent() {
                 <div
                     className="relative w-full"
                     style={{
-                        backgroundColor: "#2B344D",
+                        backgroundColor: "#000019",
                         paddingTop: "10px",
                         paddingBottom: "calc(20px + env(safe-area-inset-bottom, 0px))"
                     }}
@@ -1013,7 +1013,7 @@ function RouteComponent() {
                                     fontWeight: 600,
                                     fontSize: "14px",
                                     lineHeight: "22px",
-                                    color: '#35741F',
+                                    color: '#001900',
                                     textAlign: "left",
                                     marginBottom: "0px"
                                 }}
@@ -1096,7 +1096,7 @@ function RouteComponent() {
                                     fontWeight: 600,
                                     fontSize: "14px",
                                     lineHeight: "22px",
-                                    color: '#35741F',
+                                    color: '#001900',
                                     textAlign: "left",
                                     marginBottom: "0px"
                                 }}
@@ -1149,7 +1149,7 @@ function RouteComponent() {
                                 fontWeight: 600,
                                 fontSize: "14px",
                                 lineHeight: "22px",
-                                color: "#35741F",
+                                color: "#001900",
                                 marginBottom: "10px"
                             }}
                         >

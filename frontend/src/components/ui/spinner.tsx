@@ -25,14 +25,14 @@ export function Spinner({
 
   const getColors = () => {
     switch (color) {
-      case 'primary': return { track: 'rgba(22, 163, 74, 0.3)', active: '#16a34a' };
+      case 'primary': return { track: 'rgba(0, 25, 0, 0.3)', active: '#001900' };
       case 'secondary': return { track: 'rgba(75, 85, 99, 0.3)', active: '#4b5563' };
-      case 'success': return { track: 'rgba(22, 163, 74, 0.3)', active: '#16a34a' };
+      case 'success': return { track: 'rgba(0, 25, 0, 0.3)', active: '#001900' };
       case 'warning': return { track: 'rgba(202, 138, 4, 0.3)', active: '#ca8a04' };
       case 'danger': return { track: 'rgba(220, 38, 38, 0.3)', active: '#dc2626' };
       case 'info': return { track: 'rgba(37, 99, 235, 0.3)', active: '#2563eb' };
       case 'gray': return { track: 'rgba(156, 163, 175, 0.3)', active: '#9ca3af' };
-      default: return { track: 'rgba(22, 163, 74, 0.3)', active: '#16a34a' };
+      default: return { track: 'rgba(0, 25, 0, 0.3)', active: '#001900' };
     }
   };
 

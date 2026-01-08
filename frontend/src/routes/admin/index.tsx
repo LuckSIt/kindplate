@@ -100,7 +100,7 @@ function AdminPanel() {
     if (authLoading || statsLoading) {
         return (
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-                <div className="w-5 h-5 animate-spin" style={{ border: '2px solid rgba(34, 197, 94, 0.3)', borderTopColor: '#22c55e', borderRadius: '50%' }}></div>
+                <div className="w-5 h-5 animate-spin" style={{ border: '2px solid rgba(0, 25, 0, 0.3)', borderTopColor: '#001900', borderRadius: '50%' }}></div>
             </div>
         );
     }
@@ -309,7 +309,7 @@ function AdminPanel() {
                     
                     {businessesLoading ? (
                         <div className="p-8 text-center">
-                            <div className="w-5 h-5 animate-spin mx-auto" style={{ border: '2px solid rgba(34, 197, 94, 0.3)', borderTopColor: '#22c55e', borderRadius: '50%' }}></div>
+                            <div className="w-5 h-5 animate-spin mx-auto" style={{ border: '2px solid rgba(0, 25, 0, 0.3)', borderTopColor: '#001900', borderRadius: '50%' }}></div>
                         </div>
                     ) : businesses.length === 0 ? (
                         <div className="p-8 text-center text-gray-500 dark:text-gray-400">

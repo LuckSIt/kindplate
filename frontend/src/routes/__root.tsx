@@ -173,7 +173,7 @@ function RootRoute() {
                             <div 
                                 className="w-full flex flex-col"
                                 style={{ 
-                                    backgroundColor: '#10172A',
+                                    backgroundColor: '#000019',
                                     height: 'var(--app-height, 100vh)',
                                     maxHeight: 'var(--app-height, 100vh)',
                                     overflow: 'hidden'
@@ -211,18 +211,18 @@ function RootRoute() {
                                 >
                                     <div className="mx-auto px-4 grid grid-cols-3 gap-1 w-full">
                                         <TabLink to="/home" label="Карта" icon={(active) => (
-                                            <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? '#35741F' : '#000000'}>
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? '#001900' : '#000000'}>
                                                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                                             </svg>
                                         )} />
                                         <TabLink to="/list" label="Список" icon={(active) => (
-                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#35741F' : '#000000'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#001900' : '#000000'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M4 6h16M4 12h16M4 18h16" />
                                             </svg>
                                         )} />
                                         <TabLink to="/account" label="Профиль" icon={(active) => (
                                             active ? (
-                                                <div className="w-[22px] h-[22px] bg-[#35741F] rounded-full flex items-center justify-center">
+                                                <div className="w-[22px] h-[22px] bg-[#001900] rounded-full flex items-center justify-center">
                                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
                                                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                                     </svg>
@@ -326,7 +326,7 @@ function TabLink({ to, label, icon }: { to: string; label: string; icon: (active
                 <div className="flex flex-col items-center gap-0.5">
                     {icon(isActive)}
                     <span className="text-[9px] leading-[12px] font-semibold" style={{ 
-                        color: isActive ? '#35741F' : '#000000',
+                        color: isActive ? '#001900' : '#000000',
                         fontFamily: 'Montserrat Alternates',
                         textDecoration: 'none'
                     }}>{label}</span>

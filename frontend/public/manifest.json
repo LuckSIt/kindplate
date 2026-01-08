@@ -69,7 +69,7 @@
   "display": "standalone",
   "display_override": ["standalone", "fullscreen", "minimal-ui"],
   "orientation": "portrait",
-  "theme_color": "#22c55e",
+  "theme_color": "#001900",
   "background_color": "#ffffff",
   "categories": ["food", "lifestyle", "shopping"],
   "gcm_sender_id": "103953800507"

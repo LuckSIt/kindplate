@@ -55,7 +55,7 @@ export function QRCodeDisplay({ orderId, orderStatus, className = '' }: QRCodeDi
                 <div className="space-y-4">
                     {isLoading && (
                         <div className="text-center py-8">
-                            <div className="w-5 h-5 animate-spin mx-auto mb-4" style={{ border: '2px solid rgba(22, 163, 74, 0.3)', borderTopColor: '#16a34a', borderRadius: '50%' }}></div>
+                            <div className="w-5 h-5 animate-spin mx-auto mb-4" style={{ border: '2px solid rgba(0, 25, 0, 0.3)', borderTopColor: '#001900', borderRadius: '50%' }}></div>
                             <p className="text-gray-600 dark:text-gray-300">Загружаем QR-код...</p>
                         </div>
                     )}

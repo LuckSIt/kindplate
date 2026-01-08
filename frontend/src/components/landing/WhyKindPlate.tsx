@@ -5,7 +5,7 @@ const CARD_TEXT_STYLES: CSSProperties = {
     fontWeight: 600,
     fontSize: "13px",
     lineHeight: "0.87em",
-    color: "#10172A",
+    color: "#000019",
 };
 
 const ICON_SIZE_PX = 44; // увеличенный размер иконок
@@ -19,7 +19,7 @@ const WHY_KIND_PLATE_CARDS = [
     {
         id: "waste",
         Icon: Minimize2,
-        message: "Уменьшайте\nпищевые отходы и CO₂",
+        message: "Уменьшайте\nпищевые потери и CO₂",
     },
     {
         id: "local",
@@ -38,7 +38,7 @@ export function WhyKindPlate() {
         <section
             data-testid="why-kindplate"
             className="relative mx-auto flex h-[383px] w-[344px] flex-col rounded-[15px]"
-            style={{ backgroundColor: "#083608" }}
+            style={{ backgroundColor: "#001900" }}
         >
             <h3
                 className="absolute left-[39px] top-[4px] text-center font-montserrat-alt"
@@ -57,14 +57,14 @@ export function WhyKindPlate() {
                 {WHY_KIND_PLATE_CARDS.map(({ id, Icon, message }) => (
                     <div
                         key={id}
-                        className="flex h-[122px] w-[122px] flex-col items-center rounded-[15px] bg-[#C8EBBB] px-[14px] pt-[15px] text-center"
+                        className="flex h-[122px] w-[122px] flex-col items-center rounded-[15px] bg-[#001900] px-[14px] pt-[15px] text-center"
                     >
                         <span
                             className="mb-0 flex items-center justify-center"
                             style={{ width: ICON_SIZE_PX, height: ICON_SIZE_PX }}
                         >
                             <Icon
-                                className="text-[#10172A]"
+                                className="text-[#000019]"
                                 strokeWidth={2}
                                 style={{
                                     width: ICON_SIZE_PX,

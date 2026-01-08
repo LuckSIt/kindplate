@@ -118,7 +118,7 @@ export function OffersGrid({
       {isLoadingMore && hasMore && (
         <div className="flex justify-center py-4">
           <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-            <div className="w-4 h-4 animate-spin" style={{ border: '1.5px solid rgba(34, 197, 94, 0.3)', borderTopColor: '#22c55e', borderRadius: '50%' }} />
+            <div className="w-4 h-4 animate-spin" style={{ border: '1.5px solid rgba(0, 25, 0, 0.3)', borderTopColor: '#001900', borderRadius: '50%' }} />
             Загружаем ещё...
           </div>
         </div>

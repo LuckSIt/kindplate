@@ -126,7 +126,7 @@ export function LandingPage() {
             <div 
                 className="max-w-[375px] mx-auto w-full" 
                 style={{ 
-                    backgroundColor: '#10172A',
+                    backgroundColor: '#000019',
                     minHeight: '100%',
                     paddingBottom: '24px'
                 }}
@@ -152,15 +152,15 @@ export function LandingPage() {
                         >
                             <span
                                 className="h-[4px] w-[38px] rounded-full"
-                                style={{ backgroundColor: "#1d2840" }}
+                                style={{ backgroundColor: "#000019" }}
                             />
                             <span
                                 className="h-[4px] w-[38px] rounded-full"
-                                style={{ backgroundColor: "#1d2840" }}
+                                style={{ backgroundColor: "#000019" }}
                             />
                             <span
                                 className="h-[4px] w-[38px] rounded-full"
-                                style={{ backgroundColor: "#1d2840" }}
+                                style={{ backgroundColor: "#000019" }}
                             />
                         </button>
                     </div>
@@ -173,7 +173,7 @@ export function LandingPage() {
                             <span
                                 data-testid="hero-profitable"
                                 className="font-ramona inline-flex items-center justify-center rounded-full px-[16px] py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"
-                                style={{ backgroundColor: '#083608' }}
+                                style={{ backgroundColor: '#001900' }}
                             >
                                 Выгодно
                             </span>
@@ -189,7 +189,7 @@ export function LandingPage() {
                             <span
                                 data-testid="hero-useful"
                                 className="font-ramona inline-flex items-center justify-center rounded-full px-[16px] py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"
-                                style={{ backgroundColor: '#083608' }}
+                                style={{ backgroundColor: '#001900' }}
                             >
                                 полезно
                             </span>
@@ -223,8 +223,8 @@ export function LandingPage() {
                                 className="w-full h-[38px] rounded-[26px] text-[13px] font-bold leading-[1.14] text-center transition-opacity hover:opacity-90 whitespace-nowrap"
                                 style={{ 
                                     backgroundColor: '#FFFFFF',
-                                    border: '1px solid #083608',
-                                    color: '#083608',
+                                    border: '1px solid #001900',
+                                    color: '#001900',
                                     fontFamily: 'Montserrat Alternates, sans-serif',
                                     lineHeight: '1.14em'
                                 }}
@@ -236,7 +236,7 @@ export function LandingPage() {
                             <button 
                                 className="w-full h-[38px] rounded-[26px] border border-white text-[13px] font-bold leading-[1.14] text-center transition-opacity hover:opacity-90 whitespace-nowrap"
                                 style={{ 
-                                    backgroundColor: '#10172A',
+                                    backgroundColor: '#000019',
                                     color: '#E3E3E3',
                                     fontFamily: 'Montserrat Alternates, sans-serif',
                                     borderWidth: '1px',
@@ -267,7 +267,7 @@ export function LandingPage() {
                             <div 
                                 className="w-full h-full rounded-[24px] overflow-visible relative"
                                 style={{ 
-                                    backgroundColor: '#E7F5E2',
+                                    backgroundColor: '#001900',
                                     width: '100%',
                                     height: '100%'
                                 }}
@@ -340,7 +340,7 @@ export function LandingPage() {
                                                 left: 66,
                                                 top: 347,
                                                 position: "absolute",
-                                                color: "#10172A",
+                                                color: "#000019",
                                                 fontSize: 12,
                                                 fontFamily: "Montserrat Alternates, sans-serif",
                                                 fontWeight: 600,
@@ -359,7 +359,7 @@ export function LandingPage() {
                                                 top: 345,
                                                 position: "absolute",
                                                 textAlign: "right",
-                                                color: "#35741F",
+                                                color: "#001900",
                                                 fontSize: 13.5,
                                                 fontFamily: "Montserrat Alternates, sans-serif",
                                                 fontWeight: 600,
@@ -423,14 +423,14 @@ export function LandingPage() {
                                                     cursor: 'pointer'
                                                 }}
                                             >
-                                                <span className="text-[14px] font-bold" style={{ color: '#10172A' }}>-</span>
+                                                <span className="text-[14px] font-bold" style={{ color: '#000019' }}>-</span>
                                             </button>
                                             <span 
                                                 className="text-[14px] font-semibold text-center"
                                                 style={{ 
                                                     minWidth: 24,
                                                     fontFamily: 'Montserrat Alternates, sans-serif',
-                                                    color: '#10172A',
+                                                    color: '#000019',
                                                     lineHeight: '18px'
                                                 }}
                                             >
@@ -447,13 +447,13 @@ export function LandingPage() {
                                                     cursor: 'pointer'
                                                 }}
                                             >
-                                                <span className="text-[14px] font-bold" style={{ color: '#10172A' }}>+</span>
+                                                <span className="text-[14px] font-bold" style={{ color: '#000019' }}>+</span>
                                             </button>
                                         </div>
                                         <button 
                                             className="flex-1 h-[36px] rounded-[8px] text-[12px] font-semibold transition-opacity hover:opacity-90"
                                             style={{ 
-                                                backgroundColor: '#10172A',
+                                                backgroundColor: '#000019',
                                                 color: '#FFFFFF',
                                                 fontFamily: 'Montserrat Alternates, sans-serif'
                                             }}
@@ -471,7 +471,7 @@ export function LandingPage() {
                 <section className="px-[15px] pb-[30px]">
                     <div 
                         className="w-full max-w-[344px] mx-auto rounded-[15px] px-[32px] py-[18px] flex flex-col items-center justify-center gap-[4px]"
-                        style={{ backgroundColor: '#2B344D' }}
+                        style={{ backgroundColor: '#000019' }}
                     >
                         <p 
                             className="text-[24px] font-[600] leading-[1.04] text-center font-montserrat-alt"
@@ -483,7 +483,7 @@ export function LandingPage() {
                             <span 
                                 className="rounded-[8px] px-[12px] py-[5px] text-[22px] font-[600] whitespace-nowrap font-montserrat-alt"
                                 style={{ 
-                                    backgroundColor: '#083608',
+                                    backgroundColor: '#001900',
                                     color: '#FFFFFF'
                                 }}
                             >
@@ -506,7 +506,7 @@ export function LandingPage() {
                             className="text-[16px] leading-[1.08] mb-0 font-montserrat-alt"
                             style={{ 
                                 fontWeight: 700,
-                                color: '#083608',
+                                color: '#001900',
                                 lineHeight: '1.08em'
                             }}
                         >
@@ -520,7 +520,7 @@ export function LandingPage() {
                                 lineHeight: '0.87em'
                             }}
                         >
-                            <span className="font-montserrat-alt" style={{ color: '#083608', fontSize: '22px', fontWeight: 600, display: 'inline' }}>Экономьте и спасайте</span>
+                            <span className="font-montserrat-alt" style={{ color: '#001900', fontSize: '22px', fontWeight: 600, display: 'inline' }}>Экономьте и спасайте</span>
                             {' '}
                             <span className="font-montserrat-alt" style={{ color: '#000000', fontSize: '22px', fontWeight: 600, display: 'inline' }}>еду из любимых заведений</span>
                         </h4>
@@ -528,11 +528,11 @@ export function LandingPage() {
                             className="text-[12px] leading-[0.94] mb-[32px] font-montserrat-alt"
                             style={{ 
                                 fontWeight: 400,
-                                color: '#10172A',
+                                color: '#000019',
                                 lineHeight: '0.94em'
                             }}
                         >
-                            Получайте вкусные блюда по отличным ценам и помогайте сокращать пищевые отходы. Смотрите актуальные предложения рядом с вами и бронируйте прямо в KindPlate. Каждый заказ — шаг к более ответственному потреблению и поддержке экологической устойчивости.
+                            Получайте вкусные блюда по отличным ценам. Смотрите актуальные предложения рядом с вами и бронируйте прямо в KindPlate. Каждый заказ — шаг к более ответственному потреблению и поддержке экологической устойчивости.
                         </p>
                         
                         {/* Steps */}
@@ -542,7 +542,7 @@ export function LandingPage() {
                                     className="text-[12px] leading-[0.87] flex-shrink-0 font-montserrat-alt"
                                     style={{ 
                                         fontWeight: 600,
-                                        color: '#083608',
+                                        color: '#001900',
                                         lineHeight: '0.87em'
                                     }}
                                 >
@@ -552,7 +552,7 @@ export function LandingPage() {
                                     className="text-[11px] leading-[0.87] font-montserrat-alt"
                                     style={{ 
                                         fontWeight: 600,
-                                        color: '#10172A',
+                                        color: '#000019',
                                         lineHeight: '0.87em'
                                     }}
                                 >
@@ -565,7 +565,7 @@ export function LandingPage() {
                                     className="text-[12px] leading-[0.87] flex-shrink-0 font-montserrat-alt"
                                     style={{ 
                                         fontWeight: 600,
-                                        color: '#083608',
+                                        color: '#001900',
                                         lineHeight: '0.87em'
                                     }}
                                 >
@@ -575,7 +575,7 @@ export function LandingPage() {
                                     className="text-[11px] leading-[0.87] font-montserrat-alt"
                                     style={{ 
                                         fontWeight: 600,
-                                        color: '#10172A',
+                                        color: '#000019',
                                         lineHeight: '0.87em'
                                     }}
                                 >
@@ -588,7 +588,7 @@ export function LandingPage() {
                                     className="text-[12px] leading-[0.87] flex-shrink-0 font-montserrat-alt"
                                     style={{ 
                                         fontWeight: 600,
-                                        color: '#083608',
+                                        color: '#001900',
                                         lineHeight: '0.87em'
                                     }}
                                 >
@@ -598,7 +598,7 @@ export function LandingPage() {
                                     className="text-[11px] leading-[0.87] font-montserrat-alt"
                                     style={{ 
                                         fontWeight: 600,
-                                        color: '#10172A',
+                                        color: '#000019',
                                         lineHeight: '0.87em'
                                     }}
                                 >
@@ -612,7 +612,7 @@ export function LandingPage() {
                                 <button 
                                     className="w-[186px] h-[28px] rounded-[5px] text-[12px] font-semibold leading-[0.94] transition-opacity hover:opacity-90 font-montserrat-alt"
                                     style={{ 
-                                        backgroundColor: '#083608',
+                                        backgroundColor: '#001900',
                                         color: '#FFFFFF',
                                         lineHeight: '0.94em'
                                     }}
@@ -628,13 +628,13 @@ export function LandingPage() {
                 <section className="px-[15px] pb-[60px]">
                     <div 
                         className="rounded-[15px] px-[20px] pt-[5px] pb-[20px]"
-                        style={{ backgroundColor: '#2B344D' }}
+                        style={{ backgroundColor: '#000019' }}
                     >
                         <h3 
                             className="text-[16px] leading-[1.08] mb-0 font-montserrat-alt"
                             style={{ 
                                 fontWeight: 700,
-                                color: '#35741F',
+                                color: '#001900',
                                 lineHeight: '1.08em'
                             }}
                         >
@@ -659,7 +659,7 @@ export function LandingPage() {
                                 lineHeight: '0.94em'
                             }}
                         >
-                            Kindplate помогает ресторанам и магазинам продавать непроданные блюда и готовые продукты со скидкой, вместо того чтобы их списывать их. Так вы зарабатываете на том, что раньше отправлялось в отходы, и вносите вклад в осознанное потребление и заботу о планете.
+                            Kindplate помогает ресторанам и магазинам продавать непроданные блюда и готовые продукты со скидкой, вместо того чтобы их списывать их. Так вы вносите вклад в осознанное потребление и заботу о планете.
                         </p>
                         
                         {/* Steps */}
@@ -739,7 +739,7 @@ export function LandingPage() {
                                 className="w-full h-[31px] rounded-[5px] text-[12px] font-semibold leading-[0.94] transition-opacity hover:opacity-90 font-montserrat-alt"
                                 style={{ 
                                     backgroundColor: '#F5FBA2',
-                                    color: '#10172A',
+                                    color: '#000019',
                                     lineHeight: '0.94em'
                                 }}
                             >
@@ -759,7 +759,7 @@ export function LandingPage() {
                     <div
                         className="relative"
                         style={{ 
-                            backgroundColor: "#2B344D",
+                            backgroundColor: "#000019",
                             width: "375px",
                             minHeight: "201px",
                             paddingTop: "10px",
@@ -781,7 +781,7 @@ export function LandingPage() {
                                         fontWeight: 600,
                                         fontSize: "14px",
                                         lineHeight: "22px",
-                                        color: '#35741F',
+                                        color: '#001900',
                                         textAlign: "left",
                                         marginBottom: "0px"
                                     }}
@@ -861,7 +861,7 @@ export function LandingPage() {
                                         fontWeight: 600,
                                         fontSize: "14px",
                                         lineHeight: "22px",
-                                        color: '#35741F',
+                                        color: '#001900',
                                         textAlign: "left",
                                         marginBottom: "0px"
                                     }}
@@ -912,7 +912,7 @@ export function LandingPage() {
                                     fontWeight: 600,
                                     fontSize: "14px",
                                     lineHeight: "22px",
-                                    color: "#35741F",
+                                    color: "#001900",
                                     marginBottom: "3px"
                                 }}
                             >

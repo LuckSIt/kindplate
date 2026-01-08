@@ -283,7 +283,7 @@ export function LoadingSpinner({
     switch (color) {
       case 'white': return { track: 'rgba(255, 255, 255, 0.3)', active: '#ffffff' };
       case 'gray': return { track: 'rgba(107, 114, 128, 0.3)', active: '#6b7280' };
-      default: return { track: 'rgba(22, 163, 74, 0.3)', active: '#16a34a' };
+      default: return { track: 'rgba(0, 25, 0, 0.3)', active: '#001900' };
     }
   };
 

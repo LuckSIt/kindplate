@@ -204,7 +204,7 @@ export function MapDisplay({
             <div ref={mapRef} className="w-full h-full rounded-lg overflow-hidden" style={{ minHeight: '200px' }} />
             {isLoading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100/50 dark:bg-gray-900/50 rounded-lg">
-                    <div className="w-5 h-5 animate-spin" style={{ border: '2px solid rgba(22, 163, 74, 0.3)', borderTopColor: '#16a34a', borderRadius: '50%' }}></div>
+                    <div className="w-5 h-5 animate-spin" style={{ border: '2px solid rgba(0, 25, 0, 0.3)', borderTopColor: '#001900', borderRadius: '50%' }}></div>
                 </div>
             )}
             {address && !isLoading && (
@@ -270,7 +270,7 @@ export function LocationPicker({
             
             {isGeocoding && (
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                    <div className="w-4 h-4 animate-spin" style={{ border: '1.5px solid rgba(22, 163, 74, 0.3)', borderTopColor: '#16a34a', borderRadius: '50%' }}></div>
+                    <div className="w-4 h-4 animate-spin" style={{ border: '1.5px solid rgba(0, 25, 0, 0.3)', borderTopColor: '#001900', borderRadius: '50%' }}></div>
                     <span>Определение адреса...</span>
                 </div>
             )}
