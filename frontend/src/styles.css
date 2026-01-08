@@ -4518,3 +4518,290 @@ div.font-montserrat-alt,
 .orders-page__review-button {
   border-color: rgba(255, 255, 255, 0.3);
 }
+
+/* Favorites Page Styles (same as cart-page) */
+.favorites-page {
+  min-height: 100%;
+  width: 100%;
+  background-color: #000019;
+  position: relative;
+  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  padding-bottom: 100px;
+}
+
+.favorites-page__header {
+  width: 100%;
+  background-color: #001900;
+  padding: 27px 14px 0;
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  overflow: visible;
+  margin-bottom: 50px;
+}
+
+.favorites-page__header-floating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateY(50%);
+  width: 100%;
+}
+
+.favorites-page__back-button {
+  width: 59px;
+  height: 59px;
+  background-color: #D9D9D9;
+  border-radius: 15px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.favorites-page__back-button:hover {
+  opacity: 0.9;
+}
+
+.favorites-page__back-button-icon {
+  width: 39px;
+  height: 39px;
+  display: block;
+}
+
+.favorites-page__header-title-container {
+  flex: 1;
+  height: 59px;
+  background-color: #D9D9D9;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.favorites-page__header-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 22px;
+  color: #000000 !important;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.favorites-page__content {
+  padding: 14px;
+  padding-top: 0;
+}
+
+.favorites-page__count {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FFFFFF;
+  opacity: 0.8;
+  margin-bottom: 20px;
+  padding: 0 14px;
+}
+
+.favorites-page__loading {
+  text-align: center;
+  color: #FFFFFF;
+  padding: 40px 20px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.favorites-page__loading p {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.favorites-page__empty {
+  text-align: center;
+  color: #FFFFFF;
+  padding: 40px 20px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.favorites-page__empty p {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  color: #FFFFFF;
+  margin: 0 0 8px 0;
+}
+
+.favorites-page__empty-subtitle {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #FFFFFF;
+  opacity: 0.8;
+  margin: 0 0 24px 0 !important;
+}
+
+.favorites-page__empty-button {
+  padding: 12px 24px;
+  background-color: #D9D9D9;
+  border: none;
+  border-radius: 15px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 22px;
+  color: #000000;
+  cursor: pointer;
+}
+
+.favorites-page__empty-button:hover {
+  opacity: 0.9;
+}
+
+.favorites-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0 14px;
+}
+
+.favorites-page__business-card {
+  background-color: #000019;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.favorites-page__business-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.favorites-page__business-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  color: #FFFFFF;
+  flex: 1;
+}
+
+.favorites-page__remove-button {
+  width: 32px;
+  height: 32px;
+  background-color: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #FFFFFF;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.favorites-page__remove-button:hover {
+  opacity: 1;
+}
+
+.favorites-page__business-rating {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  color: #FFFFFF;
+  opacity: 0.8;
+}
+
+.favorites-page__business-address {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FFFFFF;
+  opacity: 0.9;
+}
+
+.favorites-page__offers-box {
+  background-color: #000019;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.favorites-page__offers-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.favorites-page__offers-content {
+  flex: 1;
+}
+
+.favorites-page__offers-count {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FFFFFF;
+  margin-bottom: 2px;
+}
+
+.favorites-page__offers-status {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  color: #FFFFFF;
+  opacity: 0.8;
+}
+
+.favorites-page__map-button {
+  width: 100%;
+  height: 40px;
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #FFFFFF;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.favorites-page__map-button:hover {
+  opacity: 0.8;
+  background-color: rgba(255, 255, 255, 0.05);
+}

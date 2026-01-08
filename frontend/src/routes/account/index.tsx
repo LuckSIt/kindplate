@@ -523,125 +523,118 @@ function RouteComponent() {
         const favorites = favoritesData?.data?.favorites || [];
         
         return (
-            <div className="min-h-screen bg-gradient-to-br from-pink-50 to-red-50 pb-20">
+            <div className="favorites-page">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-pink-600 to-red-600 text-white px-4 py-6 shadow-lg sticky top-0 z-10">
-                    <div className="flex items-center gap-3 mb-2">
+                <div className="favorites-page__header">
+                    <div className="favorites-page__header-floating">
                         <button 
+                            className="favorites-page__back-button"
                             onClick={() => setShowFavorites(false)}
-                            className="p-2 hover:bg-white/20 rounded-full transition-colors"
+                            aria-label="Назад"
                         >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
+                            <img 
+                                src={arrowBackIcon} 
+                                alt="Назад" 
+                                className="favorites-page__back-button-icon"
+                            />
                         </button>
-                        <div>
-                            <h1 className="text-2xl font-bold flex items-center gap-2">
-                                <span>❤️</span>
-                                Избранное
-                            </h1>
-                            <p className="text-pink-100 text-sm">{favorites.length} заведений</p>
+                        <div className="favorites-page__header-title-container">
+                            <h1 className="favorites-page__header-name">Избранное</h1>
                         </div>
                     </div>
                 </div>
 
-                {/* Favorites List */}
-                <div className="p-4 space-y-4">
+                {/* Content */}
+                <div className="favorites-page__content">
+                    <div className="favorites-page__count">
+                        {favorites.length} {favorites.length === 1 ? 'заведение' : favorites.length < 5 ? 'заведения' : 'заведений'}
+                    </div>
+
                     {favoritesLoading && (
-                        <div className="text-center py-12">
-                            <svg className="mx-auto mb-4 animate-spin" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="#db277733" strokeWidth="3" />
-                                <path d="M12 2a10 10 0 0 1 10 10" stroke="#db2777" strokeWidth="3" strokeLinecap="round" />
-                            </svg>
-                            <p className="text-gray-600 dark:text-gray-300">Загружаем избранное...</p>
+                        <div className="favorites-page__loading">
+                            <div className="w-5 h-5 animate-spin" style={{ 
+                                border: '2px solid rgba(217, 217, 217, 0.3)', 
+                                borderTopColor: '#D9D9D9', 
+                                borderRadius: '50%' 
+                            }}></div>
+                            <p>Загружаем избранное...</p>
                         </div>
                     )}
 
                     {!favoritesLoading && favorites.length === 0 && (
-                        <div className="text-center py-12">
-                            <span className="text-6xl block mb-4">💔</span>
-                            <p className="text-gray-600 dark:text-gray-300 text-lg mb-2">Избранных заведений пока нет</p>
-                            <p className="text-gray-400 mb-6">Добавьте понравившиеся места с карты!</p>
-                            <Button
+                        <div className="favorites-page__empty">
+                            <p>Избранных заведений пока нет</p>
+                            <p className="favorites-page__empty-subtitle">Добавьте понравившиеся места с карты!</p>
+                            <button 
+                                className="favorites-page__empty-button"
                                 onClick={() => navigate({ to: "/home" })}
-                                className="bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600"
                             >
                                 Перейти к карте
-                            </Button>
+                            </button>
                         </div>
                     )}
 
-                    {favorites.map((business: { id: number; name: string; address?: string; rating?: number; total_reviews?: number; active_offers?: number; image_url?: string; logo_url?: string }) => (
-                        <div key={business.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-                            {/* Header */}
-                            <div className="bg-gradient-to-r from-pink-500 to-red-500 text-white px-4 py-3">
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <div className="font-bold text-lg">{business.name}</div>
-                                        <div className="text-xs opacity-90 flex items-center gap-2">
-                                            {business.rating && business.rating > 0 && (
-                                                <>
-                                                    <span>⭐ {parseFloat(String(business.rating)).toFixed(1)}</span>
-                                                    <span>•</span>
-                                                </>
-                                            )}
-                                            <span>{(business.total_reviews || 0)} отзывов</span>
-                                        </div>
+                    {!favoritesLoading && favorites.length > 0 && (
+                        <div className="favorites-page__list">
+                            {favorites.map((business: { id: number; name: string; address?: string; rating?: number; total_reviews?: number; active_offers?: number; image_url?: string; logo_url?: string }) => (
+                                <div key={business.id} className="favorites-page__business-card">
+                                    <div className="favorites-page__business-header">
+                                        <div className="favorites-page__business-name">{business.name}</div>
+                                        <button
+                                            className="favorites-page__remove-button"
+                                            onClick={() => {
+                                                if (confirm(`Удалить "${business.name}" из избранного?`)) {
+                                                    removeFavorite(business.id);
+                                                }
+                                            }}
+                                            aria-label="Удалить из избранного"
+                                        >
+                                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                            </svg>
+                                        </button>
                                     </div>
+
+                                    {business.rating && business.rating > 0 && (
+                                        <div className="favorites-page__business-rating">
+                                            ⭐ {parseFloat(String(business.rating)).toFixed(1)} • {(business.total_reviews || 0)} отзывов
+                                        </div>
+                                    )}
+
+                                    {!business.rating && business.total_reviews !== undefined && (
+                                        <div className="favorites-page__business-rating">
+                                            {(business.total_reviews || 0)} отзывов
+                                        </div>
+                                    )}
+
+                                    {business.address && (
+                                        <div className="favorites-page__business-address">
+                                            {business.address}
+                                        </div>
+                                    )}
+
+                                    {(business.active_offers || 0) > 0 && (
+                                        <div className="favorites-page__offers-box">
+                                            <div className="favorites-page__offers-icon">🍽️</div>
+                                            <div className="favorites-page__offers-content">
+                                                <div className="favorites-page__offers-count">
+                                                    {business.active_offers || 0} активных предложений
+                                                </div>
+                                                <div className="favorites-page__offers-status">Доступно сейчас</div>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <button
-                                        onClick={() => {
-                                            if (confirm(`Удалить "${business.name}" из избранного?`)) {
-                                                removeFavorite(business.id);
-                                            }
-                                        }}
-                                        className="p-2 hover:bg-white/20 rounded-full transition-colors"
+                                        className="favorites-page__map-button"
+                                        onClick={() => navigate({ to: "/home" })}
                                     >
-                                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                                        </svg>
+                                        📍 Открыть на карте
                                     </button>
                                 </div>
-                            </div>
-
-                            {/* Content */}
-                            <div className="p-4 space-y-3">
-                                {/* Image */}
-                                <div className="w-full h-40 bg-gradient-to-br from-pink-200 to-red-300 rounded-xl flex items-center justify-center text-6xl">
-                                    {business.logo_url ? (
-                                        <img src={business.logo_url} alt={business.name} className="w-full h-full object-cover rounded-xl" />
-                                    ) : (
-                                        '🏪'
-                                    )}
-                                </div>
-
-                            {/* Address – только текст, без иконки */}
-                            <div className="text-sm text-gray-600 dark:text-gray-300">
-                                <span>{business.address}</span>
-                            </div>
-
-                                {/* Active Offers */}
-                                {(business.active_offers || 0) > 0 && (
-                                    <div className="bg-primary-50 border border-primary-200 rounded-lg p-3 flex items-center gap-2">
-                                        <span className="text-2xl">🍽️</span>
-                                        <div>
-                                            <div className="font-bold text-primary-700">
-                                                {business.active_offers || 0} активных предложений
-                                            </div>
-                                            <div className="text-xs text-primary">Доступно сейчас</div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Actions */}
-                                <Button
-                                    onClick={() => navigate({ to: "/home" })}
-                                    className="w-full bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary"
-                                >
-                                    📍 Открыть на карте
-                                </Button>
-                            </div>
+                            ))}
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
         );
