@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { axiosInstance } from '@/lib/axiosInstance';
+import { axiosInstance, getBackendURL } from '@/lib/axiosInstance';
 import { notify } from '@/lib/notifications';
 import type { Business, Offer } from '@/lib/types';
 import { useCart } from '@/lib/hooks/use-cart';
-import vendorOffer1 from "@/figma/vendor-offer-1.png";
-import vendorOffer2 from "@/figma/vendor-offer-2.png";
-import businessImage1 from "@/figma/business-image-1.png";
-import businessImage2 from "@/figma/business-image-2.png";
 import { useFavoriteCheck, useToggleFavorite } from '@/lib/hooks/use-favorites';
 
 interface VendorPageProps {
@@ -184,7 +180,8 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     );
   }
 
-  const offerImages = [vendorOffer1, vendorOffer2, businessImage1, businessImage2];
+  // Удаляем статические изображения - используем только image_url из API
+  // const offerImages = [vendorOffer1, vendorOffer2, businessImage1, businessImage2];
 
   return (
     <div className="vendor-page">
@@ -284,16 +281,19 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
         {offers.length === 0 ? (
           <div className="vendor-page__empty">Нет доступных предложений</div>
         ) : (
-          offers.map((offer, index) => {
+          offers.map((offer) => {
             const quantity = offerQuantities.get(offer.id) || 1;
             const showQuantitySelector = quantity > 0;
-            const image = offerImages[index % offerImages.length];
+            // Используем только image_url из API, без статических изображений
+            const imageUrl = offer.image_url 
+              ? `${getBackendURL()}${offer.image_url}` 
+              : undefined;
 
             return (
               <OfferCard
-                key={offer.id || index}
+                key={`${offer.id}-${offer.image_url || 'no-image'}`}
                 offer={offer}
-                image={image}
+                image={imageUrl}
                 quantity={quantity}
                 showQuantitySelector={showQuantitySelector}
                 onQuantityIncrease={() => handleQuantityChange(offer.id, 1)}
@@ -375,7 +375,21 @@ function OfferCard({
     >
       {/* Image */}
       <div className="vendor-page__offer-image">
-        <img src={image || offer.image_url} alt={offer.title} />
+        {image ? (
+          <img 
+            src={image} 
+            alt={offer.title}
+            key={`${offer.id}-${offer.image_url || 'no-image'}`}
+            onError={() => {
+              console.error('Ошибка загрузки изображения:', image);
+              // Можно добавить fallback изображение здесь
+            }}
+          />
+        ) : (
+          <div className="vendor-page__offer-image-placeholder">
+            <span>Нет фото</span>
+          </div>
+        )}
       </div>
 
       {/* Favorite Button */}

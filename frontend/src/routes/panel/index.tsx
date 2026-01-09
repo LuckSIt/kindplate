@@ -665,7 +665,16 @@ function RouteComponent() {
                 queryClient.invalidateQueries({ queryKey: ["businesses_fallback"] }),
                 queryClient.invalidateQueries({ queryKey: ["customer/offers"] }),
                 queryClient.invalidateQueries({ queryKey: ["customer/sellers"] }),
+                queryClient.invalidateQueries({ queryKey: ["customer/vendors"] }), // Инвалидируем страницы вендоров
+                queryClient.invalidateQueries({ queryKey: ["vendor"] }), // Инвалидируем страницы вендоров (vendor-page)
+                queryClient.invalidateQueries({ queryKey: ["vendor-offers"] }), // Инвалидируем предложения вендоров
             ]);
+            
+            // Принудительно обновляем страницы, которые могут показывать это предложение
+            queryClient.refetchQueries({ queryKey: ["offers_search"] });
+            queryClient.refetchQueries({ queryKey: ["customer/vendors"] });
+            queryClient.refetchQueries({ queryKey: ["vendor"] });
+            queryClient.refetchQueries({ queryKey: ["vendor-offers"] });
             
             notify.success("Фото загружено", "Фото успешно загружено! 📸");
         },
