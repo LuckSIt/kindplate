@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { Minus, Plus, Edit, Clock, Power, MapPin } from "lucide-react";
 import {
@@ -19,6 +19,7 @@ import type { Offer, Order } from "@/lib/types";
 import { QRScanner } from "@/components/ui/qr-scanner";
 import { OfferScheduleDialog } from "@/components/ui/offer-schedule-dialog";
 import { BusinessLocationsManager } from "@/components/ui/business-locations-manager";
+import arrowBackIcon from "@/figma/arrow-back.svg";
 
 export const Route = createFileRoute("/panel/")({
     component: RouteComponent,
@@ -580,6 +581,7 @@ function EditOfferDialog({ open, currentOffer, onSave, onDelete, onCancel }: Edi
 
 function RouteComponent() {
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('offers'); // 'offers', 'orders', or 'stats'
 
     const {
@@ -767,6 +769,17 @@ function RouteComponent() {
         <div className="panel-page">
             <div className="panel-page__header">
                 <div className="panel-page__header-content">
+                    <button 
+                        className="panel-page__back-button"
+                        onClick={() => navigate({ to: "/account" })}
+                        aria-label="Назад"
+                    >
+                        <img 
+                            src={arrowBackIcon} 
+                            alt="Назад" 
+                            className="panel-page__back-button-icon"
+                        />
+                    </button>
                     <h1 className="panel-page__header-title">Панель управления</h1>
                 </div>
                 

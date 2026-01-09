@@ -30,9 +30,9 @@ interface SEOProps {
 
 const DEFAULT_SEO = {
     siteName: 'KindPlate',
-    defaultTitle: 'KindPlate - Спасаем еду от выбрасывания',
-    defaultDescription: 'Покупайте готовую еду с коротким сроком годности со скидкой до 70%. Спасайте еду от выбрасывания и экономьте деньги!',
-    defaultImage: '/kandlate.png',
+    defaultTitle: 'KindPlate',
+    defaultDescription: 'Покупайте готовую еду со скидкой до 70%. Спасайте еду от выбрасывания и экономьте деньги!',
+    defaultImage: '/kindplate.png',
     baseUrl: import.meta.env.VITE_BASE_URL || 'http://localhost:3000',
     locale: 'ru_RU',
     twitterSite: '@kindplate',
@@ -143,7 +143,6 @@ export function HomePageSEO() {
             url="/"
             keywords={[
                 'готовая еда со скидкой',
-                'короткий срок годности',
                 'спасти еду',
                 'экономия на еде',
                 'КиндПлейт',
