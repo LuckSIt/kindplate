@@ -30,20 +30,33 @@ function RouteComponent() {
     const [selectedOrderForReview, setSelectedOrderForReview] = useState<any>(null);
     const [reviewRating, setReviewRating] = useState(5);
     const [reviewComment, setReviewComment] = useState("");
-    const { user } = useContext(authContext);
+    const authContextValue = useContext(authContext);
+    const { user, isLoading: authLoading, isSuccess: authSuccess } = authContextValue;
     
     // Логируем данные пользователя для отладки и принудительно обновляем при монтировании
     useEffect(() => {
         // Логируем всегда (не только в dev), чтобы видеть на мобильном
+        console.log('[Account] Component mounted/updated');
+        console.log('[Account] Auth context value:', JSON.stringify(authContextValue, null, 2));
         console.log('[Account] User in context:', user);
         console.log('[Account] User name:', user?.name);
         console.log('[Account] User is_business:', user?.is_business);
         console.log('[Account] User email:', user?.email);
         console.log('[Account] User id:', user?.id);
+        console.log('[Account] Auth loading:', authLoading);
+        console.log('[Account] Auth success:', authSuccess);
         
-        // Принудительно обновляем данные пользователя при загрузке страницы
+        // Принудительно обновляем данные пользователя при монтировании компонента
+        console.log('[Account] Refetching auth on mount...');
         queryClient.refetchQueries({ queryKey: ["auth"] });
-    }, [queryClient, user]);
+    }, []); // Пустой массив зависимостей - выполняется только при монтировании
+    
+    // Отдельный эффект для логирования изменений пользователя
+    useEffect(() => {
+        console.log('[Account] User changed:', user);
+        console.log('[Account] User name changed:', user?.name);
+        console.log('[Account] User is_business changed:', user?.is_business);
+    }, [user]);
     
     // Mutation для выхода из системы (не используется, но оставлено для будущего использования)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

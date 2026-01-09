@@ -104,29 +104,58 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     // Извлекаем user из разных форматов ответа
+    // Используем data !== undefined вместо isSuccess, так как данные могут быть доступны даже если isSuccess еще false
     const user = (() => {
-        console.log('[Auth] Extracting user from data:', { isSuccess, isLoading, isError, hasData: !!data, data });
+        console.log('[Auth] Extracting user from data:', { 
+            isSuccess, 
+            isLoading, 
+            isError, 
+            hasData: !!data, 
+            dataType: typeof data,
+            data: data ? JSON.stringify(data, null, 2) : 'null/undefined'
+        });
         
-        if (!isSuccess || !data) {
-            console.log('[Auth] No data or not success', { isSuccess, data, isLoading, isError });
+        // Если еще загружается, возвращаем null
+        if (isLoading) {
+            console.log('[Auth] Still loading...');
+            return null;
+        }
+        
+        // Если есть ошибка и нет данных, возвращаем null
+        if (isError && !data) {
+            console.log('[Auth] Error and no data');
+            return null;
+        }
+        
+        // Если данных нет, возвращаем null
+        if (!data) {
+            console.log('[Auth] No data available', { isSuccess, isLoading, isError });
             return null;
         }
         
         // Если data имеет структуру { user, success }
-        if ('user' in data && data.user) {
-            console.log('[Auth] User found (direct):', data.user);
-            console.log('[Auth] User details - name:', data.user.name, 'is_business:', data.user.is_business, 'email:', data.user.email);
-            return data.user;
+        if ('user' in data) {
+            const extractedUser = data.user;
+            if (extractedUser) {
+                console.log('[Auth] User found (direct):', JSON.stringify(extractedUser, null, 2));
+                console.log('[Auth] User details - name:', extractedUser.name, 'is_business:', extractedUser.is_business, 'email:', extractedUser.email);
+                return extractedUser;
+            } else {
+                console.log('[Auth] User field exists but is null/undefined');
+            }
         }
         
         // Если data имеет структуру { data: { user } }
-        if ('data' in data && data.data && 'user' in data.data && data.data.user) {
-            console.log('[Auth] User found (nested):', data.data.user);
-            console.log('[Auth] User details - name:', data.data.user.name, 'is_business:', data.data.user.is_business, 'email:', data.data.user.email);
-            return data.data.user;
+        if ('data' in data && data.data) {
+            if ('user' in data.data && data.data.user) {
+                const extractedUser = data.data.user;
+                console.log('[Auth] User found (nested):', JSON.stringify(extractedUser, null, 2));
+                console.log('[Auth] User details - name:', extractedUser.name, 'is_business:', extractedUser.is_business, 'email:', extractedUser.email);
+                return extractedUser;
+            }
         }
         
-        console.warn('[Auth] User not found in response', data);
+        console.warn('[Auth] User not found in response. Data structure:', JSON.stringify(data, null, 2));
         return null;
     })();
 
