@@ -164,13 +164,16 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
         const usersColumnsCheck = await pool.query(`
             SELECT column_name FROM information_schema.columns 
             WHERE table_schema = 'public' AND table_name = 'users'
-            AND column_name IN ('cuisine_tags', 'logo_url', 'rating', 'total_reviews')
+            AND column_name IN ('cuisine_tags', 'logo_url', 'rating', 'total_reviews', 'phone', 'working_hours', 'website')
         `);
         const availableUserColumns = usersColumnsCheck.rows.map(r => r.column_name);
         const userHasCuisineTags = availableUserColumns.includes('cuisine_tags');
         const userHasLogoUrl = availableUserColumns.includes('logo_url');
         const userHasRating = availableUserColumns.includes('rating');
         const userHasTotalReviews = availableUserColumns.includes('total_reviews');
+        const userHasPhone = availableUserColumns.includes('phone');
+        const userHasWorkingHours = availableUserColumns.includes('working_hours');
+        const userHasWebsite = availableUserColumns.includes('website');
 
         // Формируем SQL запрос
         let query = `
@@ -198,7 +201,10 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
                 u.coord_1 as business_lon,
                 ${userHasLogoUrl ? 'u.logo_url' : 'NULL::text as business_logo_url'} as business_logo_url,
                 ${userHasRating ? 'u.rating' : '0::numeric as business_rating'} as business_rating,
-                ${userHasTotalReviews ? 'u.total_reviews' : '0::integer as business_total_reviews'} as business_total_reviews
+                ${userHasTotalReviews ? 'u.total_reviews' : '0::integer as business_total_reviews'} as business_total_reviews,
+                ${userHasPhone ? 'u.phone' : 'NULL::text as business_phone'} as business_phone,
+                ${userHasWorkingHours ? 'u.working_hours' : 'NULL::text as business_working_hours'} as business_working_hours,
+                ${userHasWebsite ? 'u.website' : 'NULL::text as business_website'} as business_website
         `;
         
         // Добавляем поля локации только если таблица существует
@@ -501,7 +507,10 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
                     coords: businessCoords,
                     logo_url: row.business_logo_url || null,
                     rating: parseFloat(row.business_rating) || 0,
-                    total_reviews: row.business_total_reviews || 0
+                    total_reviews: row.business_total_reviews || 0,
+                    phone: row.business_phone || null,
+                    working_hours: row.business_working_hours || null,
+                    website: row.business_website || null
                 },
                 location: row.location_id ? {
                     id: row.location_id,

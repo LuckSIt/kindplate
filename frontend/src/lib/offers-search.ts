@@ -27,6 +27,9 @@ export type OfferSearchResult = Offer & {
     rating?: number;
     total_reviews?: number;
     logo_url?: string;
+    phone?: string;
+    working_hours?: string;
+    website?: string;
   };
   distance_km?: number | null;
   location?: {
@@ -113,7 +116,9 @@ export const mapOffersToBusinesses = (offers?: OfferSearchResult[]): Business[] 
         rating: offer.business.rating,
         total_reviews: offer.business.total_reviews,
         logo_url: offer.business.logo_url,
-        phone: undefined,
+        phone: offer.business.phone,
+        working_hours: offer.business.working_hours,
+        website: offer.business.website,
         offers: [],
       });
     }
