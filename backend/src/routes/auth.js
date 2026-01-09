@@ -142,7 +142,32 @@ authRouter.get("/logout", (req, res) => {
 });
 
 authRouter.get("/me", asyncHandler(async (req, res) => {
-    if (req.session.userId === undefined) {
+    // Диагностика для мобильных устройств
+    const userAgent = req.headers['user-agent'] || '';
+    const isMobile = /Mobile|Android|iPhone|iPad/i.test(userAgent);
+    const origin = req.headers.origin || 'no origin';
+    const cookies = req.headers.cookie || 'no cookies';
+    const hasSessionId = cookies.includes('session=');
+    const sessionUserId = req.session?.userId;
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    const hasJWT = authHeader && authHeader.startsWith('Bearer ');
+    
+    logger.info(`🔍 /auth/me request:`, {
+        isMobile,
+        origin,
+        hasSessionCookie: hasSessionId,
+        sessionUserId: sessionUserId !== undefined ? sessionUserId : 'undefined',
+        sessionExists: !!req.session,
+        hasJWT: !!hasJWT,
+        userAgent: userAgent.substring(0, 50)
+    });
+    
+    // Используем универсальную проверку аутентификации (сессия + JWT)
+    const { ensureAuthenticated } = require("../lib/auth");
+    const userId = await ensureAuthenticated(req, res);
+    
+    if (!userId) {
+        logger.warn(`⚠️ /auth/me: No userId found. Cookies: ${hasSessionId ? 'present' : 'missing'}, JWT: ${hasJWT ? 'present' : 'missing'}`);
         return res.json({
             user: null,
             success: true,
@@ -171,7 +196,7 @@ authRouter.get("/me", asyncHandler(async (req, res) => {
 
         const result = await pool.query(
             `SELECT ${selectFields.join(', ')} FROM users WHERE id=$1`,
-            [req.session.userId]
+            [userId]
         );
 
         if (result.rowCount === 0) {

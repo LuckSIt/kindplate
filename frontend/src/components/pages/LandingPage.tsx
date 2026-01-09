@@ -268,7 +268,7 @@ export function LandingPage() {
                             <div 
                                 className="w-full h-full rounded-[24px] overflow-visible relative"
                                 style={{ 
-                                    backgroundColor: '#001900',
+                                    backgroundColor: '#C8EBBB',
                                     width: '100%',
                                     height: '100%'
                                 }}

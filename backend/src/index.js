@@ -180,17 +180,42 @@ app.use(sqlInjectionProtection);
 
 // Раздача статических файлов (фотографии)
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+// Определяем настройки кук в зависимости от окружения
+// Для продакшена используем 'none' для кросс-доменных запросов
+// Для разработки используем 'lax' для локальных запросов
+const isProduction = process.env.NODE_ENV === 'production';
+const cookieSameSite = isProduction ? 'none' : 'lax';
+const cookieSecure = isProduction; // В продакшене всегда true, в разработке зависит от протокола
+
+logger.info(`🍪 Cookie settings: sameSite=${cookieSameSite}, secure=${cookieSecure}, NODE_ENV=${process.env.NODE_ENV}`);
+
 app.use(
     cookieSession({
         name: "session",
         keys: [process.env.SECRET_KEY],
-        // Cross-site cookies for frontend <-> backend on different domains (Render)
-        sameSite: 'none',
-        secure: true,
+        sameSite: cookieSameSite,
+        secure: cookieSecure,
         httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 дней
+        // Не устанавливаем domain, чтобы куки работали на всех поддоменах
+        // Это важно для мобильных устройств
     })
 );
+
+// Middleware для логирования информации о сессии (только для отладки)
+app.use((req, res, next) => {
+    if (process.env.NODE_ENV !== 'production') {
+        const userAgent = req.headers['user-agent'] || '';
+        const isMobile = /Mobile|Android|iPhone|iPad/i.test(userAgent);
+        const hasSession = req.session && req.session.userId !== undefined;
+        const origin = req.headers.origin || 'no origin';
+        
+        if (req.path === '/auth/me' || req.path.startsWith('/auth/')) {
+            logger.info(`🔐 Auth request: path=${req.path}, hasSession=${hasSession}, isMobile=${isMobile}, origin=${origin}`);
+        }
+    }
+    next();
+});
 // Регистрируем роуты
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
