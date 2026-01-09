@@ -146,7 +146,7 @@ export function LandingPage() {
                             />
                         </div>
 
-                        <button
+                        {/*<button
                             className="flex flex-col gap-[7px] pr-[6px]"
                             aria-label="Меню"
                         >
@@ -163,6 +163,7 @@ export function LandingPage() {
                                 style={{ backgroundColor: "#000019" }}
                             />
                         </button>
+                        */}
                     </div>
                 </header>
 

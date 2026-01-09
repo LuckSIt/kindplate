@@ -971,7 +971,7 @@ function RouteComponent() {
                                     fontWeight: 600,
                                     fontSize: "14px",
                                     lineHeight: "22px",
-                                    color: '#001900',
+                                    color: '#004900',
                                     textAlign: "left",
                                     marginBottom: "0px"
                                 }}
@@ -1054,7 +1054,7 @@ function RouteComponent() {
                                     fontWeight: 600,
                                     fontSize: "14px",
                                     lineHeight: "22px",
-                                    color: '#001900',
+                                    color: '#004900',
                                     textAlign: "left",
                                     marginBottom: "0px"
                                 }}
@@ -1107,7 +1107,7 @@ function RouteComponent() {
                                 fontWeight: 600,
                                 fontSize: "14px",
                                 lineHeight: "22px",
-                                color: "#001900",
+                                color: "#004900",
                                 marginBottom: "10px"
                             }}
                         >
