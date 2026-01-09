@@ -2495,16 +2495,6 @@ button:not(.font-montserrat-alt),
   word-wrap: break-word;
 }
 
-.vendor-page__header-hours {
-  font-family: 'Montserrat Alternates', sans-serif;
-  font-weight: 400;
-  font-size: clamp(5px, 1.8vw, 10px);
-  line-height: 1.3;
-  color: rgba(0, 0, 0, 0.7) !important;
-  margin-top: 4px;
-  word-wrap: break-word;
-}
-
 .vendor-page__favorite-button {
   width: 62px;
   height: 62px;

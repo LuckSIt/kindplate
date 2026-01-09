@@ -52,6 +52,8 @@ export type Business = {
   total_reviews?: number;
   logo_url?: string;
   phone?: string;
+  working_hours?: string;
+  website?: string;
   offers?: Offer[];
   is_top?: boolean; // Флаг "Лучшие у нас"
   quality_score?: number; // Балл качества (0-100)

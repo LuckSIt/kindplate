@@ -890,7 +890,7 @@ function RouteComponent() {
                                 </svg>
                             </div>
                             <div className="ml-[14px] text-[16px] font-semibold text-white leading-[20px] flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
-                                Панель управления бизнесом
+                                Управление бизнесом
                             </div>
                             <div className="w-[30px] h-[30px] ml-auto flex justify-end items-center">
                                 <svg className="w-[15px] h-[30px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

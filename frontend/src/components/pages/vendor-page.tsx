@@ -67,8 +67,8 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     quality_metrics: vendorData.quality_metrics,
     badges: vendorData.badges || [],
     offers: offersData || [],
-    website: (vendorData as any)?.website,
-    working_hours: (vendorData as any)?.working_hours,
+    website: vendorData.website,
+    working_hours: vendorData.working_hours,
   } : null;
 
   const offers: Offer[] = offersData || [];
@@ -210,9 +210,6 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
         <div className="vendor-page__header-info">
           <h1 className="vendor-page__header-name">{business.name}</h1>
           <p className="vendor-page__header-address">{business.address}</p>
-          {business.working_hours && (
-            <p className="vendor-page__header-hours">{business.working_hours}</p>
-          )}
         </div>
 
         <button 
