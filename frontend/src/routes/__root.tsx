@@ -97,27 +97,50 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
             return { user: null, success: false };
         },
         retry: false, // Не повторяем при ошибке 401
-        staleTime: 5 * 60 * 1000, // 5 минут кэш
+        staleTime: 0, // Не кэшируем данные - всегда запрашиваем свежие
+        gcTime: 0, // Не храним в кэше
         refetchOnMount: true, // Принудительно обновляем при монтировании
         refetchOnWindowFocus: true, // Обновляем при возврате на вкладку
+        refetchOnReconnect: true, // Обновляем при восстановлении соединения
     });
 
     // Извлекаем user из разных форматов ответа
     const user = (() => {
-        if (!isSuccess || !data) return null;
+        if (!isSuccess || !data) {
+            if (import.meta.env.DEV) {
+                console.log('Auth: no data or not success', { isSuccess, data, isLoading, isError });
+            }
+            return null;
+        }
         
         // Если data имеет структуру { user, success }
-        if ('user' in data) {
+        if ('user' in data && data.user) {
+            if (import.meta.env.DEV) {
+                console.log('Auth: user found (direct)', data.user);
+            }
             return data.user;
         }
         
         // Если data имеет структуру { data: { user } }
-        if ('data' in data && data.data && 'user' in data.data) {
+        if ('data' in data && data.data && 'user' in data.data && data.data.user) {
+            if (import.meta.env.DEV) {
+                console.log('Auth: user found (nested)', data.data.user);
+            }
             return data.data.user;
         }
         
+        if (import.meta.env.DEV) {
+            console.warn('Auth: user not found in response', data);
+        }
         return null;
     })();
+
+    // Логируем финальное значение user для отладки
+    useEffect(() => {
+        if (import.meta.env.DEV) {
+            console.log('Auth context user:', user, 'is_business:', user?.is_business, 'name:', user?.name);
+        }
+    }, [user]);
 
     const value: AuthContextType = {
         isLoading,

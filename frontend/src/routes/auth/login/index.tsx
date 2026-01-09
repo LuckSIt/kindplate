@@ -34,8 +34,13 @@ function RouteComponent() {
                 }
 
                 notify.success("Успешный вход", "Добро пожаловать!");
-                navigate({ to: "/home" });
+                // Принудительно обновляем данные пользователя
                 queryClient.invalidateQueries({ queryKey: ["auth"] });
+                queryClient.refetchQueries({ queryKey: ["auth"] });
+                // Небольшая задержка перед навигацией, чтобы данные успели обновиться
+                setTimeout(() => {
+                    navigate({ to: "/home" });
+                }, 100);
             } else {
                 notify.error("Ошибка входа", "Неверные учетные данные");
             }

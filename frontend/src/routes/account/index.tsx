@@ -1,10 +1,9 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { useState, useContext, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { authContext } from "@/lib/auth";
 import { notify } from "@/lib/notifications";
 import { CartSheet } from "@/components/ui/cart-sheet";
@@ -32,6 +31,15 @@ function RouteComponent() {
     const [reviewRating, setReviewRating] = useState(5);
     const [reviewComment, setReviewComment] = useState("");
     const { user } = useContext(authContext);
+    
+    // Логируем данные пользователя для отладки и принудительно обновляем при монтировании
+    useEffect(() => {
+        if (import.meta.env.DEV) {
+            console.log('Account page - user:', user, 'is_business:', user?.is_business, 'name:', user?.name);
+        }
+        // Принудительно обновляем данные пользователя при загрузке страницы
+        queryClient.refetchQueries({ queryKey: ["auth"] });
+    }, [queryClient]);
     
     // Mutation для выхода из системы (не используется, но оставлено для будущего использования)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -932,7 +940,7 @@ function RouteComponent() {
 
                 {/* О нас */}
                 <button 
-                    onClick={() => navigate({ to: "/about" })}
+                    onClick={() => navigate({ to: "/about" as any })}
                     className="mt-[9px] flex items-center justify-between w-[324px] h-[24px]"
                 >
                     <div className="text-[15px] font-semibold text-white flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>О нас</div>
