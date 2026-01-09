@@ -56,6 +56,14 @@ customerRouter.get("/sellers", async (req, res) => {
         const activeCond = has('is_active') ? 'AND o.is_active = true' : '';
         const qtyCond = offerCols.includes('quantity_available') ? 'AND o.quantity_available > 0' : '';
 
+        // Проверяем наличие колонок working_hours и website
+        const userColsRes = await pool.query(`
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_schema = 'public' AND table_name = 'users'
+        `);
+        const userCols = userColsRes.rows.map(r => r.column_name);
+        const hasUserCol = (c) => userCols.includes(c);
+
         const result = await pool.query(
             `SELECT 
                 u.id as business_id,
@@ -66,6 +74,8 @@ customerRouter.get("/sellers", async (req, res) => {
                 u.logo_url,
                 u.rating,
                 u.total_reviews,
+                ${hasUserCol('working_hours') ? 'u.working_hours' : 'NULL::text AS working_hours'},
+                ${hasUserCol('website') ? 'u.website' : 'NULL::text AS website'},
                 ${qualityFields}
                 o.id as offer_id,
                 ${titleSel} as title,
@@ -98,6 +108,8 @@ customerRouter.get("/sellers", async (req, res) => {
                     coords: [row.coord_0, row.coord_1],
                     logo_url: row.logo_url,
                     rating: parseFloat(row.rating) || 0,
+                    working_hours: row.working_hours,
+                    website: row.website,
                     total_reviews: row.total_reviews || 0,
                     is_top: row.is_top || false,
                     quality_score: parseFloat(row.quality_score) || 0,
@@ -373,6 +385,14 @@ customerRouter.get("/vendors/:id", async (req, res) => {
             0 as avg_rating
         `;
 
+        // Проверяем наличие колонок working_hours и website
+        const userColsRes = await pool.query(`
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_schema = 'public' AND table_name = 'users'
+        `);
+        const userCols = userColsRes.rows.map(r => r.column_name);
+        const hasUserCol = (c) => userCols.includes(c);
+
         // Получаем данные заведения
         const vendorResult = await pool.query(
             `SELECT 
@@ -384,6 +404,9 @@ customerRouter.get("/vendors/:id", async (req, res) => {
                 u.logo_url,
                 u.rating,
                 u.total_reviews,
+                ${hasUserCol('working_hours') ? 'u.working_hours' : 'NULL::text AS working_hours'},
+                ${hasUserCol('website') ? 'u.website' : 'NULL::text AS website'},
+                ${hasUserCol('phone') ? 'u.phone' : 'NULL::text AS phone'},
                 ${qualityFields}
             FROM users u
             WHERE u.id = $1 AND u.is_business = true`,
@@ -446,7 +469,9 @@ customerRouter.get("/vendors/:id", async (req, res) => {
                 logo_url: vendor.logo_url,
                 rating: parseFloat(vendor.rating) || 0,
                 total_reviews: vendor.total_reviews || 0,
-                phone: null
+                phone: vendor.phone || null,
+                working_hours: vendor.working_hours || null,
+                website: vendor.website || null
             }
         });
     } catch (e) {

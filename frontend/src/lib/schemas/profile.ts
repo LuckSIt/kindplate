@@ -23,6 +23,16 @@ export const profileUpdateSchema = z.object({
     .optional(),
   
   coords: z.tuple([z.number(), z.number()]).optional(),
+  
+  working_hours: z.string()
+    .max(200, 'Время работы слишком длинное')
+    .optional()
+    .or(z.literal('')),
+  
+  website: z.string()
+    .url('Некорректный URL сайта')
+    .optional()
+    .or(z.literal('')),
 });
 
 // Схема для изменения пароля

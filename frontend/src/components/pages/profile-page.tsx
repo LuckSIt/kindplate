@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { User, Lock, Shield, Trash2, Save, Phone, Mail, MapPin } from 'lucide-react';
+import { User, Lock, Trash2, Save, Phone, Mail, MapPin, Clock, Globe } from 'lucide-react';
 import { useNavigate } from '@tanstack/react-router';
 import { useProfile, useUpdateProfile, useChangePassword, useDeleteAccount } from '@/lib/hooks/use-profile';
 import { profileUpdateSchema, changePasswordSchema } from '@/lib/schemas/profile';
@@ -32,6 +32,8 @@ export function ProfilePage() {
       name: profile?.name || '',
       phone: profile?.phone || '',
       address: profile?.address || '',
+      working_hours: (profile as any)?.working_hours || '',
+      website: (profile as any)?.website || '',
     },
   });
 
@@ -47,6 +49,8 @@ export function ProfilePage() {
         name: profile.name,
         phone: profile.phone || '',
         address: profile.address || '',
+        working_hours: (profile as any)?.working_hours || '',
+        website: (profile as any)?.website || '',
       });
     }
   }, [profile, profileMethods]);
@@ -291,6 +295,48 @@ export function ProfilePage() {
                   {profileMethods.formState.errors.address && (
                     <p className="profile-page__error-message">
                       {profileMethods.formState.errors.address.message}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Время работы */}
+              {profile.is_business && (
+                <div className="profile-page__field">
+                  <label className="profile-page__field-label">
+                    <Clock className="profile-page__field-icon" />
+                    Время работы
+                  </label>
+                  <input
+                    {...profileMethods.register('working_hours')}
+                    type="text"
+                    placeholder="Например: Пн-Пт: 9:00-21:00, Сб-Вс: 10:00-20:00"
+                    className="profile-page__input"
+                  />
+                  {profileMethods.formState.errors.working_hours && (
+                    <p className="profile-page__error-message">
+                      {profileMethods.formState.errors.working_hours.message}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Сайт */}
+              {profile.is_business && (
+                <div className="profile-page__field">
+                  <label className="profile-page__field-label">
+                    <Globe className="profile-page__field-icon" />
+                    Сайт
+                  </label>
+                  <input
+                    {...profileMethods.register('website')}
+                    type="url"
+                    placeholder="https://example.com"
+                    className="profile-page__input"
+                  />
+                  {profileMethods.formState.errors.website && (
+                    <p className="profile-page__error-message">
+                      {profileMethods.formState.errors.website.message}
                     </p>
                   )}
                 </div>

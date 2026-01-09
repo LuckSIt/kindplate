@@ -66,7 +66,9 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     quality_score: vendorData.quality_score,
     quality_metrics: vendorData.quality_metrics,
     badges: vendorData.badges || [],
-    offers: offersData || []
+    offers: offersData || [],
+    website: (vendorData as any)?.website,
+    working_hours: (vendorData as any)?.working_hours,
   } : null;
 
   const offers: Offer[] = offersData || [];
@@ -149,8 +151,12 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
   };
 
   const handleWebsite = () => {
-    // TODO: Add website URL to business model
-    notify.info("Сайт", "Функция будет добавлена позже");
+    if (business?.website) {
+      // Открываем сайт в новой вкладке
+      window.open(business.website, '_blank');
+    } else {
+      notify.info("Сайт", "Сайт не указан");
+    }
   };
 
   // Loading state
@@ -204,6 +210,9 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
         <div className="vendor-page__header-info">
           <h1 className="vendor-page__header-name">{business.name}</h1>
           <p className="vendor-page__header-address">{business.address}</p>
+          {business.working_hours && (
+            <p className="vendor-page__header-hours">{business.working_hours}</p>
+          )}
         </div>
 
         <button 

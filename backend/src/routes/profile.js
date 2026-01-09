@@ -44,6 +44,8 @@ profileRouter.get("/", requireAuth, asyncHandler(async (req, res) => {
             ${has('address') ? 'address' : 'NULL::text AS address'},
             ${has('coord_0') ? 'coord_0' : 'NULL::numeric AS coord_0'},
             ${has('coord_1') ? 'coord_1' : 'NULL::numeric AS coord_1'},
+            ${has('working_hours') ? 'working_hours' : 'NULL::text AS working_hours'},
+            ${has('website') ? 'website' : 'NULL::text AS website'},
             ${has('rating') ? 'rating' : '0::numeric AS rating'},
             ${has('total_reviews') ? 'total_reviews' : '0::integer AS total_reviews'},
             ${has('terms_accepted') ? 'terms_accepted' : 'false AS terms_accepted'},
@@ -76,9 +78,18 @@ profileRouter.get("/", requireAuth, asyncHandler(async (req, res) => {
  */
 profileRouter.put("/", requireAuth, asyncHandler(async (req, res) => {
     const userId = req.session.userId;
-    const { name, phone, address, coords } = req.body;
+    const { name, phone, address, coords, working_hours, website } = req.body;
 
     logger.info('Updating profile', { userId, updates: Object.keys(req.body) });
+
+    // Проверяем наличие колонок в БД
+    const columnsRes = await pool.query(
+        `SELECT column_name 
+         FROM information_schema.columns 
+         WHERE table_schema = 'public' AND table_name = 'users'`
+    );
+    const cols = columnsRes.rows.map(r => r.column_name);
+    const has = (c) => cols.includes(c);
 
     // Валидация
     if (name !== undefined && (!name || name.trim().length < 2)) {
@@ -87,6 +98,10 @@ profileRouter.put("/", requireAuth, asyncHandler(async (req, res) => {
 
     if (phone !== undefined && !validatePhone(phone)) {
         throw new AppError('Некорректный формат телефона', 400, 'INVALID_PHONE');
+    }
+
+    if (website !== undefined && website && !/^https?:\/\/.+/.test(website)) {
+        throw new AppError('Некорректный формат URL сайта. Используйте формат http:// или https://', 400, 'INVALID_WEBSITE');
     }
 
     // Формируем запрос на обновление
@@ -116,17 +131,39 @@ profileRouter.put("/", requireAuth, asyncHandler(async (req, res) => {
         values.push(coords[1]);
     }
 
+    if (working_hours !== undefined && has('working_hours')) {
+        updates.push(`working_hours = $${paramIndex++}`);
+        values.push(working_hours || null);
+    }
+
+    if (website !== undefined && has('website')) {
+        updates.push(`website = $${paramIndex++}`);
+        values.push(website || null);
+    }
+
     if (updates.length === 0) {
         throw new AppError('Нет данных для обновления', 400, 'NO_UPDATES');
     }
 
     values.push(userId);
 
+    const returnFields = [
+        'id', 'name', 'email', 
+        has('phone') ? 'phone' : 'NULL::text AS phone',
+        'is_business', 
+        has('address') ? 'address' : 'NULL::text AS address',
+        has('coord_0') ? 'coord_0' : 'NULL::numeric AS coord_0',
+        has('coord_1') ? 'coord_1' : 'NULL::numeric AS coord_1',
+        has('working_hours') ? 'working_hours' : 'NULL::text AS working_hours',
+        has('website') ? 'website' : 'NULL::text AS website',
+        has('profile_updated_at') ? 'profile_updated_at' : 'NULL::timestamp AS profile_updated_at'
+    ].join(', ');
+
     const query = `
         UPDATE users 
         SET ${updates.join(', ')}
         WHERE id = $${paramIndex}
-        RETURNING id, name, email, phone, is_business, address, coord_0, coord_1, profile_updated_at
+        RETURNING ${returnFields}
     `;
 
     const result = await pool.query(query, values);
@@ -136,7 +173,11 @@ profileRouter.put("/", requireAuth, asyncHandler(async (req, res) => {
     }
 
     const user = result.rows[0];
-    user.coords = [user.coord_0, user.coord_1];
+    if (user.coord_0 !== null && user.coord_1 !== null) {
+        user.coords = [user.coord_0, user.coord_1];
+    } else {
+        user.coords = null;
+    }
     delete user.coord_0;
     delete user.coord_1;
 
