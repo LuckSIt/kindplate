@@ -634,7 +634,7 @@ export function LandingPage() {
                             className="text-[16px] leading-[1.08] mb-0 font-montserrat-alt"
                             style={{ 
                                 fontWeight: 700,
-                                color: '#001900',
+                                color: '#004900',
                                 lineHeight: '1.08em'
                             }}
                         >
@@ -781,7 +781,7 @@ export function LandingPage() {
                                         fontWeight: 600,
                                         fontSize: "14px",
                                         lineHeight: "22px",
-                                        color: '#001900',
+                                        color: '#004900',
                                         textAlign: "left",
                                         marginBottom: "0px"
                                     }}
@@ -861,7 +861,7 @@ export function LandingPage() {
                                         fontWeight: 600,
                                         fontSize: "14px",
                                         lineHeight: "22px",
-                                        color: '#001900',
+                                        color: '#004900',
                                         textAlign: "left",
                                         marginBottom: "0px"
                                     }}
@@ -912,7 +912,7 @@ export function LandingPage() {
                                     fontWeight: 600,
                                     fontSize: "14px",
                                     lineHeight: "22px",
-                                    color: "#001900",
+                                    color: "#004900",
                                     marginBottom: "3px"
                                 }}
                             >

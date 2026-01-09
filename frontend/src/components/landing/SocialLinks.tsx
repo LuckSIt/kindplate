@@ -23,7 +23,7 @@ export function SocialLinks({
         width: `${circleSize}px`,
         height: `${circleSize}px`,
         borderRadius: "50%",
-        backgroundColor: "#000019",
+        backgroundColor: "#7E879D",
     };
 
     const iconStyle: React.CSSProperties = {
