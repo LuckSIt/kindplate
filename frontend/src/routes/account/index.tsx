@@ -34,12 +34,16 @@ function RouteComponent() {
     
     // Логируем данные пользователя для отладки и принудительно обновляем при монтировании
     useEffect(() => {
-        if (import.meta.env.DEV) {
-            console.log('Account page - user:', user, 'is_business:', user?.is_business, 'name:', user?.name);
-        }
+        // Логируем всегда (не только в dev), чтобы видеть на мобильном
+        console.log('[Account] User in context:', user);
+        console.log('[Account] User name:', user?.name);
+        console.log('[Account] User is_business:', user?.is_business);
+        console.log('[Account] User email:', user?.email);
+        console.log('[Account] User id:', user?.id);
+        
         // Принудительно обновляем данные пользователя при загрузке страницы
         queryClient.refetchQueries({ queryKey: ["auth"] });
-    }, [queryClient]);
+    }, [queryClient, user]);
     
     // Mutation для выхода из системы (не используется, но оставлено для будущего использования)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -781,7 +785,11 @@ function RouteComponent() {
                 {/* Name and Edit */}
                 <div className="flex-1 ml-[10px] flex flex-col justify-center items-start">
                     <div className="text-[16px] font-semibold leading-[20px]" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#000000' }}>
-                        {user?.name || 'Пользователь'}
+                        {(() => {
+                            const displayName = user?.name || 'Пользователь';
+                            console.log('[Account] Display name:', displayName, 'user?.name:', user?.name);
+                            return displayName;
+                        })()}
                     </div>
                     <button
                         className="text-[10px] font-semibold text-[#767676] leading-[14px] mt-[2px] text-left p-0 m-0 border-0 bg-transparent"
@@ -906,7 +914,8 @@ function RouteComponent() {
                                 </svg>
                             </div>
                         </button>
-                    )}
+                        ) : null;
+                    })()}
                 </div>
 
                 {/* Служба поддержки */}

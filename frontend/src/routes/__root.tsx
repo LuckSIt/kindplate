@@ -54,47 +54,46 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data, isLoading, isSuccess, isError } = useQuery<{ user: User; success: boolean } | { data: { user: User } }>({
         queryKey: ["auth"],
         queryFn: async () => {
-            const response = await axiosInstance.get("/auth/me", {
-                skipErrorNotification: true, // Пропускаем уведомления для проверки авторизации
-                params: { _t: Date.now() } // Добавляем timestamp для предотвращения кэширования
-            } as any);
-            
-            // Обрабатываем разные форматы ответа для совместимости
-            const responseData = response.data;
-            
-            if (import.meta.env.DEV) {
-                console.log('Auth response:', responseData);
-            }
-            
-            // Если ответ имеет структуру { user, success }
-            if (responseData && 'user' in responseData && responseData.user) {
-                if (import.meta.env.DEV) {
-                    console.log('User data:', responseData.user, 'is_business:', responseData.user.is_business);
+            try {
+                const response = await axiosInstance.get("/auth/me", {
+                    skipErrorNotification: true, // Пропускаем уведомления для проверки авторизации
+                    params: { _t: Date.now() } // Добавляем timestamp для предотвращения кэширования
+                } as any);
+                
+                // Обрабатываем разные форматы ответа для совместимости
+                const responseData = response.data;
+                
+                // Логируем всегда (не только в dev), чтобы видеть на мобильном
+                console.log('[Auth] Full response:', JSON.stringify(response, null, 2));
+                console.log('[Auth] Response data:', JSON.stringify(responseData, null, 2));
+                
+                // Если ответ имеет структуру { user, success }
+                if (responseData && 'user' in responseData) {
+                    const user = responseData.user;
+                    console.log('[Auth] User extracted:', JSON.stringify(user, null, 2));
+                    console.log('[Auth] User name:', user?.name, 'is_business:', user?.is_business);
+                    
+                    if (user) {
+                        return { user, success: responseData.success ?? true };
+                    }
                 }
-                return responseData as { user: User; success: boolean };
-            }
-            
-            // Если ответ имеет структуру { data: { user } } (старый формат)
-            if (responseData && responseData.data && responseData.data.user) {
-                if (import.meta.env.DEV) {
-                    console.log('User data (nested):', responseData.data.user, 'is_business:', responseData.data.user.is_business);
+                
+                // Если ответ имеет структуру { data: { user } } (старый формат)
+                if (responseData && responseData.data && responseData.data.user) {
+                    const user = responseData.data.user;
+                    console.log('[Auth] User extracted (nested):', JSON.stringify(user, null, 2));
+                    console.log('[Auth] User name:', user?.name, 'is_business:', user?.is_business);
+                    return { user, success: true };
                 }
-                return { user: responseData.data.user, success: true };
+                
+                // Fallback: возвращаем null user
+                console.warn('[Auth] Unexpected response format:', JSON.stringify(responseData, null, 2));
+                return { user: null, success: false };
+            } catch (err: any) {
+                console.error('[Auth] Error fetching user:', err);
+                console.error('[Auth] Error response:', err?.response?.data);
+                throw err;
             }
-            
-            // Если user находится напрямую в responseData
-            if (responseData && responseData.user) {
-                if (import.meta.env.DEV) {
-                    console.log('User data (direct):', responseData.user, 'is_business:', responseData.user.is_business);
-                }
-                return { user: responseData.user, success: responseData.success ?? true };
-            }
-            
-            // Fallback: возвращаем null user
-            if (import.meta.env.DEV) {
-                console.warn('Unexpected auth response format:', responseData);
-            }
-            return { user: null, success: false };
         },
         retry: false, // Не повторяем при ошибке 401
         staleTime: 0, // Не кэшируем данные - всегда запрашиваем свежие
@@ -106,40 +105,37 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Извлекаем user из разных форматов ответа
     const user = (() => {
+        console.log('[Auth] Extracting user from data:', { isSuccess, isLoading, isError, hasData: !!data, data });
+        
         if (!isSuccess || !data) {
-            if (import.meta.env.DEV) {
-                console.log('Auth: no data or not success', { isSuccess, data, isLoading, isError });
-            }
+            console.log('[Auth] No data or not success', { isSuccess, data, isLoading, isError });
             return null;
         }
         
         // Если data имеет структуру { user, success }
         if ('user' in data && data.user) {
-            if (import.meta.env.DEV) {
-                console.log('Auth: user found (direct)', data.user);
-            }
+            console.log('[Auth] User found (direct):', data.user);
+            console.log('[Auth] User details - name:', data.user.name, 'is_business:', data.user.is_business, 'email:', data.user.email);
             return data.user;
         }
         
         // Если data имеет структуру { data: { user } }
         if ('data' in data && data.data && 'user' in data.data && data.data.user) {
-            if (import.meta.env.DEV) {
-                console.log('Auth: user found (nested)', data.data.user);
-            }
+            console.log('[Auth] User found (nested):', data.data.user);
+            console.log('[Auth] User details - name:', data.data.user.name, 'is_business:', data.data.user.is_business, 'email:', data.data.user.email);
             return data.data.user;
         }
         
-        if (import.meta.env.DEV) {
-            console.warn('Auth: user not found in response', data);
-        }
+        console.warn('[Auth] User not found in response', data);
         return null;
     })();
 
     // Логируем финальное значение user для отладки
     useEffect(() => {
-        if (import.meta.env.DEV) {
-            console.log('Auth context user:', user, 'is_business:', user?.is_business, 'name:', user?.name);
-        }
+        console.log('[Auth] Final user in context:', user);
+        console.log('[Auth] User name:', user?.name);
+        console.log('[Auth] User is_business:', user?.is_business);
+        console.log('[Auth] User email:', user?.email);
     }, [user]);
 
     const value: AuthContextType = {
