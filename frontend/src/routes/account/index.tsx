@@ -890,30 +890,37 @@ function RouteComponent() {
                     </button>
 
                     {/* Разделитель перед бизнес-панелью (только для бизнес-пользователя) */}
-                    {user?.is_business && (
-                        <div className="absolute top-[290px] left-[14px] w-[323px] h-px" style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)' }}></div>
-                    )}
+                    {(() => {
+                        const showBusinessPanel = user?.is_business === true;
+                        console.log('[Account] Should show business panel:', showBusinessPanel, 'user?.is_business:', user?.is_business, 'user:', user);
+                        return showBusinessPanel ? (
+                            <div className="absolute top-[290px] left-[14px] w-[323px] h-px" style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)' }}></div>
+                        ) : null;
+                    })()}
 
                     {/* Панель управления бизнесом (пятая строка) */}
-                    {user?.is_business && (
-                        <button 
-                            onClick={() => navigate({ to: "/panel" })}
-                            className="absolute top-[302px] left-[23px] flex items-center w-[301px] h-[50px]"
-                        >
-                            <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
-                                <svg className="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M3 11h18M3 15h18M7 7V5a2 2 0 012-2h6a2 2 0 012 2v2" />
-                                </svg>
-                            </div>
-                            <div className="ml-[14px] text-[16px] font-semibold text-white leading-[20px] flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
-                                Управление бизнесом
-                            </div>
-                            <div className="w-[30px] h-[30px] ml-auto flex justify-end items-center">
-                                <svg className="w-[15px] h-[30px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                </svg>
-                            </div>
-                        </button>
+                    {(() => {
+                        const showBusinessPanel = user?.is_business === true;
+                        console.log('[Account] Rendering business panel button:', showBusinessPanel, 'user?.is_business:', user?.is_business);
+                        return showBusinessPanel ? (
+                            <button 
+                                onClick={() => navigate({ to: "/panel" })}
+                                className="absolute top-[302px] left-[23px] flex items-center w-[301px] h-[50px]"
+                            >
+                                <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M3 11h18M3 15h18M7 7V5a2 2 0 012-2h6a2 2 0 012 2v2" />
+                                    </svg>
+                                </div>
+                                <div className="ml-[14px] text-[16px] font-semibold text-white leading-[20px] flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
+                                    Управление бизнесом
+                                </div>
+                                <div className="w-[30px] h-[30px] ml-auto flex justify-end items-center">
+                                    <svg className="w-[15px] h-[30px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </div>
+                            </button>
                         ) : null;
                     })()}
                 </div>
