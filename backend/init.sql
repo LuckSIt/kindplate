@@ -18,6 +18,9 @@ CREATE TABLE users (
     is_business BOOLEAN NOT NULL DEFAULT FALSE,
     role VARCHAR(20) DEFAULT 'customer' CHECK (role IN ('admin', 'business', 'customer')),
     logo_url VARCHAR(500),
+    phone VARCHAR(20),
+    working_hours VARCHAR(200),
+    website VARCHAR(500),
     rating DECIMAL(3, 2) DEFAULT 0.00,
     total_reviews INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
