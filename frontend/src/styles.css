@@ -7066,6 +7066,21 @@ div.font-montserrat-alt,
   border-color: rgba(249, 115, 22, 0.3);
 }
 
+.panel-page__stat-card--today-revenue {
+  background: linear-gradient(to bottom right, rgba(34, 197, 94, 0.3), rgba(34, 197, 94, 0.1));
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.panel-page__stat-card--today-sold {
+  background: linear-gradient(to bottom right, rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.1));
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.panel-page__stat-card--sold {
+  background: linear-gradient(to bottom right, rgba(168, 85, 247, 0.3), rgba(168, 85, 247, 0.1));
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
 .panel-page__stat-icon {
   font-size: 32px;
   line-height: 1;

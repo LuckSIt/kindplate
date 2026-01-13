@@ -1078,34 +1078,70 @@ function RouteComponent() {
 
                         {!areStatsLoading && !areStatsError && statsData?.data?.stats && (
                             <div className="panel-page__stats">
-                                {/* Main Stats Cards */}
-                                <div className="panel-page__stats-grid">
-                                    {/* Total Revenue */}
-                                    <div className="panel-page__stat-card panel-page__stat-card--revenue">
-                                        <div className="panel-page__stat-icon">💰</div>
-                                        <div className="panel-page__stat-value">{statsData.data.stats.total_revenue}₽</div>
-                                        <div className="panel-page__stat-label">Общий доход</div>
-                                    </div>
+                                {/* Daily Stats Section */}
+                                <div className="panel-page__stats-section">
+                                    <h3 className="panel-page__stats-section-title">
+                                        <span></span>
+                                        Статистика за сегодня
+                                    </h3>
+                                    <div className="panel-page__stats-grid">
+                                        {/* Today Revenue */}
+                                        <div className="panel-page__stat-card panel-page__stat-card--today-revenue">
+                                            <div className="panel-page__stat-icon"></div>
+                                            <div className="panel-page__stat-value">{statsData.data.stats.today_revenue || 0}₽</div>
+                                            <div className="panel-page__stat-label">Выручка за день</div>
+                                        </div>
 
-                                    {/* Total Orders */}
-                                    <div className="panel-page__stat-card panel-page__stat-card--orders">
-                                        <div className="panel-page__stat-icon">📦</div>
-                                        <div className="panel-page__stat-value">{statsData.data.stats.orders_count}</div>
-                                        <div className="panel-page__stat-label">Всего заказов</div>
+                                        {/* Today Sold */}
+                                        <div className="panel-page__stat-card panel-page__stat-card--today-sold">
+                                            <div className="panel-page__stat-icon"></div>
+                                            <div className="panel-page__stat-value">{statsData.data.stats.today_sold || 0}</div>
+                                            <div className="panel-page__stat-label">Продано за день</div>
+                                        </div>
                                     </div>
+                                </div>
 
-                                    {/* Completed Orders */}
-                                    <div className="panel-page__stat-card panel-page__stat-card--completed">
-                                        <div className="panel-page__stat-icon">✅</div>
-                                        <div className="panel-page__stat-value">{statsData.data.stats.completed_orders}</div>
-                                        <div className="panel-page__stat-label">Выполнено</div>
-                                    </div>
+                                {/* Total Stats Section */}
+                                <div className="panel-page__stats-section">
+                                    <h3 className="panel-page__stats-section-title">
+                                        <span></span>
+                                        Общая статистика
+                                    </h3>
+                                    <div className="panel-page__stats-grid">
+                                        {/* Total Revenue */}
+                                        <div className="panel-page__stat-card panel-page__stat-card--revenue">
+                                            <div className="panel-page__stat-icon"></div>
+                                            <div className="panel-page__stat-value">{statsData.data.stats.total_revenue || 0}₽</div>
+                                            <div className="panel-page__stat-label">Общая выручка</div>
+                                        </div>
 
-                                    {/* Unique Customers */}
-                                    <div className="panel-page__stat-card panel-page__stat-card--customers">
-                                        <div className="panel-page__stat-icon">👥</div>
-                                        <div className="panel-page__stat-value">{statsData.data.stats.unique_customers}</div>
-                                        <div className="panel-page__stat-label">Клиентов</div>
+                                        {/* Total Sold */}
+                                        <div className="panel-page__stat-card panel-page__stat-card--sold">
+                                            <div className="panel-page__stat-icon"></div>
+                                            <div className="panel-page__stat-value">{statsData.data.stats.total_sold || 0}</div>
+                                            <div className="panel-page__stat-label">Всего продано</div>
+                                        </div>
+
+                                        {/* Total Orders */}
+                                        <div className="panel-page__stat-card panel-page__stat-card--orders">
+                                            <div className="panel-page__stat-icon"></div>
+                                            <div className="panel-page__stat-value">{statsData.data.stats.orders_count || 0}</div>
+                                            <div className="panel-page__stat-label">Всего заказов</div>
+                                        </div>
+
+                                        {/* Completed Orders */}
+                                        <div className="panel-page__stat-card panel-page__stat-card--completed">
+                                            <div className="panel-page__stat-icon"></div>
+                                            <div className="panel-page__stat-value">{statsData.data.stats.completed_orders || 0}</div>
+                                            <div className="panel-page__stat-label">Выполнено</div>
+                                        </div>
+
+                                        {/* Unique Customers */}
+                                        <div className="panel-page__stat-card panel-page__stat-card--customers">
+                                            <div className="panel-page__stat-icon"></div>
+                                            <div className="panel-page__stat-value">{statsData.data.stats.unique_customers || 0}</div>
+                                            <div className="panel-page__stat-label">Клиентов</div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1116,7 +1152,7 @@ function RouteComponent() {
                                             <div className="panel-page__avg-check-label">Средний чек</div>
                                             <div className="panel-page__avg-check-value">{statsData.data.stats.avg_check}₽</div>
                                         </div>
-                                        <div className="panel-page__avg-check-icon">💳</div>
+                                        <div className="panel-page__avg-check-icon"></div>
                                     </div>
                                 </div>
 
@@ -1124,7 +1160,7 @@ function RouteComponent() {
                                 {statsData.data.stats.top_offers.length > 0 && (
                                     <div className="panel-page__stats-section">
                                         <h3 className="panel-page__stats-section-title">
-                                            <span>🏆</span>
+                                            <span></span>
                                             Топ предложений
                                         </h3>
                                         <div className="panel-page__top-offers">
@@ -1149,7 +1185,7 @@ function RouteComponent() {
                                 {/* Status Stats */}
                                 {statsData.data.stats.status_stats.length > 0 && (
                                     <div className="panel-page__stats-section">
-                                        <h3 className="panel-page__stats-section-title">📊 Статусы заказов</h3>
+                                        <h3 className="panel-page__stats-section-title">Статусы заказов</h3>
                                         <div className="panel-page__status-stats">
                                             {statsData.data.stats.status_stats.map((stat: any) => {
                                                 const statusInfo = getStatusInfo(stat.status);
