@@ -485,8 +485,9 @@ export function LandingPage() {
                             className="text-[22px] font-[600] leading-[1.4] text-center font-montserrat-alt"
                             style={{ color: '#FFFFFF', margin: 0 }}
                         >
+                            {/*className="font-ramona inline-flex items-center justify-center rounded-full px-[16px] py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"*/}
                             <span 
-                                className="rounded-[6px] px-[8px] py-[2px] text-[28px] font-[700]"
+                                className="font-ramona items-center justify-center rounded-full px-[8px] py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"
                                 style={{ backgroundColor: '#001900' }}
                             >
                                 Следите
