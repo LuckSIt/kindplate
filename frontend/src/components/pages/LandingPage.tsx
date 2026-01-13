@@ -9,6 +9,8 @@ import pizzaImage from "@/figma/762ADCA2-E303-44E5-B6E0-272EE15C6913 1.png";
 import cookiesImage from "@/figma/29BD33A8-EE31-48BF-A53C-02BC08740634 1.png";
 import phoneMapImage from "@/figma/image.png";
 import { SocialLinks } from "@/components/landing/SocialLinks";
+import telegramFooterIcon from "@/figma/telegram-footer.svg";
+import blogImage from "@/figma/blog.png";
 
 // Данные о продуктах из Figma
 const carouselItems = [
@@ -468,31 +470,48 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* Statistics Section */}
+                {/* Blog Section */}
                 <section className="px-[15px] pb-[30px]">
-                    <div 
-                        className="w-full max-w-[344px] mx-auto rounded-[15px] px-[32px] py-[18px] flex flex-col items-center justify-center gap-[4px]"
-                        style={{ backgroundColor: '#000019' }}
-                    >
-                        <p 
-                            className="text-[24px] font-[600] leading-[1.04] text-center font-montserrat-alt"
+                    <div className="w-full max-w-[344px] mx-auto flex flex-col items-center gap-[20px]">
+                        {/* Title */}
+                        <h2 
+                            className="text-[32px] font-[700] leading-[1.2] text-center font-montserrat-alt"
                             style={{ color: '#FFFFFF', margin: 0 }}
                         >
-                            Вместе мы спасли
-                        </p>
-                        <div className="flex items-center gap-[8px] leading-[1] font-montserrat-alt flex-nowrap">
+                            Блог
+                        </h2>
+                        
+                        {/* Subtitle */}
+                        <p 
+                            className="text-[16px] font-[600] leading-[1.4] text-center font-montserrat-alt"
+                            style={{ color: '#FFFFFF', margin: 0 }}
+                        >
                             <span 
-                                className="rounded-[8px] px-[12px] py-[5px] text-[22px] font-[600] whitespace-nowrap font-montserrat-alt"
-                                style={{ 
-                                    backgroundColor: '#001900',
-                                    color: '#FFFFFF'
-                                }}
+                                className="rounded-[6px] px-[8px] py-[2px]"
+                                style={{ backgroundColor: '#004900' }}
                             >
-                                532 блюд
+                                Следите
                             </span>
-                            <span className="text-[22px] font-[600] text-white font-montserrat-alt leading-[1] whitespace-nowrap">
-                                от выброса
-                            </span>
+                            {' '}за нами в нашем канале
+                        </p>
+                        
+                        {/* Blog Card - только изображение кликабельно */}
+                        <div className="w-full rounded-[15px] overflow-hidden" style={{ backgroundColor: '#001900' }}>
+                            {/* Image Container - кликабельное изображение */}
+                            <a
+                                href="https://t.me/kindplate"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block w-full cursor-pointer transition-opacity hover:opacity-90 active:opacity-80"
+                            >
+                                <div className="relative w-full h-[280px] overflow-hidden">
+                                    <img 
+                                        src={blogImage} 
+                                        alt="KindPlate блог - выгодно для тебя, полезно для планеты"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </section>
