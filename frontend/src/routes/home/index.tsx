@@ -262,11 +262,11 @@ function RouteComponent() {
     });
 
     // Filter businesses (сортировка уже сделана на бэкенде)
+    // Теперь показываем все бизнесы, но неактивные будут серыми на карте
     const filteredBusinesses = useMemo(() => {
-        // Фильтруем только бизнесы с активными предложениями
+        // Показываем все бизнесы с координатами
         return businesses.filter(business => {
-            return business.offers && business.offers.length > 0 && 
-                   business.offers.some(offer => offer.is_active && offer.quantity_available > 0);
+            return business.coords && business.coords.length === 2;
         });
     }, [businesses]);
 

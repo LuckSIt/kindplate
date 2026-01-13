@@ -44,14 +44,24 @@ function fromYmapsCoords(coords: [number, number]): [number, number] {
 }
 
 // Create custom marker element with logo
-function createMarkerElement(isSelected: boolean, onClick?: () => void): HTMLElement {
+function createMarkerElement(isSelected: boolean, hasActiveOffers: boolean = true, onClick?: () => void): HTMLElement {
     const element = document.createElement('div');
+    
+    // Определяем фильтр в зависимости от состояния
+    let filter = 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))';
+    if (isSelected) {
+        filter = 'drop-shadow(0 0 8px #f97316) brightness(1.1)';
+    } else if (!hasActiveOffers) {
+        // Серый фильтр для неактивных бизнесов
+        filter = 'drop-shadow(0 2px 4px rgba(0,0,0,0.3)) grayscale(100%) brightness(0.6)';
+    }
+    
     element.style.cssText = `
         width: 40px;
         height: 48px;
         cursor: pointer;
         transform: translate(-50%, -100%);
-        filter: ${isSelected ? 'drop-shadow(0 0 8px #f97316) brightness(1.1)' : 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'};
+        filter: ${filter};
         transition: filter 0.2s, transform 0.2s;
     `;
     
@@ -347,7 +357,10 @@ export function MapView({
                 marker: (feature: any) => {
                     const business = feature.properties.business as Business;
                     const isSelected = selectedBusinessRef.current?.id === business.id;
-                    const element = createMarkerElement(isSelected, () => {
+                    // Проверяем, есть ли активные предложения
+                    const hasActiveOffers = business.offers && business.offers.length > 0 && 
+                                          business.offers.some(offer => offer.is_active && offer.quantity_available > 0);
+                    const element = createMarkerElement(isSelected, hasActiveOffers, () => {
                         onBusinessClickRef.current(business);
                     });
                     return new YMapMarker(
@@ -375,7 +388,10 @@ export function MapView({
             points.forEach((point) => {
                 const business = point.properties.business;
                 const isSelected = selectedBusinessRef.current?.id === business.id;
-                const element = createMarkerElement(isSelected, () => {
+                // Проверяем, есть ли активные предложения
+                const hasActiveOffers = business.offers && business.offers.length > 0 && 
+                                      business.offers.some(offer => offer.is_active && offer.quantity_available > 0);
+                const element = createMarkerElement(isSelected, hasActiveOffers, () => {
                     onBusinessClickRef.current(business);
                 });
                 const marker = new YMapMarker(
