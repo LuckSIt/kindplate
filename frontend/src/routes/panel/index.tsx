@@ -812,12 +812,12 @@ function RouteComponent() {
                     >
                         Локации
                     </button>
-                    {/*<button
+                    <button
                         onClick={() => setActiveTab('stats')}
                         className={`panel-page__tab ${activeTab === 'stats' ? 'panel-page__tab--active' : ''}`}
                     >
-                        📊 Статистика
-                    </button>*/}
+                        Статистика
+                    </button>
                 </div>
             </div>
 
