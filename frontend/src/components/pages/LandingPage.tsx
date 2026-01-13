@@ -511,7 +511,7 @@ export function LandingPage() {
                                 lineHeight: '1.08em'
                             }}
                         >
-                            Для пользователей
+                            Для клиентов
                         </h3>
                         <h4 
                             className="leading-[0.87] mt-[-4px] mb-[6px] font-montserrat-alt"
@@ -521,9 +521,9 @@ export function LandingPage() {
                                 lineHeight: '0.87em'
                             }}
                         >
-                            <span className="font-montserrat-alt" style={{ color: '#001900', fontSize: '22px', fontWeight: 600, display: 'inline' }}>Экономьте и спасайте</span>
+                            <span className="font-montserrat-alt" style={{ color: '#001900', fontSize: '22px', fontWeight: 600, display: 'inline' }}>Сэкономьте деньги,</span>
                             {' '}
-                            <span className="font-montserrat-alt" style={{ color: '#000000', fontSize: '22px', fontWeight: 600, display: 'inline' }}>еду из любимых заведений</span>
+                            <span className="font-montserrat-alt" style={{ color: '#000000', fontSize: '22px', fontWeight: 600, display: 'inline' }}>купив товары в ваших любимых заведениях</span>
                         </h4>
                         <p 
                             className="text-[12px] leading-[0.94] mb-[32px] font-montserrat-alt"
@@ -533,7 +533,7 @@ export function LandingPage() {
                                 lineHeight: '0.94em'
                             }}
                         >
-                            Получайте вкусные блюда по отличным ценам. Смотрите актуальные предложения рядом с вами и бронируйте прямо в KindPlate. Каждый заказ — шаг к более ответственному потреблению и поддержке экологической устойчивости.
+                            Покупайте вкусную еду по невероятным ценам. Просматривайте предложения по близости и покупайте товары прямо в приложении KindPlate. Наши выгодные цены порадуют ваш кошелек.
                         </p>
                         
                         {/* Steps */}
@@ -639,7 +639,7 @@ export function LandingPage() {
                                 lineHeight: '1.08em'
                             }}
                         >
-                            Для партнеров
+                            Для бизнеса
                         </h3>
                         <h4 
                             className="leading-[0.87] mt-[-4px] mb-[6px] font-montserrat-alt"
@@ -660,7 +660,7 @@ export function LandingPage() {
                                 lineHeight: '0.94em'
                             }}
                         >
-                            Kindplate помогает ресторанам и магазинам продавать непроданные блюда и готовые продукты со скидкой, вместо того чтобы их списывать их. Так вы вносите вклад в осознанное потребление и заботу о планете.
+                            Kindplate помогает ресторанам и магазинам реализовывать непроданные блюда и готовые продукты со скидкой, вместо того чтобы списывать их. Так вы вносите вклад в осознанное потребление и заботу о планете. Получите дополнительный стабильный источник дохода и привлекайте новых клиентов.
                         </p>
                         
                         {/* Steps */}
