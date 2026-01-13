@@ -471,7 +471,7 @@ export function LandingPage() {
 
                 {/* Blog Section */}
                 <section className="px-[15px] pb-[30px]">
-                    <div className="w-full max-w-[344px] mx-auto flex flex-col items-center gap-[20px]">
+                    <div className="w-full max-w-[344px] mx-auto flex flex-col items-center gap-[12px]">
                         {/* Title */}
                         <h2 
                             className="text-[32px] font-[700] leading-[1.2] text-center font-montserrat-alt"
@@ -486,7 +486,7 @@ export function LandingPage() {
                             style={{ color: '#FFFFFF', margin: 0 }}
                         >
                             <span 
-                                className="rounded-[6px] px-[8px] py-[2px]"
+                                className="rounded-[6px] px-[8px] py-[2px] text-[28px] font-[700]"
                                 style={{ backgroundColor: '#001900' }}
                             >
                                 Следите
