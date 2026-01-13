@@ -53,7 +53,7 @@ function createMarkerElement(isSelected: boolean, hasActiveOffers: boolean = tru
         filter = 'drop-shadow(0 0 8px #f97316) brightness(1.1)';
     } else if (!hasActiveOffers) {
         // Серый фильтр для неактивных бизнесов
-        filter = 'drop-shadow(0 2px 4px rgba(0,0,0,0.3)) grayscale(100%) brightness(0.6)';
+        filter = 'drop-shadow(0 2px 4px rgba(0,0,0,0.3)) grayscale(100%) brightness(1.5)';
     }
     
     element.style.cssText = `

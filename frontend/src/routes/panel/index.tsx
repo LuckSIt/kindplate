@@ -954,11 +954,12 @@ function RouteComponent() {
                                         <p className="panel-page__empty-subtitle">Заказы появятся здесь после того как клиенты оформят их</p>
                                     </div>
                                 ) : (
-                                    businessOrders.map((order: Order & { items?: { quantity: number; title: string }[]; customer_name?: string; pickup_code?: string }) => {
+                                    businessOrders.map((order: Order & { items?: Array<{ quantity: number; title: string; price?: number }>; order_items?: Array<{ quantity: number; title: string; price?: number }>; customer_name?: string; pickup_code?: string }) => {
                                         const statusInfo = getStatusInfo(order.status);
-                                        const quantity = Array.isArray(order.items)
-                                            ? order.items.reduce((sum, it) => sum + (it.quantity || 0), 0)
-                                            : 1;
+                                        const orderItems = order.items || order.order_items || [];
+                                        const quantity = orderItems.length > 0
+                                            ? orderItems.reduce((sum, it) => sum + (it.quantity || 0), 0)
+                                            : (order.quantity || 1);
                                         
                                         return (
                                             <div key={order.id} className="panel-page__order-card">
@@ -993,6 +994,28 @@ function RouteComponent() {
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                {/* Order Items - Состав заказа */}
+                                                {(order.items && order.items.length > 0) || (order.order_items && order.order_items.length > 0) ? (
+                                                    <div className="panel-page__order-items">
+                                                        <div className="panel-page__order-items-title">Состав заказа:</div>
+                                                        <div className="panel-page__order-items-list">
+                                                            {(order.items || order.order_items || []).map((item: { title: string; quantity: number; price?: number }, index: number) => (
+                                                                <div key={index} className="panel-page__order-item">
+                                                                    <div className="panel-page__order-item-info">
+                                                                        <span className="panel-page__order-item-name">{item.title}</span>
+                                                                        {item.price && (
+                                                                            <span className="panel-page__order-item-price">{Math.round(item.price)}₽</span>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="panel-page__order-item-quantity">
+                                                                        x{item.quantity}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ) : null}
 
                                                 <div className="panel-page__order-summary">
                                                     <div>
