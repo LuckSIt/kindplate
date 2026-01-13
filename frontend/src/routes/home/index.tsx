@@ -143,9 +143,9 @@ function RouteComponent() {
         }
     );
     
-    // Fallback: если новый эндпоинт не работает, используем старый
-    const { data: fallbackData } = useMapQuery(
-        ["businesses_fallback", mapBounds],
+    // Получаем все бизнесы (включая без активных предложений) для отображения на карте
+    const { data: allBusinessesData } = useMapQuery(
+        ["businesses_all", mapBounds],
         () => {
             const params = new URLSearchParams();
             if (mapBounds) {
@@ -160,7 +160,10 @@ function RouteComponent() {
                 .then((res) => res.data);
         },
         {
-            enabled: !offersData && !!mapBounds, // Используем только если новый эндпоинт не вернул данные
+            enabled: !!mapBounds, // Всегда загружаем все бизнесы для карты
+            staleTime: 60000,
+            retry: 1,
+            retryDelay: 1000,
         }
     );
     
@@ -169,7 +172,7 @@ function RouteComponent() {
 
     const businessesFromSearch = useMemo(
         () => {
-            const base = mapOffersToBusinesses(offersData?.offers);
+            const base = mapOffersToBusinesses(offersData?.data?.offers || offersData?.offers);
 
             if (!normalizedSearchQuery) {
                 return base;
@@ -193,9 +196,9 @@ function RouteComponent() {
         [offersData, normalizedSearchQuery]
     );
 
-    const businessesFromFallback = useMemo(() => {
-        if (fallbackData && typeof fallbackData === 'object' && 'sellers' in fallbackData) {
-            const sellersData = fallbackData as { sellers: Array<{
+    const businessesFromAll = useMemo(() => {
+        if (allBusinessesData && typeof allBusinessesData === 'object' && 'sellers' in allBusinessesData) {
+            const sellersData = allBusinessesData as { sellers: Array<{
                 id: number;
                 name: string;
                 address: string;
@@ -220,9 +223,47 @@ function RouteComponent() {
         }
         
         return [];
-    }, [fallbackData]);
+    }, [allBusinessesData]);
 
-    const businesses: Business[] = offersData ? businessesFromSearch : businessesFromFallback;
+    // Объединяем бизнесы: берем все бизнесы из allBusinessesData и обновляем их предложениями из offersData
+    const businesses: Business[] = useMemo(() => {
+        // Создаем Map для быстрого доступа к бизнесам из offersData
+        const businessesWithOffersMap = new Map<number, Business>();
+        businessesFromSearch.forEach(business => {
+            businessesWithOffersMap.set(business.id, business);
+        });
+
+        // Создаем Map для всех бизнесов
+        const allBusinessesMap = new Map<number, Business>();
+        businessesFromAll.forEach(business => {
+            allBusinessesMap.set(business.id, business);
+        });
+
+        // Объединяем: если бизнес есть в offersData, используем его (с актуальными предложениями)
+        // Если нет - используем из allBusinessesData (может быть без предложений)
+        const result: Business[] = [];
+        
+        // Сначала добавляем все бизнесы из allBusinessesData
+        businessesFromAll.forEach(business => {
+            const businessWithOffers = businessesWithOffersMap.get(business.id);
+            if (businessWithOffers) {
+                // Если есть в offersData, используем его (с актуальными предложениями)
+                result.push(businessWithOffers);
+            } else {
+                // Если нет в offersData, добавляем бизнес без предложений
+                result.push(business);
+            }
+        });
+
+        // Добавляем бизнесы, которые есть только в offersData (но нет в allBusinessesData)
+        businessesFromSearch.forEach(business => {
+            if (!allBusinessesMap.has(business.id)) {
+                result.push(business);
+            }
+        });
+
+        return result;
+    }, [businessesFromSearch, businessesFromAll]);
     const hasBusinesses = businesses.length > 0;
 
     // Get user location

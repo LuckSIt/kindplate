@@ -141,16 +141,14 @@ customerRouter.get("/sellers", async (req, res) => {
             }
         });
 
-        // Фильтруем заведения без предложений
-        const sellersWithOffers = Object.values(sellers).filter(
-            seller => seller.offers.length > 0
-        );
+        // Возвращаем все заведения, включая без предложений (для отображения на карте)
+        const allSellers = Object.values(sellers);
 
         // Получаем бейджи для всех бизнесов (если таблица существует)
         const badgesByBusiness = {};
-        if (sellersWithOffers.length > 0) {
+        if (allSellers.length > 0) {
             try {
-                const businessIds = sellersWithOffers.map(s => s.id);
+                const businessIds = allSellers.map(s => s.id);
                 const badgesResult = await pool.query(
                     `SELECT 
                         business_id,
@@ -184,15 +182,15 @@ customerRouter.get("/sellers", async (req, res) => {
         }
         
         // Добавляем бейджи к продавцам
-        sellersWithOffers.forEach(seller => {
+        allSellers.forEach(seller => {
             seller.badges = badgesByBusiness[seller.id] || [];
         });
 
-        console.log("✅ Заведения с предложениями:", sellersWithOffers.length);
+        console.log("✅ Все заведения (включая без предложений):", allSellers.length);
 
         res.send({
             success: true,
-            sellers: sellersWithOffers,
+            sellers: allSellers,
         });
     } catch (e) {
         console.error("❌ Ошибка в /customer/sellers:", e);
