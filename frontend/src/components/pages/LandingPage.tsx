@@ -9,7 +9,6 @@ import pizzaImage from "@/figma/762ADCA2-E303-44E5-B6E0-272EE15C6913 1.png";
 import cookiesImage from "@/figma/29BD33A8-EE31-48BF-A53C-02BC08740634 1.png";
 import phoneMapImage from "@/figma/image.png";
 import { SocialLinks } from "@/components/landing/SocialLinks";
-import telegramFooterIcon from "@/figma/telegram-footer.svg";
 import blogImage from "@/figma/blog.png";
 
 // Данные о продуктах из Figma
@@ -483,12 +482,12 @@ export function LandingPage() {
                         
                         {/* Subtitle */}
                         <p 
-                            className="text-[16px] font-[600] leading-[1.4] text-center font-montserrat-alt"
+                            className="text-[22px] font-[600] leading-[1.4] text-center font-montserrat-alt"
                             style={{ color: '#FFFFFF', margin: 0 }}
                         >
                             <span 
                                 className="rounded-[6px] px-[8px] py-[2px]"
-                                style={{ backgroundColor: '#004900' }}
+                                style={{ backgroundColor: '#001900' }}
                             >
                                 Следите
                             </span>
@@ -496,7 +495,7 @@ export function LandingPage() {
                         </p>
                         
                         {/* Blog Card - только изображение кликабельно */}
-                        <div className="w-full rounded-[15px] overflow-hidden" style={{ backgroundColor: '#001900' }}>
+                        <div className="w-full rounded-[15px] overflow-hidden">
                             {/* Image Container - кликабельное изображение */}
                             <a
                                 href="https://t.me/kindplate"
