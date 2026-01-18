@@ -1,17 +1,10 @@
 const express = require("express");
 const statsRouter = express.Router();
 const pool = require("../lib/db");
+const { authOnly, businessOnly } = require("../lib/auth");
 
-// Middleware для проверки авторизации
-const requireAuth = (req, res, next) => {
-    if (!req.session.userId) {
-        return res.status(401).send({ success: false, error: "NOT_AUTHENTICATED" });
-    }
-    next();
-};
-
-// GET /stats/customer - Статистика для клиента
-statsRouter.get("/customer", requireAuth, async (req, res) => {
+// GET /stats/customer - Статистика для клиента (authOnly: сессия или JWT)
+statsRouter.get("/customer", authOnly, async (req, res) => {
     try {
         const customer_id = req.session.userId;
 
@@ -107,8 +100,8 @@ statsRouter.get("/customer", requireAuth, async (req, res) => {
     }
 });
 
-// GET /stats/business - Статистика для бизнеса
-statsRouter.get("/business", requireAuth, async (req, res) => {
+// GET /stats/business - Статистика для бизнеса (businessOnly: сессия или JWT + is_business)
+statsRouter.get("/business", businessOnly, async (req, res) => {
     try {
         const business_id = req.session?.userId;
         
