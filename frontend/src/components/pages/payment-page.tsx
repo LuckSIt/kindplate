@@ -108,7 +108,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
         <div className="payment-page__header">
           <button 
             className="payment-page__back-button"
-            onClick={() => navigate({ to: "/cart" })}
+            onClick={() => (window.history.length > 1 ? window.history.back() : navigate({ to: "/cart" }))}
             aria-label="Назад"
           >
             <img 
@@ -152,7 +152,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
         <div className="payment-page__header-content">
           <button 
             className="payment-page__back-button"
-            onClick={() => navigate({ to: "/cart" })}
+            onClick={() => (window.history.length > 1 ? window.history.back() : navigate({ to: "/cart" }))}
             aria-label="Назад"
           >
             <img 

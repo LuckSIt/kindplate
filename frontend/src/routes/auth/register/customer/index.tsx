@@ -57,7 +57,7 @@ function RouteComponent() {
                     {/* Back Button */}
                     <button 
                         className="register-page__back-button"
-                        onClick={() => navigate({ to: "/" })}
+                        onClick={() => (window.history.length > 1 ? window.history.back() : navigate({ to: "/" }))}
                         aria-label="Назад"
                     >
                         <img 

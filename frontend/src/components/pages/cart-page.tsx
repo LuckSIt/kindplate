@@ -95,7 +95,7 @@ export const CartPage: React.FC = () => {
           <div className="cart-page__header-floating">
             <button 
               className="cart-page__back-button"
-              onClick={() => navigate({ to: "/list" })}
+              onClick={() => (window.history.length > 1 ? window.history.back() : navigate({ to: "/list" }))}
               aria-label="Назад"
             >
               <img 
@@ -171,7 +171,7 @@ export const CartPage: React.FC = () => {
         <div className="cart-page__header-floating">
           <button 
             className="cart-page__back-button"
-            onClick={() => navigate({ to: "/list" })}
+            onClick={() => (window.history.length > 1 ? window.history.back() : navigate({ to: "/list" }))}
             aria-label="Назад"
           >
             <img 

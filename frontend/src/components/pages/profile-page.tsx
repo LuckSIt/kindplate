@@ -59,7 +59,11 @@ export function ProfilePage() {
   }, [profile, profileMethods]);
 
   const handleBack = () => {
-    navigate({ to: '/account' });
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      navigate({ to: '/account' });
+    }
   };
 
   const onProfileSubmit = (data: ProfileUpdateFormData) => {

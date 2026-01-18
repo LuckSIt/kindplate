@@ -62,7 +62,7 @@ function AboutPage() {
                     <div className="about-page__header-floating">
                         <button 
                             className="about-page__back-button"
-                            onClick={() => navigate({ to: "/account" })}
+                            onClick={() => (window.history.length > 1 ? window.history.back() : navigate({ to: "/account" }))}
                             aria-label="Назад"
                         >
                             <img 

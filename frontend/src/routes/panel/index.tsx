@@ -793,7 +793,7 @@ function RouteComponent() {
                 <div className="panel-page__header-content">
                     <button 
                         className="panel-page__back-button"
-                        onClick={() => navigate({ to: "/account" })}
+                        onClick={() => (window.history.length > 1 ? window.history.back() : navigate({ to: "/account" }))}
                         aria-label="Назад"
                     >
                         <img 

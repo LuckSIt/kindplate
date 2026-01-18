@@ -204,7 +204,7 @@ function OfferPage() {
         <div className="offer-page__header-floating">
           <button 
             className="offer-page__back-button"
-            onClick={() => navigate({ to: '/list' })}
+            onClick={() => (window.history.length > 1 ? window.history.back() : navigate({ to: '/list' }))}
             aria-label="Назад"
           >
             <img 
