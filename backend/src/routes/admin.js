@@ -165,7 +165,16 @@ adminRouter.get('/stats', requireAdmin, asyncHandler(async (req, res) => {
     });
 }));
 
-// Удалить бизнес (только для админа)
+// Удалить бизнес (только для админа).
+// Сначала удаляем все связанные записи (из-за FK без ON DELETE CASCADE), затем users.
+const runDeleteIgnoreMissingTable = async (client, sql, params) => {
+    try {
+        await client.query(sql, params);
+    } catch (e) {
+        if (e.code !== '42P01') throw e; // 42P01 = undefined_table
+    }
+};
+
 adminRouter.delete('/businesses/:id', requireAdmin, asyncHandler(async (req, res) => {
     const businessId = parseInt(req.params.id);
 
@@ -187,8 +196,70 @@ adminRouter.delete('/businesses/:id', requireAdmin, asyncHandler(async (req, res
         throw new AppError('Это не бизнес-аккаунт', 400);
     }
 
-    // Удаляем бизнес
-    await pool.query('DELETE FROM users WHERE id = $1', [businessId]);
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        // 1. Платежи по заказам этого бизнеса
+        await runDeleteIgnoreMissingTable(client,
+            'DELETE FROM payments WHERE order_id IN (SELECT id FROM orders WHERE business_id = $1)',
+            [businessId]);
+
+        // 2. Позиции заказов (order_items)
+        await runDeleteIgnoreMissingTable(client,
+            'DELETE FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE business_id = $1)',
+            [businessId]);
+
+        // 3. Заказы
+        await client.query('DELETE FROM orders WHERE business_id = $1', [businessId]);
+
+        // 4. Расписания офферов
+        await runDeleteIgnoreMissingTable(client,
+            'DELETE FROM offer_schedules WHERE business_id = $1',
+            [businessId]);
+
+        // 5. Элементы корзины по офферам этого бизнеса
+        await runDeleteIgnoreMissingTable(client,
+            'DELETE FROM cart_items WHERE offer_id IN (SELECT id FROM offers WHERE business_id = $1)',
+            [businessId]);
+
+        // 6. Офферы
+        await client.query('DELETE FROM offers WHERE business_id = $1', [businessId]);
+
+        // 7. Отзывы
+        await client.query('DELETE FROM reviews WHERE business_id = $1', [businessId]);
+
+        // 8. Избранное (где бизнес — объект избранного)
+        await client.query('DELETE FROM favorites WHERE business_id = $1', [businessId]);
+
+        // 9. Товары (items), если owner_id = бизнес
+        await client.query('DELETE FROM items WHERE owner_id = $1', [businessId]);
+
+        // 10. Локации бизнеса
+        await runDeleteIgnoreMissingTable(client,
+            'DELETE FROM business_locations WHERE business_id = $1',
+            [businessId]);
+
+        // 11. Настройки уведомлений пользователя-бизнеса
+        await runDeleteIgnoreMissingTable(client,
+            'DELETE FROM notification_settings WHERE user_id = $1',
+            [businessId]);
+
+        // 12. Записи уведомлений
+        await runDeleteIgnoreMissingTable(client,
+            'DELETE FROM notifications WHERE user_id = $1',
+            [businessId]);
+
+        // 13. Пользователь (бизнес)
+        await client.query('DELETE FROM users WHERE id = $1', [businessId]);
+
+        await client.query('COMMIT');
+    } catch (e) {
+        await client.query('ROLLBACK');
+        throw e;
+    } finally {
+        client.release();
+    }
 
     res.json({
         success: true,
