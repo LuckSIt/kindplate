@@ -214,6 +214,36 @@ statsRouter.get("/business", businessOnly, async (req, res) => {
             }
         }
 
+        // Статистика за последние 3 дня (сегодня + вчера + позавчера), без отмененных
+        const last3daysRevenue = await pool.query(
+            `SELECT COALESCE(SUM(${totalField}), 0) as total
+             FROM orders
+             WHERE business_id=$1 AND ${notCancelledCondition} AND created_at >= (CURRENT_DATE - INTERVAL '2 days')::date`,
+            [business_id]
+        );
+
+        let last3daysSold = 0;
+        try {
+            const last3daysSoldResult = await pool.query(
+                `SELECT COALESCE(SUM(oi.quantity), 0) as total_sold
+                 FROM order_items oi
+                 JOIN orders o ON oi.order_id = o.id
+                 WHERE o.business_id=$1 AND o.${notCancelledCondition} AND o.created_at >= (CURRENT_DATE - INTERVAL '2 days')::date`,
+                [business_id]
+            );
+            last3daysSold = parseInt(last3daysSoldResult.rows[0].total_sold) || 0;
+        } catch (e) {
+            if (orderCols.includes('quantity')) {
+                const r = await pool.query(
+                    `SELECT COALESCE(SUM(quantity), 0) as total_sold
+                     FROM orders
+                     WHERE business_id=$1 AND ${notCancelledCondition} AND created_at >= (CURRENT_DATE - INTERVAL '2 days')::date`,
+                    [business_id]
+                );
+                last3daysSold = parseInt(r.rows[0].total_sold) || 0;
+            }
+        }
+
         // Количество уникальных клиентов
         const hasUserId = orderCols.includes('user_id');
         const hasCustomerId = orderCols.includes('customer_id');
@@ -306,6 +336,8 @@ statsRouter.get("/business", businessOnly, async (req, res) => {
                 total_sold: totalSold,
                 today_revenue: parseFloat(todayRevenue.rows[0].total),
                 today_sold: todaySold,
+                last3days_revenue: parseFloat(last3daysRevenue.rows[0].total),
+                last3days_sold: last3daysSold,
                 unique_customers: parseInt(uniqueCustomers.rows[0].count),
                 avg_check: Math.round(parseFloat(avgCheck.rows[0].avg)),
                 top_offers: topOffers,

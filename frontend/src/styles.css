@@ -7100,6 +7100,16 @@ div.font-montserrat-alt,
   border-color: rgba(59, 130, 246, 0.3);
 }
 
+.panel-page__stat-card--last3days-revenue {
+  background: linear-gradient(to bottom right, rgba(34, 197, 94, 0.25), rgba(34, 197, 94, 0.08));
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+.panel-page__stat-card--last3days-sold {
+  background: linear-gradient(to bottom right, rgba(59, 130, 246, 0.25), rgba(59, 130, 246, 0.08));
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
 .panel-page__stat-card--sold {
   background: linear-gradient(to bottom right, rgba(168, 85, 247, 0.3), rgba(168, 85, 247, 0.1));
   border-color: rgba(168, 85, 247, 0.3);

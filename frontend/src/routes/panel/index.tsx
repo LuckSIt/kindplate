@@ -1101,6 +1101,26 @@ function RouteComponent() {
                                     </div>
                                 </div>
 
+                                {/* Last 3 days */}
+                                <div className="panel-page__stats-section">
+                                    <h3 className="panel-page__stats-section-title">
+                                        <span></span>
+                                        За последние 3 дня
+                                    </h3>
+                                    <div className="panel-page__stats-grid">
+                                        <div className="panel-page__stat-card panel-page__stat-card--last3days-revenue">
+                                            <div className="panel-page__stat-icon"></div>
+                                            <div className="panel-page__stat-value">{statsData.data.stats.last3days_revenue ?? 0}₽</div>
+                                            <div className="panel-page__stat-label">Выручка за 3 дня</div>
+                                        </div>
+                                        <div className="panel-page__stat-card panel-page__stat-card--last3days-sold">
+                                            <div className="panel-page__stat-icon"></div>
+                                            <div className="panel-page__stat-value">{statsData.data.stats.last3days_sold ?? 0}</div>
+                                            <div className="panel-page__stat-label">Продано за 3 дня</div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {/* Total Stats Section */}
                                 <div className="panel-page__stats-section">
                                     <h3 className="panel-page__stats-section-title">
