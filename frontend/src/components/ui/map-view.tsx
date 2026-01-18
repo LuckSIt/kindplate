@@ -93,8 +93,8 @@ function createMarkerElement(isSelected: boolean, hasActiveOffers: boolean = tru
     return element;
 }
 
-// Create cluster element
-function createClusterElement(count: number, onClick?: () => void): HTMLElement {
+// Create cluster element. hasAnyActiveOffers: в кластере есть хотя бы один бизнес с активными офферами.
+function createClusterElement(count: number, hasAnyActiveOffers: boolean = true, onClick?: () => void): HTMLElement {
     const element = document.createElement('div');
     element.style.cssText = `
         width: 48px;
@@ -106,12 +106,13 @@ function createClusterElement(count: number, onClick?: () => void): HTMLElement 
         transition: transform 0.2s;
     `;
     
-    // Background circle
+    // Цвет кружка: зелёный, если есть бизнесы с офферами; серый, если все без офферов
+    const bgColor = hasAnyActiveOffers ? '#1b5525' : '#5a5a5a';
     const bg = document.createElement('div');
     bg.style.cssText = `
         width: 100%;
         height: 100%;
-        background: #1b5525;
+        background: ${bgColor};
         border: 3px solid white;
         border-radius: 50%;
         display: flex;
@@ -369,8 +370,12 @@ export function MapView({
                     );
                 },
                 cluster: (coordinates: [number, number], features: any[]) => {
-                    const element = createClusterElement(features.length, () => {
-                        // Zoom in on cluster click
+                    const hasAnyActiveOffers = features.some((f: any) => {
+                        const b = f.properties?.business as Business | undefined;
+                        return b?.offers && b.offers.length > 0 &&
+                            b.offers.some((o: any) => o.is_active && (o.quantity_available ?? 0) > 0);
+                    });
+                    const element = createClusterElement(features.length, hasAnyActiveOffers, () => {
                         map.setLocation({
                             center: coordinates,
                             zoom: map.zoom + 2,
