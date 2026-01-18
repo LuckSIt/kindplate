@@ -88,12 +88,17 @@ class NotificationService {
     }
 
     try {
-      // VAPID ключи для web-push (в реальном приложении должны быть на сервере)
-      const vapidPublicKey = 'BEl62iUYgUivxIkv69yViEuiBIa40HI8j0KJhO3j9VHhJ4V2V9E4B3y6Y1Q7W8R5T2U9I6O3P4A7S1D2F5G8H9J0K3L6M9N2O5P8Q1R4S7T0U3V6W9X2Y5Z8';
+      // Получаем VAPID публичный ключ из переменных окружения
+      const vapidPublicKey = (import.meta as any).env?.VITE_VAPID_PUBLIC_KEY as string | undefined;
       
+      if (!vapidPublicKey) {
+        throw new Error('VAPID_PUBLIC_KEY не настроен. Добавьте VITE_VAPID_PUBLIC_KEY в переменные окружения.');
+      }
+      
+      const applicationServerKey = this.urlBase64ToUint8Array(vapidPublicKey);
       this.subscription = await this.registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(vapidPublicKey)
+        applicationServerKey: applicationServerKey as any
       });
 
       console.log('✅ Push subscription created:', this.subscription);

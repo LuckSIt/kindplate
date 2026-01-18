@@ -103,7 +103,7 @@ function AboutPage() {
                         </div>
 
                         {/* Stats */}
-                        <div className="about-page__stats">
+                        {/*<div className="about-page__stats">
                             {stats.map((stat, index) => (
                                 <div
                                     key={index}
@@ -117,7 +117,7 @@ function AboutPage() {
                                     </div>
                                 </div>
                             ))}
-                        </div>
+                        </div>*/}
                     </section>
 
                     {/* Values Section */}

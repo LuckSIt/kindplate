@@ -469,23 +469,19 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* Blog Section */}
-                <section className="px-[15px] pb-[30px]">
-                    <div className="w-full max-w-[344px] mx-auto flex flex-col items-center gap-[12px]">
-                        {/* Title */}
+                {/* Blog Section — отступы и размер карточки по макету */}
+                <section className="px-[15px] pt-[48px] pb-[48px]">
+                    <div className="w-full max-w-[344px] mx-auto flex flex-col items-center gap-[24px]">
                         <h2 
                             className="text-[32px] font-[700] leading-[1.2] text-center font-montserrat-alt"
                             style={{ color: '#FFFFFF', margin: 0 }}
                         >
                             Блог
                         </h2>
-                        
-                        {/* Subtitle */}
                         <p 
                             className="text-[22px] font-[600] leading-[1.4] text-center font-montserrat-alt"
                             style={{ color: '#FFFFFF', margin: 0 }}
                         >
-                            {/*className="font-ramona inline-flex items-center justify-center rounded-full px-[16px] py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"*/}
                             <span 
                                 className="font-ramona items-center justify-center rounded-full px-[8px] py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"
                                 style={{ backgroundColor: '#001900' }}
@@ -494,23 +490,22 @@ export function LandingPage() {
                             </span>
                             {' '}за нами в нашем канале
                         </p>
-                        
-                        {/* Blog Card - только изображение кликабельно */}
-                        <div className="w-full rounded-[15px] overflow-hidden">
-                            {/* Image Container - кликабельное изображение */}
+                        {/* Карточка: тёмно-зелёный фон, скругление 24px, внутренние отступы ~32–36px */}
+                        <div 
+                            className="w-full rounded-[24px] overflow-hidden p-8"
+                            style={{ backgroundColor: '#2D4739' }}
+                        >
                             <a
                                 href="https://t.me/kindplate"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="block w-full cursor-pointer transition-opacity hover:opacity-90 active:opacity-80"
                             >
-                                <div className="relative w-full h-[280px] overflow-hidden">
-                                    <img 
-                                        src={blogImage} 
-                                        alt="KindPlate блог - выгодно для тебя, полезно для планеты"
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
+                                <img 
+                                    src={blogImage} 
+                                    alt="KindPlate блог — выгодно для тебя, полезно для планеты"
+                                    className="w-full h-auto block"
+                                />
                             </a>
                         </div>
                     </div>

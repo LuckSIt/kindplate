@@ -282,6 +282,29 @@ ordersRouter.post("/draft", asyncHandler(async (req, res) => {
         // Не критично, продолжаем
     }
 
+    // Отправляем уведомления (не блокируем ответ, если уведомления не отправятся)
+    try {
+        const { notifyBusinessAboutNewOrder, notifyCustomerAboutNewOrder } = require('../lib/notifications');
+        
+        // Получаем информацию о бизнесе для уведомления клиенту
+        const businessResult = await pool.query(
+            `SELECT name FROM users WHERE id = $1`,
+            [business_id]
+        );
+        const businessName = businessResult.rows[0]?.name || 'Бизнес';
+
+        // Уведомляем бизнес о новом заказе
+        notifyBusinessAboutNewOrder(business_id, orderId, total, items.length)
+            .catch(err => console.error("Ошибка отправки уведомления бизнесу:", err));
+
+        // Уведомляем клиента о создании заказа
+        notifyCustomerAboutNewOrder(userId, orderId, businessName, total)
+            .catch(err => console.error("Ошибка отправки уведомления клиенту:", err));
+    } catch (notificationError) {
+        console.error("Ошибка при отправке уведомлений:", notificationError);
+        // Не критично, продолжаем
+    }
+
     res.status(201).send({
         success: true,
         data: {
@@ -363,6 +386,23 @@ ordersRouter.post("/:id/confirm", asyncHandler(async (req, res) => {
              WHERE id = $4`,
             [pickup_time_start, pickup_time_end, notes, id]
         );
+
+        // Отправляем уведомление клиенту о подтверждении заказа
+        try {
+            const { notifyCustomerAboutOrderStatus } = require('../lib/notifications');
+            const businessResult = await pool.query(
+                `SELECT u.name FROM users u 
+                 JOIN orders o ON u.id = o.business_id 
+                 WHERE o.id = $1`,
+                [id]
+            );
+            const businessName = businessResult.rows[0]?.name || 'Бизнес';
+            
+            notifyCustomerAboutOrderStatus(order.user_id, id, 'confirmed', businessName)
+                .catch(err => console.error("Ошибка отправки уведомления клиенту:", err));
+        } catch (notificationError) {
+            console.error("Ошибка при отправке уведомления:", notificationError);
+        }
 
     res.send({
         success: true,
@@ -1156,11 +1196,26 @@ ordersRouter.post("/scan", scanRateLimiter, async (req, res) => {
         // Обновляем заказ - помечаем как выданный
         await pool.query(
             `UPDATE orders 
-             SET status = 'picked_up', 
-                 pickup_verified_at = NOW() 
+             SET status = 'completed', 
+                 pickup_verified_at = NOW()
              WHERE id = $1`,
             [order.id]
         );
+
+        // Отправляем уведомление клиенту о выполнении заказа
+        try {
+            const { notifyCustomerAboutOrderStatus } = require('../lib/notifications');
+            const businessResult = await pool.query(
+                `SELECT name FROM users WHERE id = $1`,
+                [order.business_id]
+            );
+            const businessName = businessResult.rows[0]?.name || 'Бизнес';
+            
+            notifyCustomerAboutOrderStatus(order.user_id, order.id, 'completed', businessName)
+                .catch(err => console.error("Ошибка отправки уведомления клиенту:", err));
+        } catch (notificationError) {
+            console.error("Ошибка при отправке уведомления:", notificationError);
+        }
 
         // Логируем успешное сканирование
         await logOrderEvent(order.id, 'qr_scanned', businessId, 'business', {

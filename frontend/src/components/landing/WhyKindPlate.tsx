@@ -57,7 +57,7 @@ export function WhyKindPlate() {
                 {WHY_KIND_PLATE_CARDS.map(({ id, Icon, message }) => (
                     <div
                         key={id}
-                        className="flex h-[122px] w-[122px] flex-col items-center rounded-[15px] bg-[#004900] px-[14px] pt-[15px] text-center"
+                        className="flex h-[122px] w-[122px] flex-col items-center rounded-[15px] bg-[#C8EBBB] px-[14px] pt-[15px] text-center"
                     >
                         <span
                             className="mb-0 flex items-center justify-center"

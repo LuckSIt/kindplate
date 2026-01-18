@@ -324,13 +324,46 @@ paymentsRouter.post("/webhook", async (req, res) => {
                 [pickupCode, payment.order_id]
             );
 
-            // TODO: Отправить уведомление пользователю
+            // Отправляем уведомление клиенту об оплате
+            try {
+                const { notifyCustomerAboutOrderStatus } = require('../lib/notifications');
+                const businessResult = await pool.query(
+                    `SELECT u.name FROM users u 
+                     JOIN orders o ON u.id = o.business_id 
+                     WHERE o.id = $1`,
+                    [payment.order_id]
+                );
+                const businessName = businessResult.rows[0]?.name || 'Бизнес';
+                
+                notifyCustomerAboutOrderStatus(payment.user_id, payment.order_id, 'confirmed', businessName)
+                    .catch(err => console.error("Ошибка отправки уведомления клиенту:", err));
+            } catch (notificationError) {
+                console.error("Ошибка при отправке уведомления:", notificationError);
+            }
+
             console.log("✅ Платеж успешен, заказ оплачен:", payment.order_id);
         } else if (status === 'failed' || status === 'cancelled') {
             await pool.query(
                 `UPDATE orders SET status = 'cancelled', cancelled_at = NOW() WHERE id = $1`,
                 [payment.order_id]
             );
+
+            // Отправляем уведомление клиенту об отмене
+            try {
+                const { notifyCustomerAboutOrderStatus } = require('../lib/notifications');
+                const businessResult = await pool.query(
+                    `SELECT u.name FROM users u 
+                     JOIN orders o ON u.id = o.business_id 
+                     WHERE o.id = $1`,
+                    [payment.order_id]
+                );
+                const businessName = businessResult.rows[0]?.name || 'Бизнес';
+                
+                notifyCustomerAboutOrderStatus(payment.user_id, payment.order_id, 'cancelled', businessName)
+                    .catch(err => console.error("Ошибка отправки уведомления клиенту:", err));
+            } catch (notificationError) {
+                console.error("Ошибка при отправке уведомления:", notificationError);
+            }
 
             console.log("❌ Платеж не удался, заказ отменен:", payment.order_id);
         }
