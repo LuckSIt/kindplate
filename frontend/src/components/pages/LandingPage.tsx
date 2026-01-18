@@ -490,18 +490,23 @@ export function LandingPage() {
                             </span>
                             {' '}за нами в нашем канале
                         </p>
-                        <a
-                            href="https://t.me/kindplate"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block w-full mt-0 cursor-pointer transition-opacity hover:opacity-90 active:opacity-80"
+                        <div
+                            className="w-full rounded-[24px] overflow-hidden p-4 mt-0"
+                            style={{ backgroundColor: '#C8EBBB' }}
                         >
-                            <img 
-                                src={blogImage} 
-                                alt="KindPlate блог — выгодно для тебя, полезно для планеты"
-                                className="w-full h-auto block"
-                            />
-                        </a>
+                            <a
+                                href="https://t.me/kindplate"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block w-full cursor-pointer transition-opacity hover:opacity-90 active:opacity-80"
+                            >
+                                <img 
+                                    src={blogImage} 
+                                    alt="KindPlate блог — выгодно для тебя, полезно для планеты"
+                                    className="w-full h-auto block"
+                                />
+                            </a>
+                        </div>
                     </div>
                 </section>
 
