@@ -729,9 +729,21 @@ function RouteComponent() {
                     });
                 throw new Error("unknown mutation type");
             },
-            onSuccess: (data) => {
-                console.log("Success:", data);
-                refetchOffers();
+            onSuccess: async () => {
+                await refetchOffers();
+                // Инвалидируем vendor и offers, чтобы страница заведения (/v/:id) и карта/список показывали актуальные данные
+                await Promise.all([
+                    queryClient.invalidateQueries({ queryKey: ["mine_offers"] }),
+                    queryClient.invalidateQueries({ queryKey: ["vendor"] }),
+                    queryClient.invalidateQueries({ queryKey: ["vendor-offers"] }),
+                    queryClient.invalidateQueries({ queryKey: ["offers_search"] }),
+                    queryClient.invalidateQueries({ queryKey: ["offers_search_list"] }),
+                    queryClient.invalidateQueries({ queryKey: ["businesses_map"] }),
+                    queryClient.invalidateQueries({ queryKey: ["businesses_all"] }),
+                    queryClient.invalidateQueries({ queryKey: ["businesses_fallback"] }),
+                    queryClient.invalidateQueries({ queryKey: ["customer/sellers"] }),
+                    queryClient.invalidateQueries({ queryKey: ["customer/vendors"] }),
+                ]);
             },
             onError: (error: any) => {
                 const message = error.response?.data?.message || error.response?.data?.error || "Не удалось выполнить операцию";
