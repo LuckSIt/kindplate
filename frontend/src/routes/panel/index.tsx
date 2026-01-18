@@ -731,11 +731,12 @@ function RouteComponent() {
             },
             onSuccess: async () => {
                 await refetchOffers();
-                // Инвалидируем vendor и offers, чтобы страница заведения (/v/:id) и карта/список показывали актуальные данные
+                // Удаляем кэш vendor и vendor-offers, чтобы при открытии /v/:id всегда шёл свежий запрос
+                queryClient.removeQueries({ queryKey: ["vendor"] });
+                queryClient.removeQueries({ queryKey: ["vendor-offers"] });
+                // Инвалидируем остальные запросы для карты и списка
                 await Promise.all([
                     queryClient.invalidateQueries({ queryKey: ["mine_offers"] }),
-                    queryClient.invalidateQueries({ queryKey: ["vendor"] }),
-                    queryClient.invalidateQueries({ queryKey: ["vendor-offers"] }),
                     queryClient.invalidateQueries({ queryKey: ["offers_search"] }),
                     queryClient.invalidateQueries({ queryKey: ["offers_search_list"] }),
                     queryClient.invalidateQueries({ queryKey: ["businesses_map"] }),

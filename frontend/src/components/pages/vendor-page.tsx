@@ -33,19 +33,21 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     }
   }, [isFavoriteFromServer]);
 
-  // Fetch vendor data
+  // Fetch vendor data. refetchOnMount: true — переопределяем глобальный refetchOnMount: false, чтобы после снятия офферов в панели при открытии страницы получать свежие данные.
   const { data: vendorData, isLoading: vendorLoading, error: vendorError } = useQuery({
     queryKey: ['vendor', vendorId],
     queryFn: () => axiosInstance.get(`/customer/vendors/${vendorId}`),
     enabled: !!vendorId,
+    refetchOnMount: true,
     select: (res) => res.data.data as Business
   });
 
-  // Fetch vendor offers
+  // Fetch vendor offers. refetchOnMount: "always" — при каждом открытии страницы запрашивать заново, чтобы после снятия офферов в панели показывать актуальное «0 активных» (глобальный refetchOnMount: false и staleTime иначе блокируют refetch).
   const { data: offersData } = useQuery({
     queryKey: ['vendor-offers', vendorId],
     queryFn: () => axiosInstance.get(`/customer/vendors/${vendorId}/offers?active=true`),
     enabled: !!vendorId,
+    refetchOnMount: 'always',
     select: (res) => res.data.data.offers as Offer[]
   });
 
