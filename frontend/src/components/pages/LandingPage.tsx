@@ -469,8 +469,8 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* Blog Section — без отступов между заголовком, подзаголовком и картинкой */}
-                <section className="px-[15px] pt-[48px] pb-[48px]">
+                {/* Blog Section — без больших отступов между надписью, картинкой и следующим блоком */}
+                <section className="px-[15px] pt-[48px] pb-[20px]">
                     <div className="w-full max-w-[344px] mx-auto flex flex-col items-center gap-0">
                         <h2 
                             className="text-[32px] font-[700] leading-[1.2] text-center font-montserrat-alt"
@@ -479,7 +479,7 @@ export function LandingPage() {
                             Блог
                         </h2>
                         <p 
-                            className="text-[22px] font-[600] leading-[1.4] text-center font-montserrat-alt"
+                            className="text-[22px] font-[600] leading-[1.2] text-center font-montserrat-alt mb-0"
                             style={{ color: '#FFFFFF', margin: 0 }}
                         >
                             <span 
@@ -494,7 +494,7 @@ export function LandingPage() {
                             href="https://t.me/kindplate"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block w-full cursor-pointer transition-opacity hover:opacity-90 active:opacity-80"
+                            className="block w-full mt-0 cursor-pointer transition-opacity hover:opacity-90 active:opacity-80"
                         >
                             <img 
                                 src={blogImage} 
@@ -504,8 +504,8 @@ export function LandingPage() {
                         </a>
                     </div>
                 </section>
-                    
-                    {/* User Benefits Section - White Card */}
+
+                {/* User Benefits Section - White Card */}
                 <section className="px-[15px] pb-[60px]">
                     <div 
                         className="rounded-[15px] px-[20px] pt-[5px] pb-[20px]"
