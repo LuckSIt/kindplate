@@ -3,12 +3,13 @@
  * Страница профиля пользователя с формами редактирования
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { User, Lock, Trash2, Save, Phone, Mail, MapPin, Clock, Globe } from 'lucide-react';
+import { User, Lock, Trash2, Save, Phone, Mail, MapPin, Clock, Globe, Image } from 'lucide-react';
 import { useNavigate } from '@tanstack/react-router';
-import { useProfile, useUpdateProfile, useChangePassword, useDeleteAccount } from '@/lib/hooks/use-profile';
+import { useProfile, useUpdateProfile, useChangePassword, useDeleteAccount, useUploadLogo } from '@/lib/hooks/use-profile';
+import { getImageURL } from '@/lib/axiosInstance';
 import { profileUpdateSchema, changePasswordSchema } from '@/lib/schemas/profile';
 import type { ProfileUpdateFormData, ChangePasswordFormData } from '@/lib/schemas/profile';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -20,6 +21,8 @@ export function ProfilePage() {
   const updateProfileMutation = useUpdateProfile();
   const changePasswordMutation = useChangePassword();
   const deleteAccountMutation = useDeleteAccount();
+  const uploadLogoMutation = useUploadLogo();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -339,6 +342,49 @@ export function ProfilePage() {
                       {profileMethods.formState.errors.website.message}
                     </p>
                   )}
+                </div>
+              )}
+
+              {/* Фото заведения — отображается на /list */}
+              {profile.is_business && (
+                <div className="profile-page__field">
+                  <label className="profile-page__field-label">
+                    <Image className="profile-page__field-icon" />
+                    Фото заведения
+                  </label>
+                  <div className="profile-page__logo-upload">
+                    <div className="profile-page__logo-preview">
+                      {profile.logo_url ? (
+                        <img
+                          src={getImageURL(profile.logo_url)}
+                          alt="Фото заведения"
+                          className="profile-page__logo-img"
+                        />
+                      ) : (
+                        <div className="profile-page__logo-placeholder">Нет фото</div>
+                      )}
+                    </div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="profile-page__file-input"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) uploadLogoMutation.mutate(f);
+                        e.target.value = '';
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="profile-page__logo-button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadLogoMutation.isPending}
+                    >
+                      {uploadLogoMutation.isPending ? 'Загрузка...' : 'Выбрать фото'}
+                    </button>
+                    <p className="profile-page__field-hint">JPEG, PNG или WebP, до 3 МБ. Показывается на странице списка заведений.</p>
+                  </div>
                 </div>
               )}
 

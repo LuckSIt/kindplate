@@ -5557,6 +5557,66 @@ div.font-montserrat-alt,
   margin: 0;
 }
 
+.profile-page__logo-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-page__logo-preview {
+  width: 100%;
+  max-width: 200px;
+  aspect-ratio: 16/10;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.profile-page__logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-page__logo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+}
+
+.profile-page__file-input {
+  display: none;
+}
+
+.profile-page__logo-button {
+  align-self: flex-start;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.profile-page__logo-button:hover:not(:disabled) {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.5);
+}
+
+.profile-page__logo-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .profile-page__error-message {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 400;

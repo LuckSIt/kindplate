@@ -4,9 +4,9 @@ import { useMapQuery } from "@/lib/hooks/use-optimized-query";
 import { fetchOffersSearch, mapOffersToBusinesses } from "@/lib/offers-search";
 import { authContext } from "@/lib/auth";
 import { useCart } from "@/lib/hooks/use-cart";
+import { getImageURL } from "@/lib/axiosInstance";
 import type { Business } from "@/lib/types";
 import businessImage1 from "@/figma/business-image-1.png";
-import businessImage2 from "@/figma/business-image-2.png";
 import { loadDietPreferences } from "@/lib/diet-preferences";
 
 export const Route = createFileRoute("/list/")({
@@ -216,7 +216,7 @@ function ListPageComponent() {
                         <BusinessCard 
                             key={business.id || index}
                             business={business}
-                            image={index === 0 ? businessImage1 : businessImage2}
+                            image={business.logo_url ? getImageURL(business.logo_url) : businessImage1}
                             onClick={() => handleBusinessClick(business.id)}
                         />
                     ))

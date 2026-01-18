@@ -9,6 +9,7 @@ const pool = require("../lib/db");
 const logger = require("../lib/logger");
 const { AppError, asyncHandler } = require("../lib/errorHandler");
 const { requireAuth } = require("../lib/guards");
+const { uploadConfigs, handleUploadError } = require("../middleware/upload");
 
 // Валидация телефона (простая проверка)
 function validatePhone(phone) {
@@ -51,7 +52,8 @@ profileRouter.get("/", requireAuth, asyncHandler(async (req, res) => {
             ${has('terms_accepted') ? 'terms_accepted' : 'false AS terms_accepted'},
             ${has('privacy_accepted') ? 'privacy_accepted' : 'false AS privacy_accepted'},
             ${has('profile_updated_at') ? 'profile_updated_at' : 'NULL::timestamp AS profile_updated_at'},
-            ${has('created_at') ? 'created_at' : 'NOW() AS created_at'}
+            ${has('created_at') ? 'created_at' : 'NOW() AS created_at'},
+            ${has('logo_url') ? 'logo_url' : 'NULL::text AS logo_url'}
         FROM users
         WHERE id = $1
     `;
@@ -187,6 +189,46 @@ profileRouter.put("/", requireAuth, asyncHandler(async (req, res) => {
         success: true,
         message: 'Профиль успешно обновлен',
         profile: user
+    });
+}));
+
+/**
+ * POST /profile/logo - Загрузить фото заведения (только для бизнес-аккаунтов).
+ * Поле формы: logo. Сохраняется в users.logo_url, отображается на /list.
+ */
+profileRouter.post("/logo", requireAuth, uploadConfigs.logos.single("logo"), handleUploadError, asyncHandler(async (req, res) => {
+    const userId = req.session.userId;
+
+    if (!req.file) {
+        throw new AppError("Файл не загружен. Выберите изображение (JPEG, PNG, WebP, до 3 МБ).", 400, "NO_FILE");
+    }
+
+    const columnsRes = await pool.query(
+        `SELECT column_name FROM information_schema.columns 
+         WHERE table_schema = 'public' AND table_name = 'users'`
+    );
+    const cols = columnsRes.rows.map(r => r.column_name);
+    if (!cols.includes("logo_url")) {
+        throw new AppError("Функция фото заведения недоступна в данной конфигурации.", 500, "NO_LOGO_COLUMN");
+    }
+
+    const check = await pool.query("SELECT is_business FROM users WHERE id = $1", [userId]);
+    if (check.rowCount === 0) {
+        throw new AppError("Пользователь не найден", 404, "USER_NOT_FOUND");
+    }
+    if (!check.rows[0].is_business) {
+        throw new AppError("Загружать фото заведения могут только бизнес-аккаунты.", 403, "NOT_BUSINESS");
+    }
+
+    const logo_url = "/uploads/logos/" + req.file.filename;
+    await pool.query("UPDATE users SET logo_url = $1 WHERE id = $2", [logo_url, userId]);
+
+    logger.info("Profile logo uploaded", { userId, logo_url });
+
+    res.json({
+        success: true,
+        message: "Фото заведения обновлено",
+        logo_url,
     });
 }));
 

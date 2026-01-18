@@ -49,6 +49,13 @@ const profileApi = {
   deleteAccount: async (password: string): Promise<void> => {
     await axiosInstance.delete('/profile', { data: { password } });
   },
+
+  uploadLogo: async (file: File): Promise<{ logo_url: string }> => {
+    const formData = new FormData();
+    formData.append('logo', file);
+    const { data } = await axiosInstance.post<{ success: boolean; logo_url: string }>('/profile/logo', formData);
+    return { logo_url: data.logo_url };
+  },
 };
 
 /**
@@ -143,6 +150,25 @@ export const useDeleteAccount = () => {
   });
 };
 
+/**
+ * Hook для загрузки фото заведения (бизнес-аккаунты).
+ * Обновляет profile.logo_url, фото отображается на /list.
+ */
+export const useUploadLogo = () => {
+  const queryClient = useQueryClient();
 
-
-
+  return useMutation({
+    mutationFn: profileApi.uploadLogo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['auth'] });
+      queryClient.invalidateQueries({ queryKey: ['offers_search_list'] });
+      queryClient.invalidateQueries({ queryKey: ['vendor'] });
+      notify.success('Фото заведения обновлено');
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Не удалось загрузить фото';
+      notify.error('Ошибка', message);
+    },
+  });
+};
