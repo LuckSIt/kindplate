@@ -469,9 +469,9 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* Blog Section — отступы и размер карточки по макету */}
+                {/* Blog Section — без отступов между заголовком, подзаголовком и картинкой */}
                 <section className="px-[15px] pt-[48px] pb-[48px]">
-                    <div className="w-full max-w-[344px] mx-auto flex flex-col items-center gap-[24px]">
+                    <div className="w-full max-w-[344px] mx-auto flex flex-col items-center gap-0">
                         <h2 
                             className="text-[32px] font-[700] leading-[1.2] text-center font-montserrat-alt"
                             style={{ color: '#FFFFFF', margin: 0 }}
