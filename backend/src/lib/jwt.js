@@ -9,8 +9,8 @@ const crypto = require('crypto');
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
 const JWT_SECRET_KEY = new TextEncoder().encode(JWT_SECRET);
 
-// Время жизни токенов
-const ACCESS_TOKEN_EXPIRY = '15m'; // 15 минут
+// Время жизни токенов (1h — реже рефреш при «закрыл вкладку и вернулся»)
+const ACCESS_TOKEN_EXPIRY = '1h';
 const REFRESH_TOKEN_EXPIRY = '7d'; // 7 дней
 
 // Ленивая загрузка jose (ES Module)

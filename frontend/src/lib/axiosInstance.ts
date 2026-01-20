@@ -168,14 +168,15 @@ axiosInstance.interceptors.response.use(
                     notify.error('Ошибка валидации', data.message || 'Проверьте правильность введенных данных');
                     break;
                 case 401: {
-                    // Пробуем обновить access по refresh, затем повторить запрос
                     const cfg = config;
                     const isRefresh = String(cfg?.url || '').includes('/auth/refresh');
                     const alreadyRetried = !!cfg?._hasRetriedRefresh;
                     if (isRefresh || alreadyRetried) {
                         tokenStorage.clear();
-                        if (!skipNotification) notify.error('Ошибка авторизации', 'Необходимо войти в систему');
-                        window.location.href = '/auth/login';
+                        if (!skipNotification) {
+                            notify.error('Ошибка авторизации', 'Необходимо войти в систему');
+                            window.location.href = '/auth/login';
+                        }
                         return Promise.reject(error);
                     }
                     const rt = tokenStorage.getRefreshToken();
@@ -189,15 +190,19 @@ axiosInstance.interceptors.response.use(
                                 return axiosInstance.request(cfg);
                             } catch {
                                 tokenStorage.clear();
-                                if (!skipNotification) notify.error('Ошибка авторизации', 'Необходимо войти в систему');
-                                window.location.href = '/auth/login';
+                                if (!skipNotification) {
+                                    notify.error('Ошибка авторизации', 'Необходимо войти в систему');
+                                    window.location.href = '/auth/login';
+                                }
                                 return Promise.reject(error);
                             }
                         })();
                     }
                     tokenStorage.clear();
-                    if (!skipNotification) notify.error('Ошибка авторизации', 'Необходимо войти в систему');
-                    window.location.href = '/auth/login';
+                    if (!skipNotification) {
+                        notify.error('Ошибка авторизации', 'Необходимо войти в систему');
+                        window.location.href = '/auth/login';
+                    }
                     return Promise.reject(error);
                 }
                 case 403:

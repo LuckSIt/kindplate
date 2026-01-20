@@ -54,56 +54,60 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data, isLoading, isSuccess, isError } = useQuery<{ user: User; success: boolean } | { data: { user: User } }>({
         queryKey: ["auth"],
         queryFn: async () => {
+            const tryRefreshAndMe = async (): Promise<{ user: User; success: boolean } | null> => {
+                const rt = tokenStorage.getRefreshToken();
+                if (!rt) return null;
+                try {
+                    const r = await axiosInstance.post('/auth/refresh', { refreshToken: rt });
+                    tokenStorage.setAccessToken(r.data.accessToken);
+                    tokenStorage.setRefreshToken(r.data.refreshToken);
+                    const me2 = await axiosInstance.get("/auth/me", { params: { _t: Date.now() }, skipErrorNotification: true } as any);
+                    const d = me2?.data;
+                    if (d && 'user' in d && d.user) return { user: d.user, success: (d as any).success ?? true };
+                    if (d?.data?.user) return { user: d.data.user, success: true };
+                } catch {
+                    tokenStorage.clear();
+                }
+                return null;
+            };
+
+            const backfillTokens = () => {
+                if (tokenStorage.getAccessToken()) return;
+                axiosInstance.post('/auth/tokens').then((r: any) => {
+                    if (r?.data?.accessToken) tokenStorage.setAccessToken(r.data.accessToken);
+                    if (r?.data?.refreshToken) tokenStorage.setRefreshToken(r.data.refreshToken);
+                }).catch(() => {});
+            };
+
             try {
                 const response = await axiosInstance.get("/auth/me", {
-                    skipErrorNotification: true, // Пропускаем уведомления для проверки авторизации
-                    params: { _t: Date.now() } // Добавляем timestamp для предотвращения кэширования
+                    skipErrorNotification: true,
+                    params: { _t: Date.now() }
                 } as any);
-                
-                // Обрабатываем разные форматы ответа для совместимости
+
                 const responseData = response.data;
-                
-                // Логируем всегда (не только в dev), чтобы видеть на мобильном
-                console.log('[Auth] Full response:', JSON.stringify(response, null, 2));
-                console.log('[Auth] Response data:', JSON.stringify(responseData, null, 2));
-                
-                // Если ответ имеет структуру { user, success }
+
                 if (responseData && 'user' in responseData) {
                     const user = responseData.user;
-                    console.log('[Auth] User extracted:', JSON.stringify(user, null, 2));
-                    console.log('[Auth] User name:', user?.name, 'is_business:', user?.is_business);
-                    
                     if (user) {
+                        backfillTokens();
                         return { user, success: responseData.success ?? true };
                     }
                 }
-                
-                // Если ответ имеет структуру { data: { user } } (старый формат)
-                if (responseData && responseData.data && responseData.data.user) {
+
+                if (responseData?.data?.user) {
                     const user = responseData.data.user;
-                    console.log('[Auth] User extracted (nested):', JSON.stringify(user, null, 2));
-                    console.log('[Auth] User name:', user?.name, 'is_business:', user?.is_business);
+                    backfillTokens();
                     return { user, success: true };
                 }
-                
+
                 // user: null — возможно, access истёк. Пробуем refresh и повторный /auth/me
-                if (tokenStorage.getRefreshToken()) {
-                    try {
-                        const r = await axiosInstance.post('/auth/refresh', { refreshToken: tokenStorage.getRefreshToken() });
-                        tokenStorage.setAccessToken(r.data.accessToken);
-                        tokenStorage.setRefreshToken(r.data.refreshToken);
-                        const me2 = await axiosInstance.get("/auth/me", { params: { _t: Date.now() }, skipErrorNotification: true } as any);
-                        const d = me2?.data;
-                        if (d && 'user' in d && d.user) return { user: d.user, success: (d as any).success ?? true };
-                        if (d?.data?.user) return { user: d.data.user, success: true };
-                    } catch {
-                        tokenStorage.clear();
-                    }
-                }
+                const refreshed = await tryRefreshAndMe();
+                if (refreshed) return refreshed;
                 return { user: null, success: false };
             } catch (err: any) {
-                console.error('[Auth] Error fetching user:', err);
-                console.error('[Auth] Error response:', err?.response?.data);
+                const refreshed = await tryRefreshAndMe();
+                if (refreshed) return refreshed;
                 throw err;
             }
         },

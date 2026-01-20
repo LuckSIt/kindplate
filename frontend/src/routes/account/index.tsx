@@ -1063,7 +1063,7 @@ function RouteComponent() {
                                 Документы
                             </Link>
                             <a 
-                                href="#"
+                                href="https://t.me/kindplate"
                                 className="block transition-opacity hover:opacity-80 no-underline"
                                 style={{ 
                                     fontFamily: 'Montserrat Alternates, sans-serif',
