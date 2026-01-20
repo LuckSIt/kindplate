@@ -173,10 +173,7 @@ axiosInstance.interceptors.response.use(
                     const alreadyRetried = !!cfg?._hasRetriedRefresh;
                     if (isRefresh || alreadyRetried) {
                         tokenStorage.clear();
-                        if (!skipNotification) {
-                            notify.error('Ошибка авторизации', 'Необходимо войти в систему');
-                            window.location.href = '/auth/login';
-                        }
+                        if (!skipNotification) window.location.href = '/auth/login';
                         return Promise.reject(error);
                     }
                     const rt = tokenStorage.getRefreshToken();
@@ -199,10 +196,7 @@ axiosInstance.interceptors.response.use(
                         })();
                     }
                     tokenStorage.clear();
-                    if (!skipNotification) {
-                        notify.error('Ошибка авторизации', 'Необходимо войти в систему');
-                        window.location.href = '/auth/login';
-                    }
+                    if (!skipNotification) window.location.href = '/auth/login';
                     return Promise.reject(error);
                 }
                 case 403:
