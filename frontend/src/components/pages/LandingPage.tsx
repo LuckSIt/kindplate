@@ -945,7 +945,22 @@ export function LandingPage() {
                                 lineHeight: "20px",
                                 color: '#FFFFFF',
                                 textAlign: "center",
-                                marginTop: "15px",
+                                marginTop: "5px",
+                                marginBottom: "0px"
+                            }}
+                        >
+                            ИП Сатаев А.М.
+                        </p>
+                        <p
+                            className="font-montserrat-alt"
+                            style={{ 
+                                fontFamily: 'Montserrat Alternates, sans-serif',
+                                fontWeight: 400,
+                                fontSize: "8px",
+                                lineHeight: "20px",
+                                color: '#FFFFFF',
+                                textAlign: "center",
+                                marginTop: "0px",
                                 marginBottom: "0px"
                             }}
                         >
@@ -960,7 +975,7 @@ export function LandingPage() {
                                 lineHeight: "20px",
                                 color: '#FFFFFF',
                                 textAlign: "center",
-                                marginTop: "15px",
+                                marginTop: "0px",
                                 marginBottom: "0px"
                             }}
                         >
