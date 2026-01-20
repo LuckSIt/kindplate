@@ -58,11 +58,15 @@ authRouter.post("/register", registerLimiter, validateRegistration, asyncHandler
     req.session.isBusiness = false;
     req.session.role = 'customer';
 
+    // Токены для persistent login (localStorage), чтобы не разлогинивать при закрытии вкладки
+    const tokens = await createTokenPair({ id: userId, email, is_business: false });
+
     logger.info("User registered successfully", { userId, email, is_business: false, role: 'customer' });
 
     res.status(201).json({
         success: true,
-        message: "Пользователь успешно зарегистрирован"
+        message: "Пользователь успешно зарегистрирован",
+        tokens
     });
 }));
 

@@ -167,13 +167,39 @@ axiosInstance.interceptors.response.use(
                 case 400:
                     notify.error('Ошибка валидации', data.message || 'Проверьте правильность введенных данных');
                     break;
-                case 401:
-                    // Очищаем токены, чтобы не зациклиться на невалидном accessToken
+                case 401: {
+                    // Пробуем обновить access по refresh, затем повторить запрос
+                    const cfg = config;
+                    const isRefresh = String(cfg?.url || '').includes('/auth/refresh');
+                    const alreadyRetried = !!cfg?._hasRetriedRefresh;
+                    if (isRefresh || alreadyRetried) {
+                        tokenStorage.clear();
+                        if (!skipNotification) notify.error('Ошибка авторизации', 'Необходимо войти в систему');
+                        window.location.href = '/auth/login';
+                        return Promise.reject(error);
+                    }
+                    const rt = tokenStorage.getRefreshToken();
+                    if (rt) {
+                        return (async () => {
+                            try {
+                                const r = await axiosInstance.post('/auth/refresh', { refreshToken: rt });
+                                tokenStorage.setAccessToken(r.data.accessToken);
+                                tokenStorage.setRefreshToken(r.data.refreshToken);
+                                (cfg as any)._hasRetriedRefresh = true;
+                                return axiosInstance.request(cfg);
+                            } catch {
+                                tokenStorage.clear();
+                                if (!skipNotification) notify.error('Ошибка авторизации', 'Необходимо войти в систему');
+                                window.location.href = '/auth/login';
+                                return Promise.reject(error);
+                            }
+                        })();
+                    }
                     tokenStorage.clear();
-                    notify.error('Ошибка авторизации', 'Необходимо войти в систему');
-                    // Перенаправляем на страницу входа
+                    if (!skipNotification) notify.error('Ошибка авторизации', 'Необходимо войти в систему');
                     window.location.href = '/auth/login';
-                    break;
+                    return Promise.reject(error);
+                }
                 case 403:
                     notify.error('Доступ запрещен', 'У вас нет прав для выполнения этого действия');
                     break;

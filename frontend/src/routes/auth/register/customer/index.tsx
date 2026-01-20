@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { customerRegisterSchema } from "@/lib/schema";
-import { axiosInstance } from "@/lib/axiosInstance";
+import { axiosInstance, tokenStorage } from "@/lib/axiosInstance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { notify } from "@/lib/notifications";
 import arrowBackIcon from "@/figma/arrow-back.svg";
@@ -22,6 +22,9 @@ function RouteComponent() {
         mutationKey: ["register.customer"],
         mutationFn: (data) => axiosInstance.post("/auth/register/", data),
         onSuccess: (res) => {
+            const tokens = res.data?.tokens;
+            if (tokens?.accessToken) tokenStorage.setAccessToken(tokens.accessToken);
+            if (tokens?.refreshToken) tokenStorage.setRefreshToken(tokens.refreshToken);
             notify.success("Регистрация успешна", "Добро пожаловать в KindPlate!");
             queryClient.invalidateQueries({ queryKey: ["auth"] });
             navigate({ to: "/home" });

@@ -8,7 +8,7 @@ import {
     useQuery,
 } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
-import { axiosInstance } from "@/lib/axiosInstance";
+import { axiosInstance, tokenStorage } from "@/lib/axiosInstance";
 import { authContext, type AuthContextType } from "@/lib/auth";
 import type { User } from "@/lib/types";
 import { ThemeProvider } from "@/lib/theme";
@@ -86,8 +86,20 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
                     return { user, success: true };
                 }
                 
-                // Fallback: возвращаем null user
-                console.warn('[Auth] Unexpected response format:', JSON.stringify(responseData, null, 2));
+                // user: null — возможно, access истёк. Пробуем refresh и повторный /auth/me
+                if (tokenStorage.getRefreshToken()) {
+                    try {
+                        const r = await axiosInstance.post('/auth/refresh', { refreshToken: tokenStorage.getRefreshToken() });
+                        tokenStorage.setAccessToken(r.data.accessToken);
+                        tokenStorage.setRefreshToken(r.data.refreshToken);
+                        const me2 = await axiosInstance.get("/auth/me", { params: { _t: Date.now() }, skipErrorNotification: true } as any);
+                        const d = me2?.data;
+                        if (d && 'user' in d && d.user) return { user: d.user, success: (d as any).success ?? true };
+                        if (d?.data?.user) return { user: d.data.user, success: true };
+                    } catch {
+                        tokenStorage.clear();
+                    }
+                }
                 return { user: null, success: false };
             } catch (err: any) {
                 console.error('[Auth] Error fetching user:', err);

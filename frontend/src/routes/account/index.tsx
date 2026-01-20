@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { axiosInstance } from "@/lib/axiosInstance";
+import { axiosInstance, tokenStorage } from "@/lib/axiosInstance";
 import { useState, useContext, useEffect } from "react";
 import { authContext } from "@/lib/auth";
 import { notify } from "@/lib/notifications";
@@ -63,6 +63,7 @@ function RouteComponent() {
     useMutation({
         mutationFn: () => axiosInstance.get("/auth/logout"),
         onSuccess: () => {
+            tokenStorage.clear();
             queryClient.clear();
             navigate({ to: "/auth/login" });
             notify.success("Выход", "Вы вышли из системы");
@@ -71,7 +72,7 @@ function RouteComponent() {
             if (import.meta.env.DEV) {
                 console.error("Logout error:", error);
             }
-            // Даже при ошибке выходим
+            tokenStorage.clear();
             queryClient.clear();
             navigate({ to: "/auth/login" });
         },
