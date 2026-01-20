@@ -949,7 +949,22 @@ export function LandingPage() {
                                 marginBottom: "0px"
                             }}
                         >
-                            ©KindPlate 2005. Все права защищены
+                            ИНН: 784808895487
+                        </p>
+                        <p
+                            className="font-montserrat-alt"
+                            style={{ 
+                                fontFamily: 'Montserrat Alternates, sans-serif',
+                                fontWeight: 400,
+                                fontSize: "8px",
+                                lineHeight: "20px",
+                                color: '#FFFFFF',
+                                textAlign: "center",
+                                marginTop: "15px",
+                                marginBottom: "0px"
+                            }}
+                        >
+                            ОГРН: 326784700012921
                         </p>
                     </div>
                 </footer>
