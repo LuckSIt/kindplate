@@ -231,7 +231,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
               onChange={(e) => setConsentToOffer(e.target.checked)}
             />
             <span className="payment-page__consent-text">
-              Нажимая на кнопку "Оплатить", я подтверждаю, что с правилами и особенностями оформления заказа, изложенных в{" "} ознакомлен.
+              Нажимая на кнопку "Оплатить", я подтверждаю, что ознакомлен с правилами и особенностями оформления заказа, изложенных в{" "}.
               <button
                 type="button"
                 className="payment-page__consent-link"
