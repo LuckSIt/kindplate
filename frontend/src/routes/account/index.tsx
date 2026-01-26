@@ -12,6 +12,7 @@ import { SocialLinks } from "@/components/landing/SocialLinks";
 import { QRCodeDisplay } from "@/components/ui/qr-code-display";
 import { loadDietPreferences, saveDietPreferences, DIET_OPTIONS, CUISINE_OPTIONS, ALLERGEN_OPTIONS } from "@/lib/diet-preferences";
 import arrowBackIcon from "@/figma/arrow-back.svg";
+import { DocumentsModal } from "@/components/ui/documents-modal";
 
 export const Route = createFileRoute("/account/")({
     component: RouteComponent,
@@ -30,6 +31,7 @@ function RouteComponent() {
     const [selectedOrderForReview, setSelectedOrderForReview] = useState<any>(null);
     const [reviewRating, setReviewRating] = useState(5);
     const [reviewComment, setReviewComment] = useState("");
+    const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
     const authContextValue = useContext(authContext);
     const { user, isLoading: authLoading, isSuccess: authSuccess } = authContextValue;
     
@@ -1252,6 +1254,12 @@ function RouteComponent() {
                 onClose={() => setIsCartOpen(false)}
                 onGoToOffers={() => { setIsCartOpen(false); navigate({ to: "/home" }); }}
                 onCheckout={() => { setIsCartOpen(false); navigate({ to: "/checkout" }); }}
+            />
+            
+            {/* Documents Modal */}
+            <DocumentsModal 
+                isOpen={isDocumentsModalOpen} 
+                onClose={() => setIsDocumentsModalOpen(false)} 
             />
         </div>
     );

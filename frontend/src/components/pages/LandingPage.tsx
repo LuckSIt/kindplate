@@ -10,6 +10,7 @@ import cookiesImage from "@/figma/29BD33A8-EE31-48BF-A53C-02BC08740634 1.png";
 import phoneMapImage from "@/figma/image.png";
 import { SocialLinks } from "@/components/landing/SocialLinks";
 import blogImage from "@/figma/blog.png";
+import { DocumentsModal } from "@/components/ui/documents-modal";
 
 // Данные о продуктах из Figma
 const carouselItems = [
@@ -64,6 +65,7 @@ export function LandingPage() {
     const [touchEnd, setTouchEnd] = useState<number | null>(null);
     const [isPaused, setIsPaused] = useState(false);
     const [quantity, setQuantity] = useState(1);
+    const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
 
     // Минимальное расстояние для распознавания свайпа
     const minSwipeDistance = 50;
@@ -984,6 +986,12 @@ export function LandingPage() {
                     </div>
                 </footer>
             </div>
+            
+            {/* Documents Modal */}
+            <DocumentsModal 
+                isOpen={isDocumentsModalOpen} 
+                onClose={() => setIsDocumentsModalOpen(false)} 
+            />
         </div>
     );
 }
