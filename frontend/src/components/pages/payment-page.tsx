@@ -5,6 +5,7 @@ import { notify } from '@/lib/notifications';
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '@/lib/axiosInstance';
 import arrowBackIcon from "@/figma/arrow-back.svg";
+import { DocumentsModal } from '@/components/ui/documents-modal';
 
 interface PaymentPageProps {
   orderId: string;
@@ -33,6 +34,8 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
   const [paymentStatus, setPaymentStatus] = useState<'loading' | 'pending' | 'processing' | 'failed'>('loading');
   const [error, setError] = useState<string>('');
   const [isInitializing, setIsInitializing] = useState(false);
+  const [consentToOffer, setConsentToOffer] = useState(false);
+  const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
 
   const { createPayment } = usePayments();
   const { config } = useOrders();
@@ -217,13 +220,40 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
         </div>
       )}
 
+      {/* Consent Checkbox */}
+      {(paymentStatus === 'loading' || paymentStatus === 'failed') && (
+        <div className="payment-page__consent">
+          <label className="payment-page__consent-label">
+            <input
+              type="checkbox"
+              className="payment-page__consent-checkbox"
+              checked={consentToOffer}
+              onChange={(e) => setConsentToOffer(e.target.checked)}
+            />
+            <span className="payment-page__consent-text">
+              Нажимая на кнопку "Оплатить", я подтверждаю, что с правилами и особенностями оформления заказа, изложенных в{" "} ознакомлен.
+              <button
+                type="button"
+                className="payment-page__consent-link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsDocumentsModalOpen(true);
+                }}
+              >
+                оферте
+              </button>
+            </span>
+          </label>
+        </div>
+      )}
+
       {/* Payment Button */}
       {(paymentStatus === 'loading' || paymentStatus === 'failed') && (
         <div className="payment-page__actions">
           <button 
             className="payment-page__pay-button"
             onClick={handleCreatePayment}
-            disabled={isInitializing || paymentStatus === 'processing'}
+            disabled={isInitializing || paymentStatus === 'processing' || !consentToOffer}
           >
             {isInitializing || paymentStatus === 'processing' ? "Подготовка..." : "Оплатить"}
           </button>
@@ -236,6 +266,12 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ orderId }) => {
           </button>
         </div>
       )}
+
+      {/* Documents Modal */}
+      <DocumentsModal
+        isOpen={isDocumentsModalOpen}
+        onClose={() => setIsDocumentsModalOpen(false)}
+      />
       </div>
     );
 };
