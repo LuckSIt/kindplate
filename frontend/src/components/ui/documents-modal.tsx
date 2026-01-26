@@ -254,7 +254,7 @@ export function DocumentsModal({ isOpen, onClose }: DocumentsModalProps) {
               ОБРАБОТКА ПЕРСОНАЛЬНЫХ ДАННЫХ
             </h2>
             <p className="documents-modal__content-subtitle">
-              г. Москва, редакция от 22.12.2025 г.
+              г. Санкт-Петербург, «26» января 2026 г.
             </p>
             
             <div className="documents-modal__content-section">
@@ -299,7 +299,7 @@ export function DocumentsModal({ isOpen, onClose }: DocumentsModalProps) {
               РАСПРОСТРАНЕНИЕ ДАННЫХ
             </h2>
             <p className="documents-modal__content-subtitle">
-              г. Москва, редакция от 22.12.2025 г.
+              г. Санкт-Петербург, «26» января 2026 г.
             </p>
             
             <div className="documents-modal__content-section">
@@ -351,7 +351,7 @@ export function DocumentsModal({ isOpen, onClose }: DocumentsModalProps) {
               РЕКЛАМА И МАРКЕТИНГ
             </h2>
             <p className="documents-modal__content-subtitle">
-              г. Москва, редакция от 22.12.2025 г.
+              г. Санкт-Петербург, «26» января 2026 г.
             </p>
             
             <div className="documents-modal__content-section">
@@ -388,7 +388,7 @@ export function DocumentsModal({ isOpen, onClose }: DocumentsModalProps) {
               ФАЙЛЫ COOKIE И АНАЛОГИЧНЫЕ ТЕХНОЛОГИИ
             </h2>
             <p className="documents-modal__content-subtitle">
-              г. Москва, редакция от 22.12.2025 г.
+              г. Санкт-Петербург, «26» января 2026 г.
             </p>
             
             <div className="documents-modal__content-section">

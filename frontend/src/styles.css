@@ -1180,13 +1180,13 @@ button:not(.font-montserrat-alt),
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  height: calc(100vh - 60px);
-  padding: 0;
+  min-height: calc(100vh - 60px);
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .register-page__back-button {
@@ -1214,7 +1214,8 @@ button:not(.font-montserrat-alt),
 }
 
 .register-page__card {
-  width: 368px;
+  width: 100%;
+  max-width: 368px;
   background-color: #2B344D;
   border-radius: 15px;
   margin-top: 0;
@@ -1222,6 +1223,7 @@ button:not(.font-montserrat-alt),
   position: relative;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
   /* max-height и overflow-y убраны - контент адаптивен, скроллинг на html */
 }
 
@@ -1267,6 +1269,7 @@ button:not(.font-montserrat-alt),
   display: flex;
   flex-direction: column;
   gap: 15px;
+  box-sizing: border-box;
 }
 
 .register-page__field {
@@ -1475,10 +1478,135 @@ button:not(.font-montserrat-alt),
 }
 
 /* Responsive adjustments for register page */
-@media (max-width: 420px) {
+@media (max-width: 480px) {
+  .register-page__container {
+    padding: 15px 12px;
+  }
+
+  .register-page__card {
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .register-page__header {
+    padding: 0 16px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+  }
+
+  .register-page__title {
+    font-size: 20px;
+    line-height: 24px;
+    margin-bottom: 15px;
+  }
+
+  .register-page__subtitle {
+    font-size: 9px;
+    line-height: 16px;
+  }
+
+  .register-page__form {
+    padding: 0 20px;
+    gap: 12px;
+  }
+
+  .register-page__field-label {
+    font-size: 15px;
+    line-height: 16px;
+  }
+
+  .register-page__input-wrapper {
+    height: 45px;
+  }
+
+  .register-page__input {
+    height: 32px;
+    font-size: 13px;
+    padding: 0 15px;
+  }
+
+  .register-page__submit-button {
+    width: 100%;
+    max-width: 211px;
+    font-size: 17px;
+    margin: 15px auto 0;
+  }
+
+  .register-page__consent {
+    margin: 8px 0;
+  }
+
+  .register-page__consent-label {
+    gap: 10px;
+    font-size: 11px;
+    line-height: 15px;
+  }
+
+  .register-page__consent-checkbox {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    min-height: 16px;
+  }
+
+  .register-page__consent-checkbox:checked::after {
+    width: 9px;
+    height: 9px;
+  }
+
+  .register-page__consent-text {
+    line-height: 16px;
+  }
+
+  .register-page__footer-text {
+    font-size: 10px;
+    line-height: 11px;
+    margin: 15px 12px;
+  }
+
   .register-page__back-button {
-    left: 15px;
-    top: 20px;
+    left: 12px;
+    top: 15px;
+    width: 35px;
+    height: 35px;
+  }
+
+  .register-page__back-button-icon {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+@media (max-width: 360px) {
+  .register-page__container {
+    padding: 12px 10px;
+  }
+
+  .register-page__form {
+    padding: 0 16px;
+    gap: 10px;
+  }
+
+  .register-page__title {
+    font-size: 18px;
+    line-height: 22px;
+  }
+
+  .register-page__field-label {
+    font-size: 14px;
+  }
+
+  .register-page__consent-label {
+    font-size: 10px;
+    line-height: 14px;
+    gap: 8px;
+  }
+
+  .register-page__consent-checkbox {
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+    min-height: 15px;
   }
 }
 
