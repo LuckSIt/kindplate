@@ -1049,8 +1049,8 @@ function RouteComponent() {
                             >
                                 Для пользователей
                             </Link>
-                            <Link 
-                                to="/legal/faq"
+                            <button
+                                onClick={() => setIsDocumentsModalOpen(true)}
                                 className="block transition-opacity hover:opacity-80 no-underline"
                                 style={{ 
                                     fontFamily: 'Montserrat Alternates, sans-serif',
@@ -1059,11 +1059,15 @@ function RouteComponent() {
                                     lineHeight: "22px",
                                     color: '#FFFFFF',
                                     textAlign: "left",
-                                    textDecoration: "none"
+                                    textDecoration: "none",
+                                    background: 'none',
+                                    border: 'none',
+                                    padding: 0,
+                                    cursor: 'pointer'
                                 }}
                             >
                                 Документы
-                            </Link>
+                            </button>
                             <a 
                                 href="https://t.me/kindplate"
                                 className="block transition-opacity hover:opacity-80 no-underline"

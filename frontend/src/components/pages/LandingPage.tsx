@@ -834,8 +834,8 @@ export function LandingPage() {
                                 >
                                     Для пользователей
                                 </Link>
-                                <Link 
-                                    to="/legal/faq"
+                                <button
+                                    onClick={() => setIsDocumentsModalOpen(true)}
                                     className="block transition-opacity hover:opacity-80 footer-link"
                                     style={{ 
                                         fontFamily: 'Montserrat Alternates, sans-serif',
@@ -843,11 +843,15 @@ export function LandingPage() {
                                         fontSize: "11px",
                                         lineHeight: "22px",
                                         color: '#FFFFFF',
-                                        textAlign: "left"
+                                        textAlign: "left",
+                                        background: 'none',
+                                        border: 'none',
+                                        padding: 0,
+                                        cursor: 'pointer'
                                     }}
                                 >
                                     Документы
-                                </Link>
+                                </button>
                                 <a 
                                     href="https://t.me/kindplate"
                                     className="block transition-opacity hover:opacity-80 footer-link"
