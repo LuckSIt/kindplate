@@ -6,6 +6,8 @@ import { axiosInstance, tokenStorage } from "@/lib/axiosInstance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { notify } from "@/lib/notifications";
 import arrowBackIcon from "@/figma/arrow-back.svg";
+import { DocumentsModal } from "@/components/ui/documents-modal";
+import { useState } from "react";
 
 export const Route = createFileRoute("/auth/register/customer/")({
     component: RouteComponent,
@@ -14,13 +16,14 @@ export const Route = createFileRoute("/auth/register/customer/")({
 function RouteComponent() {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
     const methods = useForm({
         resolver: zodResolver(customerRegisterSchema),
     });
     const { register, handleSubmit } = methods;
     const { mutate, isPending } = useMutation({
         mutationKey: ["register.customer"],
-        mutationFn: (data) => axiosInstance.post("/auth/register/", data),
+        mutationFn: (data: any) => axiosInstance.post("/auth/register/", data),
         onSuccess: (res) => {
             const tokens = res.data?.tokens;
             if (tokens?.accessToken) tokenStorage.setAccessToken(tokens.accessToken);
@@ -35,7 +38,7 @@ function RouteComponent() {
         },
     });
 
-    const onSubmit = (data) => {
+    const onSubmit = (data: any) => {
         const toSend = {
             name: data.name,
             password: data.password,
@@ -151,6 +154,42 @@ function RouteComponent() {
                                 </div>
                                         </div>
 
+                            {/* Consent Checkbox */}
+                            <div className="register-page__consent">
+                                <label className="register-page__consent-label">
+                                    <input
+                                        {...register("consent")}
+                                        type="checkbox"
+                                        className="register-page__consent-checkbox"
+                                    />
+                                    <span className="register-page__consent-text">
+                                        Я даю{" "}
+                                        <button
+                                            type="button"
+                                            className="register-page__consent-link"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                setIsDocumentsModalOpen(true);
+                                            }}
+                                        >
+                                            согласие
+                                        </button>
+                                        {" "}на обработку моих персональных данных в соответствии с{" "}
+                                        <button
+                                            type="button"
+                                            className="register-page__consent-link"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                setIsDocumentsModalOpen(true);
+                                            }}
+                                        >
+                                            Политикой конфиденциальности
+                                        </button>
+                                        , в целях регистрации на сайте и предоставления доступа к личному кабинету.
+                                    </span>
+                                </label>
+                            </div>
+
                             {/* Submit Button */}
                             <button
                                             type="submit" 
@@ -175,6 +214,12 @@ function RouteComponent() {
                     </p>
                 </div>
             </div>
+            
+            {/* Documents Modal */}
+            <DocumentsModal
+                isOpen={isDocumentsModalOpen}
+                onClose={() => setIsDocumentsModalOpen(false)}
+            />
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 
-type DocumentTab = 'policy' | 'processing' | 'distribution' | 'advertising' | 'cookie';
+type DocumentTab = 'policy' | 'processing' | 'distribution' | 'advertising' | 'cookie' | 'offer';
 
 interface DocumentsModalProps {
   isOpen: boolean;
@@ -19,6 +19,7 @@ export function DocumentsModal({ isOpen, onClose }: DocumentsModalProps) {
     { id: 'distribution', label: 'РАСПРОСТРАНЕНИЕ' },
     { id: 'advertising', label: 'РЕКЛАМА' },
     { id: 'cookie', label: 'COOKIE' },
+    { id: 'offer', label: 'ОФЕРТА' },
   ];
 
   const renderContent = () => {
@@ -27,87 +28,220 @@ export function DocumentsModal({ isOpen, onClose }: DocumentsModalProps) {
         return (
           <div className="documents-modal__content">
             <h2 className="documents-modal__content-title">
-              ПОЛИТИКА В ОТНОШЕНИИ ОБРАБОТКИ ПЕРСОНАЛЬНЫХ ДАННЫХ
+              ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ И ОБРАБОТКИ ПЕРСОНАЛЬНЫХ ДАННЫХ KINDPLATE
             </h2>
             <p className="documents-modal__content-subtitle">
-              г. Москва, редакция от 22.12.2025 г.
+              г. Санкт-Петербург, «26» января 2026 г.
             </p>
             
             <div className="documents-modal__content-section">
-              <h3 className="documents-modal__content-heading">Термины и определения</h3>
+              <h3 className="documents-modal__content-heading">1. Общие положения</h3>
               <p className="documents-modal__content-text">
-                Компания KindPlate ценит вашу конфиденциальность и обязуется защищать ваши персональные данные. 
-                Настоящая Политика конфиденциальности объясняет, как мы собираем, используем, передаем и защищаем 
-                вашу информацию, когда вы используете наше мобильное приложение KindPlate (далее – «Приложение») 
-                и связанные с ним услуги (далее – «Услуги»).
+                <strong>1.1.</strong> Настоящая Политика конфиденциальности (далее — «Политика») определяет порядок обработки и защиты персональных данных пользователей платформы Kindplate (сайт и мобильное приложение) индивидуальным предпринимателем ИП А. М. Сатаев (ИНН: 784808895487, ОГРН: 326784700012921, далее — «Оператор», «мы»).
               </p>
               <p className="documents-modal__content-text">
-                Услуги позволяют пользователям приобретать и резервировать излишки еды из участвующих (партнеров) 
-                кофеен, ресторанов, пекарен и других предприятий общественного питания.
+                <strong>1.2.</strong> Политика разработана в соответствии с Федеральным законом РФ № 152-ФЗ «О персональных данных» и иным применимым законодательством Российской Федерации.
               </p>
               <p className="documents-modal__content-text">
-                Используя наше Приложение, вы соглашаетесь на сбор и использование информации в соответствии с 
-                настоящей Политикой конфиденциальности.
+                <strong>1.3.</strong> Регистрация в приложении, использование сайта, нажатие кнопки «Зарегистрироваться» / «Продолжить» либо фактическое использование сервиса означает согласие пользователя с настоящей Политикой, пользовательским соглашением и офертой.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>1.4.</strong> Если пользователь не согласен с условиями Политики, он обязан немедленно прекратить использование платформы Kindplate.
               </p>
             </div>
 
             <div className="documents-modal__content-section">
-              <h3 className="documents-modal__content-heading">1. Мы собираем следующие виды информации</h3>
+              <h3 className="documents-modal__content-heading">2. Термины</h3>
               <p className="documents-modal__content-text">
-                <strong>Информация, предоставляемая вами напрямую:</strong> Данные для регистрации аккаунта (имя, 
-                адрес электронной почты, номер телефона), профильная информация, платежная информация, данные о заказах.
+                <strong>2.1.</strong> «Платформа Kindplate» (далее — «Платформа») — сайт и мобильное приложение Kindplate, принадлежащие Оператору и предназначенные для взаимодействия пользователей с партнёрами (ресторанами, кафе, магазинами) по бронированию и покупке продуктов с истекающим сроком годности.
               </p>
               <p className="documents-modal__content-text">
-                <strong>Информация, собираемая автоматически:</strong> Данные об устройстве, данные о использовании 
-                Приложения, геолокационные данные (с вашего согласия).
+                <strong>2.2.</strong> «Персональные данные» — любая информация, относящаяся к прямо или косвенно определённому физическому лицу (пользователю), включая, но не ограничиваясь: ФИО, номер телефона, адрес электронной почты, данные о заказах, данные устройства, IP-адрес и иные сведения.
               </p>
               <p className="documents-modal__content-text">
-                <strong>Информация от третьих сторон:</strong> Информация от наших Партнеров в связи с выполнением 
-                вашего заказа, данные из социальных сетей при входе через них.
+                <strong>2.3.</strong> «Обработка персональных данных» — любое действие (операция) или совокупность действий, совершаемых с персональными данными с использованием средств автоматизации или без них: сбор, запись, систематизация, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, передача (в том числе предоставление, доступ), обезличивание, блокирование, удаление, уничтожение.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>2.4.</strong> «Пользователь» — любое физическое лицо, прошедшее регистрацию на Платформе или использующее Платформу любым способом.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>2.5.</strong> «Партнёр» — юридическое или физическое лицо (ресторан, кафе, магазин и др.), размещающее предложения о продаже продуктов через Платформу.
               </p>
             </div>
 
             <div className="documents-modal__content-section">
-              <h3 className="documents-modal__content-heading">2. Мы используем собранную информацию для следующих целей</h3>
+              <h3 className="documents-modal__content-heading">3. Статус Оператора</h3>
+              <p className="documents-modal__content-text">
+                <strong>3.1.</strong> Оператором персональных данных является ИП А. М. Сатаев (ИНН: 784808895487, ОГРН: 326784700012921), осуществляющий обработку персональных данных пользователей Платформы в целях её функционирования, исполнения договоров и соблюдения требований законодательства.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">4. Состав обрабатываемых персональных данных</h3>
+              <p className="documents-modal__content-text">
+                <strong>4.1.</strong> Оператор может обрабатывать следующие категории персональных данных пользователей:
+              </p>
               <ul className="documents-modal__content-list">
-                <li>Предоставление и улучшение Услуг</li>
-                <li>Связь с вами (уведомления о статусе заказа, подтверждения бронирования)</li>
-                <li>Персонализация контента и рекомендаций</li>
-                <li>Поддержка и аналитика</li>
-                <li>Безопасность (выявление и предотвращение мошеннических транзакций)</li>
+                <li>фамилия, имя (при наличии — отчество);</li>
+                <li>номер мобильного телефона;</li>
+                <li>адрес электронной почты;</li>
+                <li>данные об аккаунте (идентификатор пользователя, история заказов, отзывы, бонусы и т.п.);</li>
+                <li>данные о взаимодействии с Платформой: дата и время посещения, использованные функции, IP-адрес, данные браузера и устройства, cookie-файлы, идентификаторы рекламных и аналитических систем;</li>
+                <li>информация о платежах: сумма, метод оплаты, статус транзакции (при этом реквизиты банковской карты обрабатываются платёжным агрегатором и не хранятся у Оператора).</li>
+              </ul>
+              <p className="documents-modal__content-text">
+                <strong>4.2.</strong> Оператор, как правило, не обрабатывает специальные категории персональных данных (о здоровье, политических взглядах, религиозных убеждениях и т.п.). В случае их получения по ошибке такие данные подлежат удалению либо обезличиванию, если иное не требуется по закону.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">5. Цели обработки персональных данных</h3>
+              <p className="documents-modal__content-text">
+                <strong>5.1.</strong> Персональные данные пользователей обрабатываются Оператором в следующих целях:
+              </p>
+              <ul className="documents-modal__content-list">
+                <li>регистрация и идентификация пользователя на Платформе;</li>
+                <li>обеспечение работы функционала Платформы, создание, оформление и исполнение заказов;</li>
+                <li>обмен информацией между пользователем и Партнёром (передача данных о заказе и контактных данных пользователя Партнёру для исполнения заказа);</li>
+                <li>обработка платежей, возвратов, претензий и обращений пользователей;</li>
+                <li>направление сервисных и информационных уведомлений (о статусе заказа, изменении условий, технических уведомлениях, безопасности);</li>
+                <li>улучшение качества работы Платформы, проведение аналитики и статистики, персонализация отображаемого контента и предложений;</li>
+                <li>соблюдение требований действующего законодательства РФ, включая бухгалтерский и налоговый учёт, отчётность и ответы на запросы уполномоченных органов.</li>
+              </ul>
+              <p className="documents-modal__content-text">
+                <strong>5.2.</strong> Обработка персональных данных не осуществляется в целях, несовместимых с указанными в настоящем разделе.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">6. Правовые основания обработки</h3>
+              <p className="documents-modal__content-text">
+                <strong>6.1.</strong> Правовыми основаниями обработки персональных данных являются:
+              </p>
+              <ul className="documents-modal__content-list">
+                <li>согласие пользователя на обработку его персональных данных, выраженное при регистрации, оформлении заказа, а также при ином использовании Платформы;</li>
+                <li>необходимость обработки для заключения и исполнения договоров (публичной оферты) между пользователем и Оператором, а также между пользователем и Партнёром;</li>
+                <li>исполнение обязательств Оператора, наложенных законодательством Российской Федерации (включая в сфере бухгалтерского и налогового учёта, защиты прав потребителей и т.п.).</li>
               </ul>
             </div>
 
             <div className="documents-modal__content-section">
-              <h3 className="documents-modal__content-heading">3. Передача данных</h3>
+              <h3 className="documents-modal__content-heading">7. Передача персональных данных третьим лицам</h3>
               <p className="documents-modal__content-text">
-                Мы не продаем и не сдаем в аренду ваши персональные данные третьим лицам. Мы передаем вашу информацию 
-                только Партнерам (для выполнения заказа), Поставщикам услуг (платежные шлюзы, хостинг, аналитика), 
-                по требованию закона или при смене владельца компании.
+                <strong>7.1.</strong> Оператор может передавать персональные данные пользователей третьим лицам в следующих случаях:
+              </p>
+              <ul className="documents-modal__content-list">
+                <li>Партнёрам Платформы — в объёме, необходимом для исполнения заказа (ФИО, номер телефона, информация о заказе, комментарии и т.п.);</li>
+                <li>платёжным агрегаторам, банкам и иным финансовым организациям — для приёма и возврата платежей;</li>
+                <li>подрядчикам Оператора (хостинг-провайдерам, службам технической поддержки, маркетинговым и аналитическим сервисам, провайдерам SMS и email-рассылок) — при условии заключения соглашений о конфиденциальности и защите данных;</li>
+                <li>государственным органам и органам местного самоуправления — при наличии правового основания и надлежащим образом оформленного запроса;</li>
+                <li>в случаях реорганизации бизнеса (передача в рамках правопреемства) — при условии соблюдения требований законодательства о персональных данных.</li>
+              </ul>
+              <p className="documents-modal__content-text">
+                <strong>7.2.</strong> Оператор не продаёт персональные данные пользователей и не раскрывает их третьим лицам вне случаев, указанных в п. 7.1, либо предусмотренных законом.
               </p>
             </div>
 
             <div className="documents-modal__content-section">
-              <h3 className="documents-modal__content-heading">4. Безопасность данных</h3>
+              <h3 className="documents-modal__content-heading">8. Хранение и сроки обработки персональных данных</h3>
               <p className="documents-modal__content-text">
-                Мы реализовали соответствующие технические и организационные меры безопасности, предназначенные для защиты 
-                ваших персональных данных от несанкционированного доступа, использования, изменения или уничтожения. 
-                Эти меры включают шифрование данных, регулярный мониторинг наших систем и строгий контроль доступа.
+                <strong>8.1.</strong> Персональные данные пользователей хранятся на серверах, расположенных на территории Российской Федерации, либо в юрисдикциях, обеспечивающих адекватный уровень защиты персональных данных в соответствии с требованиями законодательства РФ.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>8.2.</strong> Срок обработки персональных данных определяется целями обработки, сроком действия договоров с пользователем, сроками исковой давности, а также требованиями законодательства Российской Федерации (для хранения бухгалтерской, налоговой и иной документации).
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>8.3.</strong> Персональные данные подлежат удалению или обезличиванию после достижения целей обработки либо при отзыве согласия пользователя, если хранение данных не требуется по закону.
               </p>
             </div>
 
             <div className="documents-modal__content-section">
-              <h3 className="documents-modal__content-heading">5. Ваши права</h3>
+              <h3 className="documents-modal__content-heading">9. Защита персональных данных</h3>
               <p className="documents-modal__content-text">
-                В зависимости от вашей юрисдикции, у вас могут быть следующие права: право на доступ, исправление, 
-                удаление, ограничение обработки, переносимость данных, право на возражение, право отозвать согласие, 
-                управление уведомлениями.
+                <strong>9.1.</strong> Оператор принимает необходимые и достаточные организационные и технические меры для защиты персональных данных от неправомерного или случайного доступа, уничтожения, изменения, блокирования, копирования, распространения, а также иных неправомерных действий.
               </p>
               <p className="documents-modal__content-text">
-                Чтобы воспользоваться этими правами, свяжитесь с нами по электронной почте: 
-                <a href="mailto:kindplate.io@mail.ru" className="documents-modal__content-link">
-                  kindplate.io@mail.ru
-                </a>
+                <strong>9.2.</strong> Доступ к персональным данным предоставляется только тем сотрудникам и подрядчикам Оператора, которым такой доступ необходим для выполнения служебных обязанностей и исполнения договоров.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>9.3.</strong> В случае утечки или иного инцидента, связанного с персональными данными, Оператор принимает необходимые меры по минимизации последствий и при необходимости уведомляет уполномоченные органы и пользователей.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">10. Права пользователя как субъекта персональных данных</h3>
+              <p className="documents-modal__content-text">
+                <strong>10.1.</strong> Пользователь имеет право получать информацию о факте, целях, правовых основаниях и способах обработки его персональных данных, а также о лицах, которым данные могут быть переданы.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>10.2.</strong> Пользователь имеет право требовать уточнения своих персональных данных, их блокирования или уничтожения, если данные являются неполными, устаревшими, неточными, незаконно полученными или не являются необходимыми для заявленных целей обработки.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>10.3.</strong> Пользователь имеет право отозвать своё согласие на обработку персональных данных, направив Оператору соответствующее заявление по контактам, указанным в разделе 14 настоящей Политики. При этом Оператор вправе продолжить обработку персональных данных при наличии иных законных оснований.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>10.4.</strong> Пользователь имеет право обжаловать действия или бездействие Оператора, нарушающие его права, в уполномоченный орган по защите прав субъектов персональных данных или в суд.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">11. Использование файлов cookie и аналогичных технологий</h3>
+              <p className="documents-modal__content-text">
+                <strong>11.1.</strong> Платформа может использовать cookie-файлы, пиксель-теги, веб-маяки и другие технологии для:
+              </p>
+              <ul className="documents-modal__content-list">
+                <li>идентификации пользователя и поддержания сессии;</li>
+                <li>сохранения настроек и параметров аккаунта;</li>
+                <li>анализа трафика и статистики использования Платформы;</li>
+                <li>показа персонализированных предложений и рекламы.</li>
+              </ul>
+              <p className="documents-modal__content-text">
+                <strong>11.2.</strong> Пользователь может ограничить или отключить использование cookie в настройках браузера или устройства. Однако это может повлиять на корректность работы Платформы, в том числе на возможность авторизации или оформления заказов.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">12. Обработка персональных данных третьих лиц</h3>
+              <p className="documents-modal__content-text">
+                <strong>12.1.</strong> Если пользователь предоставляет Оператору персональные данные третьих лиц (например, контактные данные получателя заказа), пользователь подтверждает, что получил согласие этих лиц на передачу и обработку их персональных данных в соответствии с настоящей Политикой.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>12.2.</strong> Оператор вправе использовать такие данные исключительно для целей, указанных пользователем (исполнение заказа, доставка и т.п.).
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">13. Изменение Политики</h3>
+              <p className="documents-modal__content-text">
+                <strong>13.1.</strong> Оператор вправе вносить изменения в настоящую Политику в одностороннем порядке. Актуальная версия Политики всегда доступна на сайте и/или в мобильном приложении Платформы.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>13.2.</strong> Изменения вступают в силу с момента размещения новой версии Политики, если иное не указано в самой Политике.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>13.3.</strong> Продолжение использования Платформы после внесения изменений означает согласие пользователя с обновлённой Политикой.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">14. Контактные данные Оператора</h3>
+              <p className="documents-modal__content-text">
+                ИП А. М. Сатаев
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>ИНН:</strong> 784808895487
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>ОГРН:</strong> 326784700012921
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>Телефон:</strong> +7 999 028 1207
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>Email:</strong> <a href="mailto:kindplate.io@mail.ru" className="documents-modal__content-link">kindplate.io@mail.ru</a>
+              </p>
+              <p className="documents-modal__content-text" style={{ marginTop: '20px' }}>
+                Используя Платформу Kindplate, пользователь подтверждает, что внимательно ознакомился с настоящей Политикой, полностью её понимает и соглашается с условиями обработки своих персональных данных.
               </p>
             </div>
           </div>
@@ -284,6 +418,172 @@ export function DocumentsModal({ isOpen, onClose }: DocumentsModalProps) {
               <p className="documents-modal__content-text">
                 Вы можете управлять настройками cookie через настройки вашего браузера или устройства. Обратите внимание, что отключение 
                 некоторых типов cookie может повлиять на функциональность Приложения.
+              </p>
+            </div>
+          </div>
+        );
+
+      case 'offer':
+        return (
+          <div className="documents-modal__content">
+            <h2 className="documents-modal__content-title">
+              ПУБЛИЧНАЯ ОФЕРТА ПЛАТФОРМЫ KINDPLATE
+            </h2>
+            <p className="documents-modal__content-subtitle">
+              г. Санкт-Петербург, «26» января 2026 г.
+            </p>
+            
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">1. Общие положения</h3>
+              <p className="documents-modal__content-text">
+                <strong>1.1.</strong> Настоящий документ является официальной публичной офертой индивидуального предпринимателя ИП А. М. Сатаев (ИНН: 784808895487, ОГРН: 326784700012921, тел.: +7 999 028 1207, email: kindplate.io@mail.ru, далее — «Компания»), адресованной юридическим и физическим лицам (далее — «Покупатель») о предоставлении доступа к платформе Kindplate для поиска, бронирования и оплаты продуктов.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>1.2.</strong> Акцепт оферты (полное и безоговорочное принятие) происходит путём: регистрации на Платформе, оплаты услуг, либо совершения покупки. С момента акцепта считается заключённым договор на указанных условиях.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>1.3.</strong> Платформа выступает информационным агрегатором и платёжным посредником. Компания НЕ продаёт продукты и НЕ несёт ответственности за их качество, безопасность и соответствие стандартам.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">2. Предмет оферты</h3>
+              <p className="documents-modal__content-text">
+                <strong>2.1.</strong> Компания предоставляет Покупателю доступ к Платформе для:
+              </p>
+              <ul className="documents-modal__content-list">
+                <li>поиска предложений от Продавцов (рестораны, кафе, магазины);</li>
+                <li>бронирования и оплаты продуктов онлайн;</li>
+                <li>передачи платежа Продавцу за вычетом комиссии 12%.</li>
+              </ul>
+              <p className="documents-modal__content-text">
+                <strong>2.2.</strong> Услуги оказываются дистанционно через сайт и мобильное приложение.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">3. Порядок оказания услуг</h3>
+              <p className="documents-modal__content-text">
+                <strong>3.1.</strong> Покупатель регистрируется, выбирает продукт и оплачивает через платёжный сервис.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>3.2.</strong> Деньги передаются Продавцу после подтверждения Покупателем получения заказа.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>3.3.</strong> Срок оказания услуг — момент предоставления доступа к Платформе (сразу после оплаты).
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>3.4.</strong> Покупатель самостоятельно забирает заказ у Продавца в указанное время.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">4. Стоимость услуг и порядок расчетов</h3>
+              <p className="documents-modal__content-text">
+                <strong>4.1.</strong> Стоимость услуг включена в цену продукта (с Продавца удерживается комиссия 10%). Покупатель оплачивает только цену продукта.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>4.2.</strong> Оплата производится банковской картой или электронными средствами. Возврат средств возможен только при отказе Продавца от исполнения заказа.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>4.3.</strong> Налоги: Компания выступает налоговым агентом по НДФЛ при необходимости.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">5. Права и обязанности сторон</h3>
+              <p className="documents-modal__content-text">
+                <strong>Обязанности Покупателя:</strong>
+              </p>
+              <ul className="documents-modal__content-list">
+                <li>предоставлять достоверные данные;</li>
+                <li>оплачивать услуги своевременно;</li>
+                <li>получить заказ у Продавца и проверить качество самостоятельно.</li>
+              </ul>
+              <p className="documents-modal__content-text">
+                <strong>Обязанности Компании:</strong>
+              </p>
+              <ul className="documents-modal__content-list">
+                <li>обеспечить доступ к Платформе;</li>
+                <li>передать платеж Продавцу;</li>
+                <li>предоставить информацию о предложениях.</li>
+              </ul>
+              <p className="documents-modal__content-text">
+                <strong>5.1.</strong> Компания НЕ отвечает за:
+              </p>
+              <ul className="documents-modal__content-list">
+                <li>качество, безопасность продуктов (это ответственность Продавца);</li>
+                <li>соблюдение Продавцом санитарных норм;</li>
+                <li>вред здоровью от продуктов.</li>
+              </ul>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">6. Порядок расторжения и возврата</h3>
+              <p className="documents-modal__content-text">
+                <strong>6.1.</strong> Покупатель вправе отказаться до получения заказа. После получения — только при порче (спор с Продавцом).
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>6.2.</strong> Возврат средств в течение 10 дней на реквизиты Покупателя.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">7. Ответственность сторон</h3>
+              <p className="documents-modal__content-text">
+                <strong>7.1.</strong> Штраф за просрочку оплаты — 0,1% в день.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>7.2.</strong> Компания не несет ответственности за убытки от действий Продавцов. Максимальная ответственность — стоимость услуг.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">8. Конфиденциальность</h3>
+              <p className="documents-modal__content-text">
+                <strong>8.1.</strong> Обработка персональных данных по ФЗ-152. Согласие дается акцептом оферты.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">9. Разрешение споров</h3>
+              <p className="documents-modal__content-text">
+                <strong>9.1.</strong> Претензии направлять на email: <a href="mailto:info@kindplate.ru" className="documents-modal__content-link">info@kindplate.ru</a> или +7 999 028 1207. Срок рассмотрения — 10 дней.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>9.2.</strong> Споры — в Арбитражном суде г. Санкт-Петербурга.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">10. Прочие условия</h3>
+              <p className="documents-modal__content-text">
+                <strong>10.1.</strong> Оферта действует с момента размещения на сайте. Изменения публикуются на сайте.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>10.2.</strong> Признание пункта недействительным не влияет на остальные.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">Реквизиты Компании</h3>
+              <p className="documents-modal__content-text">
+                ИП А. М. Сатаев «Kindplate»
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>ИНН:</strong> 784808895487
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>ОГРН:</strong> 326784700012921
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>Телефон:</strong> +7 999 028 1207
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>Email:</strong> <a href="mailto:kindplate.io@mail.ru" className="documents-modal__content-link">kindplate.io@mail.ru</a>
+              </p>
+              <p className="documents-modal__content-text" style={{ marginTop: '20px' }}>
+                Акцептуя оферту, Покупатель подтверждает понимание рисков и ответственности Продавца за продукты.
               </p>
             </div>
           </div>

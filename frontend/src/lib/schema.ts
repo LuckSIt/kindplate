@@ -18,6 +18,9 @@ export const customerRegisterSchema = z
             .min(6, "Пароль должен быть не короче 6 символов")
             .max(50, "Пароль должен быть не длиннее 50 символов"),
         confirmPassword: z.string(),
+        consent: z.boolean().refine((val) => val === true, {
+            message: "Необходимо дать согласие на обработку персональных данных",
+        }),
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: "Пароли должны совпадать",

@@ -1381,6 +1381,99 @@ button:not(.font-montserrat-alt),
   padding: 0;
 }
 
+.register-page__consent {
+  margin: 10px 0;
+}
+
+.register-page__consent-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: #D9D9D9;
+}
+
+.register-page__consent-checkbox {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  margin: 0;
+  padding: 0;
+  border: 2px solid #D9D9D9;
+  border-radius: 4px;
+  background-color: transparent;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: relative;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.register-page__consent-checkbox:hover {
+  border-color: #FFFFFF;
+}
+
+.register-page__consent-checkbox:checked {
+  background-color: #001900;
+  border-color: #001900;
+}
+
+.register-page__consent-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.register-page__consent-checkbox:focus {
+  outline: 2px solid #001900;
+  outline-offset: 2px;
+}
+
+.register-page__consent-text {
+  flex: 1;
+  line-height: 18px;
+}
+
+.register-page__consent-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: #D9D9D9;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  transition: color 0.2s ease;
+}
+
+.register-page__consent-link:hover {
+  color: #FFFFFF;
+}
+
+.register-page__consent-link:focus {
+  outline: 2px solid #001900;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 /* Responsive adjustments for register page */
 @media (max-width: 420px) {
   .register-page__back-button {
@@ -7692,13 +7785,16 @@ div.font-montserrat-alt,
 
 .documents-modal__tabs {
   display: flex;
-  gap: 8px;
-  padding: 16px 24px;
+  gap: 6px;
+  padding: 12px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   overflow-x: auto;
+  overflow-y: hidden;
   flex-shrink: 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
 }
 
 .documents-modal__tabs::-webkit-scrollbar {
@@ -7706,12 +7802,12 @@ div.font-montserrat-alt,
 }
 
 .documents-modal__tab {
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: 12px;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 11px;
+  line-height: 14px;
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.7);
@@ -7719,6 +7815,20 @@ div.font-montserrat-alt,
   transition: all 0.2s ease;
   white-space: nowrap;
   flex-shrink: 0;
+  min-width: fit-content;
+}
+
+@media (min-width: 480px) {
+  .documents-modal__tabs {
+    gap: 8px;
+    padding: 16px 24px;
+  }
+  
+  .documents-modal__tab {
+    padding: 8px 16px;
+    font-size: 12px;
+    line-height: 16px;
+  }
 }
 
 .documents-modal__tab:hover {
