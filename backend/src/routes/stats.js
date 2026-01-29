@@ -134,8 +134,8 @@ statsRouter.get("/business", businessOnly, async (req, res) => {
             });
         }
 
-        // Условие для исключения отмененных заказов
-        const notCancelledCondition = `status != 'cancelled'`;
+        // Условие: только оплаченные заказы (не черновики и не отменённые). Заказ считается у бизнеса только после оплаты.
+        const notCancelledCondition = `status NOT IN ('draft', 'cancelled')`;
 
         // Общее количество заказов (без отмененных)
         const ordersCount = await pool.query(

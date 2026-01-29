@@ -819,12 +819,12 @@ function RouteComponent() {
                     >
                         Заказы
                     </button>
-                    <button
+                    {/*<button
                         onClick={() => setActiveTab('locations')}
                         className={`panel-page__tab ${activeTab === 'locations' ? 'panel-page__tab--active' : ''}`}
                     >
                         Локации
-                    </button>
+                    </button>*/}
                     <button
                         onClick={() => setActiveTab('stats')}
                         className={`panel-page__tab ${activeTab === 'stats' ? 'panel-page__tab--active' : ''}`}

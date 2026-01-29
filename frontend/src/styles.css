@@ -1736,10 +1736,23 @@ button:not(.font-montserrat-alt),
   padding: 0 15px 10px;
   /* На карте не нужно дополнительное смещение вниз как в списке */
   transform: none;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  /* Предотвращаем сдвиг вёрстки при фокусе на поиске */
+  isolation: isolate;
 }
 
 .businesses-list-page__search-container--map .businesses-list-page__search {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* На карте: font-size не меньше 16px, чтобы iOS не зумил при фокусе и вёрстка не слетала */
+.businesses-list-page__search-container--map .businesses-list-page__search-input {
+  font-size: 16px;
+  line-height: 1.25;
 }
 
 .businesses-list-page__search {

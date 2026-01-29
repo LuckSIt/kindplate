@@ -120,6 +120,7 @@ export const mapOffersToBusinesses = (offers?: OfferSearchResult[]): Business[] 
         working_hours: offer.business.working_hours,
         website: offer.business.website,
         offers: [],
+        distance_km: offer.distance_km ?? null,
       });
     }
 

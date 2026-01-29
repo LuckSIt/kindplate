@@ -55,6 +55,8 @@ export type Business = {
   working_hours?: string;
   website?: string;
   offers?: Offer[];
+  /** Расстояние в км от точки отсчёта (центр карты или геолокация пользователя) */
+  distance_km?: number | null;
   is_top?: boolean; // Флаг "Лучшие у нас"
   quality_score?: number; // Балл качества (0-100)
   quality_metrics?: QualityMetrics; // Детальные метрики

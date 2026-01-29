@@ -746,6 +746,7 @@ ordersRouter.get("/business", asyncHandler(async (req, res) => {
                 FROM orders o
                 JOIN users u ON o.user_id = u.id
                 WHERE o.business_id = $1
+                  AND o.status NOT IN ('draft', 'cancelled')
                 ORDER BY o.created_at DESC
             `, [businessId]);
         } else {
@@ -765,6 +766,7 @@ ordersRouter.get("/business", asyncHandler(async (req, res) => {
                     o.confirmed_at
                 FROM orders o
                 WHERE o.business_id = $1
+                  AND o.status NOT IN ('draft', 'cancelled')
                 ORDER BY o.created_at DESC
             `, [businessId]);
         }

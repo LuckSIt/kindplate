@@ -96,12 +96,11 @@ function RouteComponent() {
                 radius_km: 5000,
             };
             
-            // Геолокация
+            // Точка отсчёта для расстояния: геолокация клиента до геолокации бизнеса; если нет — центр карты
             if (userLocation) {
                 filters.lat = userLocation[0];
                 filters.lon = userLocation[1];
             } else if (debouncedMapBounds) {
-                // Если нет геолокации, используем центр карты
                 const centerLat = (debouncedMapBounds.north + debouncedMapBounds.south) / 2;
                 const centerLon = (debouncedMapBounds.east + debouncedMapBounds.west) / 2;
                 filters.lat = centerLat;
@@ -785,7 +784,7 @@ function HomeBusinessCard({ business, onClick }: { business: Business; onClick: 
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" fill="#F5FBA2"/>
                         </svg>
-                        <span>~1 км</span>
+                        <span>{business.distance_km != null ? `${business.distance_km < 1 ? business.distance_km.toFixed(2) : business.distance_km.toFixed(1)} км` : '—'}</span>
                     </div>
                     <div className="businesses-list-page__business-meta-item">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
