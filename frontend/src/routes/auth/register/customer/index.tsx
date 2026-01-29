@@ -210,7 +210,14 @@ function RouteComponent() {
 
                     {/* Footer Text */}
                     <p className="register-page__footer-text">
-                        Продолжая, вы соглашаетесь с нашими условиями и политикой конфиденциальности
+                        Продолжая, вы соглашаетесь с нашими условиями и{" "}
+                        <button
+                            type="button"
+                            className="register-page__footer-link"
+                            onClick={() => setIsDocumentsModalOpen(true)}
+                        >
+                            политикой конфиденциальности
+                        </button>
                     </p>
                 </div>
             </div>

@@ -1131,6 +1131,25 @@ button:not(.font-montserrat-alt),
   padding: 0;
 }
 
+.login-page__footer-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: #C1C1C1;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  transition: color 0.2s ease;
+}
+
+.login-page__footer-link:hover {
+  color: #D9D9D9;
+}
+
 /* Responsive adjustments */
 @media (max-width: 420px) {
   .login-page__back-button {
@@ -1382,6 +1401,25 @@ button:not(.font-montserrat-alt),
   text-align: center;
   margin: 20px 15px 20px 15px;
   padding: 0;
+}
+
+.register-page__footer-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: #C1C1C1;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  transition: color 0.2s ease;
+}
+
+.register-page__footer-link:hover {
+  color: #D9D9D9;
 }
 
 .register-page__consent {
@@ -2154,7 +2192,7 @@ button:not(.font-montserrat-alt),
   width: 100%;
   max-width: 100%;
   height: 52px;
-  background-color: #D9D9D9;
+  background-color: #000019;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -2180,11 +2218,11 @@ button:not(.font-montserrat-alt),
 }
 
 .businesses-list-page__nav-button--active .businesses-list-page__nav-label {
-  color: #001900;
+  color: #D9D9D9;
 }
 
 .businesses-list-page__nav-button--active svg {
-  stroke: #001900;
+  stroke: #D9D9D9;
 }
 
 .businesses-list-page__nav-label {
@@ -2192,7 +2230,7 @@ button:not(.font-montserrat-alt),
   font-weight: 600;
   font-size: 9px;
   line-height: 11px;
-  color: #000000;
+  color: #FFFFFF;
   text-align: center;
   text-decoration: none !important;
 }
@@ -2200,6 +2238,11 @@ button:not(.font-montserrat-alt),
 .businesses-list-page__nav-button svg {
   width: 20px;
   height: 20px;
+  stroke: #FFFFFF;
+}
+
+.businesses-list-page__nav-button:not(.businesses-list-page__nav-button--active) svg {
+  stroke: #FFFFFF;
 }
 
 /* Responsive adjustments for businesses list page */
@@ -2559,7 +2602,7 @@ button:not(.font-montserrat-alt),
   right: 0;
   width: 100%;
   height: 73px;
-  background-color: #D9D9D9;
+  background-color: #000019;
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
@@ -2589,7 +2632,7 @@ button:not(.font-montserrat-alt),
   font-weight: 600;
   font-size: 12px;
   line-height: 22px;
-  color: #000000;
+  color: #FFFFFF;
   text-align: center;
   text-decoration: none !important;
 }
@@ -2597,6 +2640,7 @@ button:not(.font-montserrat-alt),
 .pickup-code-page__nav-button svg {
   width: 28px;
   height: 28px;
+  stroke: #FFFFFF;
 }
 
 /* Responsive adjustments for pickup code page */
@@ -3127,7 +3171,7 @@ button:not(.font-montserrat-alt),
   right: 0;
   width: 100%;
   height: 73px;
-  background-color: #D9D9D9;
+  background-color: #000019;
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
@@ -3153,11 +3197,11 @@ button:not(.font-montserrat-alt),
 }
 
 .vendor-page__nav-button--active .vendor-page__nav-label {
-  color: #001900;
+  color: #D9D9D9;
 }
 
 .vendor-page__nav-button--active svg {
-  stroke: #001900;
+  stroke: #D9D9D9;
 }
 
 .vendor-page__nav-label {
@@ -3165,7 +3209,7 @@ button:not(.font-montserrat-alt),
   font-weight: 600;
   font-size: 12px;
   line-height: 22px;
-  color: #000000;
+  color: #FFFFFF;
   text-align: center;
   text-decoration: none !important;
 }
@@ -3173,6 +3217,11 @@ button:not(.font-montserrat-alt),
 .vendor-page__nav-button svg {
   width: 28px;
   height: 28px;
+  stroke: #FFFFFF;
+}
+
+.vendor-page__nav-button:not(.vendor-page__nav-button--active) svg {
+  stroke: #FFFFFF;
 }
 
 /* Responsive adjustments for vendor page */
@@ -3582,7 +3631,7 @@ button:not(.font-montserrat-alt),
   right: 0;
   width: 100%;
   height: 73px;
-  background-color: #D9D9D9;
+  background-color: #000019;
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
@@ -3608,11 +3657,11 @@ button:not(.font-montserrat-alt),
 }
 
 .cart-page__nav-button--active .cart-page__nav-label {
-  color: #001900;
+  color: #D9D9D9;
 }
 
 .cart-page__nav-button--active svg {
-  stroke: #001900;
+  stroke: #D9D9D9;
 }
 
 .cart-page__nav-label {
@@ -3620,7 +3669,7 @@ button:not(.font-montserrat-alt),
   font-weight: 600;
   font-size: 12px;
   line-height: 22px;
-  color: #000000;
+  color: #FFFFFF;
   text-align: center;
   text-decoration: none !important;
 }
@@ -3628,6 +3677,11 @@ button:not(.font-montserrat-alt),
 .cart-page__nav-button svg {
   width: 28px;
   height: 28px;
+  stroke: #FFFFFF;
+}
+
+.cart-page__nav-button:not(.cart-page__nav-button--active) svg {
+  stroke: #FFFFFF;
 }
 
 /* Responsive adjustments for cart page */

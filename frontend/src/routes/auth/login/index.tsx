@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/lib/schema";
@@ -7,6 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { notify } from "@/lib/notifications";
 import type { LoginForm } from "@/lib/types";
 import arrowBackIcon from "@/figma/arrow-back.svg";
+import { DocumentsModal } from "@/components/ui/documents-modal";
 
 export const Route = createFileRoute("/auth/login/")({
     component: RouteComponent,
@@ -15,6 +17,7 @@ export const Route = createFileRoute("/auth/login/")({
 function RouteComponent() {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
     const methods = useForm({
         resolver: zodResolver(loginSchema),
     });
@@ -150,10 +153,22 @@ function RouteComponent() {
 
                     {/* Footer Text */}
                     <p className="login-page__footer-text">
-                        Продолжая, вы соглашаетесь с нашими условиями и политикой конфиденциальности
+                        Продолжая, вы соглашаетесь с нашими условиями и{" "}
+                        <button
+                            type="button"
+                            className="login-page__footer-link"
+                            onClick={() => setIsDocumentsModalOpen(true)}
+                        >
+                            политикой конфиденциальности
+                        </button>
                     </p>
                 </div>
             </div>
+
+            <DocumentsModal
+                isOpen={isDocumentsModalOpen}
+                onClose={() => setIsDocumentsModalOpen(false)}
+            />
         </div>
     );
 }

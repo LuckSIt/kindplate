@@ -16,8 +16,8 @@ export function DocumentsModal({ isOpen, onClose }: DocumentsModalProps) {
   const tabs: { id: DocumentTab; label: string }[] = [
     { id: 'policy', label: 'ПОЛИТИКА' },
     { id: 'processing', label: 'ОБРАБОТКА' },
-    { id: 'distribution', label: 'РАСПРОСТРАНЕНИЕ' },
-    { id: 'advertising', label: 'РЕКЛАМА' },
+    /*{ id: 'distribution', label: 'РАСПРОСТРАНЕНИЕ' },
+    { id: 'advertising', label: 'РЕКЛАМА' },*/
     { id: 'cookie', label: 'COOKIE' },
     { id: 'offer', label: 'ОФЕРТА' },
   ];
@@ -292,7 +292,7 @@ export function DocumentsModal({ isOpen, onClose }: DocumentsModalProps) {
           </div>
         );
 
-      case 'distribution':
+      /*case 'distribution':
         return (
           <div className="documents-modal__content">
             <h2 className="documents-modal__content-title">
@@ -343,8 +343,8 @@ export function DocumentsModal({ isOpen, onClose }: DocumentsModalProps) {
             </div>
           </div>
         );
-
-      case 'advertising':
+*/
+      /*case 'advertising':
         return (
           <div className="documents-modal__content">
             <h2 className="documents-modal__content-title">
@@ -380,7 +380,7 @@ export function DocumentsModal({ isOpen, onClose }: DocumentsModalProps) {
             </div>
           </div>
         );
-
+*/
       case 'cookie':
         return (
           <div className="documents-modal__content">
@@ -600,7 +600,7 @@ export function DocumentsModal({ isOpen, onClose }: DocumentsModalProps) {
         {/* Header */}
         <div className="documents-modal__header">
           <h1 className="documents-modal__title">
-            Политика в отношении обработки персональных данных
+            Документы
           </h1>
           <button 
             className="documents-modal__close-button"
