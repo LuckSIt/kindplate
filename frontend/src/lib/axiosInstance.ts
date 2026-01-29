@@ -73,6 +73,10 @@ const deleteCookie = (name: string) => {
     document.cookie = name + "=; path=/; max-age=0";
 };
 
+// Срок жизни cookie: access — 7 дней (JWT живёт 1h, cookie держим дольше для удобства), refresh — 1 год (чтобы после закрытия вкладки/удаления из недавних не требовалась повторная авторизация)
+const ACCESS_COOKIE_DAYS = 7;
+const REFRESH_COOKIE_DAYS = 365;
+
 export const tokenStorage = {
     getAccessToken: () => (typeof window === "undefined" ? null : getCookie(ACCESS_TOKEN_KEY)),
     setAccessToken: (token?: string | null) => {
@@ -80,7 +84,7 @@ export const tokenStorage = {
         if (!token) {
             deleteCookie(ACCESS_TOKEN_KEY);
         } else {
-            setCookie(ACCESS_TOKEN_KEY, token, 1); // 1 день
+            setCookie(ACCESS_TOKEN_KEY, token, ACCESS_COOKIE_DAYS);
         }
     },
     getRefreshToken: () => (typeof window === "undefined" ? null : getCookie(REFRESH_TOKEN_KEY)),
@@ -89,7 +93,7 @@ export const tokenStorage = {
         if (!token) {
             deleteCookie(REFRESH_TOKEN_KEY);
         } else {
-            setCookie(REFRESH_TOKEN_KEY, token, 7); // 7 дней
+            setCookie(REFRESH_TOKEN_KEY, token, REFRESH_COOKIE_DAYS);
         }
     },
     clear: () => {
