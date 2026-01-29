@@ -233,7 +233,7 @@ export function LandingPage() {
                                     lineHeight: '1.14em'
                                 }}
                             >
-                                начать спасать
+                                смотреть предложения
                             </button>
                         </Link>
                         <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer">
@@ -247,7 +247,7 @@ export function LandingPage() {
                                     lineHeight: '1.14em'
                                 }}
                             >
-                                начать продавать
+                                стать партнером
                             </button>
                         </a>
                     </div>

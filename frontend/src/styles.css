@@ -1752,7 +1752,7 @@ button:not(.font-montserrat-alt),
 
 /* На карте: font-size не меньше 16px, чтобы iOS не зумил при фокусе и вёрстка не слетала */
 .businesses-list-page__search-container--map .businesses-list-page__search-input {
-  font-size: 16px;
+  font-size: 12px;
   line-height: 1.25;
   touch-action: manipulation;
 }
@@ -6958,6 +6958,15 @@ div.font-montserrat-alt,
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.panel-page__orders-hint {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 8px 0;
 }
 
 .panel-page__offer-card {

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import { Minus, Plus, Edit, Clock, Power, MapPin } from "lucide-react";
 import {
     Dialog,
@@ -598,7 +598,7 @@ function RouteComponent() {
         retryDelay: 1000,
     });
 
-    // Получаем заказы для бизнеса
+    // Получаем заказы для бизнеса: автообновление каждые 30 сек на вкладке «Заказы» и при возврате в окно
     const {
         data: businessOrders,
         isLoading: areOrdersLoading,
@@ -612,7 +612,20 @@ function RouteComponent() {
         retry: 1,
         retryDelay: 1000,
         select: (res) => res.data.data as Order[],
+        refetchInterval: activeTab === 'orders' ? 30_000 : false, // каждые 30 сек, пока открыта вкладка «Заказы»
+        refetchOnWindowFocus: true, // при возврате в вкладку браузера — обновить список
     });
+
+    // Уведомление о новом заказе: если на вкладке «Заказы» количество заказов выросло — показать toast
+    const ordersCountRef = useRef<number | null>(null);
+    useEffect(() => {
+        if (activeTab !== 'orders' || !businessOrders) return;
+        const count = businessOrders.length;
+        if (ordersCountRef.current !== null && count > ordersCountRef.current) {
+            notify.success("Новый заказ", "Поступил новый заказ. Список обновлён.");
+        }
+        ordersCountRef.current = count;
+    }, [activeTab, businessOrders]);
 
     // Получаем статистику для бизнеса
     const {
@@ -964,7 +977,7 @@ function RouteComponent() {
                                     <div className="panel-page__empty">
                                         <span className="panel-page__empty-icon">📦</span>
                                         <p className="panel-page__empty-title">Заказов пока нет</p>
-                                        <p className="panel-page__empty-subtitle">Заказы появятся здесь после того как клиенты оформят их</p>
+                                        <p className="panel-page__empty-subtitle">Заказы появятся здесь после того как клиенты оформят их. Список обновляется автоматически.</p>
                                     </div>
                                 ) : (
                                     businessOrders.map((order: Order & { items?: Array<{ quantity: number; title: string; price?: number }>; order_items?: Array<{ quantity: number; title: string; price?: number }>; customer_name?: string; pickup_code?: string }) => {

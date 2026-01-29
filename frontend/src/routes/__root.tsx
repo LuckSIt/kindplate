@@ -325,18 +325,20 @@ function RootRoute() {
                             >
                                 <Outlet />
                             </main>
-                            {/* Bottom Tab Bar - компактная навигация */}
+                            {/* Bottom Tab Bar: контент (56px) сверху, safe-area только снизу — без лишнего пустого пространства */}
                             {!hideNav && (
                                 <nav
-                                    className="fixed bottom-0 left-0 right-0 z-50 w-full flex-shrink-0 flex items-center"
+                                    className="fixed left-0 right-0 z-50 w-full flex-shrink-0 flex flex-col justify-end overflow-hidden"
                                     style={{ 
                                         backgroundColor: '#000019', 
                                         paddingBottom: navSafeArea,
+                                        minHeight: '56px',
                                         height: navHeight,
-                                        bottom: 'var(--app-bottom-inset, 0px)'
+                                        bottom: 'var(--app-bottom-inset, 0px)',
+                                        isolation: 'isolate'
                                     }}
                                 >
-                                    <div className="mx-auto px-4 grid grid-cols-3 gap-1 w-full">
+                                    <div className="mx-auto px-4 flex items-center justify-between w-full flex-shrink-0 gap-1" style={{ minHeight: '56px', height: '56px' }}>
                                         <TabLink to="/home" label="Карта" icon={(active) => (
                                             <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? '#D9D9D9' : '#D9D9D9'}>
                                                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
@@ -443,17 +445,18 @@ function MobileOnly({ children }: { children: React.ReactNode }) {
 }
 
 function TabLink({ to, label, icon }: { to: string; label: string; icon: (active: boolean) => React.ReactNode }) {
+    const linkClass = "flex-1 min-w-0 flex flex-col items-center justify-center py-1 transition-transform duration-150 motion-tap no-underline";
     return (
         <Link
             to={to}
             activeOptions={{ exact: to === '/' }}
-            inactiveProps={{ className: "flex flex-col items-center justify-center py-1 transition-transform duration-150 motion-tap no-underline" }}
-            activeProps={{ className: "flex flex-col items-center justify-center py-1 transition-transform duration-150 motion-tap no-underline" }}
+            inactiveProps={{ className: linkClass }}
+            activeProps={{ className: linkClass }}
         >
             {({ isActive }: { isActive: boolean }) => (
-                <div className="flex flex-col items-center gap-0.5">
+                <div className="flex flex-col items-center justify-center gap-0.5 w-full min-h-0 shrink-0">
                     {icon(isActive)}
-                    <span className="text-[9px] leading-[12px] font-semibold" style={{ 
+                    <span className="text-[9px] leading-[12px] font-semibold whitespace-nowrap" style={{ 
                         color: isActive ? '#D9D9D9' : '#D9D9D9',
                         fontFamily: 'Montserrat Alternates',
                         textDecoration: 'none'
