@@ -209,6 +209,9 @@ function RootRoute() {
     // Устанавливаем CSS переменную --app-height для точной высоты viewport на мобильных устройствах
     useEffect(() => {
         const updateViewportVars = () => {
+            // На странице карты при фокусе на поиске не меняем высоту — иначе вёрстка слетает при открытии клавиатуры
+            if (document.documentElement.getAttribute('data-map-search-focused') === 'true') return;
+
             const viewport = window.visualViewport;
             const vh = viewport?.height ?? window.innerHeight;
             document.documentElement.style.setProperty('--app-height', `${vh}px`);

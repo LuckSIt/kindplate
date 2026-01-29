@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance, getBackendURL } from "@/lib/axiosInstance";
 import { notify } from "@/lib/notifications";
@@ -63,7 +63,8 @@ function RouteComponent() {
     const [sortBy, setSortBy] = useState<MapSortType>('distance');
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-    
+    const bodyOverflowRef = useRef<string>('');
+
     // Order states
     const [orderDialogOpen, setOrderDialogOpen] = useState(false);
     const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
@@ -80,14 +81,19 @@ function RouteComponent() {
         return () => clearTimeout(timer);
     }, [mapBounds]);
 
-    // На странице карты отключаем прокрутку main, чтобы при фокусе на поиске вёрстка не слетала
+    // На странице карты отключаем прокрутку main и фиксируем контейнер, чтобы при фокусе на поиске вёрстка не слетала
     useEffect(() => {
         const main = document.querySelector('main');
         if (!main) return;
         const prevOverflow = (main as HTMLElement).style.overflow;
+        const prevOverflowX = (main as HTMLElement).style.overflowX;
         (main as HTMLElement).style.overflow = 'hidden';
+        (main as HTMLElement).style.overflowX = 'hidden';
         return () => {
             (main as HTMLElement).style.overflow = prevOverflow;
+            (main as HTMLElement).style.overflowX = prevOverflowX;
+            document.documentElement.removeAttribute('data-map-search-focused');
+            document.body.style.overflow = bodyOverflowRef.current;
         };
     }, []);
 
@@ -492,12 +498,24 @@ function RouteComponent() {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onFocus={() => {
-                                requestAnimationFrame(() => {
+                                document.documentElement.setAttribute('data-map-search-focused', 'true');
+                                bodyOverflowRef.current = document.body.style.overflow;
+                                document.body.style.overflow = 'hidden';
+                                const scrollToTop = () => {
                                     document.scrollingElement?.scrollTo(0, 0);
                                     window.scrollTo(0, 0);
                                     const main = document.querySelector('main');
-                                    if (main) main.scrollTo(0, 0);
-                                });
+                                    if (main) (main as HTMLElement).scrollTo(0, 0);
+                                };
+                                scrollToTop();
+                                requestAnimationFrame(scrollToTop);
+                                setTimeout(scrollToTop, 50);
+                                setTimeout(scrollToTop, 150);
+                                setTimeout(scrollToTop, 350);
+                            }}
+                            onBlur={() => {
+                                document.documentElement.removeAttribute('data-map-search-focused');
+                                document.body.style.overflow = bodyOverflowRef.current;
                             }}
                         />
                     </div>
