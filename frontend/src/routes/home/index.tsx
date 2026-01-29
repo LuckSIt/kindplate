@@ -418,44 +418,6 @@ function RouteComponent() {
         }
     }, [activeSnap]);
 
-    // Убираем aria-hidden с навигации, чтобы избежать проблем с доступностью
-    useEffect(() => {
-        const nav = document.querySelector('nav.fixed.bottom-0');
-        if (!nav) return;
-
-        // Немедленно удаляем aria-hidden если он уже есть
-        if (nav.hasAttribute('aria-hidden')) {
-            nav.removeAttribute('aria-hidden');
-        }
-        if (nav.hasAttribute('data-aria-hidden')) {
-            nav.removeAttribute('data-aria-hidden');
-        }
-
-        // Наблюдаем за изменениями конкретно на элементе навигации
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'attributes' && 
-                    (mutation.attributeName === 'aria-hidden' || mutation.attributeName === 'data-aria-hidden')) {
-                    const target = mutation.target as HTMLElement;
-                    if (target.hasAttribute('aria-hidden')) {
-                        target.removeAttribute('aria-hidden');
-                    }
-                    if (target.hasAttribute('data-aria-hidden')) {
-                        target.removeAttribute('data-aria-hidden');
-                    }
-                }
-            });
-        });
-
-        // Наблюдаем только за навигационным элементом
-        observer.observe(nav, {
-            attributes: true,
-            attributeFilter: ['aria-hidden', 'data-aria-hidden'],
-        });
-
-        return () => observer.disconnect();
-    }, []);
-
     // Высота навигации должна совпадать с __root.tsx (56px + safe area)
     const navHeight = 'calc(56px + env(safe-area-inset-bottom))';
 

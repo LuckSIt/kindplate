@@ -273,7 +273,22 @@ function RootRoute() {
                     location.pathname.startsWith('/pickup-code/') ||
                     location.pathname.startsWith('/admin') ||
                     location.pathname.startsWith('/panel');
-    
+
+    // Не даём drawer/модалкам вешать aria-hidden на нижнюю навигацию: внутри неё фокусные ссылки
+    useEffect(() => {
+        if (hideNav) return;
+        const nav = document.querySelector('[data-app-bottom-nav]');
+        if (!nav) return;
+        const removeAriaHidden = () => {
+            nav.removeAttribute('aria-hidden');
+            nav.removeAttribute('data-aria-hidden');
+        };
+        removeAriaHidden();
+        const observer = new MutationObserver(removeAriaHidden);
+        observer.observe(nav, { attributes: true, attributeFilter: ['aria-hidden', 'data-aria-hidden'] });
+        return () => observer.disconnect();
+    }, [hideNav, location.pathname]);
+
     // Для главной страницы показываем лендинг без MobileOnly обертки
     const isLandingPage = location.pathname === '/';
 
@@ -328,6 +343,7 @@ function RootRoute() {
                             {/* Bottom Tab Bar: контент (56px) сверху, safe-area только снизу — без лишнего пустого пространства */}
                             {!hideNav && (
                                 <nav
+                                    data-app-bottom-nav
                                     className="fixed left-0 right-0 z-50 w-full flex-shrink-0 flex flex-col justify-end overflow-hidden"
                                     style={{ 
                                         backgroundColor: '#000019', 
