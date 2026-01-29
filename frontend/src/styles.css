@@ -1741,6 +1741,7 @@ button:not(.font-montserrat-alt),
   box-sizing: border-box;
   /* Предотвращаем сдвиг вёрстки при фокусе на поиске */
   isolation: isolate;
+  touch-action: manipulation;
 }
 
 .businesses-list-page__search-container--map .businesses-list-page__search {
@@ -1753,6 +1754,7 @@ button:not(.font-montserrat-alt),
 .businesses-list-page__search-container--map .businesses-list-page__search-input {
   font-size: 16px;
   line-height: 1.25;
+  touch-action: manipulation;
 }
 
 .businesses-list-page__search {
@@ -8266,5 +8268,86 @@ div.font-montserrat-alt,
 }
 
 .documents-modal__button:active {
+  transform: translateY(0);
+}
+
+/* Cookie consent banner — окошко при первом входе */
+.cookie-consent-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  max-width: calc(100vw - 32px);
+  width: 100%;
+  padding: 16px 20px;
+  background-color: #000019;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fade-up 0.3s ease;
+}
+
+@media (min-width: 480px) {
+  .cookie-consent-banner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    max-width: 420px;
+    padding: 18px 24px;
+  }
+}
+
+.cookie-consent-banner__text {
+  margin: 0;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+  color: #D9D9D9;
+}
+
+.cookie-consent-banner__link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  color: #D9D9D9;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.cookie-consent-banner__link:hover {
+  opacity: 0.85;
+}
+
+.cookie-consent-banner__btn {
+  padding: 10px 20px;
+  background-color: #D9D9D9;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 18px;
+  color: #000019;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.cookie-consent-banner__btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.cookie-consent-banner__btn:active {
   transform: translateY(0);
 }

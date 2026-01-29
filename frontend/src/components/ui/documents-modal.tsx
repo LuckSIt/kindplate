@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
 type DocumentTab = 'policy' | 'processing' | 'distribution' | 'advertising' | 'cookie' | 'offer';
@@ -6,10 +6,16 @@ type DocumentTab = 'policy' | 'processing' | 'distribution' | 'advertising' | 'c
 interface DocumentsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** При открытии переключить на эту вкладку (например, 'cookie' из баннера согласия). */
+  initialTab?: DocumentTab;
 }
 
-export function DocumentsModal({ isOpen, onClose }: DocumentsModalProps) {
-  const [activeTab, setActiveTab] = useState<DocumentTab>('policy');
+export function DocumentsModal({ isOpen, onClose, initialTab }: DocumentsModalProps) {
+  const [activeTab, setActiveTab] = useState<DocumentTab>(initialTab ?? 'policy');
+
+  useEffect(() => {
+    if (isOpen && initialTab) setActiveTab(initialTab);
+  }, [isOpen, initialTab]);
 
   if (!isOpen) return null;
 

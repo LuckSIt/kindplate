@@ -45,33 +45,57 @@ export const getImageURL = (path?: string) => {
     return `${base}${rel}`;
 };
 
-// Ключи для хранения токенов в localStorage
+// Ключи для хранения токенов в cookies
 const ACCESS_TOKEN_KEY = "kp_access_token";
 const REFRESH_TOKEN_KEY = "kp_refresh_token";
 
+// Хелперы для работы с cookies (JS читает токены для заголовка Authorization)
+const getCookie = (name: string): string | null => {
+    if (typeof document === "undefined") return null;
+    const match = document.cookie.match(new RegExp("(?:^|;\\s*)" + name.replace(/[\\.*+?^${}()|[\]\\]/g, "\\$&") + "=([^;]*)"));
+    return match ? decodeURIComponent(match[1]) : null;
+};
+
+const setCookie = (name: string, value: string, maxAgeDays: number) => {
+    if (typeof document === "undefined") return;
+    const secure = location.protocol === "https:";
+    const maxAge = maxAgeDays * 24 * 60 * 60;
+    document.cookie =
+        name + "=" + encodeURIComponent(value) +
+        "; path=/" +
+        "; max-age=" + maxAge +
+        "; SameSite=Lax" +
+        (secure ? "; Secure" : "");
+};
+
+const deleteCookie = (name: string) => {
+    if (typeof document === "undefined") return;
+    document.cookie = name + "=; path=/; max-age=0";
+};
+
 export const tokenStorage = {
-    getAccessToken: () => (typeof window === "undefined" ? null : localStorage.getItem(ACCESS_TOKEN_KEY)),
+    getAccessToken: () => (typeof window === "undefined" ? null : getCookie(ACCESS_TOKEN_KEY)),
     setAccessToken: (token?: string | null) => {
         if (typeof window === "undefined") return;
         if (!token) {
-            localStorage.removeItem(ACCESS_TOKEN_KEY);
+            deleteCookie(ACCESS_TOKEN_KEY);
         } else {
-            localStorage.setItem(ACCESS_TOKEN_KEY, token);
+            setCookie(ACCESS_TOKEN_KEY, token, 1); // 1 день
         }
     },
-    getRefreshToken: () => (typeof window === "undefined" ? null : localStorage.getItem(REFRESH_TOKEN_KEY)),
+    getRefreshToken: () => (typeof window === "undefined" ? null : getCookie(REFRESH_TOKEN_KEY)),
     setRefreshToken: (token?: string | null) => {
         if (typeof window === "undefined") return;
         if (!token) {
-            localStorage.removeItem(REFRESH_TOKEN_KEY);
+            deleteCookie(REFRESH_TOKEN_KEY);
         } else {
-            localStorage.setItem(REFRESH_TOKEN_KEY, token);
+            setCookie(REFRESH_TOKEN_KEY, token, 7); // 7 дней
         }
     },
     clear: () => {
         if (typeof window === "undefined") return;
-        localStorage.removeItem(ACCESS_TOKEN_KEY);
-        localStorage.removeItem(REFRESH_TOKEN_KEY);
+        deleteCookie(ACCESS_TOKEN_KEY);
+        deleteCookie(REFRESH_TOKEN_KEY);
     }
 };
 

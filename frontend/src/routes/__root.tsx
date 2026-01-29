@@ -18,6 +18,7 @@ import { ensureNoPushWithoutVapid, unregisterServiceWorker } from "@/lib/pwa";
 import { PushOnboarding } from "@/components/ui/push-onboarding";
 import { AddToHomeScreenPrompt } from "@/components/ui/add-to-home-screen-prompt";
 import { CartSheet } from "@/components/ui/cart-sheet";
+import { CookieConsentBanner } from "@/components/ui/cookie-consent-banner";
 import { useLocation } from "@tanstack/react-router";
 
 // Оптимизированная конфигурация QueryClient для лучшей производительности
@@ -383,6 +384,7 @@ function RootRoute() {
                         />
                     )}
                     <NotificationContainer />
+                    <CookieConsentBanner />
                     {/* InstallPrompt removed per request to hide floating icon */}
                     <NetworkStatus />
                     <PushOnboarding />

@@ -80,6 +80,17 @@ function RouteComponent() {
         return () => clearTimeout(timer);
     }, [mapBounds]);
 
+    // На странице карты отключаем прокрутку main, чтобы при фокусе на поиске вёрстка не слетала
+    useEffect(() => {
+        const main = document.querySelector('main');
+        if (!main) return;
+        const prevOverflow = (main as HTMLElement).style.overflow;
+        (main as HTMLElement).style.overflow = 'hidden';
+        return () => {
+            (main as HTMLElement).style.overflow = prevOverflow;
+        };
+    }, []);
+
     // Fetch offers data with optimized map query using new search endpoint
     useEffect(() => {
         const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 400);
@@ -480,6 +491,14 @@ function RouteComponent() {
                             placeholder="Найти заведение"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
+                            onFocus={() => {
+                                requestAnimationFrame(() => {
+                                    document.scrollingElement?.scrollTo(0, 0);
+                                    window.scrollTo(0, 0);
+                                    const main = document.querySelector('main');
+                                    if (main) main.scrollTo(0, 0);
+                                });
+                            }}
                         />
                     </div>
                 </div>
