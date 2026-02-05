@@ -202,9 +202,8 @@ function RootRoute() {
     const [_hasShadow, _setHasShadow] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const location = useLocation();
-    const navSafeArea = 'calc(env(safe-area-inset-bottom) + var(--app-bottom-inset, 0px))';
-    // Чуть более компактная навигация (56px) + safe-area + динамический inset клавиатуры
-    const navHeight = `calc(56px + env(safe-area-inset-bottom) + var(--app-bottom-inset, 0px))`;
+    // Компактная навигация (52px) + safe-area
+    const navHeight = `calc(52px + env(safe-area-inset-bottom, 0px))`;
 
     // Устанавливаем CSS переменную --app-height для точной высоты viewport на мобильных устройствах
     useEffect(() => {
@@ -340,21 +339,18 @@ function RootRoute() {
                             >
                                 <Outlet />
                             </main>
-                            {/* Bottom Tab Bar: контент (56px) сверху, safe-area только снизу — без лишнего пустого пространства */}
+                            {/* Bottom Tab Bar: компактный, вплотную к нижнему краю */}
                             {!hideNav && (
                                 <nav
                                     data-app-bottom-nav
-                                    className="fixed left-0 right-0 z-50 w-full flex-shrink-0 flex flex-col justify-end overflow-hidden"
+                                    className="fixed left-0 right-0 bottom-0 z-50 w-full"
                                     style={{ 
                                         backgroundColor: '#000019', 
-                                        paddingBottom: navSafeArea,
-                                        minHeight: '56px',
-                                        height: navHeight,
-                                        bottom: 'var(--app-bottom-inset, 0px)',
+                                        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
                                         isolation: 'isolate'
                                     }}
                                 >
-                                    <div className="mx-auto px-4 flex items-center justify-between w-full flex-shrink-0 gap-1" style={{ minHeight: '56px', height: '56px' }}>
+                                    <div className="mx-auto px-4 flex items-center justify-between w-full" style={{ height: '52px' }}>
                                         <TabLink to="/home" label="Карта" icon={(active) => (
                                             <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? '#D9D9D9' : '#D9D9D9'}>
                                                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
