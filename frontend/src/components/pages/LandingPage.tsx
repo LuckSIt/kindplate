@@ -19,8 +19,8 @@ const carouselItems = [
         image: bunImage,
         name: "Булочка с корицей",
         price: "79₽",
-        oldPrice: "130₽",
-        discount: "-40%",
+        oldPrice: "247₽",
+        discount: "-68%",
         category: "Пекарня / Выпечка"
     },
     {
@@ -28,8 +28,8 @@ const carouselItems = [
         image: saladImage,
         name: "Салат с авокадо",
         price: "159₽",
-        oldPrice: "265₽",
-        discount: "-40%",
+        oldPrice: "399₽",
+        discount: "-60%",
         category: "Кафе / готовая еда"
     },
     {
@@ -37,8 +37,8 @@ const carouselItems = [
         image: croissantImage,
         name: "Круассан с беконом",
         price: "139₽",
-        oldPrice: "230₽",
-        discount: "-40%",
+        oldPrice: "349₽",
+        discount: "-60%",
         category: "Кафе / готовая еда"
     },
     {
@@ -46,8 +46,8 @@ const carouselItems = [
         image: breadImage,
         name: "Чиабатта 3шт.",
         price: "99₽",
-        oldPrice: "165₽",
-        discount: "-40%",
+        oldPrice: "299₽",
+        discount: "-67%",
         category: "Пекарня / хлеб"
     },
     {
@@ -55,8 +55,8 @@ const carouselItems = [
         image: pizzaImage,
         name: "Пепперони пицца",
         price: "279₽",
-        oldPrice: "465₽",
-        discount: "-40%",
+        oldPrice: "699₽",
+        discount: "-60%",
         category: "Кафе / готовая еда"
     },
     {
@@ -64,8 +64,8 @@ const carouselItems = [
         image: cookiesImage,
         name: "Печенье с шоколадом",
         price: "99₽",
-        oldPrice: "165₽",
-        discount: "-40%",
+        oldPrice: "249₽",
+        discount: "-60%",
         category: "Пекарня / кондитерское изделие"
     }
 ];
@@ -343,35 +343,35 @@ export function LandingPage() {
                                                 left: "50%",
                                                 top: 310,
                                                 transform: "translateX(-50%)",
-                                                width: 220,
+                                                width: 240,
                                                 background: "#FFFFFF",
-                                                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
-                                                borderRadius: 12,
-                                                padding: "12px 16px",
+                                                boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.12)",
+                                                borderRadius: 14,
+                                                padding: "14px 18px",
                                             }}
                                         >
                                             {/* Категория */}
                                             <div
                                                 style={{
-                                                    color: "#757575",
-                                                    fontSize: 11,
+                                                    color: "#6B7280",
+                                                    fontSize: 12,
                                                     fontFamily: "Montserrat Alternates, sans-serif",
                                                     fontWeight: 500,
-                                                    marginBottom: 4,
+                                                    marginBottom: 2,
                                                 }}
                                             >
                                                 {currentItem.category}
                                             </div>
                                             
                                             {/* Название + скидка */}
-                                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
                                                 <span
                                                     style={{
                                                         color: "#000019",
-                                                        fontSize: 14,
+                                                        fontSize: 16,
                                                         fontFamily: "Montserrat Alternates, sans-serif",
                                                         fontWeight: 700,
-                                                        lineHeight: "18px",
+                                                        lineHeight: "20px",
                                                     }}
                                                 >
                                                     {currentItem.name}
@@ -380,12 +380,14 @@ export function LandingPage() {
                                                     style={{
                                                         backgroundColor: "#FF6B35",
                                                         color: "#FFFFFF",
-                                                        fontSize: 10,
+                                                        fontSize: 12,
                                                         fontFamily: "Montserrat Alternates, sans-serif",
                                                         fontWeight: 700,
-                                                        padding: "3px 6px",
-                                                        borderRadius: 4,
+                                                        padding: "4px 8px",
+                                                        borderRadius: 6,
                                                         whiteSpace: "nowrap",
+                                                        marginLeft: 8,
+                                                        flexShrink: 0,
                                                     }}
                                                 >
                                                     {currentItem.discount}
@@ -393,11 +395,11 @@ export function LandingPage() {
                                             </div>
                                             
                                             {/* Цены */}
-                                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
                                                 <span
                                                     style={{
                                                         color: "#9CA3AF",
-                                                        fontSize: 14,
+                                                        fontSize: 16,
                                                         fontFamily: "Montserrat Alternates, sans-serif",
                                                         fontWeight: 500,
                                                         textDecoration: "line-through",
@@ -408,7 +410,7 @@ export function LandingPage() {
                                                 <span
                                                     style={{
                                                         color: "#000019",
-                                                        fontSize: 18,
+                                                        fontSize: 22,
                                                         fontFamily: "Montserrat Alternates, sans-serif",
                                                         fontWeight: 700,
                                                     }}
