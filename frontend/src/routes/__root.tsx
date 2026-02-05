@@ -343,8 +343,9 @@ function RootRoute() {
                             {!hideNav && (
                                 <nav
                                     data-app-bottom-nav
-                                    className="fixed left-0 right-0 bottom-0 z-50 w-full"
+                                    className="fixed left-0 right-0 z-50 w-full"
                                     style={{ 
+                                        bottom: 0,
                                         backgroundColor: '#000019', 
                                         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
                                         isolation: 'isolate'
