@@ -55,18 +55,35 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data, isLoading, isSuccess, isError } = useQuery<{ user: User; success: boolean } | { data: { user: User } }>({
         queryKey: ["auth"],
         queryFn: async () => {
+            // Логирование для отладки persistent login
+            const at = tokenStorage.getAccessToken();
+            const rt = tokenStorage.getRefreshToken();
+            console.log('🔐 Auth check:', { 
+                hasAccessToken: !!at, 
+                hasRefreshToken: !!rt,
+                accessTokenPreview: at ? at.substring(0, 20) + '...' : null
+            });
+
             const tryRefreshAndMe = async (): Promise<{ user: User; success: boolean } | null> => {
-                const rt = tokenStorage.getRefreshToken();
-                if (!rt) return null;
+                const refreshToken = tokenStorage.getRefreshToken();
+                console.log('🔄 Trying refresh...', { hasRefreshToken: !!refreshToken });
+                if (!refreshToken) {
+                    console.log('❌ No refresh token available');
+                    return null;
+                }
                 try {
-                    const r = await axiosInstance.post('/auth/refresh', { refreshToken: rt });
+                    console.log('📡 Calling /auth/refresh...');
+                    const r = await axiosInstance.post('/auth/refresh', { refreshToken });
+                    console.log('✅ Refresh successful:', { hasNewAccessToken: !!r.data?.accessToken });
                     tokenStorage.setAccessToken(r.data.accessToken);
                     tokenStorage.setRefreshToken(r.data.refreshToken);
                     const me2 = await axiosInstance.get("/auth/me", { params: { _t: Date.now() }, skipErrorNotification: true } as any);
                     const d = me2?.data;
+                    console.log('✅ /auth/me after refresh:', { hasUser: !!d?.user });
                     if (d && 'user' in d && d.user) return { user: d.user, success: (d as any).success ?? true };
                     if (d?.data?.user) return { user: d.data.user, success: true };
-                } catch {
+                } catch (e: any) {
+                    console.error('❌ Refresh failed:', e?.response?.data || e?.message);
                     tokenStorage.clear();
                 }
                 return null;
@@ -81,16 +98,23 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
             };
 
             try {
+                console.log('📡 Calling /auth/me...');
                 const response = await axiosInstance.get("/auth/me", {
                     skipErrorNotification: true,
                     params: { _t: Date.now() }
                 } as any);
 
                 const responseData = response.data;
+                console.log('📥 /auth/me response:', { 
+                    hasUser: !!responseData?.user, 
+                    success: responseData?.success,
+                    userId: responseData?.user?.id 
+                });
 
                 if (responseData && 'user' in responseData) {
                     const user = responseData.user;
                     if (user) {
+                        console.log('✅ User authenticated via /auth/me:', user.email || user.id);
                         backfillTokens();
                         return { user, success: responseData.success ?? true };
                     }
@@ -98,15 +122,19 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 
                 if (responseData?.data?.user) {
                     const user = responseData.data.user;
+                    console.log('✅ User authenticated (nested):', user.email || user.id);
                     backfillTokens();
                     return { user, success: true };
                 }
 
                 // user: null — возможно, access истёк. Пробуем refresh и повторный /auth/me
+                console.log('⚠️ No user in response, trying refresh...');
                 const refreshed = await tryRefreshAndMe();
                 if (refreshed) return refreshed;
+                console.log('❌ Refresh failed, user not authenticated');
                 return { user: null, success: false };
             } catch (err: any) {
+                console.error('❌ /auth/me error:', err?.response?.status, err?.response?.data || err?.message);
                 const refreshed = await tryRefreshAndMe();
                 if (refreshed) return refreshed;
                 throw err;

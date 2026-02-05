@@ -244,15 +244,21 @@ authRouter.get("/me", asyncHandler(async (req, res) => {
 // Endpoint для обновления токена через refresh token
 authRouter.post("/refresh", asyncHandler(async (req, res) => {
     const { refreshToken } = req.body;
+    
+    console.log('🔄 /auth/refresh called:', { hasRefreshToken: !!refreshToken });
 
     if (!refreshToken) {
+        console.log('❌ No refresh token provided');
         throw new AppError('Refresh токен не предоставлен', 401, 'NO_REFRESH_TOKEN');
     }
 
     try {
+        console.log('🔄 Verifying refresh token...');
         const payload = await verifyToken(refreshToken);
+        console.log('📦 Refresh token payload:', { userId: payload?.userId, type: payload?.type });
 
         if (payload.type !== 'refresh') {
+            console.log('❌ Wrong token type:', payload.type);
             throw new AppError('Неверный тип токена', 401, 'INVALID_TOKEN_TYPE');
         }
 
@@ -263,6 +269,7 @@ authRouter.post("/refresh", asyncHandler(async (req, res) => {
         );
 
         if (result.rowCount === 0) {
+            console.log('❌ User not found:', payload.userId);
             throw new AppError('Пользователь не найден', 404, 'USER_NOT_FOUND');
         }
 
@@ -271,6 +278,7 @@ authRouter.post("/refresh", asyncHandler(async (req, res) => {
         // Создаем новую пару токенов
         const tokens = await createTokenPair(user);
 
+        console.log('✅ Tokens refreshed successfully for user:', user.id);
         logger.info('Tokens refreshed', { userId: user.id });
 
         res.json({
@@ -281,6 +289,7 @@ authRouter.post("/refresh", asyncHandler(async (req, res) => {
         if (error instanceof AppError) {
             throw error;
         }
+        console.log('❌ Refresh failed:', error.message);
         logger.warn('Token refresh failed', { error: error.message });
         throw new AppError('Невалидный или истекший refresh токен', 401, 'INVALID_REFRESH_TOKEN');
     }

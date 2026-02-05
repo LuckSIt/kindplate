@@ -7,25 +7,42 @@ const { verifyToken } = require("./jwt");
  * При успехе выставляем req.session.userId, чтобы остальной код работал как раньше.
  */
 async function ensureAuthenticated(req, res) {
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    const hasSession = !!(req.session && req.session.userId !== undefined);
+    const hasJWT = !!(authHeader && authHeader.startsWith('Bearer '));
+    
+    console.log('🔐 ensureAuthenticated:', { 
+        hasSession, 
+        hasJWT,
+        sessionUserId: req.session?.userId,
+        url: req.url
+    });
+
     // 1) Уже есть сессия
     if (req.session && req.session.userId !== undefined) {
+        console.log('✅ Auth via session:', req.session.userId);
         return req.session.userId;
     }
 
     // 2) Пробуем вытянуть Bearer-токен из заголовка
-    const authHeader = req.headers.authorization || req.headers.Authorization;
     if (!authHeader || typeof authHeader !== "string") {
+        console.log('❌ No auth header');
         return null;
     }
 
     const [scheme, token] = authHeader.split(" ");
     if (!token || scheme.toLowerCase() !== "bearer") {
+        console.log('❌ Invalid auth header format');
         return null;
     }
 
     try {
+        console.log('🔄 Verifying JWT token...');
         const payload = await verifyToken(token);
+        console.log('📦 JWT payload:', { userId: payload?.userId, type: payload?.type, exp: payload?.exp });
+        
         if (!payload || payload.type !== "access" || !payload.userId) {
+            console.log('❌ Invalid JWT payload');
             return null;
         }
 
@@ -34,6 +51,7 @@ async function ensureAuthenticated(req, res) {
             payload.userId,
         ]);
         if (result.rowCount === 0) {
+            console.log('❌ User not found in DB:', payload.userId);
             return null;
         }
 
@@ -41,9 +59,11 @@ async function ensureAuthenticated(req, res) {
         req.session.userId = result.rows[0].id;
         req.session.isBusiness = result.rows[0].is_business;
 
+        console.log('✅ Auth via JWT:', result.rows[0].id);
         return result.rows[0].id;
     } catch (e) {
         // Невалидный/просроченный токен — считаем, что не авторизован
+        console.log('❌ JWT verification failed:', e.message);
         return null;
     }
 }
