@@ -19,6 +19,8 @@ const carouselItems = [
         image: bunImage,
         name: "Булочка с корицей",
         price: "79₽",
+        oldPrice: "130₽",
+        discount: "-40%",
         category: "Пекарня / Выпечка"
     },
     {
@@ -26,6 +28,8 @@ const carouselItems = [
         image: saladImage,
         name: "Салат с авокадо",
         price: "159₽",
+        oldPrice: "265₽",
+        discount: "-40%",
         category: "Кафе / готовая еда"
     },
     {
@@ -33,6 +37,8 @@ const carouselItems = [
         image: croissantImage,
         name: "Круассан с беконом",
         price: "139₽",
+        oldPrice: "230₽",
+        discount: "-40%",
         category: "Кафе / готовая еда"
     },
     {
@@ -40,6 +46,8 @@ const carouselItems = [
         image: breadImage,
         name: "Чиабатта 3шт.",
         price: "99₽",
+        oldPrice: "165₽",
+        discount: "-40%",
         category: "Пекарня / хлеб"
     },
     {
@@ -47,6 +55,8 @@ const carouselItems = [
         image: pizzaImage,
         name: "Пепперони пицца",
         price: "279₽",
+        oldPrice: "465₽",
+        discount: "-40%",
         category: "Кафе / готовая еда"
     },
     {
@@ -54,6 +64,8 @@ const carouselItems = [
         image: cookiesImage,
         name: "Печенье с шоколадом",
         price: "99₽",
+        oldPrice: "165₽",
+        discount: "-40%",
         category: "Пекарня / кондитерское изделие"
     }
 ];
@@ -220,8 +232,8 @@ export function LandingPage() {
                 </section>
 
                 {/* CTA Buttons */}
-                <section className="px-[24px] pb-[40px]">
-                    <div className="flex gap-[14px]">
+                <section className="pb-[40px] w-full flex justify-center">
+                    <div className="flex gap-[14px] justify-center px-[24px] w-full max-w-[375px]">
                         <Link to="/auth/login" className="flex-1">
                             <button 
                                 className="w-full h-[38px] rounded-[26px] text-[13px] font-bold leading-[1.14] text-center transition-opacity hover:opacity-90 whitespace-nowrap"
@@ -236,7 +248,7 @@ export function LandingPage() {
                                 смотреть предложения
                             </button>
                         </Link>
-                        <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer">
+                        <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer" className="flex-1">
                             <button 
                                 className="w-full h-[38px] rounded-[26px] border border-white text-[13px] font-bold leading-[1.14] text-center transition-opacity hover:opacity-90 whitespace-nowrap"
                                 style={{ 
@@ -325,73 +337,87 @@ export function LandingPage() {
 
                                         {/* Подпись под продуктом */}
                                         <div
+                                            className="transition-opacity duration-300"
                                             style={{
-                                                width: 187.5,
-                                                height: 39,
-                                                left: 60,
-                                                top: 329,
                                                 position: "absolute",
+                                                left: "50%",
+                                                top: 310,
+                                                transform: "translateX(-50%)",
+                                                width: 220,
                                                 background: "#FFFFFF",
-                                                boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-                                                borderRadius: 7.5,
-                                            }}
-        />
-                                        <div
-                                            className="transition-opacity duration-300"
-                                            style={{
-                                                width: 160.5,
-                                                height: 10.5,
-                                                left: 66,
-                                                top: 347,
-                                                position: "absolute",
-                                                color: "#000019",
-                                                fontSize: 12,
-                                                fontFamily: "Montserrat Alternates, sans-serif",
-                                                fontWeight: 600,
-                                                lineHeight: "10.44px",
-                                                wordWrap: "break-word",
+                                                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
+                                                borderRadius: 12,
+                                                padding: "12px 16px",
                                             }}
                                         >
-                                            {currentItem.name}
+                                            {/* Категория */}
+                                            <div
+                                                style={{
+                                                    color: "#757575",
+                                                    fontSize: 11,
+                                                    fontFamily: "Montserrat Alternates, sans-serif",
+                                                    fontWeight: 500,
+                                                    marginBottom: 4,
+                                                }}
+                                            >
+                                                {currentItem.category}
+                                            </div>
+                                            
+                                            {/* Название + скидка */}
+                                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                                                <span
+                                                    style={{
+                                                        color: "#000019",
+                                                        fontSize: 14,
+                                                        fontFamily: "Montserrat Alternates, sans-serif",
+                                                        fontWeight: 700,
+                                                        lineHeight: "18px",
+                                                    }}
+                                                >
+                                                    {currentItem.name}
+                                                </span>
+                                                <span
+                                                    style={{
+                                                        backgroundColor: "#FF6B35",
+                                                        color: "#FFFFFF",
+                                                        fontSize: 10,
+                                                        fontFamily: "Montserrat Alternates, sans-serif",
+                                                        fontWeight: 700,
+                                                        padding: "3px 6px",
+                                                        borderRadius: 4,
+                                                        whiteSpace: "nowrap",
+                                                    }}
+                                                >
+                                                    {currentItem.discount}
+                                                </span>
+                                            </div>
+                                            
+                                            {/* Цены */}
+                                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                                <span
+                                                    style={{
+                                                        color: "#9CA3AF",
+                                                        fontSize: 14,
+                                                        fontFamily: "Montserrat Alternates, sans-serif",
+                                                        fontWeight: 500,
+                                                        textDecoration: "line-through",
+                                                    }}
+                                                >
+                                                    {currentItem.oldPrice}
+                                                </span>
+                                                <span
+                                                    style={{
+                                                        color: "#000019",
+                                                        fontSize: 18,
+                                                        fontFamily: "Montserrat Alternates, sans-serif",
+                                                        fontWeight: 700,
+                                                    }}
+                                                >
+                                                    {currentItem.price}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div
-                                            className="transition-opacity duration-300"
-                                            style={{
-                                                width: 40,
-                                                height: 10.5,
-                                                left: 202,
-                                                top: 345,
-                                                position: "absolute",
-                                                textAlign: "right",
-                                                color: "#001900",
-                                                fontSize: 13.5,
-                                                fontFamily: "Montserrat Alternates, sans-serif",
-                                                fontWeight: 600,
-                                                lineHeight: "11.745px",
-                                                wordWrap: "break-word",
-                                            }}
-                                        >
-                                            {currentItem.price}
-                                        </div>
-                                        <div
-                                            className="transition-opacity duration-300"
-                                            style={{
-                                                width: 160.5,
-                                                height: 10.5,
-                                                left: 66,
-                                                top: 336,
-                                                position: "absolute",
-                                                color: "#757575",
-                                                fontSize: 7.5,
-                                                fontFamily: "Montserrat Alternates, sans-serif",
-                                                fontWeight: 600,
-                                                lineHeight: "6.525px",
-                                                wordWrap: "break-word",
-                                            }}
-                                        >
-                                            {currentItem.category}
-                </div>
-            </div>
+                                    </div>
 
                                 </div>
                                 

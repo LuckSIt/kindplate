@@ -391,39 +391,130 @@ export function DocumentsModal({ isOpen, onClose, initialTab }: DocumentsModalPr
         return (
           <div className="documents-modal__content">
             <h2 className="documents-modal__content-title">
-              ФАЙЛЫ COOKIE И АНАЛОГИЧНЫЕ ТЕХНОЛОГИИ
+              СОГЛАШЕНИЕ ОБ ИСПОЛЬЗОВАНИИ ФАЙЛОВ COOKIE
             </h2>
             <p className="documents-modal__content-subtitle">
-              г. Санкт-Петербург, «26» января 2026 г.
+              г. Санкт-Петербург, «30» января 2026 г.
             </p>
             
             <div className="documents-modal__content-section">
-              <h3 className="documents-modal__content-heading">Что такое cookie</h3>
               <p className="documents-modal__content-text">
-                Наше Приложение использует файлы cookie и аналогичные технологии (например, пиксели) для сбора данных об использовании, 
-                запоминания ваших предпочтений и персонализации рекламы.
+                <strong>Владелец сайта:</strong> ИП А. М. Сатаев (далее — «Мы», «Kindplate»), ИНН 784808895487
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>Пользователь сайта:</strong> любое лицо, посещающее сайт <a href="http://app-kindplate.ru" className="documents-modal__content-link">app-kindplate.ru</a> (далее — «Вы», «Пользователь»)
+              </p>
+              <p className="documents-modal__content-text">
+                Настоящее Соглашение об использовании файлов cookie (далее — «Соглашение») регулирует порядок использования файлов cookie на сайте Kindplate — современной технологичной платформе, объединяющей рестораны, кафе, магазины и покупателей для спасения качественной еды от утилизации и стимулирования осознанного потребления.
+              </p>
+              <p className="documents-modal__content-text">
+                Продолжая использовать сайт Kindplate (включая навигацию, авторизацию или совершение действий), Вы выражаете полное и безоговорочное согласие с условиями настоящего Соглашения. Если Вы не согласны, пожалуйста, отключите cookies в настройках браузера или покиньте сайт.
               </p>
             </div>
 
             <div className="documents-modal__content-section">
-              <h3 className="documents-modal__content-heading">Типы используемых cookie</h3>
-              <ul className="documents-modal__content-list">
-                <li><strong>Необходимые cookie:</strong> Эти cookie необходимы для работы Приложения и не могут быть отключены. 
-                Они обычно устанавливаются в ответ на ваши действия, такие как вход в систему или заполнение форм.</li>
-                <li><strong>Функциональные cookie:</strong> Эти cookie позволяют Приложению запоминать ваши предпочтения (например, 
-                язык, регион) и предоставлять улучшенные функции.</li>
-                <li><strong>Аналитические cookie:</strong> Эти cookie помогают нам понять, как посетители взаимодействуют с Приложением, 
-                собирая и сообщая информацию анонимно.</li>
-                <li><strong>Рекламные cookie:</strong> Эти cookie используются для отслеживания ваших посещений и интересов для показа 
-                релевантной рекламы.</li>
-              </ul>
+              <h3 className="documents-modal__content-heading">1. Определения</h3>
+              <p className="documents-modal__content-text">
+                <strong>1.1.</strong> Файлы cookie — небольшие текстовые файлы, которые веб-сервер размещает на устройстве Пользователя для идентификации, анализа поведения и улучшения функциональности сайта.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>1.2.</strong> Сайт — интернет-ресурс <a href="http://app-kindplate.ru" className="documents-modal__content-link">app-kindplate.ru</a>, включая все поддомены и мобильную версию.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>1.3.</strong> Персональные данные — любая информация, относящаяся к Пользователю, обрабатываемая в соответствии с Политикой конфиденциальности Kindplate.
+              </p>
             </div>
 
             <div className="documents-modal__content-section">
-              <h3 className="documents-modal__content-heading">Управление cookie</h3>
+              <h3 className="documents-modal__content-heading">2. Виды используемых cookie</h3>
               <p className="documents-modal__content-text">
-                Вы можете управлять настройками cookie через настройки вашего браузера или устройства. Обратите внимание, что отключение 
-                некоторых типов cookie может повлиять на функциональность Приложения.
+                <strong>2.1. Строго необходимые</strong> — обеспечивают базовую работу Сайта (авторизация, корзина заказов), не требуют согласия (примеры: session_id, csrf_token).
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>2.2. Функциональные</strong> — сохраняют настройки (предпочтения по кухне, локации), требуют согласия (примеры: user_prefs, location).
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>2.3. Аналитические</strong> — собирают анонимизированную статистику (Яндекс.Метрика, Google Analytics), требуют согласия (примеры: _ga, ym_uid).
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>2.4. Маркетинговые</strong> — персонализируют рекламу акций от партнёров-ресторанов, требуют согласия (примеры: ad_id, targeting).
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">3. Цели использования</h3>
+              <p className="documents-modal__content-text">
+                <strong>3.1.</strong> Обеспечение функциональности Сайта и персонализация предложений для снижения пищевых отходов.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>3.2.</strong> Анализ трафика и поведения Пользователей для оптимизации платформы и выгоды бизнеса партнёров.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>3.3.</strong> Предотвращение мошенничества и обеспечение безопасности.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>3.4.</strong> Третьи лица (аналитические сервисы) устанавливают cookie только с Вашего согласия.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">4. Сроки хранения</h3>
+              <p className="documents-modal__content-text">
+                <strong>4.1.</strong> Сессионные cookie: до закрытия браузера.
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>4.2.</strong> Постоянные cookie: от 1 дня до 24 месяцев (аналитика — до 14 месяцев).
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">5. Права пользователя и управление cookie</h3>
+              <p className="documents-modal__content-text">
+                <strong>5.1.</strong> При первом посещении Сайта отображается баннер для получения согласия (кроме строго необходимых cookie).
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>5.2.</strong> Вы можете:
+              </p>
+              <ul className="documents-modal__content-list">
+                <li>отозвать согласие в любое время через настройки Сайта или баннер;</li>
+                <li>отключить cookie в браузере (инструкции: Chrome, Firefox, Safari);</li>
+                <li>удалить cookie вручную.</li>
+              </ul>
+              <p className="documents-modal__content-text">
+                <strong>5.3.</strong> Отключение cookie может ограничить функциональность Сайта (например, рекомендации акций).
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">6. Передача данных</h3>
+              <p className="documents-modal__content-text">
+                Cookie могут передаваться третьим лицам (Google, Яндекс) исключительно для указанных целей. Мы не продаём Ваши данные.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">7. Правовая основа и актуальность</h3>
+              <p className="documents-modal__content-text">
+                Настоящее Соглашение соответствует Федеральному закону № 152-ФЗ «О персональных данных» и GDPR (для пользователей ЕС). Мы оставляем за собой право вносить изменения; актуальная версия публикуется на Сайте.
+              </p>
+            </div>
+
+            <div className="documents-modal__content-section">
+              <h3 className="documents-modal__content-heading">8. Контакты</h3>
+              <p className="documents-modal__content-text">
+                По вопросам обращайтесь:
+              </p>
+              <p className="documents-modal__content-text">
+                <strong>Email:</strong> <a href="mailto:kindplate.io@mail.ru" className="documents-modal__content-link">kindplate.io@mail.ru</a>
+              </p>
+              <p className="documents-modal__content-text">
+                Ответ в течение 10 рабочих дней.
+              </p>
+              <p className="documents-modal__content-text" style={{ marginTop: '20px' }}>
+                <strong>Согласие подтверждено:</strong> Продолжением использования Сайта после ознакомления.
+              </p>
+              <p className="documents-modal__content-text">
+                Kindplate, 30 января 2026 г.
               </p>
             </div>
           </div>
