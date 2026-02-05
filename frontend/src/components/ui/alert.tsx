@@ -25,18 +25,23 @@ export function Alert({
     onDismiss?.();
   };
 
-  const getVariantClasses = () => {
+  const getAccentColor = () => {
     switch (variant) {
-      case 'success':
-        return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200';
-      case 'warning':
-        return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200';
-      case 'error':
-        return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200';
-      case 'info':
-        return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200';
-      default:
-        return 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200';
+      case 'success': return '#22C55E';
+      case 'warning': return '#F59E0B';
+      case 'error': return '#EF4444';
+      case 'info': return '#3B82F6';
+      default: return '#6B7280';
+    }
+  };
+
+  const getIconColor = () => {
+    switch (variant) {
+      case 'success': return 'text-green-400';
+      case 'warning': return 'text-yellow-400';
+      case 'error': return 'text-red-400';
+      case 'info': return 'text-blue-400';
+      default: return 'text-gray-400';
     }
   };
 
@@ -54,17 +59,18 @@ export function Alert({
   };
 
   const getIcon = () => {
+    const iconClass = `w-5 h-5 ${getIconColor()}`;
     switch (variant) {
       case 'success':
-        return <CheckCircle className="w-5 h-5" />;
+        return <CheckCircle className={iconClass} />;
       case 'warning':
-        return <AlertTriangle className="w-5 h-5" />;
+        return <AlertTriangle className={iconClass} />;
       case 'error':
-        return <AlertCircle className="w-5 h-5" />;
+        return <AlertCircle className={iconClass} />;
       case 'info':
-        return <Info className="w-5 h-5" />;
+        return <Info className={iconClass} />;
       default:
-        return <Info className="w-5 h-5" />;
+        return <Info className={iconClass} />;
     }
   };
 
@@ -72,20 +78,25 @@ export function Alert({
 
   return (
     <div
-      className={`flex items-start gap-3 border rounded-lg ${getVariantClasses()} ${getSizeClasses()} ${className}`}
+      className={`flex items-start gap-3 rounded-xl text-white ${getSizeClasses()} ${className}`}
+      style={{
+        background: 'linear-gradient(180deg, #1E293B 0%, #0F172A 100%)',
+        borderLeft: `4px solid ${getAccentColor()}`,
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+      }}
     >
       <div className="flex-shrink-0">
         {getIcon()}
       </div>
       
-      <div className="flex-1">
+      <div className="flex-1 text-white/90">
         {children}
       </div>
       
       {dismissible && (
         <button
           onClick={handleDismiss}
-          className="flex-shrink-0 text-current hover:opacity-75 transition-opacity"
+          className="flex-shrink-0 text-white/50 hover:text-white hover:bg-white/10 rounded-lg p-1 transition-all"
         >
           <X className="w-4 h-4" />
         </button>
@@ -188,18 +199,13 @@ export function AlertBanner({
     onDismiss?.();
   };
 
-  const getVariantClasses = () => {
+  const getAccentColor = () => {
     switch (variant) {
-      case 'success':
-        return 'bg-green-600 dark:bg-green-700 text-white';
-      case 'warning':
-        return 'bg-yellow-600 dark:bg-yellow-700 text-white';
-      case 'error':
-        return 'bg-red-600 dark:bg-red-700 text-white';
-      case 'info':
-        return 'bg-blue-600 dark:bg-blue-700 text-white';
-      default:
-        return 'bg-gray-600 dark:bg-gray-700 text-white';
+      case 'success': return '#22C55E';
+      case 'warning': return '#F59E0B';
+      case 'error': return '#EF4444';
+      case 'info': return '#3B82F6';
+      default: return '#6B7280';
     }
   };
 
@@ -207,7 +213,11 @@ export function AlertBanner({
 
   return (
     <div
-      className={`flex items-center justify-between px-4 py-3 ${getVariantClasses()} ${className}`}
+      className={`flex items-center justify-between px-4 py-3 text-white ${className}`}
+      style={{
+        background: 'linear-gradient(90deg, #1E293B 0%, #0F172A 100%)',
+        borderLeft: `4px solid ${getAccentColor()}`,
+      }}
     >
       <div className="flex items-center gap-3">
         {children}
@@ -216,7 +226,7 @@ export function AlertBanner({
       {dismissible && (
         <button
           onClick={handleDismiss}
-          className="flex-shrink-0 text-white hover:opacity-75 transition-opacity"
+          className="flex-shrink-0 text-white/50 hover:text-white hover:bg-white/10 rounded-lg p-1 transition-all"
         >
           <X className="w-4 h-4" />
         </button>
@@ -245,7 +255,7 @@ export function AlertToast({
   action,
   dismissible = true,
   onDismiss,
-  duration = 5000,
+  duration = 2500,
   className = ''
 }: AlertToastProps) {
   const [isVisible, setIsVisible] = React.useState(true);
@@ -266,18 +276,23 @@ export function AlertToast({
     onDismiss?.();
   };
 
-  const getVariantClasses = () => {
+  const getAccentColor = () => {
     switch (variant) {
-      case 'success':
-        return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200';
-      case 'warning':
-        return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200';
-      case 'error':
-        return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200';
-      case 'info':
-        return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200';
-      default:
-        return 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200';
+      case 'success': return '#22C55E';
+      case 'warning': return '#F59E0B';
+      case 'error': return '#EF4444';
+      case 'info': return '#3B82F6';
+      default: return '#6B7280';
+    }
+  };
+
+  const getIconColor = () => {
+    switch (variant) {
+      case 'success': return 'text-green-400';
+      case 'warning': return 'text-yellow-400';
+      case 'error': return 'text-red-400';
+      case 'info': return 'text-blue-400';
+      default: return 'text-gray-400';
     }
   };
 
@@ -285,18 +300,23 @@ export function AlertToast({
 
   return (
     <div
-      className={`flex items-start gap-3 p-4 border rounded-lg shadow-lg max-w-sm ${getVariantClasses()} ${className}`}
+      className={`flex items-start gap-3 p-4 rounded-2xl shadow-xl max-w-sm animate-in slide-in-from-top-2 fade-in duration-200 ${className}`}
+      style={{
+        background: 'linear-gradient(180deg, #1E293B 0%, #0F172A 100%)',
+        borderLeft: `4px solid ${getAccentColor()}`,
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      }}
     >
-      <div className="flex-shrink-0">
+      <div className={`flex-shrink-0 ${getIconColor()}`}>
         {children}
       </div>
       
       <div className="flex-1">
         {title && (
-          <h3 className="font-semibold mb-1">{title}</h3>
+          <h3 className="font-semibold mb-1 text-white">{title}</h3>
         )}
         {description && (
-          <p className="text-sm">{description}</p>
+          <p className="text-sm text-white/70">{description}</p>
         )}
         {action && (
           <div className="mt-2">
@@ -308,7 +328,7 @@ export function AlertToast({
       {dismissible && (
         <button
           onClick={handleDismiss}
-          className="flex-shrink-0 text-current hover:opacity-75 transition-opacity"
+          className="flex-shrink-0 text-white/50 hover:text-white hover:bg-white/10 rounded-lg p-1 transition-all"
         >
           <X className="w-4 h-4" />
         </button>

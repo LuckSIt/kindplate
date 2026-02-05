@@ -45,11 +45,44 @@ export const getImageURL = (path?: string) => {
     return `${base}${rel}`;
 };
 
-// Ключи для хранения токенов в cookies
+// Ключи для хранения токенов
 const ACCESS_TOKEN_KEY = "kp_access_token";
 const REFRESH_TOKEN_KEY = "kp_refresh_token";
 
-// Хелперы для работы с cookies (JS читает токены для заголовка Authorization)
+// ============================================================================
+// Гибридное хранилище: localStorage (основное) + cookies (fallback)
+// localStorage более надежен на iOS/мобильных PWA, cookies могут очищаться
+// ============================================================================
+
+// localStorage helpers
+const getFromStorage = (key: string): string | null => {
+    if (typeof window === "undefined") return null;
+    try {
+        return localStorage.getItem(key);
+    } catch {
+        return null;
+    }
+};
+
+const setToStorage = (key: string, value: string): void => {
+    if (typeof window === "undefined") return;
+    try {
+        localStorage.setItem(key, value);
+    } catch {
+        // localStorage может быть недоступен в некоторых режимах
+    }
+};
+
+const removeFromStorage = (key: string): void => {
+    if (typeof window === "undefined") return;
+    try {
+        localStorage.removeItem(key);
+    } catch {
+        // ignore
+    }
+};
+
+// Cookie helpers (для совместимости с httpOnly cookies от сервера)
 const getCookie = (name: string): string | null => {
     if (typeof document === "undefined") return null;
     const match = document.cookie.match(new RegExp("(?:^|;\\s*)" + name.replace(/[\\.*+?^${}()|[\]\\]/g, "\\$&") + "=([^;]*)"));
@@ -73,35 +106,69 @@ const deleteCookie = (name: string) => {
     document.cookie = name + "=; path=/; max-age=0";
 };
 
-// Срок жизни cookie: access — 7 дней (JWT живёт 1h, cookie держим дольше для удобства), refresh — 1 год (чтобы после закрытия вкладки/удаления из недавних не требовалась повторная авторизация)
+// Срок жизни cookie: access — 7 дней, refresh — 1 год
 const ACCESS_COOKIE_DAYS = 7;
 const REFRESH_COOKIE_DAYS = 365;
 
 export const tokenStorage = {
-    getAccessToken: () => (typeof window === "undefined" ? null : getCookie(ACCESS_TOKEN_KEY)),
+    getAccessToken: (): string | null => {
+        if (typeof window === "undefined") return null;
+        // Сначала проверяем localStorage, затем cookies
+        return getFromStorage(ACCESS_TOKEN_KEY) || getCookie(ACCESS_TOKEN_KEY);
+    },
     setAccessToken: (token?: string | null) => {
         if (typeof window === "undefined") return;
         if (!token) {
+            removeFromStorage(ACCESS_TOKEN_KEY);
             deleteCookie(ACCESS_TOKEN_KEY);
         } else {
+            // Сохраняем в оба хранилища для надежности
+            setToStorage(ACCESS_TOKEN_KEY, token);
             setCookie(ACCESS_TOKEN_KEY, token, ACCESS_COOKIE_DAYS);
         }
     },
-    getRefreshToken: () => (typeof window === "undefined" ? null : getCookie(REFRESH_TOKEN_KEY)),
+    getRefreshToken: (): string | null => {
+        if (typeof window === "undefined") return null;
+        // Сначала проверяем localStorage, затем cookies
+        return getFromStorage(REFRESH_TOKEN_KEY) || getCookie(REFRESH_TOKEN_KEY);
+    },
     setRefreshToken: (token?: string | null) => {
         if (typeof window === "undefined") return;
         if (!token) {
+            removeFromStorage(REFRESH_TOKEN_KEY);
             deleteCookie(REFRESH_TOKEN_KEY);
         } else {
+            // Сохраняем в оба хранилища для надежности
+            setToStorage(REFRESH_TOKEN_KEY, token);
             setCookie(REFRESH_TOKEN_KEY, token, REFRESH_COOKIE_DAYS);
         }
     },
     clear: () => {
         if (typeof window === "undefined") return;
+        removeFromStorage(ACCESS_TOKEN_KEY);
+        removeFromStorage(REFRESH_TOKEN_KEY);
         deleteCookie(ACCESS_TOKEN_KEY);
         deleteCookie(REFRESH_TOKEN_KEY);
+    },
+    // Миграция: если токены есть только в cookies, скопировать в localStorage
+    migrateFromCookies: () => {
+        if (typeof window === "undefined") return;
+        const accessFromCookie = getCookie(ACCESS_TOKEN_KEY);
+        const refreshFromCookie = getCookie(REFRESH_TOKEN_KEY);
+        
+        if (accessFromCookie && !getFromStorage(ACCESS_TOKEN_KEY)) {
+            setToStorage(ACCESS_TOKEN_KEY, accessFromCookie);
+        }
+        if (refreshFromCookie && !getFromStorage(REFRESH_TOKEN_KEY)) {
+            setToStorage(REFRESH_TOKEN_KEY, refreshFromCookie);
+        }
     }
 };
+
+// Запускаем миграцию при загрузке модуля
+if (typeof window !== "undefined") {
+    tokenStorage.migrateFromCookies();
+}
 
 const axiosInstance = axios.create({
     baseURL: getBaseURL(),

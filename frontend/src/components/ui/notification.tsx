@@ -18,20 +18,31 @@ const icons = {
 export function NotificationComponent({ notification, onRemove }: NotificationProps) {
   const Icon = icons[notification.type];
 
+  const getAccentColor = () => {
+    switch (notification.type) {
+      case 'success': return '#22C55E';
+      case 'error': return '#EF4444';
+      case 'warning': return '#F59E0B';
+      case 'info': return '#3B82F6';
+      default: return '#6B7280';
+    }
+  };
+
+  const accentColor = getAccentColor();
+
   return (
     <div 
       className="notification-toast animate-in slide-in-from-top-2 fade-in duration-200"
       style={{
         maxWidth: '400px',
         width: '100%',
-        backgroundColor: '#000019',
-        borderRadius: '12px',
+        background: 'linear-gradient(180deg, #1E293B 0%, #0F172A 100%)',
+        borderRadius: '16px',
         padding: '14px 16px',
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
         pointerEvents: 'auto',
         fontFamily: "'Montserrat Alternates', sans-serif",
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(8px)',
+        borderLeft: `4px solid ${accentColor}`,
         transform: 'translateZ(0)',
         willChange: 'transform, opacity',
       }}
@@ -40,31 +51,21 @@ export function NotificationComponent({ notification, onRemove }: NotificationPr
         {/* Icon */}
         <div style={{ 
           flexShrink: 0,
-          width: '24px',
-          height: '24px',
+          width: '32px',
+          height: '32px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          borderRadius: '10px',
+          backgroundColor: `${accentColor}20`,
         }}>
-          <div style={{
-            width: '20px',
-            height: '20px',
-            borderRadius: '50%',
-            border: '2px solid #FFFFFF',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'transparent'
-          }}>
-            <Icon 
-              style={{ 
-                width: '12px', 
-                height: '12px', 
-                color: '#FFFFFF',
-                strokeWidth: '3'
-              }} 
-            />
-          </div>
+          <Icon 
+            style={{ 
+              width: '18px', 
+              height: '18px', 
+              color: accentColor,
+            }} 
+          />
         </div>
         
         {/* Content */}
@@ -90,20 +91,20 @@ export function NotificationComponent({ notification, onRemove }: NotificationPr
             {notification.message}
           </p>
           {notification.action && (
-            <div style={{ marginTop: '12px' }}>
+            <div style={{ marginTop: '10px' }}>
               <button
                 onClick={notification.action.onClick}
                 style={{
-                  fontSize: '14px',
+                  fontSize: '13px',
                   fontWeight: 600,
-                  color: '#FFFFFF',
+                  color: accentColor,
                   background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
-                  textDecoration: 'underline',
-                  padding: 0
+                  padding: 0,
+                  transition: 'opacity 0.2s ease'
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
                 onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
               >
                 {notification.action.label}
@@ -117,21 +118,28 @@ export function NotificationComponent({ notification, onRemove }: NotificationPr
           <button
             onClick={() => onRemove(notification.id)}
             style={{
-              background: 'transparent',
+              background: 'rgba(255, 255, 255, 0.1)',
               border: 'none',
               cursor: 'pointer',
-              padding: '4px',
+              padding: '6px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#FFFFFF',
-              opacity: 0.8
+              color: 'rgba(255, 255, 255, 0.5)',
+              borderRadius: '8px',
+              transition: 'all 0.2s ease'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+              e.currentTarget.style.color = 'rgba(255, 255, 255, 0.9)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)';
+            }}
             aria-label="Закрыть"
           >
-            <X style={{ width: '18px', height: '18px' }} />
+            <X style={{ width: '14px', height: '14px' }} />
           </button>
         </div>
       </div>

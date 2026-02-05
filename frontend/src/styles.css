@@ -8425,14 +8425,14 @@ div.font-montserrat-alt,
   max-width: calc(100vw - 32px);
   width: 100%;
   padding: 16px 20px;
-  background-color: #000019;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  animation: fade-up 0.3s ease;
+  gap: 14px;
+  animation: slideInUp 0.3s ease-out;
 }
 
 @media (min-width: 480px) {
@@ -8440,8 +8440,8 @@ div.font-montserrat-alt,
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    max-width: 420px;
+    gap: 20px;
+    max-width: 440px;
     padding: 18px 24px;
   }
 }
@@ -8451,8 +8451,8 @@ div.font-montserrat-alt,
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 400;
   font-size: 13px;
-  line-height: 18px;
-  color: #D9D9D9;
+  line-height: 19px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .cookie-consent-banner__link {
@@ -8462,36 +8462,38 @@ div.font-montserrat-alt,
   font-family: inherit;
   font-size: inherit;
   font-weight: 600;
-  color: #D9D9D9;
-  text-decoration: underline;
+  color: #22C55E;
+  text-decoration: none;
   cursor: pointer;
   transition: opacity 0.2s ease;
 }
 
 .cookie-consent-banner__link:hover {
-  opacity: 0.85;
+  opacity: 0.8;
+  text-decoration: underline;
 }
 
 .cookie-consent-banner__btn {
-  padding: 10px 20px;
-  background-color: #D9D9D9;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
   border: none;
   border-radius: 12px;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
   font-size: 14px;
   line-height: 18px;
-  color: #000019;
+  color: #FFFFFF;
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
 }
 
 .cookie-consent-banner__btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
 }
 
 .cookie-consent-banner__btn:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }

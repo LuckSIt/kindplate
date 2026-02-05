@@ -42,40 +42,45 @@ export function NotificationItem({
   const getIcon = () => {
     switch (notification.type) {
       case 'success':
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
+        return <CheckCircle className="w-5 h-5 text-green-400" />;
       case 'error':
-        return <AlertCircle className="w-5 h-5 text-red-600" />;
+        return <AlertCircle className="w-5 h-5 text-red-400" />;
       case 'warning':
-        return <AlertTriangle className="w-5 h-5 text-yellow-600" />;
+        return <AlertTriangle className="w-5 h-5 text-yellow-400" />;
       case 'info':
-        return <Info className="w-5 h-5 text-blue-600" />;
+        return <Info className="w-5 h-5 text-blue-400" />;
       default:
-        return <Info className="w-5 h-5 text-gray-600" />;
+        return <Info className="w-5 h-5 text-gray-400" />;
     }
   };
 
-  const getBackgroundColor = () => {
+  const getBorderColor = () => {
     switch (notification.type) {
       case 'success':
-        return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
+        return '#22C55E';
       case 'error':
-        return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
+        return '#EF4444';
       case 'warning':
-        return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800';
+        return '#F59E0B';
       case 'info':
-        return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800';
+        return '#3B82F6';
       default:
-        return 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-800';
+        return '#6B7280';
     }
   };
 
   return (
     <div
-      className={`relative max-w-sm w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg border-l-4 ${getBackgroundColor()} transform transition-all duration-300 ease-in-out ${
+      className={`relative max-w-sm w-full rounded-2xl shadow-xl transform transition-all duration-300 ease-out ${
         isVisible && !isRemoving
-          ? 'translate-x-0 opacity-100'
-          : 'translate-x-full opacity-0'
+          ? 'translate-y-0 opacity-100'
+          : '-translate-y-4 opacity-0'
       } ${className}`}
+      style={{
+        background: 'linear-gradient(180deg, #1E293B 0%, #0F172A 100%)',
+        borderLeft: `4px solid ${getBorderColor()}`,
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+      }}
     >
       <div className="p-4">
         <div className="flex items-start">
@@ -83,11 +88,11 @@ export function NotificationItem({
             {getIcon()}
           </div>
           <div className="ml-3 w-0 flex-1">
-            <p className="text-sm font-medium text-gray-900 dark:text-white">
+            <p className="text-sm font-semibold text-white">
               {notification.title}
             </p>
             {notification.message && (
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+              <p className="mt-1 text-sm text-white/70">
                 {notification.message}
               </p>
             )}
@@ -95,7 +100,7 @@ export function NotificationItem({
           <div className="ml-4 flex-shrink-0 flex">
             <button
               onClick={handleRemove}
-              className="bg-white dark:bg-gray-800 rounded-md inline-flex text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              className="rounded-full p-1 inline-flex text-white/50 hover:text-white hover:bg-white/10 transition-all focus:outline-none"
             >
               <span className="sr-only">Закрыть</span>
               <X className="h-5 w-5" />
