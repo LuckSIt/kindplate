@@ -55,9 +55,13 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data, isLoading, isSuccess, isError } = useQuery<{ user: User; success: boolean } | { data: { user: User } }>({
         queryKey: ["auth"],
         queryFn: async () => {
-            // Логирование для отладки persistent login
-            const at = tokenStorage.getAccessToken();
-            const rt = tokenStorage.getRefreshToken();
+            // Ждём инициализации хранилища токенов (IndexedDB)
+            await tokenStorage.init();
+            
+            // Используем асинхронные геттеры для проверки всех источников (включая IndexedDB)
+            const at = await tokenStorage.getAccessTokenAsync();
+            const rt = await tokenStorage.getRefreshTokenAsync();
+            
             console.log('🔐 Auth check:', { 
                 hasAccessToken: !!at, 
                 hasRefreshToken: !!rt,
@@ -65,7 +69,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
             });
 
             const tryRefreshAndMe = async (): Promise<{ user: User; success: boolean } | null> => {
-                const refreshToken = tokenStorage.getRefreshToken();
+                const refreshToken = await tokenStorage.getRefreshTokenAsync();
                 console.log('🔄 Trying refresh...', { hasRefreshToken: !!refreshToken });
                 if (!refreshToken) {
                     console.log('❌ No refresh token available');

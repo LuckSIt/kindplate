@@ -48,13 +48,83 @@ export const getImageURL = (path?: string) => {
 // Ключи для хранения токенов
 const ACCESS_TOKEN_KEY = "kp_access_token";
 const REFRESH_TOKEN_KEY = "kp_refresh_token";
+const IDB_STORE_NAME = "tokens";
+const IDB_DB_NAME = "kindplate_auth";
 
 // ============================================================================
-// Гибридное хранилище: localStorage (основное) + cookies (fallback)
-// localStorage более надежен на iOS/мобильных PWA, cookies могут очищаться
+// Тройное хранилище: IndexedDB (основное для PWA) + localStorage + cookies
+// IndexedDB наиболее надёжно на iOS PWA, localStorage и cookies могут очищаться
 // ============================================================================
 
-// localStorage helpers
+// IndexedDB helpers - более надёжное хранилище для iOS PWA
+let idbPromise: Promise<IDBDatabase> | null = null;
+
+const openIDB = (): Promise<IDBDatabase> => {
+    if (typeof window === "undefined" || !window.indexedDB) {
+        return Promise.reject(new Error("IndexedDB not available"));
+    }
+    if (idbPromise) return idbPromise;
+    
+    idbPromise = new Promise((resolve, reject) => {
+        const request = indexedDB.open(IDB_DB_NAME, 1);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result);
+        request.onupgradeneeded = (event) => {
+            const db = (event.target as IDBOpenDBRequest).result;
+            if (!db.objectStoreNames.contains(IDB_STORE_NAME)) {
+                db.createObjectStore(IDB_STORE_NAME);
+            }
+        };
+    });
+    return idbPromise;
+};
+
+const getFromIDB = async (key: string): Promise<string | null> => {
+    try {
+        const db = await openIDB();
+        return new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE_NAME, "readonly");
+            const store = tx.objectStore(IDB_STORE_NAME);
+            const request = store.get(key);
+            request.onsuccess = () => resolve(request.result || null);
+            request.onerror = () => resolve(null);
+        });
+    } catch {
+        return null;
+    }
+};
+
+const setToIDB = async (key: string, value: string): Promise<void> => {
+    try {
+        const db = await openIDB();
+        return new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE_NAME, "readwrite");
+            const store = tx.objectStore(IDB_STORE_NAME);
+            store.put(value, key);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => resolve();
+        });
+    } catch {
+        // ignore
+    }
+};
+
+const removeFromIDB = async (key: string): Promise<void> => {
+    try {
+        const db = await openIDB();
+        return new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE_NAME, "readwrite");
+            const store = tx.objectStore(IDB_STORE_NAME);
+            store.delete(key);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => resolve();
+        });
+    } catch {
+        // ignore
+    }
+};
+
+// localStorage helpers (синхронные, для быстрого доступа)
 const getFromStorage = (key: string): string | null => {
     if (typeof window === "undefined") return null;
     try {
@@ -110,64 +180,158 @@ const deleteCookie = (name: string) => {
 const ACCESS_COOKIE_DAYS = 7;
 const REFRESH_COOKIE_DAYS = 365;
 
+// Кэш токенов в памяти для синхронного доступа
+let cachedAccessToken: string | null = null;
+let cachedRefreshToken: string | null = null;
+
 export const tokenStorage = {
+    // Синхронный геттер (использует кэш и localStorage)
     getAccessToken: (): string | null => {
         if (typeof window === "undefined") return null;
-        // Сначала проверяем localStorage, затем cookies
-        return getFromStorage(ACCESS_TOKEN_KEY) || getCookie(ACCESS_TOKEN_KEY);
+        // Сначала кэш, затем localStorage, затем cookies
+        const token = cachedAccessToken || getFromStorage(ACCESS_TOKEN_KEY) || getCookie(ACCESS_TOKEN_KEY);
+        if (token && !cachedAccessToken) {
+            cachedAccessToken = token;
+        }
+        return token;
     },
+    
+    // Асинхронный геттер (проверяет IndexedDB если синхронные источники пусты)
+    getAccessTokenAsync: async (): Promise<string | null> => {
+        if (typeof window === "undefined") return null;
+        // Сначала синхронные источники
+        let token = cachedAccessToken || getFromStorage(ACCESS_TOKEN_KEY) || getCookie(ACCESS_TOKEN_KEY);
+        // Если нет - проверяем IndexedDB
+        if (!token) {
+            token = await getFromIDB(ACCESS_TOKEN_KEY);
+            if (token) {
+                console.log('🔄 Restored access token from IndexedDB');
+                // Восстанавливаем в другие хранилища
+                cachedAccessToken = token;
+                setToStorage(ACCESS_TOKEN_KEY, token);
+            }
+        }
+        if (token) cachedAccessToken = token;
+        return token;
+    },
+    
     setAccessToken: (token?: string | null) => {
         if (typeof window === "undefined") return;
         if (!token) {
+            cachedAccessToken = null;
             removeFromStorage(ACCESS_TOKEN_KEY);
             deleteCookie(ACCESS_TOKEN_KEY);
+            removeFromIDB(ACCESS_TOKEN_KEY);
         } else {
-            // Сохраняем в оба хранилища для надежности
+            cachedAccessToken = token;
+            // Сохраняем во все хранилища для максимальной надёжности
             setToStorage(ACCESS_TOKEN_KEY, token);
             setCookie(ACCESS_TOKEN_KEY, token, ACCESS_COOKIE_DAYS);
+            setToIDB(ACCESS_TOKEN_KEY, token); // async, fire-and-forget
         }
     },
+    
     getRefreshToken: (): string | null => {
         if (typeof window === "undefined") return null;
-        // Сначала проверяем localStorage, затем cookies
-        return getFromStorage(REFRESH_TOKEN_KEY) || getCookie(REFRESH_TOKEN_KEY);
+        const token = cachedRefreshToken || getFromStorage(REFRESH_TOKEN_KEY) || getCookie(REFRESH_TOKEN_KEY);
+        if (token && !cachedRefreshToken) {
+            cachedRefreshToken = token;
+        }
+        return token;
     },
+    
+    getRefreshTokenAsync: async (): Promise<string | null> => {
+        if (typeof window === "undefined") return null;
+        let token = cachedRefreshToken || getFromStorage(REFRESH_TOKEN_KEY) || getCookie(REFRESH_TOKEN_KEY);
+        if (!token) {
+            token = await getFromIDB(REFRESH_TOKEN_KEY);
+            if (token) {
+                console.log('🔄 Restored refresh token from IndexedDB');
+                cachedRefreshToken = token;
+                setToStorage(REFRESH_TOKEN_KEY, token);
+            }
+        }
+        if (token) cachedRefreshToken = token;
+        return token;
+    },
+    
     setRefreshToken: (token?: string | null) => {
         if (typeof window === "undefined") return;
         if (!token) {
+            cachedRefreshToken = null;
             removeFromStorage(REFRESH_TOKEN_KEY);
             deleteCookie(REFRESH_TOKEN_KEY);
+            removeFromIDB(REFRESH_TOKEN_KEY);
         } else {
-            // Сохраняем в оба хранилища для надежности
+            cachedRefreshToken = token;
             setToStorage(REFRESH_TOKEN_KEY, token);
             setCookie(REFRESH_TOKEN_KEY, token, REFRESH_COOKIE_DAYS);
+            setToIDB(REFRESH_TOKEN_KEY, token); // async, fire-and-forget
         }
     },
+    
     clear: () => {
         if (typeof window === "undefined") return;
+        cachedAccessToken = null;
+        cachedRefreshToken = null;
         removeFromStorage(ACCESS_TOKEN_KEY);
         removeFromStorage(REFRESH_TOKEN_KEY);
         deleteCookie(ACCESS_TOKEN_KEY);
         deleteCookie(REFRESH_TOKEN_KEY);
+        removeFromIDB(ACCESS_TOKEN_KEY);
+        removeFromIDB(REFRESH_TOKEN_KEY);
     },
-    // Миграция: если токены есть только в cookies, скопировать в localStorage
-    migrateFromCookies: () => {
+    
+    // Инициализация: восстанавливаем токены из всех источников
+    init: async () => {
         if (typeof window === "undefined") return;
-        const accessFromCookie = getCookie(ACCESS_TOKEN_KEY);
-        const refreshFromCookie = getCookie(REFRESH_TOKEN_KEY);
+        console.log('🔄 TokenStorage init...');
         
-        if (accessFromCookie && !getFromStorage(ACCESS_TOKEN_KEY)) {
-            setToStorage(ACCESS_TOKEN_KEY, accessFromCookie);
+        // Проверяем все источники и синхронизируем
+        const sources = {
+            localStorage: {
+                access: getFromStorage(ACCESS_TOKEN_KEY),
+                refresh: getFromStorage(REFRESH_TOKEN_KEY)
+            },
+            cookies: {
+                access: getCookie(ACCESS_TOKEN_KEY),
+                refresh: getCookie(REFRESH_TOKEN_KEY)
+            },
+            indexedDB: {
+                access: await getFromIDB(ACCESS_TOKEN_KEY),
+                refresh: await getFromIDB(REFRESH_TOKEN_KEY)
+            }
+        };
+        
+        console.log('📦 Token sources:', {
+            localStorage: { hasAccess: !!sources.localStorage.access, hasRefresh: !!sources.localStorage.refresh },
+            cookies: { hasAccess: !!sources.cookies.access, hasRefresh: !!sources.cookies.refresh },
+            indexedDB: { hasAccess: !!sources.indexedDB.access, hasRefresh: !!sources.indexedDB.refresh }
+        });
+        
+        // Берём токен из первого доступного источника и синхронизируем
+        const accessToken = sources.localStorage.access || sources.cookies.access || sources.indexedDB.access;
+        const refreshToken = sources.localStorage.refresh || sources.cookies.refresh || sources.indexedDB.refresh;
+        
+        if (accessToken) {
+            cachedAccessToken = accessToken;
+            if (!sources.localStorage.access) setToStorage(ACCESS_TOKEN_KEY, accessToken);
+            if (!sources.indexedDB.access) setToIDB(ACCESS_TOKEN_KEY, accessToken);
         }
-        if (refreshFromCookie && !getFromStorage(REFRESH_TOKEN_KEY)) {
-            setToStorage(REFRESH_TOKEN_KEY, refreshFromCookie);
+        
+        if (refreshToken) {
+            cachedRefreshToken = refreshToken;
+            if (!sources.localStorage.refresh) setToStorage(REFRESH_TOKEN_KEY, refreshToken);
+            if (!sources.indexedDB.refresh) setToIDB(REFRESH_TOKEN_KEY, refreshToken);
         }
+        
+        console.log('✅ TokenStorage ready:', { hasAccess: !!accessToken, hasRefresh: !!refreshToken });
     }
 };
 
-// Запускаем миграцию при загрузке модуля
+// Запускаем инициализацию при загрузке модуля
 if (typeof window !== "undefined") {
-    tokenStorage.migrateFromCookies();
+    tokenStorage.init().catch(console.error);
 }
 
 const axiosInstance = axios.create({
