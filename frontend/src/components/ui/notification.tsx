@@ -20,17 +20,20 @@ export function NotificationComponent({ notification, onRemove }: NotificationPr
 
   return (
     <div 
-      className="notification-toast"
+      className="notification-toast animate-in slide-in-from-top-2 fade-in duration-200"
       style={{
         maxWidth: '400px',
         width: '100%',
         backgroundColor: '#000019',
         borderRadius: '12px',
-        padding: '16px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+        padding: '14px 16px',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
         pointerEvents: 'auto',
         fontFamily: "'Montserrat Alternates', sans-serif",
         border: '1px solid rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(8px)',
+        transform: 'translateZ(0)',
+        willChange: 'transform, opacity',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>

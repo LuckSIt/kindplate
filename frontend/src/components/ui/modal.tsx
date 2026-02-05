@@ -78,12 +78,12 @@ export function Modal({
 
   return (
     <div
-      className={`fixed inset-0 z-50 overflow-y-auto ${isVisible ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
+      className={`fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm ${isVisible ? 'opacity-100' : 'opacity-0'} transition-all duration-200`}
       onClick={handleOverlayClick}
     >
       <div className="flex min-h-full items-center justify-center p-4">
         <div
-          className={`relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full ${getSizeClasses()} ${className}`}
+          className={`relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full transform ${isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-2'} transition-all duration-200 ease-out ${getSizeClasses()} ${className}`}
         >
           {title && (
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">

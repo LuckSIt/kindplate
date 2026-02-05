@@ -30,8 +30,8 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
       notifications: [...state.notifications, newNotification]
     }));
 
-    // Автоматически удаляем уведомление через указанное время
-    const duration = notification.duration || 5000;
+    // Автоматически удаляем уведомление через указанное время (сокращено для лучшего UX)
+    const duration = notification.duration || 2500;
     setTimeout(() => {
       set((state) => ({
         notifications: state.notifications.filter(n => n.id !== id)
@@ -66,7 +66,7 @@ export const notify = {
       type: 'error',
       title,
       message,
-      duration: 8000, // Ошибки показываем дольше
+      duration: 4000, // Ошибки показываем чуть дольше
       ...options
     });
   },

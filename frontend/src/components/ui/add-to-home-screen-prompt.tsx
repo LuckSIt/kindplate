@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Smartphone, Download, Share2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { X, Share, Plus, MoreVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const STORAGE_KEY = 'add-to-home-screen-dismissed';
@@ -114,112 +113,178 @@ export function AddToHomeScreenPrompt({ className }: AddToHomeScreenPromptProps)
     <>
       {/* Backdrop для затемнения фона */}
       <div 
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in duration-300"
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9998] animate-in fade-in duration-200"
         onClick={handleDismiss}
         aria-hidden="true"
       />
       
       <div
         className={cn(
-          'fixed bottom-4 left-4 right-4 z-50 animate-in slide-in-from-bottom-5 duration-300',
-          'md:left-auto md:right-4 md:max-w-md',
+          'fixed bottom-0 left-0 right-0 z-[9999] animate-in slide-in-from-bottom duration-300 ease-out',
+          'safe-area-bottom',
           className
         )}
       >
-        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-200 dark:border-gray-700 p-5">
+        <div 
+          className="mx-3 mb-3 rounded-2xl overflow-hidden"
+          style={{
+            background: 'linear-gradient(180deg, #1E293B 0%, #0F172A 100%)',
+            boxShadow: '0 -4px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.08)',
+          }}
+        >
+          {/* Handle indicator */}
+          <div className="flex justify-center pt-3 pb-1">
+            <div className="w-10 h-1 rounded-full bg-white/20" />
+          </div>
+
           {/* Header */}
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3 flex-1">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                <Smartphone className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="font-bold text-lg leading-tight text-gray-900 dark:text-white">
-                  Добавьте KindPlate на главный экран
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mt-0.5">
-                  Быстрый доступ без браузера
-                </p>
-              </div>
+          <div className="px-5 pt-2 pb-4">
+            <div className="flex items-center justify-between">
+              <h3 
+                className="text-white font-semibold"
+                style={{ fontSize: '17px', letterSpacing: '-0.2px' }}
+              >
+                Добавьте KindPlate на главный экран
+              </h3>
+              <button
+                onClick={handleDismiss}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 text-white/60 hover:bg-white/20 hover:text-white transition-all active:scale-95"
+                aria-label="Закрыть"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-            <button
-              onClick={handleDismiss}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-1 -mt-1 -mr-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-              aria-label="Закрыть"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <p className="text-white/50 mt-1" style={{ fontSize: '13px' }}>
+              Быстрый доступ без браузера
+            </p>
           </div>
 
           {/* Instructions */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4 border border-gray-200 dark:border-gray-700">
+          <div className="px-5 pb-5">
             {isIOS ? (
-              <div className="space-y-3 text-sm">
-                <div className="flex items-start gap-3">
-                  <span className="font-bold text-green-600 dark:text-green-400 flex-shrink-0 text-base">1.</span>
-                  <span className="text-gray-700 dark:text-gray-200 leading-relaxed">
-                    Нажмите кнопку <Share2 className="w-4 h-4 inline-block mx-1 text-gray-600 dark:text-gray-400" /> внизу экрана
-                  </span>
+              <div className="space-y-4">
+                {/* Step 1 */}
+                <div className="flex items-center gap-4">
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(59, 130, 246, 0.15)' }}
+                  >
+                    <Share className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-white/90 text-sm leading-snug">
+                      Нажмите кнопку <span className="text-blue-400 font-medium">«Поделиться»</span> внизу экрана
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="font-bold text-green-600 dark:text-green-400 flex-shrink-0 text-base">2.</span>
-                  <span className="text-gray-700 dark:text-gray-200 leading-relaxed">
-                    Выберите <strong className="text-gray-900 dark:text-white font-semibold">«На экран "Домой"»</strong>
-                  </span>
+
+                {/* Step 2 */}
+                <div className="flex items-center gap-4">
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(34, 197, 94, 0.15)' }}
+                  >
+                    <Plus className="w-5 h-5 text-green-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-white/90 text-sm leading-snug">
+                      Выберите <span className="text-white font-medium">«На экран Домой»</span>
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="font-bold text-green-600 dark:text-green-400 flex-shrink-0 text-base">3.</span>
-                  <span className="text-gray-700 dark:text-gray-200 leading-relaxed">
-                    Нажмите <strong className="text-gray-900 dark:text-white font-semibold">«Добавить»</strong>
-                  </span>
+
+                {/* Step 3 */}
+                <div className="flex items-center gap-4">
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white font-bold text-sm"
+                    style={{ background: 'rgba(34, 197, 94, 0.15)' }}
+                  >
+                    ✓
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-white/90 text-sm leading-snug">
+                      Нажмите <span className="text-white font-medium">«Добавить»</span>
+                    </p>
+                  </div>
                 </div>
               </div>
             ) : isAndroid ? (
-              <div className="space-y-3 text-sm">
-                <div className="flex items-start gap-3">
-                  <span className="font-bold text-green-600 dark:text-green-400 flex-shrink-0 text-base">1.</span>
-                  <span className="text-gray-700 dark:text-gray-200 leading-relaxed">
-                    Нажмите меню <span className="text-gray-900 dark:text-white font-bold text-lg">⋮</span> в правом верхнем углу браузера
-                  </span>
+              <div className="space-y-4">
+                {/* Step 1 */}
+                <div className="flex items-center gap-4">
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(156, 163, 175, 0.15)' }}
+                  >
+                    <MoreVertical className="w-5 h-5 text-gray-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-white/90 text-sm leading-snug">
+                      Нажмите <span className="text-white font-medium">меню ⋮</span> в углу браузера
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="font-bold text-green-600 dark:text-green-400 flex-shrink-0 text-base">2.</span>
-                  <span className="text-gray-700 dark:text-gray-200 leading-relaxed">
-                    Выберите <strong className="text-gray-900 dark:text-white font-semibold">«Добавить на главный экран»</strong> или <strong className="text-gray-900 dark:text-white font-semibold">«Установить приложение»</strong>
-                  </span>
+
+                {/* Step 2 */}
+                <div className="flex items-center gap-4">
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(34, 197, 94, 0.15)' }}
+                  >
+                    <Plus className="w-5 h-5 text-green-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-white/90 text-sm leading-snug">
+                      Выберите <span className="text-white font-medium">«Установить приложение»</span>
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="font-bold text-green-600 dark:text-green-400 flex-shrink-0 text-base">3.</span>
-                  <span className="text-gray-700 dark:text-gray-200 leading-relaxed">
-                    Подтвердите установку
-                  </span>
+
+                {/* Step 3 */}
+                <div className="flex items-center gap-4">
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-green-400 font-bold text-sm"
+                    style={{ background: 'rgba(34, 197, 94, 0.15)' }}
+                  >
+                    ✓
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-white/90 text-sm leading-snug">
+                      Подтвердите установку
+                    </p>
+                  </div>
                 </div>
               </div>
             ) : (
-              <div className="text-sm text-gray-700 dark:text-gray-200">
-                Откройте меню браузера и выберите <strong className="text-gray-900 dark:text-white font-semibold">«Добавить на главный экран»</strong>
-              </div>
+              <p className="text-white/90 text-sm">
+                Откройте меню браузера и выберите <span className="text-white font-medium">«Добавить на главный экран»</span>
+              </p>
             )}
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3">
-            <Button
+          <div className="px-5 pb-5 flex gap-3">
+            <button
               onClick={handleInstall}
-              className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 font-semibold shadow-lg"
-              size="sm"
+              className="flex-1 h-12 rounded-xl font-semibold text-white transition-all active:scale-[0.98]"
+              style={{
+                background: 'linear-gradient(135deg, #22C55E 0%, #16A34A 100%)',
+                boxShadow: '0 4px 16px rgba(34, 197, 94, 0.3)',
+                fontSize: '15px',
+              }}
             >
-              <Download className="w-4 h-4 mr-2" />
-              {isAndroid ? 'Установить' : 'Понятно'}
-            </Button>
-            <Button
+              {isAndroid ? 'Понятно' : 'Понятно'}
+            </button>
+            <button
               onClick={handleDismiss}
-              variant="outline"
-              className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium"
-              size="sm"
+              className="h-12 px-6 rounded-xl font-medium text-white/70 hover:text-white hover:bg-white/10 transition-all active:scale-[0.98]"
+              style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                fontSize: '15px',
+              }}
             >
               Позже
-            </Button>
+            </button>
           </div>
         </div>
       </div>

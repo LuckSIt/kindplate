@@ -298,6 +298,45 @@ span[style*="fontFamily"] {
   font-family: var(--font-display) !important;
 }
 
+/* Page transition animations */
+.page-enter {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.15s ease-in, transform 0.15s ease-in;
+}
+
+/* Плавная анимация появления контента страницы */
+.page-content {
+  animation: pageContentFadeIn 0.25s ease-out forwards;
+}
+
+@keyframes pageContentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Dark theme support */
 .dark body {
   background: #000019;
@@ -452,9 +491,83 @@ button:not(.font-montserrat-alt),
 .motion-tap { transition: transform var(--dur-fast) var(--ease-smooth); }
 .motion-tap:active { transform: scale(0.96); }
 
+/* Глобальные плавные переходы для интерактивных элементов */
+a, button, input, select, textarea, [role="button"] {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Плавные переходы для всех элементов с hover-эффектами */
+*:focus-visible {
+  outline: 2px solid rgba(0, 25, 0, 0.5);
+  outline-offset: 2px;
+  transition: outline-offset 0.15s ease;
+}
+
+/* Улучшенная анимация появления */
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInFromBottom {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up { animation: slideInUp 0.25s var(--ease-smooth) forwards; }
+.animate-slide-down { animation: slideInDown 0.25s var(--ease-smooth) forwards; }
+.animate-scale-in { animation: scaleIn 0.2s var(--ease-smooth) forwards; }
+.animate-slide-from-bottom { animation: slideInFromBottom 0.3s var(--ease-smooth) forwards; }
+
+/* Плавные переходы для карточек и списков */
+.smooth-appear {
+  animation: slideInUp 0.3s var(--ease-smooth) forwards;
+  animation-delay: calc(var(--index, 0) * 50ms);
+  opacity: 0;
+}
+
+/* Улучшенные hover-эффекты */
+.hover-lift {
+  transition: transform 0.2s var(--ease-smooth), box-shadow 0.2s var(--ease-smooth);
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+.hover-lift:active {
+  transform: translateY(0);
+}
+
+/* Плавный скролл */
+html {
+  scroll-behavior: smooth;
+}
+
+/* GPU-ускоренные анимации */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .motion-fade-in, .animate-fade-in { animation: none !important; }
-  .motion-scale-pop, .motion-tap { transition: none !important; }
+  .motion-fade-in, .animate-fade-in, .animate-slide-up, .animate-slide-down, 
+  .animate-scale-in, .animate-slide-from-bottom, .smooth-appear { 
+    animation: none !important; 
+    opacity: 1 !important;
+  }
+  .motion-scale-pop, .motion-tap, .hover-lift { transition: none !important; }
+  html { scroll-behavior: auto; }
 }
 
 /* Button styles */
@@ -1995,29 +2108,43 @@ button:not(.font-montserrat-alt),
 .businesses-list-page__business-card {
   width: 100%;
   background-color: #2B344D;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
   position: relative;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.2s ease;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .businesses-list-page__business-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.businesses-list-page__business-card:active {
+  transform: translateY(0) scale(0.99);
+  transition-duration: 0.1s;
 }
 
 .businesses-list-page__business-image {
   width: 100%;
   height: 200px;
   overflow: hidden;
-  border-radius: 10px 10px 0 0;
+  border-radius: 12px 12px 0 0;
 }
 
 .businesses-list-page__business-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.businesses-list-page__business-card:hover .businesses-list-page__business-image img {
+  transform: scale(1.05);
 }
 
 .businesses-list-page__favorite-button {
@@ -2962,6 +3089,14 @@ button:not(.font-montserrat-alt),
   border-radius: 20px;
   overflow: hidden;
   position: relative;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.vendor-page__offer-card:active {
+  transform: scale(0.98);
+  transition-duration: 0.1s;
 }
 
 .vendor-page__offer-image {

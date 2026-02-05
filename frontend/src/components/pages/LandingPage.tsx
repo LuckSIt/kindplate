@@ -347,7 +347,7 @@ export function LandingPage() {
                                                 background: "#FFFFFF",
                                                 boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
                                                 borderRadius: 16,
-                                                padding: "14px 18px",
+                                                padding: "5px 8px",
                                             }}
                                         >
                                             {/* Категория */}
@@ -357,7 +357,7 @@ export function LandingPage() {
                                                     fontSize: 13,
                                                     fontFamily: "Montserrat Alternates, sans-serif",
                                                     fontWeight: 500,
-                                                    marginBottom: 3,
+                                                    marginBottom: 0,
                                                     letterSpacing: "-0.2px",
                                                 }}
                                             >
@@ -365,7 +365,7 @@ export function LandingPage() {
                                             </div>
                                             
                                             {/* Название + скидка */}
-                                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 0 }}>
                                                 <span
                                                     style={{
                                                         color: "#1F2937",
