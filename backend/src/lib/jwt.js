@@ -5,9 +5,21 @@
 
 const crypto = require('crypto');
 
-// Secret key для подписи JWT (в production должен быть в .env)
-const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
-const JWT_SECRET_KEY = new TextEncoder().encode(JWT_SECRET);
+// Secret key для подписи JWT (ОБЯЗАТЕЛЬНО должен быть в .env для production!)
+// Если не установлен - токены будут инвалидироваться при каждом перезапуске сервера
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+    console.error('⚠️  КРИТИЧЕСКОЕ ПРЕДУПРЕЖДЕНИЕ: JWT_SECRET не установлен!');
+    console.error('   Токены будут инвалидироваться при каждом перезапуске сервера.');
+    console.error('   Установите JWT_SECRET в .env файле:');
+    console.error('   JWT_SECRET=' + crypto.randomBytes(32).toString('hex'));
+    console.error('');
+}
+
+// Fallback на случайный секрет (ТОЛЬКО для разработки, в production это вызовет проблемы!)
+const EFFECTIVE_JWT_SECRET = JWT_SECRET || crypto.randomBytes(32).toString('hex');
+const JWT_SECRET_KEY = new TextEncoder().encode(EFFECTIVE_JWT_SECRET);
 
 // Время жизни токенов: access 1h, refresh 90 дней — чтобы при обратном заходе после закрытия вкладки не требовалась повторная авторизация
 const ACCESS_TOKEN_EXPIRY = '1h';

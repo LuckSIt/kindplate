@@ -23,6 +23,7 @@ services:
       DB_PASSWORD: plate
       DB_PORT: 5432
       SECRET_KEY: ${SECRET_KEY}
+      JWT_SECRET: ${JWT_SECRET}
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-https://app-kindplate.ru}
     depends_on:
       - postgres
