@@ -343,10 +343,10 @@ export function LandingPage() {
                                                 left: "50%",
                                                 top: 310,
                                                 transform: "translateX(-50%)",
-                                                width: 240,
+                                                width: 260,
                                                 background: "#FFFFFF",
-                                                boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.12)",
-                                                borderRadius: 14,
+                                                boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                                                borderRadius: 16,
                                                 padding: "14px 18px",
                                             }}
                                         >
@@ -354,39 +354,41 @@ export function LandingPage() {
                                             <div
                                                 style={{
                                                     color: "#6B7280",
-                                                    fontSize: 12,
+                                                    fontSize: 13,
                                                     fontFamily: "Montserrat Alternates, sans-serif",
                                                     fontWeight: 500,
-                                                    marginBottom: 2,
+                                                    marginBottom: 3,
+                                                    letterSpacing: "-0.2px",
                                                 }}
                                             >
                                                 {currentItem.category}
                                             </div>
                                             
                                             {/* Название + скидка */}
-                                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                                                 <span
                                                     style={{
-                                                        color: "#000019",
-                                                        fontSize: 16,
+                                                        color: "#1F2937",
+                                                        fontSize: 18,
                                                         fontFamily: "Montserrat Alternates, sans-serif",
                                                         fontWeight: 700,
-                                                        lineHeight: "20px",
+                                                        lineHeight: "22px",
+                                                        letterSpacing: "-0.3px",
                                                     }}
                                                 >
                                                     {currentItem.name}
                                                 </span>
                                                 <span
                                                     style={{
-                                                        backgroundColor: "#FF6B35",
+                                                        backgroundColor: "#F97316",
                                                         color: "#FFFFFF",
-                                                        fontSize: 12,
+                                                        fontSize: 14,
                                                         fontFamily: "Montserrat Alternates, sans-serif",
                                                         fontWeight: 700,
-                                                        padding: "4px 8px",
-                                                        borderRadius: 6,
+                                                        padding: "6px 12px",
+                                                        borderRadius: "6px 14px 14px 6px",
                                                         whiteSpace: "nowrap",
-                                                        marginLeft: 8,
+                                                        marginLeft: 10,
                                                         flexShrink: 0,
                                                     }}
                                                 >
@@ -399,20 +401,22 @@ export function LandingPage() {
                                                 <span
                                                     style={{
                                                         color: "#9CA3AF",
-                                                        fontSize: 16,
+                                                        fontSize: 18,
                                                         fontFamily: "Montserrat Alternates, sans-serif",
                                                         fontWeight: 500,
                                                         textDecoration: "line-through",
+                                                        letterSpacing: "-0.3px",
                                                     }}
                                                 >
                                                     {currentItem.oldPrice}
                                                 </span>
                                                 <span
                                                     style={{
-                                                        color: "#000019",
-                                                        fontSize: 22,
+                                                        color: "#16A34A",
+                                                        fontSize: 28,
                                                         fontFamily: "Montserrat Alternates, sans-serif",
                                                         fontWeight: 700,
+                                                        letterSpacing: "-0.5px",
                                                     }}
                                                 >
                                                     {currentItem.price}
