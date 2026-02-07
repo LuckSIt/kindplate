@@ -267,9 +267,9 @@ export function LandingPage() {
                 {/* Phone Mockup Section with Product */}
                 <section className="px-[15px] pb-[30px]">
                     <div className="flex justify-center items-center">
-                        {/* Phone Frame - responsive, scales down on small screens */}
+                        {/* Phone Frame - responsive, auto height по контенту */}
                         <div 
-                            className="relative rounded-[30px] p-[14px] sm:p-[18px] mx-auto w-[85vw] max-w-[310px] aspect-[310/620]"
+                            className="relative rounded-[30px] p-[12px] sm:p-[16px] mx-auto w-[85vw] max-w-[310px]"
                             style={{ 
                                 backgroundColor: '#C8EBBB',
                                 overflow: 'hidden',
@@ -277,12 +277,12 @@ export function LandingPage() {
                         >
                             {/* Phone Screen — flex column: карта + подпись + кнопки */}
                             <div 
-                                className="w-full h-full rounded-[24px] overflow-hidden flex flex-col"
+                                className="w-full rounded-[20px] overflow-hidden flex flex-col"
                                 style={{ backgroundColor: '#C8EBBB' }}
                             >
                                 {/* Верхняя часть: карта + продукт */}
                                 <div 
-                                    className="flex-1 relative overflow-hidden min-h-0"
+                                    className="relative overflow-hidden w-full aspect-[1/1.15]"
                                     onTouchStart={onTouchStart}
                                     onTouchMove={onTouchMove}
                                     onTouchEnd={onTouchEnd}
