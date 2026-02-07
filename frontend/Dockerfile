@@ -7,7 +7,8 @@ RUN npm install
 COPY . ./
 
 # Build args для Vite переменных окружения
-ARG VITE_BACKEND_BASE_URL=https://api-kindplate.ru
+# /api — same-origin proxy через Caddy, решает проблему cookie на iOS PWA
+ARG VITE_BACKEND_BASE_URL=/api
 ARG VITE_VAPID_PUBLIC_KEY=
 
 # Передаём в ENV для использования в npm run build

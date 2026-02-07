@@ -431,10 +431,10 @@ axiosInstance.interceptors.response.use(
             error.message?.includes('ECONNREFUSED') ||
             !error.response;
 
-        // Авто-фолбэк: если локальный бэкенд недоступен, переключаемся на прод/резервный
+        // Авто-фолбэк: если текущий бэкенд недоступен, переключаемся на резервный
+        // Работает для: localhost → remote, /api → api-kindplate.ru
         if (
             isNetworkError &&
-            isLocalUrl(getBaseURL()) &&
             !config._retriedWithFallback
         ) {
             config._retriedWithFallback = true;
