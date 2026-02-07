@@ -269,23 +269,20 @@ export function LandingPage() {
                     <div className="flex justify-center items-center">
                         {/* Phone Frame - responsive, scales down on small screens */}
                         <div 
-                            className="relative rounded-[30px] p-[14px] sm:p-[18px] mx-auto w-[85vw] max-w-[310px] aspect-[310/580]"
+                            className="relative rounded-[30px] p-[14px] sm:p-[18px] mx-auto w-[85vw] max-w-[310px] aspect-[310/620]"
                             style={{ 
                                 backgroundColor: '#C8EBBB',
+                                overflow: 'hidden',
                             }}
                         >
-                            {/* Phone Screen */}
+                            {/* Phone Screen — flex column: карта + подпись + кнопки */}
                             <div 
-                                className="w-full h-full rounded-[24px] overflow-visible relative"
-                                style={{ 
-                                    backgroundColor: '#C8EBBB',
-                                    width: '100%',
-                                    height: '100%'
-                                }}
+                                className="w-full h-full rounded-[24px] overflow-hidden flex flex-col"
+                                style={{ backgroundColor: '#C8EBBB' }}
                             >
-                                {/* Product Image + карта СПб - Карусель */}
+                                {/* Верхняя часть: карта + продукт */}
                                 <div 
-                                    className="w-full h-[65%] relative overflow-visible"
+                                    className="flex-1 relative overflow-hidden min-h-0"
                                     onTouchStart={onTouchStart}
                                     onTouchMove={onTouchMove}
                                     onTouchEnd={onTouchEnd}
@@ -302,14 +299,13 @@ export function LandingPage() {
                                         style={{
                                             position: "absolute",
                                             left: "50%",
-                                            top: "50%",
-                                            transform: "translate(-50%, -50%) translateY(15%) scale(0.85)",
-                                            width: "90%",
+                                            top: "45%",
+                                            transform: "translate(-50%, -50%) scale(0.82)",
+                                            width: "88%",
                                             aspectRatio: "1",
                                             cursor: "grab"
                                         }}
                                     >
-                                        {/* Фото продукта с анимацией */}
                                         <div className="relative w-full h-full">
                                             {carouselItems.map((item, index) => (
                                                 <img
@@ -327,117 +323,106 @@ export function LandingPage() {
                                                 />
                                             ))}
                                         </div>
+                                    </div>
+                                </div>
 
-                                        {/* Подпись под продуктом */}
+                                {/* Подпись продукта */}
+                                <div className="px-[10px] pt-[6px]">
+                                    <div
+                                        className="transition-opacity duration-300"
+                                        style={{
+                                            background: "#FFFFFF",
+                                            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                                            borderRadius: 14,
+                                            padding: "5px 8px",
+                                        }}
+                                    >
+                                        {/* Категория */}
                                         <div
-                                            className="transition-opacity duration-300"
                                             style={{
-                                                position: "absolute",
-                                                left: "50%",
-                                                top: "105%",
-                                                transform: "translateX(-50%)",
-                                                width: "85%",
-                                                background: "#FFFFFF",
-                                                boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                                                borderRadius: 16,
-                                                padding: "5px 8px",
+                                                color: "#6B7280",
+                                                fontSize: 11,
+                                                fontFamily: "Montserrat Alternates, sans-serif",
+                                                fontWeight: 500,
+                                                marginBottom: 0,
+                                                letterSpacing: "-0.2px",
                                             }}
                                         >
-                                            {/* Категория */}
-                                            <div
+                                            {currentItem.category}
+                                        </div>
+                                        
+                                        {/* Название + скидка */}
+                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 0 }}>
+                                            <span
                                                 style={{
-                                                    color: "#6B7280",
-                                                    fontSize: 13,
+                                                    color: "#1F2937",
+                                                    fontSize: 15,
                                                     fontFamily: "Montserrat Alternates, sans-serif",
-                                                    fontWeight: 500,
-                                                    marginBottom: 0,
-                                                    letterSpacing: "-0.2px",
+                                                    fontWeight: 700,
+                                                    lineHeight: "20px",
+                                                    letterSpacing: "-0.3px",
                                                 }}
                                             >
-                                                {currentItem.category}
-                                            </div>
-                                            
-                                            {/* Название + скидка */}
-                                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 0 }}>
-                                                <span
-                                                    style={{
-                                                        color: "#1F2937",
-                                                        fontSize: 18,
-                                                        fontFamily: "Montserrat Alternates, sans-serif",
-                                                        fontWeight: 700,
-                                                        lineHeight: "22px",
-                                                        letterSpacing: "-0.3px",
-                                                    }}
-                                                >
-                                                    {currentItem.name}
-                                                </span>
-                                                <span
-                                                    style={{
-                                                        backgroundColor: "#F97316",
-                                                        color: "#FFFFFF",
-                                                        fontSize: 14,
-                                                        fontFamily: "Montserrat Alternates, sans-serif",
-                                                        fontWeight: 700,
-                                                        padding: "6px 12px",
-                                                        borderRadius: "6px 14px 14px 6px",
-                                                        whiteSpace: "nowrap",
-                                                        marginLeft: 10,
-                                                        flexShrink: 0,
-                                                    }}
-                                                >
-                                                    {currentItem.discount}
-                                                </span>
-                                            </div>
-                                            
-                                            {/* Цены */}
-                                            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-                                                <span
-                                                    style={{
-                                                        color: "#9CA3AF",
-                                                        fontSize: 18,
-                                                        fontFamily: "Montserrat Alternates, sans-serif",
-                                                        fontWeight: 500,
-                                                        textDecoration: "line-through",
-                                                        letterSpacing: "-0.3px",
-                                                    }}
-                                                >
-                                                    {currentItem.oldPrice}
-                                                </span>
-                                                <span
-                                                    style={{
-                                                        color: "#16A34A",
-                                                        fontSize: 28,
-                                                        fontFamily: "Montserrat Alternates, sans-serif",
-                                                        fontWeight: 700,
-                                                        letterSpacing: "-0.5px",
-                                                    }}
-                                                >
-                                                    {currentItem.price}
-                                                </span>
-                                            </div>
+                                                {currentItem.name}
+                                            </span>
+                                            <span
+                                                style={{
+                                                    backgroundColor: "#F97316",
+                                                    color: "#FFFFFF",
+                                                    fontSize: 12,
+                                                    fontFamily: "Montserrat Alternates, sans-serif",
+                                                    fontWeight: 700,
+                                                    padding: "4px 10px",
+                                                    borderRadius: "6px 14px 14px 6px",
+                                                    whiteSpace: "nowrap",
+                                                    marginLeft: 8,
+                                                    flexShrink: 0,
+                                                }}
+                                            >
+                                                {currentItem.discount}
+                                            </span>
+                                        </div>
+                                        
+                                        {/* Цены */}
+                                        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
+                                            <span
+                                                style={{
+                                                    color: "#9CA3AF",
+                                                    fontSize: 15,
+                                                    fontFamily: "Montserrat Alternates, sans-serif",
+                                                    fontWeight: 500,
+                                                    textDecoration: "line-through",
+                                                    letterSpacing: "-0.3px",
+                                                }}
+                                            >
+                                                {currentItem.oldPrice}
+                                            </span>
+                                            <span
+                                                style={{
+                                                    color: "#16A34A",
+                                                    fontSize: 22,
+                                                    fontFamily: "Montserrat Alternates, sans-serif",
+                                                    fontWeight: 700,
+                                                    letterSpacing: "-0.5px",
+                                                }}
+                                            >
+                                                {currentItem.price}
+                                            </span>
                                         </div>
                                     </div>
-
                                 </div>
-                                
-                                {/* Product Card */}
-                                <div 
-                                    className="absolute bottom-0 left-0 right-0 p-[15px] rounded-t-[20px]"
-                                    style={{ 
-                                        backgroundColor: 'transparent',
-                                        boxShadow: 'none',
-                                        bottom: '-6px'
-                                    }}
-                                >
-                                    <div className="flex items-center gap-[12px]">
+
+                                {/* Кнопки — внутри зелёной рамки */}
+                                <div className="px-[10px] py-[8px]">
+                                    <div className="flex items-center gap-[8px]">
                                         {/* Quantity Selector */}
                                         <div
                                             className="flex items-center"
                                             style={{ 
                                                 backgroundColor: '#F3F4F6',
-                                                borderRadius: 12,
-                                                padding: '8px 12px',
-                                                gap: '12px',
+                                                borderRadius: 10,
+                                                padding: '6px 10px',
+                                                gap: '10px',
                                                 boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
                                             }}
                                         >
@@ -445,22 +430,22 @@ export function LandingPage() {
                                                 className="flex items-center justify-center"
                                                 onClick={() => setQuantity(q => Math.max(1, q - 1))}
                                                 style={{ 
-                                                    width: 20,
-                                                    height: 20,
+                                                    width: 18,
+                                                    height: 18,
                                                     backgroundColor: 'transparent',
                                                     boxShadow: 'none',
                                                     cursor: 'pointer'
                                                 }}
                                             >
-                                                <span className="text-[14px] font-bold" style={{ color: '#000019' }}>-</span>
+                                                <span className="text-[13px] font-bold" style={{ color: '#000019' }}>-</span>
                                             </button>
                                             <span 
-                                                className="text-[14px] font-semibold text-center"
+                                                className="text-[13px] font-semibold text-center"
                                                 style={{ 
-                                                    minWidth: 24,
+                                                    minWidth: 20,
                                                     fontFamily: 'Montserrat Alternates, sans-serif',
                                                     color: '#000019',
-                                                    lineHeight: '18px'
+                                                    lineHeight: '16px'
                                                 }}
                                             >
                                                 {quantity}
@@ -469,18 +454,18 @@ export function LandingPage() {
                                                 className="flex items-center justify-center"
                                                 onClick={() => setQuantity(q => q + 1)}
                                                 style={{ 
-                                                    width: 20,
-                                                    height: 20,
+                                                    width: 18,
+                                                    height: 18,
                                                     backgroundColor: 'transparent',
                                                     boxShadow: 'none',
                                                     cursor: 'pointer'
                                                 }}
                                             >
-                                                <span className="text-[14px] font-bold" style={{ color: '#000019' }}>+</span>
+                                                <span className="text-[13px] font-bold" style={{ color: '#000019' }}>+</span>
                                             </button>
                                         </div>
                                         <button 
-                                            className="flex-1 h-[36px] rounded-[8px] text-[12px] font-semibold transition-opacity hover:opacity-90"
+                                            className="flex-1 h-[32px] rounded-[8px] text-[11px] font-semibold transition-opacity hover:opacity-90"
                                             style={{ 
                                                 backgroundColor: '#000019',
                                                 color: '#FFFFFF',
