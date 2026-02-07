@@ -157,7 +157,7 @@ export function NotificationContainer() {
       aria-live="assertive"
       style={{
         position: 'fixed',
-        top: '16px',
+        top: 'calc(16px + env(safe-area-inset-top, 0px))',
         left: '16px',
         right: '16px',
         zIndex: 9999,

@@ -5,12 +5,10 @@ export const Route = createFileRoute("/auth")({
 });
 
 function RouteComponent() {
-    // Редиректим на страницу входа, если пользователь зашел на /
+    // Прозрачная обёртка — login/register имеют свои полноэкранные layouts
     return (
-        <div className="w-full h-[100vh] flex justify-center items-center bg-gray-300">
-            <div className="max-w-[400px] w-full bg-gray-200 p-5 rounded-xl shadow-lg mt-[-150px]">
-                <Outlet />
-            </div>
+        <div className="w-full min-h-full">
+            <Outlet />
         </div>
     )
 }

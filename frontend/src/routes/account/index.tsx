@@ -791,7 +791,7 @@ function RouteComponent() {
     return (
         <div className="w-full mx-auto bg-[#000019] flex flex-col items-center" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
             {/* Информация о клиенте */}
-            <div className="w-[350px] h-[50px] rounded-[15px] bg-[#D9D9D9] flex items-center mt-[64px] px-[14px] py-[7px]">
+            <div className="w-full max-w-[350px] h-[50px] rounded-[15px] bg-[#D9D9D9] flex items-center mt-[64px] mx-4 px-[14px] py-[7px]">
                 {/* Avatar */}
                 <div className="w-[40px] h-[40px] overflow-hidden flex items-center justify-center flex-shrink-0">
                     <svg className="w-[32px] h-[32px] text-[#000019]" fill="currentColor" viewBox="0 0 24 24">
@@ -818,20 +818,20 @@ function RouteComponent() {
             </div>
 
             {/* Menu Options */}
-            <div className="mt-[27px] flex flex-col items-start w-[350px]">
+            <div className="mt-[27px] flex flex-col items-start w-full max-w-[350px] px-4 sm:px-0">
                 {/* Main Menu Card */}
-                <div className="relative w-[350px] h-[360px] rounded-[15px] border border-white bg-[#000019]">
+                <div className="w-full rounded-[15px] border border-white bg-[#000019] flex flex-col divide-y divide-white/30">
                     {/* Избранное */}
                     <button 
                         onClick={() => setShowFavorites(true)}
-                        className="absolute top-[12px] left-[23px] flex items-center w-[301px] h-[50px]"
+                        className="flex items-center w-full px-[20px] py-[12px]"
                     >
                         <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[20px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>
                         </div>
-                        <div className="ml-[14px] text-[16px] font-semibold text-white leading-[20px] flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Избранное</div>
+                        <div className="ml-[14px] text-[16px] font-semibold text-white leading-[20px]" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Избранное</div>
                         <div className="w-[30px] h-[30px] ml-auto flex justify-end items-center">
                             <svg className="w-[15px] h-[30px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -839,20 +839,17 @@ function RouteComponent() {
                         </div>
                     </button>
 
-                    {/* Разделитель */}
-                    <div className="absolute top-[73px] left-[14px] w-[323px] h-px" style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)' }}></div>
-
                     {/* История заказов */}
                     <button 
                         onClick={() => setShowOrders(true)}
-                        className="absolute top-[85px] left-[23px] flex items-center w-[301px] h-[50px]"
+                        className="flex items-center w-full px-[20px] py-[12px]"
                     >
                         <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[20px] h-[20px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <div className="ml-[14px] text-[16px] font-semibold text-white leading-[20px] flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>История заказов</div>
+                        <div className="ml-[14px] text-[16px] font-semibold text-white leading-[20px]" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>История заказов</div>
                         <div className="w-[30px] h-[30px] ml-auto flex justify-end items-center">
                             <svg className="w-[15px] h-[30px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -860,22 +857,18 @@ function RouteComponent() {
                         </div>
                     </button>
 
-                    {/* Разделитель */}
-                    <div className="absolute top-[145px] left-[14px] w-[323px] h-px" style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)' }}></div>
-
                     {/* Пищевые предпочтения */}
                     <button 
                         onClick={() => setShowDietPrefs(true)}
-                        className="absolute top-[158px] left-[23px] flex items-center w-[301px] h-[50px]"
+                        className="flex items-center w-full px-[20px] py-[12px]"
                     >
                         <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                         </div>
-                        <div className="ml-[14px] text-[16px] font-semibold text-white leading-[18px] flex-shrink-0 text-left" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
-                            <div>Пищевые</div>
-                            <div>предпочтения</div>
+                        <div className="ml-[14px] text-[16px] font-semibold text-white leading-[18px] text-left" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
+                            Пищевые предпочтения
                         </div>
                         <div className="w-[30px] h-[30px] ml-auto flex justify-end items-center">
                             <svg className="w-[15px] h-[30px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -884,20 +877,17 @@ function RouteComponent() {
                         </div>
                     </button>
 
-                    {/* Разделитель */}
-                    <div className="absolute top-[218px] left-[14px] w-[323px] h-px" style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)' }}></div>
-
                     {/* Уведомления */}
                     <button 
                         onClick={() => setShowSubscriptions(true)}
-                        className="absolute top-[230px] left-[23px] flex items-center w-[301px] h-[50px]"
+                        className="flex items-center w-full px-[20px] py-[12px]"
                     >
                         <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[16px] h-[20px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
                         </div>
-                        <div className="ml-[14px] text-[16px] font-semibold text-white leading-[20px] flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Уведомления</div>
+                        <div className="ml-[14px] text-[16px] font-semibold text-white leading-[20px]" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Уведомления</div>
                         <div className="w-[30px] h-[30px] ml-auto flex justify-end items-center">
                             <svg className="w-[15px] h-[30px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -905,30 +895,20 @@ function RouteComponent() {
                         </div>
                     </button>
 
-                    {/* Разделитель перед бизнес-панелью (только для бизнес-пользователя) */}
+                    {/* Панель управления бизнесом */}
                     {(() => {
                         const showBusinessPanel = user?.is_business === true;
-                        console.log('[Account] Should show business panel:', showBusinessPanel, 'user?.is_business:', user?.is_business, 'user:', user);
-                        return showBusinessPanel ? (
-                            <div className="absolute top-[290px] left-[14px] w-[323px] h-px" style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)' }}></div>
-                        ) : null;
-                    })()}
-
-                    {/* Панель управления бизнесом (пятая строка) */}
-                    {(() => {
-                        const showBusinessPanel = user?.is_business === true;
-                        console.log('[Account] Rendering business panel button:', showBusinessPanel, 'user?.is_business:', user?.is_business);
                         return showBusinessPanel ? (
                             <button 
                                 onClick={() => navigate({ to: "/panel" })}
-                                className="absolute top-[302px] left-[23px] flex items-center w-[301px] h-[50px]"
+                                className="flex items-center w-full px-[20px] py-[12px]"
                             >
                                 <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
                                     <svg className="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M3 11h18M3 15h18M7 7V5a2 2 0 012-2h6a2 2 0 012 2v2" />
                                     </svg>
                                 </div>
-                                <div className="ml-[14px] text-[16px] font-semibold text-white leading-[20px] flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
+                                <div className="ml-[14px] text-[16px] font-semibold text-white leading-[20px]" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
                                     Управление бизнесом
                                 </div>
                                 <div className="w-[30px] h-[30px] ml-auto flex justify-end items-center">
@@ -947,7 +927,7 @@ function RouteComponent() {
                         const telegramBotUrl = 'https://t.me/kindplatesupportbot';
                         window.open(telegramBotUrl, '_blank');
                     }}
-                    className="mt-[19px] flex items-center justify-between w-[324px] h-[24px]"
+                    className="mt-[19px] flex items-center justify-between w-full h-[24px]"
                 >
                     <div className="text-[15px] font-semibold text-white flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Служба поддержки</div>
                     <div className="w-[30px] h-[30px] flex justify-end items-center">
@@ -960,7 +940,7 @@ function RouteComponent() {
                 {/* Пригласить друзей */}
                 <button 
                     onClick={() => {}}
-                    className="mt-[10px] flex items-center justify-between w-[324px] h-[24px]"
+                    className="mt-[10px] flex items-center justify-between w-full h-[24px]"
                 >
                     <div className="text-[15px] font-semibold text-white flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>Пригласить друзей</div>
                     <div className="w-[30px] h-[30px] flex justify-end items-center">
@@ -973,7 +953,7 @@ function RouteComponent() {
                 {/* О нас */}
                 <button 
                     onClick={() => navigate({ to: "/about" as any })}
-                    className="mt-[9px] flex items-center justify-between w-[324px] h-[24px]"
+                    className="mt-[9px] flex items-center justify-between w-full h-[24px]"
                 >
                     <div className="text-[15px] font-semibold text-white flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>О нас</div>
                     <div className="w-[30px] h-[30px] flex justify-end items-center">
@@ -997,14 +977,10 @@ function RouteComponent() {
                     }}
                 >
                     {/* Два столбца: KindPlate и Нужна помощь? */}
-                    <div className="flex">
-                        {/* Левый столбец - KindPlate (x:26) */}
-                        <div 
-                            style={{ 
-                                marginLeft: "26px",
-                                width: "122px"
-                            }}
-                        >
+                    <div className="flex px-[26px] gap-[40px]">
+                        {/* Левый столбец - KindPlate */}
+                        <div className="flex-1 min-w-0">
+
                             <p 
                                 style={{ 
                                     fontFamily: 'Montserrat Alternates, sans-serif',
@@ -1085,13 +1061,9 @@ function RouteComponent() {
                             </a>
                         </div>
                         
-                        {/* Правый столбец - Нужна помощь? (x:208) */}
-                        <div 
-                            style={{ 
-                                marginLeft: "60px",
-                                width: "128px"
-                            }}
-                        >
+                        {/* Правый столбец - Нужна помощь? */}
+                        <div className="flex-1 min-w-0">
+
                             <p 
                                 style={{ 
                                     fontFamily: 'Montserrat Alternates, sans-serif',

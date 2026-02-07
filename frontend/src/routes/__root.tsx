@@ -347,8 +347,8 @@ function RootRoute() {
                                 className="w-full flex flex-col"
                                 style={{ 
                                     backgroundColor: '#000019',
-                                    height: 'var(--app-height, 100vh)',
-                                    maxHeight: 'var(--app-height, 100vh)',
+                                    height: 'var(--app-height, 100dvh)',
+                                    maxHeight: 'var(--app-height, 100dvh)',
                                     overflow: 'hidden'
                                 }}
                             >

@@ -131,23 +131,22 @@ export function LandingPage() {
             className="w-full overflow-y-auto overflow-x-hidden"
             style={{ 
                 backgroundColor: '#000019',
-                height: 'var(--app-height, 100vh)',
-                maxHeight: 'var(--app-height, 100vh)',
+                minHeight: '100dvh',
                 WebkitOverflowScrolling: 'touch',
                 overscrollBehavior: 'contain'
             }}
         >
-            {/* Mobile-first layout - single column */}
+            {/* Mobile-first layout - single column, adapts to all screen widths */}
             <div 
-                className="max-w-[375px] mx-auto w-full" 
+                className="w-full mx-auto max-w-[480px] sm:max-w-[640px] md:max-w-[768px]" 
                 style={{ 
                     backgroundColor: '#000019',
                     minHeight: '100%',
-                    paddingBottom: '24px'
+                    paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))'
                 }}
             >
                 {/* Header */}
-                <header className="px-[12px] pt-[14px] pb-0">
+                <header className="px-[12px] pb-0" style={{ paddingTop: 'calc(env(safe-area-inset-top, 14px) + 14px)' }}>
                     {/* Навбар из макета Figma (node 322-460) */}
                     <div
                         className="mx-auto flex h-[58px] w-full max-w-[780px] items-center justify-between rounded-[18px] px-[20px] shadow-[0_12px_26px_rgba(0,0,0,0.16)]"
@@ -185,10 +184,10 @@ export function LandingPage() {
                 {/* Hero Section */}
                 <section className="px-[15px] pt-[21px] pb-[20px]">
                     <div className="flex flex-col items-center text-center gap-[6px]">
-                        <div className="flex w-full max-w-[360px] md:max-w-[720px] flex-nowrap items-center justify-center gap-[10px] md:gap-[14px] text-[32px] leading-[38px] md:text-[44px] md:leading-[50px] text-white">
+                        <div className="flex w-full max-w-[360px] md:max-w-[720px] flex-nowrap items-center justify-center gap-[8px] sm:gap-[10px] md:gap-[14px] text-[26px] leading-[32px] sm:text-[32px] sm:leading-[38px] md:text-[44px] md:leading-[50px] text-white">
                             <span
                                 data-testid="hero-profitable"
-                                className="font-ramona inline-flex items-center justify-center rounded-full px-[16px] py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"
+                                className="font-ramona inline-flex items-center justify-center rounded-full px-[12px] py-[6px] sm:px-[16px] sm:py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"
                                 style={{ backgroundColor: '#001900' }}
                             >
                                 Выгодно
@@ -201,10 +200,10 @@ export function LandingPage() {
                             </span>
                         </div>
 
-                        <div className="flex w-full max-w-[360px] md:max-w-[720px] flex-nowrap items-center justify-center gap-[10px] md:gap-[14px] text-[32px] leading-[38px] md:text-[44px] md:leading-[50px] text-white">
+                        <div className="flex w-full max-w-[360px] md:max-w-[720px] flex-nowrap items-center justify-center gap-[8px] sm:gap-[10px] md:gap-[14px] text-[26px] leading-[32px] sm:text-[32px] sm:leading-[38px] md:text-[44px] md:leading-[50px] text-white">
                             <span
                                 data-testid="hero-useful"
-                                className="font-ramona inline-flex items-center justify-center rounded-full px-[16px] py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"
+                                className="font-ramona inline-flex items-center justify-center rounded-full px-[12px] py-[6px] sm:px-[16px] sm:py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"
                                 style={{ backgroundColor: '#001900' }}
                             >
                                 полезно
@@ -233,7 +232,7 @@ export function LandingPage() {
 
                 {/* CTA Buttons */}
                 <section className="pb-[40px] w-full flex justify-center">
-                    <div className="flex gap-[14px] justify-center px-[24px] w-full max-w-[375px]">
+                    <div className="flex gap-[14px] justify-center px-[24px] w-full max-w-[400px]">
                         <Link to="/auth/login" className="flex-1">
                             <button 
                                 className="w-full h-[38px] rounded-[26px] text-[13px] font-bold leading-[1.14] text-center transition-opacity hover:opacity-90 whitespace-nowrap"
@@ -268,15 +267,11 @@ export function LandingPage() {
                 {/* Phone Mockup Section with Product */}
                 <section className="px-[15px] pb-[30px]">
                     <div className="flex justify-center items-center">
-                        {/* Phone Frame */}
+                        {/* Phone Frame - responsive, scales down on small screens */}
                         <div 
-                            className="relative rounded-[30px] p-[18px] mx-auto"
+                            className="relative rounded-[30px] p-[14px] sm:p-[18px] mx-auto w-[85vw] max-w-[310px] aspect-[310/580]"
                             style={{ 
                                 backgroundColor: '#C8EBBB',
-                                width: '310px',
-                                height: '580px',
-                                minWidth: '310px',
-                                minHeight: '580px'
                             }}
                         >
                             {/* Phone Screen */}
@@ -308,9 +303,9 @@ export function LandingPage() {
                                             position: "absolute",
                                             left: "50%",
                                             top: "50%",
-                                            transform: "translate(-50%, -50%) translateY(45px) scale(0.85)",
-                                            width: 300,
-                                            height: 300,
+                                            transform: "translate(-50%, -50%) translateY(15%) scale(0.85)",
+                                            width: "90%",
+                                            aspectRatio: "1",
                                             cursor: "grab"
                                         }}
                                     >
@@ -321,10 +316,8 @@ export function LandingPage() {
                                                     key={item.id}
                                                     src={item.image}
                                                     alt={item.name}
-                                                    className="absolute inset-0 transition-all duration-500 ease-in-out"
+                                                    className="absolute inset-0 w-full h-full transition-all duration-500 ease-in-out"
                                                     style={{
-                                                        width: 300,
-                                                        height: 300,
                                                         borderRadius: "0",
                                                         objectFit: "cover",
                                                         opacity: index === currentSlide ? 1 : 0,
@@ -341,9 +334,9 @@ export function LandingPage() {
                                             style={{
                                                 position: "absolute",
                                                 left: "50%",
-                                                top: 310,
+                                                top: "105%",
                                                 transform: "translateX(-50%)",
-                                                width: 260,
+                                                width: "85%",
                                                 background: "#FFFFFF",
                                                 boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
                                                 borderRadius: 16,
@@ -505,7 +498,7 @@ export function LandingPage() {
 
                 {/* Blog Section — без больших отступов между надписью, картинкой и следующим блоком */}
                 <section className="px-[15px] pt-[48px] pb-[20px]">
-                    <div className="w-full max-w-[344px] mx-auto flex flex-col items-center gap-0">
+                    <div className="w-full max-w-[400px] mx-auto flex flex-col items-center gap-0">
                         <h2 
                             className="text-[32px] font-[700] leading-[1.2] text-center font-montserrat-alt"
                             style={{ color: '#FFFFFF', margin: 0 }}
@@ -805,24 +798,19 @@ export function LandingPage() {
                 {/* Footer - точное соответствие Figma node 35-753 */}
                 <footer className="px-0 pb-0">
                     <div
-                        className="relative"
+                        className="relative w-full"
                         style={{ 
                             backgroundColor: "#000019",
-                            width: "375px",
                             minHeight: "201px",
                             paddingTop: "10px",
-                            paddingBottom: "20px"
+                            paddingBottom: "calc(20px + env(safe-area-inset-bottom, 0px))"
                         }}
                     >
                         {/* Два столбца: KindPlate и Нужна помощь? */}
-                        <div className="flex">
-                            {/* Левый столбец - KindPlate (x:26) */}
-                            <div 
-                                style={{ 
-                                    marginLeft: "26px",
-                                    width: "122px"
-                                }}
-                            >
+                        <div className="flex px-[26px] gap-[40px]">
+                            {/* Левый столбец - KindPlate */}
+                            <div className="flex-1 min-w-0">
+
                                 <p 
                                     style={{ 
                                         fontFamily: 'Montserrat Alternates, sans-serif',
@@ -900,13 +888,9 @@ export function LandingPage() {
                                 </a>
                             </div>
                             
-                            {/* Правый столбец - Нужна помощь? (x:208) */}
-                            <div 
-                                style={{ 
-                                    marginLeft: "60px",
-                                    width: "128px"
-                                }}
-                            >
+                            {/* Правый столбец - Нужна помощь? */}
+                            <div className="flex-1 min-w-0">
+
                                 <p 
                                     style={{ 
                                         fontFamily: 'Montserrat Alternates, sans-serif',
@@ -954,7 +938,8 @@ export function LandingPage() {
                         {/* Социальные сети (x:27, y:101 - примерно 91px от начала контента) */}
                         <div 
                             style={{ 
-                                marginLeft: "27px",
+                                marginLeft: "26px",
+                                marginRight: "26px",
                                 marginTop: "13px"
                             }}
                         >

@@ -38,9 +38,17 @@ backend/uploads/
 
 # Testing
 coverage/
+frontend/playwright-report/
+frontend/test-results/
+
+# Temp files
+frontend/tmp/
 
 # PWA
 **/public/sw.js
 **/public/workbox-*.js
 **/dev-dist/
+
+# Cursor/IDE generated assets
+assets/
 

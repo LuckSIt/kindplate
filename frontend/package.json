@@ -9,7 +9,6 @@
     "serve": "vite preview",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "clear-cache": "node clear-cache.js",
     "generate-icons": "node scripts/generate-icons.js"
   },
   "overrides": {
