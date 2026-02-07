@@ -71,60 +71,57 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
             
             console.log('🔐 Auth check:', { hasAccessToken: !!at, hasRefreshToken: !!rt });
 
-            // 2. Если нет вообще никаких токенов — пользователь не залогинен
-            if (!at && !rt) {
-                console.log('❌ No tokens found, user not authenticated');
-                return { user: null, success: false };
-            }
-
-            // 3. Пробуем /auth/me с текущим access-токеном
-            try {
-                const response = await axiosInstance.get("/auth/me", {
-                    skipErrorNotification: true,
-                    params: { _t: Date.now() }
-                } as any);
-
-                const user = extractUser(response.data);
-                if (user) {
-                    console.log('✅ User authenticated:', user.email || user.id);
-                    return { user, success: true };
-                }
-            } catch (err: any) {
-                console.warn('⚠️ /auth/me failed:', err?.response?.status || err?.message);
-                // 401 уже обработан интерцептором (включая refresh).
-                // Если мы здесь — значит и refresh не помог.
-            }
-
-            // 4. /auth/me вернул user: null (200) — access-токен протух.
-            //    Пробуем явный refresh + повторный /auth/me
-            if (rt) {
-                console.log('🔄 Trying explicit refresh...');
+            // 2. Пробуем /auth/me с текущим access-токеном (если есть)
+            //    Даже без токенов в localStorage — session cookie или httpOnly cookie 
+            //    могут сработать (same-origin proxy через Caddy)
+            if (at) {
                 try {
-                    const r = await axiosInstance.post('/auth/refresh', { refreshToken: rt }, {
-                        skipErrorNotification: true
+                    const response = await axiosInstance.get("/auth/me", {
+                        skipErrorNotification: true,
+                        params: { _t: Date.now() }
                     } as any);
-                    if (r.data?.accessToken) {
-                        tokenStorage.setAccessToken(r.data.accessToken);
-                        tokenStorage.setRefreshToken(r.data.refreshToken);
-                        console.log('✅ Refresh successful, retrying /auth/me...');
 
-                        const me2 = await axiosInstance.get("/auth/me", {
-                            skipErrorNotification: true,
-                            params: { _t: Date.now() }
-                        } as any);
-                        const user = extractUser(me2.data);
-                        if (user) {
-                            console.log('✅ User authenticated after refresh:', user.email || user.id);
-                            return { user, success: true };
-                        }
+                    const user = extractUser(response.data);
+                    if (user) {
+                        console.log('✅ User authenticated:', user.email || user.id);
+                        return { user, success: true };
                     }
-                } catch (e: any) {
-                    console.error('❌ Refresh failed:', e?.response?.data || e?.message);
-                    // Не очищаем токены здесь — они могли быть уже очищены интерцептором
+                } catch (err: any) {
+                    console.warn('⚠️ /auth/me failed:', err?.response?.status || err?.message);
+                    // 401 уже обработан интерцептором (включая refresh).
                 }
             }
 
-            console.log('❌ All auth attempts exhausted');
+            // 3. Access-токен отсутствует или протух — пробуем refresh
+            //    Refresh token может быть в localStorage/IndexedDB или в httpOnly cookie
+            console.log('🔄 Trying refresh...', { hasClientRT: !!rt });
+            try {
+                const body = rt ? { refreshToken: rt } : {};
+                const r = await axiosInstance.post('/auth/refresh', body, {
+                    skipErrorNotification: true
+                } as any);
+                if (r.data?.accessToken) {
+                    tokenStorage.setAccessToken(r.data.accessToken);
+                    if (r.data.refreshToken) {
+                        tokenStorage.setRefreshToken(r.data.refreshToken);
+                    }
+                    console.log('✅ Refresh successful, retrying /auth/me...');
+
+                    const me2 = await axiosInstance.get("/auth/me", {
+                        skipErrorNotification: true,
+                        params: { _t: Date.now() }
+                    } as any);
+                    const user = extractUser(me2.data);
+                    if (user) {
+                        console.log('✅ User authenticated after refresh:', user.email || user.id);
+                        return { user, success: true };
+                    }
+                }
+            } catch (e: any) {
+                console.warn('⚠️ Refresh failed:', e?.response?.data || e?.message);
+            }
+
+            console.log('❌ All auth attempts exhausted — user not logged in');
             return { user: null, success: false };
         },
         retry: 1,              // Одна повторная попытка при сбое сети

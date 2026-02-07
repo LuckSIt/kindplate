@@ -3,7 +3,8 @@ import { notify } from "./notifications";
 import type { ApiResponse, ApiError } from "./types";
 
 const LOCAL_BASE_URL = "http://localhost:5000";
-const DEFAULT_REMOTE_BASE_URL = "https://api-kindplate.ru";
+// Same-origin proxy: /api на продакшене (решает проблему third-party cookies на iOS)
+const DEFAULT_REMOTE_BASE_URL = "/api";
 const envBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL?.trim();
 const envFallbackUrl = import.meta.env.VITE_BACKEND_FALLBACK_URL?.trim();
 
@@ -22,7 +23,7 @@ let currentBaseURL = (() => {
     return fallback;
 })();
 
-const fallbackBaseURL = envFallbackUrl || DEFAULT_REMOTE_BASE_URL;
+const fallbackBaseURL = envFallbackUrl || "https://api-kindplate.ru";
 
 const switchBaseURL = (nextBaseURL: string) => {
     if (!nextBaseURL || nextBaseURL === currentBaseURL) return;
@@ -479,39 +480,37 @@ axiosInstance.interceptors.response.use(
                 });
             }
 
+            // Пробуем refresh: из клиентского хранилища или через httpOnly cookie (same-origin)
             const rt = tokenStorage.getRefreshToken();
-            if (rt) {
-                isRefreshing = true;
-                return (async () => {
-                    try {
-                        console.log('🔄 Interceptor: refreshing token...');
-                        const r = await axiosInstance.post('/auth/refresh', { refreshToken: rt });
-                        const newAccessToken = r.data.accessToken;
-                        tokenStorage.setAccessToken(newAccessToken);
+            // Даже если rt нет в localStorage — httpOnly cookie может содержать refresh token
+            isRefreshing = true;
+            return (async () => {
+                try {
+                    console.log('🔄 Interceptor: refreshing token...', { hasClientRT: !!rt });
+                    const body = rt ? { refreshToken: rt } : {};
+                    const r = await axiosInstance.post('/auth/refresh', body);
+                    const newAccessToken = r.data.accessToken;
+                    tokenStorage.setAccessToken(newAccessToken);
+                    if (r.data.refreshToken) {
                         tokenStorage.setRefreshToken(r.data.refreshToken);
-                        isRefreshing = false;
-                        onTokenRefreshed(newAccessToken);
-                        cfg._hasRetriedRefresh = true;
-                        cfg.headers = cfg.headers || {};
-                        cfg.headers['Authorization'] = `Bearer ${newAccessToken}`;
-                        return axiosInstance.request(cfg);
-                    } catch {
-                        isRefreshing = false;
-                        onRefreshFailed();
-                        tokenStorage.clear();
-                        if (!skipNotification) {
-                            notify.error('Ошибка авторизации', 'Необходимо войти в систему');
-                            window.location.href = '/auth/login';
-                        }
-                        return Promise.reject(error);
                     }
-                })();
-            }
-
-            // Нет refresh-токена — сбрасываем
-            tokenStorage.clear();
-            if (!skipNotification) window.location.href = '/auth/login';
-            return Promise.reject(error);
+                    isRefreshing = false;
+                    onTokenRefreshed(newAccessToken);
+                    cfg._hasRetriedRefresh = true;
+                    cfg.headers = cfg.headers || {};
+                    cfg.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                    return axiosInstance.request(cfg);
+                } catch {
+                    isRefreshing = false;
+                    onRefreshFailed();
+                    tokenStorage.clear();
+                    if (!skipNotification) {
+                        notify.error('Ошибка авторизации', 'Необходимо войти в систему');
+                        window.location.href = '/auth/login';
+                    }
+                    return Promise.reject(error);
+                }
+            })();
         }
 
         // ============================================================

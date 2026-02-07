@@ -3,7 +3,20 @@
 }
 
 app-kindplate.ru {
-  reverse_proxy frontend:80
+  # API-запросы проксируем на бэкенд (same-origin — cookie работают на iOS!)
+  handle_path /api/* {
+    reverse_proxy backend:5000 {
+      header_up X-Forwarded-Proto {scheme}
+      header_up X-Forwarded-For {remote_host}
+      header_up X-Real-IP {remote_host}
+    }
+  }
+
+  # Всё остальное — фронтенд
+  handle {
+    reverse_proxy frontend:80
+  }
+
   encode gzip zstd
   header {
     Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"

@@ -216,7 +216,7 @@ html.landing-active body {
   overscroll-behavior: auto !important;
 }
 
-html.landing-active #root {
+html.landing-active #app {
   overflow: visible !important;
   height: auto !important;
   min-height: 100% !important;
@@ -466,7 +466,7 @@ img, video, svg {
 }
 
 /* Prevent horizontal overflow on ALL pages */
-body, #root {
+body, #app {
   overflow-x: hidden;
   width: 100%;
   max-width: 100vw;

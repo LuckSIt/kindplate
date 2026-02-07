@@ -131,9 +131,15 @@ export function LandingPage() {
             className="w-full overflow-y-auto overflow-x-hidden"
             style={{ 
                 backgroundColor: '#000019',
-                minHeight: '100dvh',
+                /* fixed + inset:0 гарантирует, что контейнер занимает весь экран
+                   без зависимости от html/body overflow:hidden и --app-height */
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 1,
                 WebkitOverflowScrolling: 'touch',
-                overscrollBehavior: 'contain'
             }}
         >
             {/* Mobile-first layout - single column, adapts to all screen widths */}

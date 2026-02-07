@@ -34,7 +34,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_BACKEND_BASE_URL: ${VITE_BACKEND_BASE_URL:-https://api-kindplate.ru}
+        VITE_BACKEND_BASE_URL: ${VITE_BACKEND_BASE_URL:-/api}
         VITE_VAPID_PUBLIC_KEY: ${VITE_VAPID_PUBLIC_KEY:-}
     depends_on:
       - backend

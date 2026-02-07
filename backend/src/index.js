@@ -200,25 +200,23 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads"), {
         }
     }
 }));
-// Определяем настройки кук в зависимости от окружения
-// Для продакшена используем 'none' для кросс-доменных запросов
-// Для разработки используем 'lax' для локальных запросов
+// Определяем настройки кук
+// Теперь API проксируется через app-kindplate.ru/api/* (same-origin), 
+// поэтому используем 'lax' — он безопаснее и работает на iOS PWA
 const isProduction = process.env.NODE_ENV === 'production';
-const cookieSameSite = isProduction ? 'none' : 'lax';
-const cookieSecure = isProduction; // В продакшене всегда true, в разработке зависит от протокола
+const cookieSameSite = 'lax'; // same-origin: 'lax' работает везде, включая iOS Safari
+const cookieSecure = isProduction; // В продакшене всегда true (HTTPS)
 
 logger.info(`🍪 Cookie settings: sameSite=${cookieSameSite}, secure=${cookieSecure}, NODE_ENV=${process.env.NODE_ENV}`);
 
 app.use(
     cookieSession({
         name: "session",
-        keys: [process.env.SECRET_KEY],
+        keys: [process.env.SECRET_KEY || process.env.JWT_SECRET || 'kindplate-session-fallback'],
         sameSite: cookieSameSite,
         secure: cookieSecure,
         httpOnly: true,
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней (для PWA важно длительное хранение сессии)
-        // Не устанавливаем domain, чтобы куки работали на всех поддоменах
-        // Это важно для мобильных устройств
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
     })
 );
 

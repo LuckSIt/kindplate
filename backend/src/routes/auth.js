@@ -8,6 +8,39 @@ const { AppError, asyncHandler } = require("../lib/errorHandler");
 const { validateRegistration, validateLogin } = require("../lib/validation");
 const { createTokenPair, verifyToken } = require("../lib/jwt");
 
+// ============================================================
+// httpOnly Cookie для refresh token — наиболее надёжный способ
+// хранения на iOS PWA (same-origin через Caddy proxy)
+// ============================================================
+const REFRESH_COOKIE_NAME = 'kp_refresh';
+const REFRESH_COOKIE_MAX_AGE = 365 * 24 * 60 * 60 * 1000; // 1 год
+
+/** Установить httpOnly cookie с refresh token */
+function setRefreshCookie(res, refreshToken) {
+    res.cookie(REFRESH_COOKIE_NAME, refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: REFRESH_COOKIE_MAX_AGE,
+    });
+}
+
+/** Очистить httpOnly cookie с refresh token */
+function clearRefreshCookie(res) {
+    res.clearCookie(REFRESH_COOKIE_NAME, { path: '/' });
+}
+
+/** Прочитать refresh token: сначала из тела запроса, затем из cookie */
+function getRefreshToken(req) {
+    // 1. Из body (стандартный способ, обратная совместимость)
+    if (req.body?.refreshToken) return req.body.refreshToken;
+    // 2. Из httpOnly cookie (iOS PWA same-origin)
+    const cookies = req.headers.cookie || '';
+    const match = cookies.match(new RegExp('(?:^|;\\s*)' + REFRESH_COOKIE_NAME + '=([^;]*)'));
+    return match ? decodeURIComponent(match[1]) : null;
+}
+
 // ВНИМАНИЕ: rate limiting для логина сейчас отключён, чтобы не мешать реальным пользователям.
 // При необходимости можно вернуть middleware rateLimit сюда.
 
@@ -58,8 +91,10 @@ authRouter.post("/register", registerLimiter, validateRegistration, asyncHandler
     req.session.isBusiness = false;
     req.session.role = 'customer';
 
-    // Токены для persistent login (localStorage), чтобы не разлогинивать при закрытии вкладки
+    // Токены для persistent login
     const tokens = await createTokenPair({ id: userId, email, is_business: false });
+    // httpOnly cookie — надёжное хранение refresh token для iOS PWA
+    setRefreshCookie(res, tokens.refreshToken);
 
     logger.info("User registered successfully", { userId, email, is_business: false, role: 'customer' });
 
@@ -102,8 +137,10 @@ authRouter.post("/login", validateLogin, asyncHandler(async (req, res) => {
         req.session.isBusiness = is_business;
         req.session.role = userRole;
 
-        // Создаём пару токенов (access + refresh) для клиентов, у которых могут не работать cookie
+        // Создаём пару токенов (access + refresh)
         const tokens = await createTokenPair({ id, email, is_business });
+        // httpOnly cookie — надёжное хранение refresh token для iOS PWA
+        setRefreshCookie(res, tokens.refreshToken);
 
         logger.info("User logged in successfully", { userId: id, email, is_business, role: userRole });
 
@@ -128,6 +165,7 @@ authRouter.post("/login", validateLogin, asyncHandler(async (req, res) => {
 authRouter.get("/logout", (req, res) => {
     // Если пользователь уже не авторизован, просто возвращаем успех
     if (req.session.userId === undefined) {
+        clearRefreshCookie(res);
         return res.json({
             success: true,
             message: "Вы уже вышли из системы"
@@ -138,6 +176,7 @@ authRouter.get("/logout", (req, res) => {
     req.session.userId = undefined;
     req.session.isBusiness = undefined;
     req.session.role = undefined;
+    clearRefreshCookie(res);
     
     res.json({
         success: true,
@@ -242,13 +281,17 @@ authRouter.get("/me", asyncHandler(async (req, res) => {
 }));
 
 // Endpoint для обновления токена через refresh token
+// Принимает refresh token из body ИЛИ из httpOnly cookie (для iOS PWA)
 authRouter.post("/refresh", asyncHandler(async (req, res) => {
-    const { refreshToken } = req.body;
+    const refreshToken = getRefreshToken(req);
     
-    console.log('🔄 /auth/refresh called:', { hasRefreshToken: !!refreshToken });
+    console.log('🔄 /auth/refresh called:', { 
+        hasRefreshToken: !!refreshToken, 
+        source: req.body?.refreshToken ? 'body' : 'cookie' 
+    });
 
     if (!refreshToken) {
-        console.log('❌ No refresh token provided');
+        console.log('❌ No refresh token in body or cookie');
         throw new AppError('Refresh токен не предоставлен', 401, 'NO_REFRESH_TOKEN');
     }
 
@@ -275,8 +318,11 @@ authRouter.post("/refresh", asyncHandler(async (req, res) => {
 
         const user = result.rows[0];
 
-        // Создаем новую пару токенов
+        // Создаем новую пару токенов (ротация: новый refresh каждый раз)
         const tokens = await createTokenPair(user);
+        
+        // Обновляем httpOnly cookie с новым refresh token
+        setRefreshCookie(res, tokens.refreshToken);
 
         console.log('✅ Tokens refreshed successfully for user:', user.id);
         logger.info('Tokens refreshed', { userId: user.id });
@@ -291,6 +337,8 @@ authRouter.post("/refresh", asyncHandler(async (req, res) => {
         }
         console.log('❌ Refresh failed:', error.message);
         logger.warn('Token refresh failed', { error: error.message });
+        // Очищаем невалидную cookie
+        clearRefreshCookie(res);
         throw new AppError('Невалидный или истекший refresh токен', 401, 'INVALID_REFRESH_TOKEN');
     }
 }));
