@@ -250,6 +250,19 @@ function RootRoute() {
     // Для главной страницы показываем лендинг без MobileOnly обертки
     const isLandingPage = location.pathname === '/';
 
+    // На лендинге снимаем ограничения overflow: hidden с html/body,
+    // чтобы страница нормально скроллилась и не было «рамки» внизу
+    useEffect(() => {
+        if (isLandingPage) {
+            document.documentElement.classList.add('landing-active');
+        } else {
+            document.documentElement.classList.remove('landing-active');
+        }
+        return () => {
+            document.documentElement.classList.remove('landing-active');
+        };
+    }, [isLandingPage]);
+
     return (
         <HelmetProvider>
             <QueryClientProvider client={queryClient}>

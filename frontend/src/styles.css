@@ -206,6 +206,22 @@ body {
   touch-action: manipulation;
 }
 
+/* На лендинге снимаем ограничения — страница свободно скроллится, без «рамки» */
+html.landing-active,
+html.landing-active body {
+  overflow: auto !important;
+  overflow-x: hidden !important;
+  height: auto !important;
+  min-height: 100% !important;
+  overscroll-behavior: auto !important;
+}
+
+html.landing-active #root {
+  overflow: visible !important;
+  height: auto !important;
+  min-height: 100% !important;
+}
+
 /* Mobile typography - фиксированные размеры */
 h1 { font-size: 24px !important; line-height: 30px !important; font-weight: 700; color: #f8fafc; }
 h2 { font-size: 20px !important; line-height: 28px !important; font-weight: 700; color: #f8fafc; }
