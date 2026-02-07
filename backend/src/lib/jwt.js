@@ -21,9 +21,11 @@ if (!JWT_SECRET) {
 const EFFECTIVE_JWT_SECRET = JWT_SECRET || crypto.randomBytes(32).toString('hex');
 const JWT_SECRET_KEY = new TextEncoder().encode(EFFECTIVE_JWT_SECRET);
 
-// Время жизни токенов: access 1h, refresh 90 дней — чтобы при обратном заходе после закрытия вкладки не требовалась повторная авторизация
-const ACCESS_TOKEN_EXPIRY = '1h';
-const REFRESH_TOKEN_EXPIRY = '90d';
+// Время жизни токенов:
+// access 7 дней — достаточно для PWA, где пользователь может не заходить несколько дней
+// refresh 365 дней — позволяет оставаться залогиненным до года
+const ACCESS_TOKEN_EXPIRY = '7d';
+const REFRESH_TOKEN_EXPIRY = '365d';
 
 // Ленивая загрузка jose (ES Module)
 let joseModule = null;

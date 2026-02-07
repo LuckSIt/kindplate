@@ -4,7 +4,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { Button } from './button';
 import { CountdownTimer } from './countdown-timer';
 import { WaitlistSubscribeButton } from './waitlist-subscribe-button';
-import { getBackendURL } from '@/lib/axiosInstance';
+import { ReliableImg } from './optimized-image';
 import type { Offer } from '@/lib/types';
 
 interface OfferCardVendorProps {
@@ -36,14 +36,15 @@ export const OfferCardVendor: React.FC<OfferCardVendorProps> = ({
       {/* Image */}
       <div className="relative h-48 bg-gradient-to-br from-primary-200 to-primary-300">
         {offer.image_url ? (
-          <img 
-            src={`${getBackendURL()}${offer.image_url}`}
+          <ReliableImg 
+            src={offer.image_url}
             alt={offer.title}
             className="w-full h-full object-cover"
-            onError={(e) => {
-              console.error('Ошибка загрузки изображения:', offer.image_url);
-              e.currentTarget.style.display = 'none';
-            }}
+            fallbackElement={
+              <div className="w-full h-full flex items-center justify-center">
+                <span className="text-4xl">🍽️</span>
+              </div>
+            }
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

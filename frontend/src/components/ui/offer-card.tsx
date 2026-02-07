@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import type { Offer } from '@/lib/types';
-import { getBackendURL } from '@/lib/axiosInstance';
+import { ReliableImg } from './optimized-image';
 
 function formatTimeLeft(ms: number) {
   if (ms <= 0) return 'заканчивается';
@@ -70,15 +70,14 @@ export function OfferCard({ offer, onClick }: { offer: Offer; onClick?: () => vo
     >
       <div className="relative w-full aspect-video bg-gray-100 dark:bg-gray-800 overflow-hidden">
         {offer.image_url ? (
-          <img 
-            src={`${getBackendURL()}${offer.image_url}`} 
+          <ReliableImg 
+            src={offer.image_url} 
             alt={offer.title} 
             className="w-full h-full object-cover"
             key={offer.image_url}
-            onError={(e) => {
-              // Скрываем изображение при ошибке загрузки
-              e.currentTarget.style.display = 'none';
-            }}
+            fallbackElement={
+              <div className="w-full h-full flex items-center justify-center text-3xl">🍱</div>
+            }
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-3xl">🍱</div>

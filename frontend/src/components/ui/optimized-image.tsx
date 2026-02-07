@@ -1,9 +1,13 @@
 /**
  * Optimized Image Component
- * Компонент для lazy loading и оптимизации изображений с поддержкой WebP/AVIF
+ * Компонент для lazy loading, retry-логики и оптимизации изображений
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { getImageURL } from '@/lib/axiosInstance';
+
+const MAX_RETRIES = 3;
+const RETRY_DELAYS = [1000, 2000, 4000]; // ms
 
 interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
@@ -14,78 +18,67 @@ interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> 
   rootMargin?: string;
   onLoad?: () => void;
   onError?: () => void;
-  // Размеры для responsive images
+  /** Размеры для responsive images */
   sizes?: string;
-  // Включить автоматическую конвертацию в WebP/AVIF
+  /** Автоматически добавлять backend URL к относительным путям */
+  resolveUrl?: boolean;
+  /** Не используется — оставлено для совместимости */
   modernFormats?: boolean;
 }
 
 /**
- * Определяет поддержку современных форматов изображений
+ * Разрешает URL изображения: добавляет backend-префикс для относительных путей
  */
-function checkModernFormatSupport() {
-  if (typeof window === 'undefined') return { webp: false, avif: false };
-
-  const canvas = document.createElement('canvas');
-  canvas.width = 1;
-  canvas.height = 1;
-
-  // Проверка WebP
-  const webp = canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
-
-  // Проверка AVIF (упрощенная, так как toDataURL не поддерживает AVIF)
-  // В реальности проверяется через создание Image и обработку события load
-  const avif = false; // Для упрощения, можно добавить полную проверку
-
-  return { webp, avif };
-}
-
-/**
- * Генерирует srcset с современными форматами
- */
-function generateModernSrcSet(src: string, modernFormats: boolean): string | undefined {
-  if (!modernFormats) return undefined;
-
-  const support = checkModernFormatSupport();
-  
-  // Если оригинальный URL уже имеет расширение WebP/AVIF, не трогаем
-  if (src.endsWith('.webp') || src.endsWith('.avif')) {
-    return undefined;
-  }
-
-  // Генерируем URL для современных форматов
-  const basePath = src.replace(/\.[^/.]+$/, ''); // Убираем расширение
-  const sources: string[] = [];
-
-  if (support.webp) {
-    sources.push(`${basePath}.webp`);
-  }
-
-  return sources.length > 0 ? sources.join(', ') : undefined;
+function resolveImageSrc(src: string | undefined, resolve: boolean): string {
+  if (!src) return '';
+  if (!resolve) return src;
+  return getImageURL(src);
 }
 
 export function OptimizedImage({
   src,
   alt,
-  fallback = '/placeholder.png',
+  fallback = '',
   lazy = true,
   threshold = 0.01,
   rootMargin = '50px',
   className = '',
   sizes,
-  modernFormats = false, // Отключаем по умолчанию
+  resolveUrl = true,
+  modernFormats: _mf,
   onLoad,
   onError,
   ...props
 }: OptimizedImageProps) {
-  const [imageSrc, setImageSrc] = useState(lazy ? fallback : src);
+  const resolvedSrc = resolveImageSrc(src, resolveUrl);
+
+  const [imageSrc, setImageSrc] = useState(lazy ? '' : resolvedSrc);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const retryCountRef = useRef(0);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const imgRef = useRef<HTMLImageElement>(null);
+  const isVisibleRef = useRef(!lazy);
 
+  // Сброс состояния при смене src
+  useEffect(() => {
+    const newSrc = resolveImageSrc(src, resolveUrl);
+    retryCountRef.current = 0;
+    setHasError(false);
+    setIsLoading(true);
+    if (isVisibleRef.current) {
+      setImageSrc(newSrc);
+    }
+    return () => {
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+    };
+  }, [src, resolveUrl]);
+
+  // Lazy-loading через IntersectionObserver
   useEffect(() => {
     if (!lazy || !imgRef.current) {
-      setImageSrc(src);
+      isVisibleRef.current = true;
+      setImageSrc(resolvedSrc);
       return;
     }
 
@@ -93,15 +86,13 @@ export function OptimizedImage({
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setImageSrc(src);
+            isVisibleRef.current = true;
+            setImageSrc(resolvedSrc);
             observer.unobserve(entry.target);
           }
         });
       },
-      {
-        threshold,
-        rootMargin
-      }
+      { threshold, rootMargin }
     );
 
     observer.observe(imgRef.current);
@@ -109,28 +100,43 @@ export function OptimizedImage({
     return () => {
       observer.disconnect();
     };
-  }, [src, lazy, threshold, rootMargin]);
+  }, [resolvedSrc, lazy, threshold, rootMargin]);
 
-  const handleLoad = () => {
+  const handleLoad = useCallback(() => {
+    retryCountRef.current = 0;
     setIsLoading(false);
+    setHasError(false);
     onLoad?.();
-  };
+  }, [onLoad]);
 
-  const handleError = () => {
-    setHasError(true);
-    setIsLoading(false);
-    setImageSrc(fallback);
-    onError?.();
-  };
+  const handleError = useCallback(() => {
+    const attempt = retryCountRef.current;
+    if (attempt < MAX_RETRIES && resolvedSrc) {
+      retryCountRef.current = attempt + 1;
+      const delay = RETRY_DELAYS[attempt] || 4000;
+      retryTimerRef.current = setTimeout(() => {
+        // Добавляем cache-buster для повторных попыток
+        const sep = resolvedSrc.includes('?') ? '&' : '?';
+        setImageSrc(`${resolvedSrc}${sep}_r=${attempt + 1}&_t=${Date.now()}`);
+      }, delay);
+    } else {
+      setHasError(true);
+      setIsLoading(false);
+      if (fallback) {
+        setImageSrc(fallback);
+      }
+      onError?.();
+    }
+  }, [resolvedSrc, fallback, onError]);
 
   return (
     <img
       ref={imgRef}
-      src={imageSrc}
+      src={imageSrc || undefined}
       alt={alt}
       loading="lazy"
       decoding="async"
-      className={`transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'} ${className}`}
+      className={`transition-opacity duration-300 ${isLoading && !hasError ? 'opacity-0' : 'opacity-100'} ${className}`}
       onLoad={handleLoad}
       onError={handleError}
       {...props}
@@ -146,14 +152,17 @@ interface OptimizedBackgroundProps {
   children: React.ReactNode;
   className?: string;
   lazy?: boolean;
+  resolveUrl?: boolean;
 }
 
 export function OptimizedBackground({
   src,
   children,
   className = '',
-  lazy = true
+  lazy = true,
+  resolveUrl = true
 }: OptimizedBackgroundProps) {
+  const resolvedSrc = resolveImageSrc(src, resolveUrl);
   const [loaded, setLoaded] = useState(!lazy);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -188,7 +197,7 @@ export function OptimizedBackground({
       ref={ref}
       className={className}
       style={{
-        backgroundImage: loaded ? `url(${src})` : 'none',
+        backgroundImage: loaded ? `url(${resolvedSrc})` : 'none',
         transition: 'background-image 0.3s ease-in-out'
       }}
     >
@@ -210,7 +219,7 @@ interface AvatarProps {
 export function Avatar({ src, name, size = 'md', className = '' }: AvatarProps) {
   const [hasError, setHasError] = useState(false);
 
-  const sizes = {
+  const sizeClasses = {
     sm: 'w-8 h-8 text-sm',
     md: 'w-12 h-12 text-base',
     lg: 'w-16 h-16 text-xl'
@@ -220,7 +229,7 @@ export function Avatar({ src, name, size = 'md', className = '' }: AvatarProps) 
 
   if (!src || hasError) {
     return (
-      <div className={`${sizes[size]} ${className} rounded-full bg-gradient-to-r from-primary-500 to-primary-600 flex items-center justify-center text-white font-semibold`}>
+      <div className={`${sizeClasses[size]} ${className} rounded-full bg-gradient-to-r from-primary-500 to-primary-600 flex items-center justify-center text-white font-semibold`}>
         {initial}
       </div>
     );
@@ -230,8 +239,66 @@ export function Avatar({ src, name, size = 'md', className = '' }: AvatarProps) 
     <OptimizedImage
       src={src}
       alt={name}
-      className={`${sizes[size]} ${className} rounded-full object-cover`}
+      resolveUrl
+      className={`${sizeClasses[size]} ${className} rounded-full object-cover`}
       onError={() => setHasError(true)}
+    />
+  );
+}
+
+/**
+ * Хелпер: <img> с retry-логикой для использования вместо обычного <img>
+ * Подключает backend URL для относительных путей и ретраит при ошибках.
+ */
+export function ReliableImg({
+  src,
+  alt = '',
+  className = '',
+  fallbackElement,
+  ...props
+}: React.ImgHTMLAttributes<HTMLImageElement> & {
+  fallbackElement?: React.ReactNode;
+}) {
+  const resolvedSrc = resolveImageSrc(src, true);
+  const [currentSrc, setCurrentSrc] = useState(resolvedSrc);
+  const [failed, setFailed] = useState(false);
+  const retryRef = useRef(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    const newSrc = resolveImageSrc(src, true);
+    retryRef.current = 0;
+    setFailed(false);
+    setCurrentSrc(newSrc);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [src]);
+
+  const handleError = useCallback(() => {
+    const attempt = retryRef.current;
+    if (attempt < MAX_RETRIES && resolvedSrc) {
+      retryRef.current = attempt + 1;
+      timerRef.current = setTimeout(() => {
+        const sep = resolvedSrc.includes('?') ? '&' : '?';
+        setCurrentSrc(`${resolvedSrc}${sep}_r=${attempt + 1}&_t=${Date.now()}`);
+      }, RETRY_DELAYS[attempt] || 4000);
+    } else {
+      setFailed(true);
+    }
+  }, [resolvedSrc]);
+
+  if (failed) {
+    return fallbackElement ? <>{fallbackElement}</> : null;
+  }
+
+  return (
+    <img
+      src={currentSrc || undefined}
+      alt={alt}
+      className={className}
+      onError={handleError}
+      loading="lazy"
+      decoding="async"
+      {...props}
     />
   );
 }

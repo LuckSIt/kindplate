@@ -178,8 +178,28 @@ app.use(sqlInjectionProtection);
 // Rate limiting для защиты от брутфорса теперь настроен непосредственно в маршрутах auth.
 // Здесь дополнительный лимитер НЕ используем, чтобы не дублировать ограничение.
 
-// Раздача статических файлов (фотографии)
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+// Раздача статических файлов (фотографии) с кешированием
+app.use("/uploads", express.static(path.join(__dirname, "../uploads"), {
+    maxAge: '7d',             // Кешировать изображения 7 дней
+    etag: true,               // Включить ETag для условных запросов
+    lastModified: true,       // Включить Last-Modified заголовок
+    immutable: false,         // Файлы могут обновляться
+    setHeaders: (res, filePath) => {
+        // CORS для изображений (чтобы браузеры могли кешировать кросс-доменные)
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cache-Control', 'public, max-age=604800, stale-while-revalidate=86400');
+        // Определяем тип контента
+        if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
+            res.setHeader('Content-Type', 'image/jpeg');
+        } else if (filePath.endsWith('.png')) {
+            res.setHeader('Content-Type', 'image/png');
+        } else if (filePath.endsWith('.webp')) {
+            res.setHeader('Content-Type', 'image/webp');
+        } else if (filePath.endsWith('.svg')) {
+            res.setHeader('Content-Type', 'image/svg+xml');
+        }
+    }
+}));
 // Определяем настройки кук в зависимости от окружения
 // Для продакшена используем 'none' для кросс-доменных запросов
 // Для разработки используем 'lax' для локальных запросов
@@ -196,7 +216,7 @@ app.use(
         sameSite: cookieSameSite,
         secure: cookieSecure,
         httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 дней
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней (для PWA важно длительное хранение сессии)
         // Не устанавливаем domain, чтобы куки работали на всех поддоменах
         // Это важно для мобильных устройств
     })

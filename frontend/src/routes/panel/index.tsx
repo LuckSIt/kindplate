@@ -12,7 +12,7 @@ import { z } from "zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { axiosInstance, getBackendURL } from "@/lib/axiosInstance";
+import { axiosInstance, getImageURL } from "@/lib/axiosInstance";
 import { AxiosError } from "axios";
 import { notify } from "@/lib/notifications";
 import type { Offer, Order } from "@/lib/types";
@@ -306,7 +306,7 @@ function OfferSummary({
                     {image_url ? (
                         <div className="panel-page__offer-photo-container">
                             <img 
-                                src={`${getBackendURL()}${image_url}`} 
+                                src={getImageURL(image_url)} 
                                 alt={title}
                                 className="panel-page__offer-photo-img"
                                 key={`${id}-${image_url}`}

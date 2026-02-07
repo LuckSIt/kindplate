@@ -52,169 +52,96 @@ export const Route = createRootRoute({
 });
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
-    const { data, isLoading, isSuccess, isError } = useQuery<{ user: User; success: boolean } | { data: { user: User } }>({
+    // Хелпер: извлечь User из любого формата ответа /auth/me
+    const extractUser = (responseData: any): User | null => {
+        if (!responseData) return null;
+        if (responseData.user) return responseData.user;
+        if (responseData.data?.user) return responseData.data.user;
+        return null;
+    };
+
+    const { data, isLoading, isSuccess, isError } = useQuery<{ user: User | null; success: boolean }>({
         queryKey: ["auth"],
-        queryFn: async () => {
-            // Ждём инициализации хранилища токенов (IndexedDB)
+        queryFn: async (): Promise<{ user: User | null; success: boolean }> => {
+            // 1. Ждём полной инициализации хранилища (IndexedDB + localStorage + cookies)
             await tokenStorage.init();
             
-            // Используем асинхронные геттеры для проверки всех источников (включая IndexedDB)
             const at = await tokenStorage.getAccessTokenAsync();
             const rt = await tokenStorage.getRefreshTokenAsync();
             
-            console.log('🔐 Auth check:', { 
-                hasAccessToken: !!at, 
-                hasRefreshToken: !!rt,
-                accessTokenPreview: at ? at.substring(0, 20) + '...' : null
-            });
+            console.log('🔐 Auth check:', { hasAccessToken: !!at, hasRefreshToken: !!rt });
 
-            const tryRefreshAndMe = async (): Promise<{ user: User; success: boolean } | null> => {
-                const refreshToken = await tokenStorage.getRefreshTokenAsync();
-                console.log('🔄 Trying refresh...', { hasRefreshToken: !!refreshToken });
-                if (!refreshToken) {
-                    console.log('❌ No refresh token available');
-                    return null;
-                }
-                try {
-                    console.log('📡 Calling /auth/refresh...');
-                    const r = await axiosInstance.post('/auth/refresh', { refreshToken });
-                    console.log('✅ Refresh successful:', { hasNewAccessToken: !!r.data?.accessToken });
-                    tokenStorage.setAccessToken(r.data.accessToken);
-                    tokenStorage.setRefreshToken(r.data.refreshToken);
-                    const me2 = await axiosInstance.get("/auth/me", { params: { _t: Date.now() }, skipErrorNotification: true } as any);
-                    const d = me2?.data;
-                    console.log('✅ /auth/me after refresh:', { hasUser: !!d?.user });
-                    if (d && 'user' in d && d.user) return { user: d.user, success: (d as any).success ?? true };
-                    if (d?.data?.user) return { user: d.data.user, success: true };
-                } catch (e: any) {
-                    console.error('❌ Refresh failed:', e?.response?.data || e?.message);
-                    tokenStorage.clear();
-                }
-                return null;
-            };
+            // 2. Если нет вообще никаких токенов — пользователь не залогинен
+            if (!at && !rt) {
+                console.log('❌ No tokens found, user not authenticated');
+                return { user: null, success: false };
+            }
 
-            const backfillTokens = () => {
-                if (tokenStorage.getAccessToken()) return;
-                axiosInstance.post('/auth/tokens').then((r: any) => {
-                    if (r?.data?.accessToken) tokenStorage.setAccessToken(r.data.accessToken);
-                    if (r?.data?.refreshToken) tokenStorage.setRefreshToken(r.data.refreshToken);
-                }).catch(() => {});
-            };
-
+            // 3. Пробуем /auth/me с текущим access-токеном
             try {
-                console.log('📡 Calling /auth/me...');
                 const response = await axiosInstance.get("/auth/me", {
                     skipErrorNotification: true,
                     params: { _t: Date.now() }
                 } as any);
 
-                const responseData = response.data;
-                console.log('📥 /auth/me response:', { 
-                    hasUser: !!responseData?.user, 
-                    success: responseData?.success,
-                    userId: responseData?.user?.id 
-                });
-
-                if (responseData && 'user' in responseData) {
-                    const user = responseData.user;
-                    if (user) {
-                        console.log('✅ User authenticated via /auth/me:', user.email || user.id);
-                        backfillTokens();
-                        return { user, success: responseData.success ?? true };
-                    }
-                }
-
-                if (responseData?.data?.user) {
-                    const user = responseData.data.user;
-                    console.log('✅ User authenticated (nested):', user.email || user.id);
-                    backfillTokens();
+                const user = extractUser(response.data);
+                if (user) {
+                    console.log('✅ User authenticated:', user.email || user.id);
                     return { user, success: true };
                 }
-
-                // user: null — возможно, access истёк. Пробуем refresh и повторный /auth/me
-                console.log('⚠️ No user in response, trying refresh...');
-                const refreshed = await tryRefreshAndMe();
-                if (refreshed) return refreshed;
-                console.log('❌ Refresh failed, user not authenticated');
-                return { user: null, success: false };
             } catch (err: any) {
-                console.error('❌ /auth/me error:', err?.response?.status, err?.response?.data || err?.message);
-                const refreshed = await tryRefreshAndMe();
-                if (refreshed) return refreshed;
-                throw err;
+                console.warn('⚠️ /auth/me failed:', err?.response?.status || err?.message);
+                // 401 уже обработан интерцептором (включая refresh).
+                // Если мы здесь — значит и refresh не помог.
             }
+
+            // 4. /auth/me вернул user: null (200) — access-токен протух.
+            //    Пробуем явный refresh + повторный /auth/me
+            if (rt) {
+                console.log('🔄 Trying explicit refresh...');
+                try {
+                    const r = await axiosInstance.post('/auth/refresh', { refreshToken: rt }, {
+                        skipErrorNotification: true
+                    } as any);
+                    if (r.data?.accessToken) {
+                        tokenStorage.setAccessToken(r.data.accessToken);
+                        tokenStorage.setRefreshToken(r.data.refreshToken);
+                        console.log('✅ Refresh successful, retrying /auth/me...');
+
+                        const me2 = await axiosInstance.get("/auth/me", {
+                            skipErrorNotification: true,
+                            params: { _t: Date.now() }
+                        } as any);
+                        const user = extractUser(me2.data);
+                        if (user) {
+                            console.log('✅ User authenticated after refresh:', user.email || user.id);
+                            return { user, success: true };
+                        }
+                    }
+                } catch (e: any) {
+                    console.error('❌ Refresh failed:', e?.response?.data || e?.message);
+                    // Не очищаем токены здесь — они могли быть уже очищены интерцептором
+                }
+            }
+
+            console.log('❌ All auth attempts exhausted');
+            return { user: null, success: false };
         },
-        retry: false, // Не повторяем при ошибке 401
-        staleTime: 0, // Не кэшируем данные - всегда запрашиваем свежие
-        gcTime: 0, // Не храним в кэше
-        refetchOnMount: true, // Принудительно обновляем при монтировании
-        refetchOnWindowFocus: true, // Обновляем при возврате на вкладку
-        refetchOnReconnect: true, // Обновляем при восстановлении соединения
+        retry: 1,              // Одна повторная попытка при сбое сети
+        retryDelay: 2000,
+        staleTime: 2 * 60 * 1000,   // Данные свежие 2 минуты (не запрашивать при каждом ререндере)
+        gcTime: 5 * 60 * 1000,      // Хранить в кеше 5 минут
+        refetchOnMount: true,
+        refetchOnWindowFocus: true,  // При возврате на вкладку — обновить
+        refetchOnReconnect: true,
     });
 
-    // Извлекаем user из разных форматов ответа
-    // Используем data !== undefined вместо isSuccess, так как данные могут быть доступны даже если isSuccess еще false
+    // Извлекаем user из данных
     const user = (() => {
-        console.log('[Auth] Extracting user from data:', { 
-            isSuccess, 
-            isLoading, 
-            isError, 
-            hasData: !!data, 
-            dataType: typeof data,
-            data: data ? JSON.stringify(data, null, 2) : 'null/undefined'
-        });
-        
-        // Если еще загружается, возвращаем null
-        if (isLoading) {
-            console.log('[Auth] Still loading...');
-            return null;
-        }
-        
-        // Если есть ошибка и нет данных, возвращаем null
-        if (isError && !data) {
-            console.log('[Auth] Error and no data');
-            return null;
-        }
-        
-        // Если данных нет, возвращаем null
-        if (!data) {
-            console.log('[Auth] No data available', { isSuccess, isLoading, isError });
-            return null;
-        }
-        
-        // Если data имеет структуру { user, success }
-        if ('user' in data) {
-            const extractedUser = data.user;
-            if (extractedUser) {
-                console.log('[Auth] User found (direct):', JSON.stringify(extractedUser, null, 2));
-                console.log('[Auth] User details - name:', extractedUser.name, 'is_business:', extractedUser.is_business, 'email:', extractedUser.email);
-                return extractedUser;
-            } else {
-                console.log('[Auth] User field exists but is null/undefined');
-            }
-        }
-        
-        // Если data имеет структуру { data: { user } }
-        if ('data' in data && data.data) {
-            if ('user' in data.data && data.data.user) {
-                const extractedUser = data.data.user;
-                console.log('[Auth] User found (nested):', JSON.stringify(extractedUser, null, 2));
-                console.log('[Auth] User details - name:', extractedUser.name, 'is_business:', extractedUser.is_business, 'email:', extractedUser.email);
-                return extractedUser;
-            }
-        }
-        
-        console.warn('[Auth] User not found in response. Data structure:', JSON.stringify(data, null, 2));
-        return null;
+        if (isLoading || (!data && !isError)) return null;
+        if (!data) return null;
+        return data.user ?? null;
     })();
-
-    // Логируем финальное значение user для отладки
-    useEffect(() => {
-        console.log('[Auth] Final user in context:', user);
-        console.log('[Auth] User name:', user?.name);
-        console.log('[Auth] User is_business:', user?.is_business);
-        console.log('[Auth] User email:', user?.email);
-    }, [user]);
 
     const value: AuthContextType = {
         isLoading,

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from './button';
-import { getBackendURL } from '@/lib/axiosInstance';
+import { getImageURL } from '@/lib/axiosInstance';
 
 interface PhotoCarouselProps {
   images: string[];
@@ -50,7 +50,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
   };
 
   const currentImage = images[currentIndex];
-  const imageUrl = currentImage ? getBackendURL(currentImage) : '/placeholder-food.png';
+  const imageUrl = currentImage ? getImageURL(currentImage) : '/placeholder-food.png';
 
   return (
     <>

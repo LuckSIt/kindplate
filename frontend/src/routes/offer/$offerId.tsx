@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { axiosInstance, getBackendURL } from '@/lib/axiosInstance';
+import { axiosInstance, getImageURL } from '@/lib/axiosInstance';
 import { OfferLocation } from '@/components/ui/offer-location';
 import { VendorConflictModal } from '@/components/ui/vendor-conflict-modal';
 import { OfferSkeleton } from '@/components/ui/skeletons';
@@ -240,7 +240,7 @@ function OfferPage() {
         {images.length > 0 && (
           <div className="offer-page__gallery">
             <img
-              src={`${getBackendURL()}${images[0]}`}
+              src={getImageURL(images[0])}
               alt={offer.title}
               style={{
                 width: '100%',

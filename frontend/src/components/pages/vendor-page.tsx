@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { axiosInstance, getBackendURL } from '@/lib/axiosInstance';
+import { axiosInstance, getImageURL } from '@/lib/axiosInstance';
 import { notify } from '@/lib/notifications';
 import type { Business, Offer } from '@/lib/types';
 import { useCart } from '@/lib/hooks/use-cart';
 import { useFavoriteCheck, useToggleFavorite } from '@/lib/hooks/use-favorites';
+import { ReliableImg } from '@/components/ui/optimized-image';
 
 interface VendorPageProps {
   vendorId: string;
@@ -288,7 +289,7 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
             const showQuantitySelector = quantity > 0;
             // Используем только image_url из API, без статических изображений
             const imageUrl = offer.image_url 
-              ? `${getBackendURL()}${offer.image_url}` 
+              ? getImageURL(offer.image_url) 
               : undefined;
 
             return (
@@ -378,14 +379,15 @@ function OfferCard({
       {/* Image */}
       <div className="vendor-page__offer-image">
         {image ? (
-          <img 
-            src={image} 
+          <ReliableImg 
+            src={image}
             alt={offer.title}
             key={`${offer.id}-${offer.image_url || 'no-image'}`}
-            onError={() => {
-              console.error('Ошибка загрузки изображения:', image);
-              // Можно добавить fallback изображение здесь
-            }}
+            fallbackElement={
+              <div className="vendor-page__offer-image-placeholder">
+                <span>Нет фото</span>
+              </div>
+            }
           />
         ) : (
           <div className="vendor-page__offer-image-placeholder">

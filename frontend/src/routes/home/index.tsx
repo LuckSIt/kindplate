@@ -1,12 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { axiosInstance, getBackendURL } from "@/lib/axiosInstance";
+import { axiosInstance, getImageURL } from "@/lib/axiosInstance";
 import { notify } from "@/lib/notifications";
 import { fetchOffersSearch, mapOffersToBusinesses } from "@/lib/offers-search";
 import { MapView } from "@/components/ui/map-view";
 import { BusinessDrawer } from "@/components/ui/business-drawer";
 import { FavoriteButton } from "@/components/ui/favorite-button";
+import { ReliableImg } from "@/components/ui/optimized-image";
 import { type MapSortType } from "@/components/ui/map-sort-controls";
 import { Drawer } from "vaul";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -737,9 +738,9 @@ function HomeBusinessCard({ business, onClick }: { business: Business; onClick: 
     const remainingCount = activeOffers.length - 2;
     // Use first offer image or business logo as fallback
     const image = activeOffers[0]?.image_url 
-        ? `${getBackendURL()}${activeOffers[0].image_url}` 
+        ? getImageURL(activeOffers[0].image_url) 
         : business.logo_url 
-            ? `${getBackendURL()}${business.logo_url}` 
+            ? getImageURL(business.logo_url) 
             : null;
 
     return (
@@ -747,11 +748,13 @@ function HomeBusinessCard({ business, onClick }: { business: Business; onClick: 
             {/* Image */}
             <div className="businesses-list-page__business-image">
                 {image ? (
-                    <img 
+                    <ReliableImg 
                         src={image} 
                         alt={business.name} 
                         key={activeOffers[0]?.image_url || business.logo_url}
-                        onError={(e) => e.currentTarget.style.display = 'none'} 
+                        fallbackElement={
+                            <div className="w-full h-full bg-gray-700 flex items-center justify-center text-3xl">🏪</div>
+                        }
                     />
                 ) : (
                     <div className="w-full h-full bg-gray-700 flex items-center justify-center text-3xl">🏪</div>

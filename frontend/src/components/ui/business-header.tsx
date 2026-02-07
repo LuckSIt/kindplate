@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { Star, MapPin, ExternalLink, Phone } from 'lucide-react';
 import { Button } from './button';
 import { OptimizedImage } from './optimized-image';

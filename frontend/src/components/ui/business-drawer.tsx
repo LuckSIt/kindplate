@@ -7,7 +7,6 @@ import { FavoriteButton } from './favorite-button';
 import { QualityBadgeCompact } from './quality-badge';
 import { RouteButton } from './route-button';
 import { OptimizedImage } from './optimized-image';
-import { getBackendURL } from '@/lib/axiosInstance';
 import type { Business, Offer } from '@/lib/types';
 
 interface BusinessDrawerProps {
@@ -36,13 +35,11 @@ const OfferCard: React.FC<OfferCardProps> = ({ offer, onOrder }) => {
       <div className="w-full h-32 bg-gradient-to-br from-primary-200 to-primary-300 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
         {offer.image_url ? (
           <OptimizedImage 
-            src={`${getBackendURL()}${offer.image_url}`}
+            src={offer.image_url!}
             alt={offer.title}
             lazy
-            modernFormats
             sizes="(max-width: 768px) 100vw, 384px"
             className="w-full h-full object-cover"
-            fallback="/placeholder.png"
             key={offer.image_url}
           />
         ) : (
@@ -138,10 +135,9 @@ export const BusinessDrawer: React.FC<BusinessDrawerProps> = ({
               <div className="w-16 h-16 bg-gradient-to-br from-primary-200 to-primary-300 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {business.logo_url ? (
                   <OptimizedImage 
-                    src={business.logo_url} 
+                    src={business.logo_url!} 
                     alt={business.name}
                     lazy
-                    modernFormats
                     sizes="64px"
                     className="w-full h-full object-cover rounded-lg"
                   />
