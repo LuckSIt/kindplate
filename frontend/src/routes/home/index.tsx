@@ -68,6 +68,7 @@ function RouteComponent() {
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
     const bodyOverflowRef = useRef<string>('');
+    const locationRequestedOnTapRef = useRef(false);
 
     // Order states
     const [orderDialogOpen, setOrderDialogOpen] = useState(false);
@@ -286,26 +287,35 @@ function RouteComponent() {
     }, [businessesFromSearch, businessesFromAll]);
     const hasBusinesses = businesses.length > 0;
 
-    // Get user location
-    useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setUserLocation([position.coords.latitude, position.coords.longitude]);
-                },
-                (error) => {
-                    if (import.meta.env.DEV) {
-                        console.info("⚠️ Геолокация недоступна:", error.message);
-                    }
-                },
-                {
-                    enableHighAccuracy: false,
-                    timeout: 15000,
-                    maximumAge: 300000,
+    // Запрос геолокации (при загрузке и по первому касанию карты — на iOS часто нужен жест пользователя)
+    const requestLocation = useCallback(() => {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setUserLocation([position.coords.latitude, position.coords.longitude]);
+            },
+            (error) => {
+                if (import.meta.env.DEV) {
+                    console.info("⚠️ Геолокация недоступна:", error.message);
                 }
-            );
-        }
+            },
+            { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
+        );
     }, []);
+
+    useEffect(() => {
+        requestLocation();
+    }, [requestLocation]);
+
+    // По первому касанию карты повторно запрашиваем геолокацию (помогает на iOS, где без жеста доступ может блокироваться)
+    const handleMapClick = useCallback(() => {
+        setSelectedBusiness(null);
+        setActiveSnap(0.2);
+        if (!userLocation && !locationRequestedOnTapRef.current && navigator.geolocation) {
+            locationRequestedOnTapRef.current = true;
+            requestLocation();
+        }
+    }, [userLocation, requestLocation]);
 
     // Create order mutation
     const createOrderMutation = useMutation({
@@ -425,8 +435,8 @@ function RouteComponent() {
         }
     }, [activeSnap]);
 
-    // Высота навигации должна совпадать с __root.tsx (56px + safe area)
-    const navHeight = 'calc(56px + env(safe-area-inset-bottom))';
+    // Высота навигации должна совпадать с __root.tsx (52px + safe area), без лишнего отступа
+    const navHeight = 'calc(52px + env(safe-area-inset-bottom, 0px))';
 
     return (
         <>
@@ -507,7 +517,7 @@ function RouteComponent() {
                         onBoundsChange={handleBoundsChange}
                         selectedBusiness={selectedBusiness}
                         userLocation={userLocation}
-                        onMapClick={() => { setSelectedBusiness(null); setActiveSnap(0.2); }}
+                        onMapClick={handleMapClick}
                         className="w-full"
                         style={{ width: '100%', height: '100%' }}
                     />

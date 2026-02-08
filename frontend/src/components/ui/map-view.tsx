@@ -155,14 +155,17 @@ function createClusterElement(count: number, hasAnyActiveOffers: boolean = true,
 function createUserMarkerElement(): HTMLElement {
     const element = document.createElement('div');
     element.style.cssText = `
-        width: 20px;
-        height: 20px;
-        background: #3b82f6;
+        width: 28px;
+        height: 28px;
+        background: #2563eb;
         border: 3px solid white;
         border-radius: 50%;
-        box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.3), 0 2px 6px rgba(0,0,0,0.3);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.5), 0 0 0 10px rgba(37, 99, 235, 0.2), 0 2px 8px rgba(0,0,0,0.4);
         transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 10;
     `;
+    element.setAttribute('aria-hidden', 'true');
     return element;
 }
 

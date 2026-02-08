@@ -170,8 +170,8 @@ function RootRoute() {
     const [_hasShadow, _setHasShadow] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const location = useLocation();
-    // Компактная навигация (52px) + safe-area
-    const navHeight = `calc(52px + env(safe-area-inset-bottom, 0px))`;
+    // Компактная навигация (52px) + safe-area (ограничено 34px, как в .app-bottom-nav)
+    const navHeight = 'calc(52px + min(env(safe-area-inset-bottom, 0px), 34px))';
 
     // Устанавливаем CSS переменную --app-height для точной высоты viewport на мобильных устройствах
     useEffect(() => {
