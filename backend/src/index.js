@@ -207,39 +207,38 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads"), {
 const isProduction = process.env.NODE_ENV === 'production';
 
 // Подключение к Redis + RedisStore
+// connect-redis v9 совместим ТОЛЬКО с redis (node-redis v4+), НЕ с ioredis
 let sessionStore;
 try {
-    const Redis = require("ioredis");
+    const { createClient } = require("redis");
     const connectRedis = require("connect-redis");
     
-    // connect-redis v7+: ESM default export
+    // connect-redis v8+: default export
     const RedisStoreClass = typeof connectRedis === 'function' 
         ? connectRedis 
         : (connectRedis.default || connectRedis.RedisStore);
     
+    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+    
     console.log('🔧 Redis init:', {
-        redisModule: typeof Redis,
-        connectRedisModule: typeof connectRedis,
         RedisStoreClass: typeof RedisStoreClass,
-        REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379'
+        REDIS_URL: redisUrl
     });
 
     if (!RedisStoreClass) {
         throw new Error('RedisStore class not found in connect-redis module');
     }
 
-    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-    const redisClient = new Redis(redisUrl, {
-        maxRetriesPerRequest: 3,
-        retryStrategy(times) {
-            if (times > 10) return null;
-            return Math.min(times * 200, 5000);
-        },
-    });
+    const redisClient = createClient({ url: redisUrl });
 
     redisClient.on('connect', () => console.log('✅ Redis connected'));
     redisClient.on('ready', () => console.log('✅ Redis ready'));
     redisClient.on('error', (err) => console.error('❌ Redis error:', err.message));
+
+    // redis v4 требует явного подключения
+    redisClient.connect().catch((err) => {
+        console.error('❌ Redis connect failed:', err.message);
+    });
 
     sessionStore = new RedisStoreClass({
         client: redisClient,
