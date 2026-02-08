@@ -8500,3 +8500,216 @@ div.font-montserrat-alt,
 .cookie-consent-banner__btn:active {
   transform: translateY(0) scale(0.98);
 }
+
+/* Плашка разрешения уведомлений — сверху, в стиле cookie (только прикреплена к top) */
+.notification-consent-banner {
+  position: fixed;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  max-width: calc(100vw - 32px);
+  width: 100%;
+  padding: 16px 20px;
+  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (min-width: 480px) {
+  .notification-consent-banner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    max-width: 440px;
+    padding: 18px 24px;
+  }
+}
+
+.notification-consent-banner__text {
+  margin: 0;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 19px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.notification-consent-banner__link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  color: #22C55E;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.notification-consent-banner__link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.notification-consent-banner__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.notification-consent-banner__btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 18px;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
+}
+
+.notification-consent-banner__btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+}
+
+.notification-consent-banner__btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.notification-consent-banner__btn--secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  box-shadow: none;
+}
+
+.notification-consent-banner__btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: none;
+}
+
+/* Плашка «Добавить на главный экран» — тот же стиль, только на первой странице сверху */
+.add-to-home-banner {
+  position: fixed;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  max-width: calc(100vw - 32px);
+  width: 100%;
+  padding: 16px 20px;
+  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: slideInDown 0.3s ease-out;
+}
+
+@media (min-width: 480px) {
+  .add-to-home-banner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    max-width: 440px;
+    padding: 18px 24px;
+  }
+}
+
+.add-to-home-banner__text {
+  margin: 0;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 19px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.add-to-home-banner__link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  color: #22C55E;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.add-to-home-banner__link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.add-to-home-banner__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.add-to-home-banner__btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 18px;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
+}
+
+.add-to-home-banner__btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+}
+
+.add-to-home-banner__btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.add-to-home-banner__btn--secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  box-shadow: none;
+}
+
+.add-to-home-banner__btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: none;
+}

@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, useContext } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { authContext } from "@/lib/auth";
+import { PushOnboarding } from "@/components/ui/push-onboarding";
 import { axiosInstance, getImageURL } from "@/lib/axiosInstance";
 import { notify } from "@/lib/notifications";
 import { fetchOffersSearch, mapOffersToBusinesses } from "@/lib/offers-search";
@@ -48,7 +50,8 @@ interface OrderData {
 function RouteComponent() {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
-    
+    const { user } = useContext(authContext);
+
     // UI State
     const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -424,6 +427,7 @@ function RouteComponent() {
 
     return (
         <>
+            {user && <PushOnboarding />}
             <HomePageSEO />
             <div 
                 className="flex flex-col"
