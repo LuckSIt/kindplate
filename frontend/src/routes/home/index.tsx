@@ -294,11 +294,14 @@ function RouteComponent() {
                     setUserLocation([position.coords.latitude, position.coords.longitude]);
                 },
                 (error) => {
-                    // Геолокация не критична, просто не используем её
                     if (import.meta.env.DEV) {
-                        // Логируем мягко только в dev, чтобы не засирать консоль ошибками
                         console.info("⚠️ Геолокация недоступна:", error.message);
                     }
+                },
+                {
+                    enableHighAccuracy: false,
+                    timeout: 15000,
+                    maximumAge: 300000,
                 }
             );
         }

@@ -45,6 +45,11 @@ function RouteComponent() {
                 },
                 (error) => {
                     console.warn('Ошибка получения геолокации:', error);
+                },
+                {
+                    enableHighAccuracy: false,
+                    timeout: 15000,
+                    maximumAge: 300000,
                 }
             );
         }

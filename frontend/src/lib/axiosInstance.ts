@@ -42,7 +42,12 @@ export const getImageURL = (path?: string) => {
     if (!path) return '';
     if (/^https?:\/\//i.test(path)) return path;
     const base = getBaseURL().replace(/\/$/, '');
-    const rel = path.startsWith('/') ? path : `/${path}`;
+    // Убираем ведущий "api/" или "/api/" из path, чтобы не получать /api/api/uploads/...
+    let rel = path.startsWith('/') ? path.slice(1) : path;
+    if (rel.toLowerCase().startsWith('api/')) {
+        rel = rel.slice(4); // "api/uploads/..." -> "uploads/..."
+    }
+    rel = rel.startsWith('/') ? rel : `/${rel}`;
     return `${base}${rel}`;
 };
 

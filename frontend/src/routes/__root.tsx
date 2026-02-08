@@ -324,13 +324,7 @@ function RootRoute() {
                             {!hideNav && (
                                 <nav
                                     data-app-bottom-nav
-                                    className="fixed left-0 right-0 z-50 w-full"
-                                    style={{ 
-                                        bottom: 0,
-                                        backgroundColor: '#000019', 
-                                        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-                                        isolation: 'isolate'
-                                    }}
+                                    className="app-bottom-nav"
                                 >
                                     <div className="mx-auto px-4 flex items-center justify-between w-full" style={{ height: '52px' }}>
                                         <TabLink to="/home" label="Карта" icon={(active) => (
