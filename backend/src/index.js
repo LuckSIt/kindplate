@@ -205,35 +205,45 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads"), {
 // ============================================
 // СЕССИИ: express-session + Redis
 // Redis хранит данные сессии на сервере, в cookie только ID (32 байта)
-// Это решает проблему потери сессий на iOS PWA
 // ============================================
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Подключение к Redis
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-const redisClient = new Redis(redisUrl, {
-    maxRetriesPerRequest: 3,
-    retryStrategy(times) {
-        if (times > 10) return null; // Прекращаем попытки после 10
-        return Math.min(times * 200, 5000);
-    },
-    lazyConnect: false,
-});
+// Подключение к Redis + RedisStore
+let sessionStore;
+try {
+    const Redis = require("ioredis");
+    // connect-redis v7-9: ESM default export
+    const connectRedis = require("connect-redis");
+    const RedisStoreClass = typeof connectRedis === 'function' ? connectRedis : connectRedis.default;
 
-redisClient.on('connect', () => logger.info('✅ Redis connected'));
-redisClient.on('error', (err) => logger.error('❌ Redis error:', err.message));
+    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+    const redisClient = new Redis(redisUrl, {
+        maxRetriesPerRequest: 3,
+        retryStrategy(times) {
+            if (times > 10) return null;
+            return Math.min(times * 200, 5000);
+        },
+    });
 
-const sessionStore = new RedisStore({
-    client: redisClient,
-    prefix: 'kp:sess:',
-    ttl: 30 * 24 * 60 * 60, // 30 дней (в секундах)
-});
+    redisClient.on('connect', () => logger.info('✅ Redis connected'));
+    redisClient.on('error', (err) => logger.error('❌ Redis error:', err.message));
 
-logger.info(`🍪 Session: Redis store, secure=${isProduction}, NODE_ENV=${process.env.NODE_ENV}`);
+    sessionStore = new RedisStoreClass({
+        client: redisClient,
+        prefix: 'kp:sess:',
+        ttl: 30 * 24 * 60 * 60, // 30 дней
+    });
+    logger.info('🗄️  Session store: Redis');
+} catch (err) {
+    logger.warn('⚠️  Redis unavailable, using MemoryStore (sessions won\'t persist across restarts):', err.message);
+    sessionStore = undefined; // express-session будет использовать MemoryStore
+}
+
+logger.info(`🍪 Session: secure=${isProduction}, NODE_ENV=${process.env.NODE_ENV}`);
 
 app.use(
     session({
-        store: sessionStore,
+        ...(sessionStore ? { store: sessionStore } : {}),
         name: 'kp.sid',
         secret: process.env.SECRET_KEY || process.env.JWT_SECRET || 'kindplate-session-fallback',
         resave: false,
