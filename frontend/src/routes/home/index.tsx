@@ -287,9 +287,11 @@ function RouteComponent() {
     }, [businessesFromSearch, businessesFromAll]);
     const hasBusinesses = businesses.length > 0;
 
-    // Запрос геолокации (при загрузке и по первому касанию карты — на iOS часто нужен жест пользователя)
+    // Геолокация на мобильных работает только по HTTPS и часто требует жеста пользователя (iOS)
+    const isSecureContext = typeof window !== 'undefined' && (window.isSecureContext || location.protocol === 'https:' || /^localhost$/i.test(location.hostname));
+
     const requestLocation = useCallback(() => {
-        if (!navigator.geolocation) return;
+        if (!navigator.geolocation || !isSecureContext) return;
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 setUserLocation([position.coords.latitude, position.coords.longitude]);
@@ -301,21 +303,25 @@ function RouteComponent() {
             },
             { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
         );
-    }, []);
+    }, [isSecureContext]);
 
     useEffect(() => {
         requestLocation();
     }, [requestLocation]);
 
-    // По первому касанию карты повторно запрашиваем геолокацию (помогает на iOS, где без жеста доступ может блокироваться)
-    const handleMapClick = useCallback(() => {
-        setSelectedBusiness(null);
-        setActiveSnap(0.2);
-        if (!userLocation && !locationRequestedOnTapRef.current && navigator.geolocation) {
+    // По первому касанию карты или фокусу в поиске запрашиваем геолокацию (на мобильных без жеста часто блокируется)
+    const requestLocationOnUserGesture = useCallback(() => {
+        if (!userLocation && !locationRequestedOnTapRef.current && navigator.geolocation && isSecureContext) {
             locationRequestedOnTapRef.current = true;
             requestLocation();
         }
-    }, [userLocation, requestLocation]);
+    }, [userLocation, requestLocation, isSecureContext]);
+
+    const handleMapClick = useCallback(() => {
+        setSelectedBusiness(null);
+        setActiveSnap(0.2);
+        requestLocationOnUserGesture();
+    }, [requestLocationOnUserGesture]);
 
     // Create order mutation
     const createOrderMutation = useMutation({
@@ -478,6 +484,7 @@ function RouteComponent() {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onFocus={() => {
+                                requestLocationOnUserGesture();
                                 document.documentElement.setAttribute('data-map-search-focused', 'true');
                                 bodyOverflowRef.current = document.body.style.overflow;
                                 document.body.style.overflow = 'hidden';

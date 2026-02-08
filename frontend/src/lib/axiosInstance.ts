@@ -38,17 +38,39 @@ const getBaseURL = () => currentBaseURL;
 console.log("🔍 Backend URL:", getBaseURL(), "Location:", typeof window !== 'undefined' ? location.hostname : 'server');
 
 export const getBackendURL = getBaseURL;
+
+/**
+ * URL картинок всегда через текущий origin (same-origin), чтобы на мобильных не было
+ * запросов на другой домен (api-kindplate.ru), которые могут не открываться или блокироваться.
+ */
 export const getImageURL = (path?: string) => {
     if (!path) return '';
-    if (/^https?:\/\//i.test(path)) return path;
-    const base = getBaseURL().replace(/\/$/, '');
-    // Убираем ведущий "api/" или "/api/" из path, чтобы не получать /api/api/uploads/...
-    let rel = path.startsWith('/') ? path.slice(1) : path;
-    if (rel.toLowerCase().startsWith('api/')) {
-        rel = rel.slice(4); // "api/uploads/..." -> "uploads/..."
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const norm = (p: string) => p.replace(/^\/+/, '').toLowerCase();
+
+    // Уже абсолютный URL (бэкенд иногда отдаёт полный URL) — переводим на same-origin
+    if (/^https?:\/\//i.test(path)) {
+        try {
+            const url = new URL(path);
+            let pathname = url.pathname.replace(/^\/+/, '');
+            if (pathname.startsWith('api/api/')) pathname = pathname.slice(4); // api/api/uploads -> uploads
+            else if (pathname.startsWith('api/')) pathname = pathname.slice(4);
+            if (!pathname.startsWith('uploads/')) return path; // не наш путь — как есть
+            return origin ? `${origin}/api/${pathname}` : path;
+        } catch {
+            return path;
+        }
     }
-    rel = rel.startsWith('/') ? rel : `/${rel}`;
-    return `${base}${rel}`;
+
+    // Относительный путь: убираем дублирование api/ и собираем same-origin URL
+    let rel = path.startsWith('/') ? path.slice(1) : path;
+    if (norm(rel).startsWith('api/')) rel = rel.slice(4);
+    const base = getBaseURL().replace(/\/$/, '');
+    // На клиенте предпочитаем origin + /api/... чтобы всегда same-origin
+    if (origin && (base === '/api' || base.startsWith(origin))) {
+        return `${origin}/api/${rel.replace(/^\/+/, '')}`;
+    }
+    return `${base}/${rel.replace(/^\/+/, '')}`;
 };
 
 // Ключи для хранения токенов
