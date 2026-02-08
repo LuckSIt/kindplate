@@ -8713,3 +8713,155 @@ div.font-montserrat-alt,
   background: rgba(255, 255, 255, 0.15);
   box-shadow: none;
 }
+
+/* Плашка инструкции «Как добавить на главный экран» — сверху, как баннер, контрастные иконки и кнопка */
+.add-to-home-instructions-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(0, 0, 0, 0.45);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.add-to-home-instructions {
+  position: fixed;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  max-width: calc(100vw - 32px);
+  width: 100%;
+  max-height: calc(100vh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  padding: 0;
+  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  animation: slideInDown 0.3s ease-out;
+}
+
+@media (min-width: 480px) {
+  .add-to-home-instructions {
+    max-width: 400px;
+  }
+}
+
+.add-to-home-instructions__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px 12px;
+}
+
+.add-to-home-instructions__title {
+  margin: 0;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 24px;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.add-to-home-instructions__close {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.add-to-home-instructions__close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.add-to-home-instructions__body {
+  padding: 8px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.add-to-home-instructions__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.add-to-home-instructions__step p {
+  margin: 0;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.9);
+  padding-top: 4px;
+}
+
+.add-to-home-instructions__step strong {
+  color: #22C55E;
+  font-weight: 600;
+}
+
+.add-to-home-instructions__icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(34, 197, 94, 0.2);
+  color: #22C55E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-to-home-instructions__icon--check {
+  font-size: 16px;
+  font-weight: 700;
+  color: #22C55E;
+}
+
+.add-to-home-instructions__fallback {
+  margin: 0;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.add-to-home-instructions__fallback strong {
+  color: #22C55E;
+}
+
+.add-to-home-instructions__btn {
+  margin: 0 20px 20px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 20px;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
+}
+
+.add-to-home-instructions__btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+}
+
+.add-to-home-instructions__btn:active {
+  transform: translateY(0) scale(0.98);
+}

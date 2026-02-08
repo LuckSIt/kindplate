@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { X, Share, Plus, MoreVertical } from 'lucide-react';
-import { KP_MODAL } from '@/lib/kp-modal-style';
 
 const STORAGE_KEY = 'add-to-home-screen-dismissed';
 const STORAGE_EXPIRY_DAYS = 7;
@@ -117,144 +116,85 @@ export function AddToHomeScreenPrompt() {
       {instructionsOpen && (
         <>
           <div
-            className="fixed inset-0 z-[9998]"
-            style={KP_MODAL.backdrop}
+            className="add-to-home-instructions-backdrop"
             onClick={() => setInstructionsOpen(false)}
             aria-hidden="true"
           />
           <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
-            style={{
-              paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-              paddingTop: 'env(safe-area-inset-top, 0px)',
-            }}
+            className="add-to-home-instructions"
+            role="dialog"
+            aria-labelledby="add-to-home-instructions-title"
+            onClick={(e) => e.stopPropagation()}
           >
-            <div
-              role="dialog"
-              aria-labelledby="add-to-home-instructions-title"
-              className="w-full max-w-[340px] rounded-2xl overflow-hidden"
-              style={KP_MODAL.card}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex justify-end pt-3 pr-3">
-                <button
-                  type="button"
-                  onClick={() => setInstructionsOpen(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full transition-all active:scale-95"
-                  style={{ color: KP_MODAL.textMuted }}
-                  aria-label="Закрыть"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="px-6 pb-4 -mt-1">
-                <h2
-                  id="add-to-home-instructions-title"
-                  className="font-bold"
-                  style={{
-                    fontSize: '18px',
-                    lineHeight: '24px',
-                    color: KP_MODAL.text,
-                  }}
-                >
-                  Как добавить на главный экран
-                </h2>
-              </div>
-              <div className="mx-6 h-px" style={{ background: KP_MODAL.divider }} />
-              <div className="px-6 py-4 space-y-4">
+            <div className="add-to-home-instructions__head">
+              <h2 id="add-to-home-instructions-title" className="add-to-home-instructions__title">
+                Как добавить на главный экран
+              </h2>
+              <button
+                type="button"
+                className="add-to-home-instructions__close"
+                onClick={() => setInstructionsOpen(false)}
+                aria-label="Закрыть"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="add-to-home-instructions__body">
                 {isIOS ? (
                   <>
-                    <div className="flex items-start gap-3">
-                      <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{ background: KP_MODAL.primaryRgba }}
-                      >
-                        <Share className="w-4 h-4" style={{ color: KP_MODAL.primary }} />
-                      </div>
-                      <p className="text-[14px] leading-snug pt-1" style={{ color: KP_MODAL.text }}>
-                        1. Нажмите <strong style={{ color: KP_MODAL.primary }}>«Поделиться»</strong> внизу экрана Safari
-                      </p>
+                  <div className="add-to-home-instructions__step">
+                    <div className="add-to-home-instructions__icon">
+                      <Share className="w-4 h-4" />
                     </div>
-                    <div className="flex items-start gap-3">
-                      <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{ background: KP_MODAL.primaryRgba }}
-                      >
-                        <Plus className="w-4 h-4" style={{ color: KP_MODAL.primary }} />
-                      </div>
-                      <p className="text-[14px] leading-snug pt-1" style={{ color: KP_MODAL.text }}>
-                        2. Выберите <strong>«На экран „Домой“»</strong>
-                      </p>
+                    <p>1. Нажмите <strong>«Поделиться»</strong> внизу экрана Safari</p>
+                  </div>
+                  <div className="add-to-home-instructions__step">
+                    <div className="add-to-home-instructions__icon">
+                      <Plus className="w-4 h-4" />
                     </div>
-                    <div className="flex items-start gap-3">
-                      <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-[16px] font-bold"
-                        style={{ background: KP_MODAL.primaryRgba, color: '#22C55E' }}
-                      >
-                        ✓
-                      </div>
-                      <p className="text-[14px] leading-snug pt-1" style={{ color: KP_MODAL.text }}>
-                        3. Нажмите <strong>«Добавить»</strong>
-                      </p>
+                    <p>2. Выберите <strong>«На экран „Домой"»</strong></p>
+                  </div>
+                  <div className="add-to-home-instructions__step">
+                    <div className="add-to-home-instructions__icon add-to-home-instructions__icon--check">
+                      ✓
                     </div>
-                  </>
-                ) : isAndroid ? (
-                  <>
-                    <div className="flex items-start gap-3">
-                      <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{ background: KP_MODAL.primaryRgba }}
-                      >
-                        <MoreVertical className="w-4 h-4" style={{ color: KP_MODAL.primary }} />
-                      </div>
-                      <p className="text-[14px] leading-snug pt-1" style={{ color: KP_MODAL.text }}>
-                        1. Нажмите <strong>меню ⋮</strong> в правом верхнем углу браузера
-                      </p>
+                    <p>3. Нажмите <strong>«Добавить»</strong></p>
+                  </div>
+                </>
+              ) : isAndroid ? (
+                <>
+                  <div className="add-to-home-instructions__step">
+                    <div className="add-to-home-instructions__icon">
+                      <MoreVertical className="w-4 h-4" />
                     </div>
-                    <div className="flex items-start gap-3">
-                      <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{ background: KP_MODAL.primaryRgba }}
-                      >
-                        <Plus className="w-4 h-4" style={{ color: KP_MODAL.primary }} />
-                      </div>
-                      <p className="text-[14px] leading-snug pt-1" style={{ color: KP_MODAL.text }}>
-                        2. Выберите <strong>«Установить приложение»</strong> или <strong>«Добавить на главный экран»</strong>
-                      </p>
+                    <p>1. Нажмите <strong>меню ⋮</strong> в правом верхнем углу браузера</p>
+                  </div>
+                  <div className="add-to-home-instructions__step">
+                    <div className="add-to-home-instructions__icon">
+                      <Plus className="w-4 h-4" />
                     </div>
-                    <div className="flex items-start gap-3">
-                      <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-[16px] font-bold"
-                        style={{ background: KP_MODAL.primaryRgba, color: '#22C55E' }}
-                      >
-                        ✓
-                      </div>
-                      <p className="text-[14px] leading-snug pt-1" style={{ color: KP_MODAL.text }}>
-                        3. Подтвердите установку
-                      </p>
+                    <p>2. Выберите <strong>«Установить приложение»</strong> или <strong>«Добавить на главный экран»</strong></p>
+                  </div>
+                  <div className="add-to-home-instructions__step">
+                    <div className="add-to-home-instructions__icon add-to-home-instructions__icon--check">
+                      ✓
                     </div>
-                  </>
-                ) : (
-                  <p className="text-[14px]" style={{ color: KP_MODAL.text }}>
-                    Откройте меню браузера и выберите пункт <strong>«Добавить на главный экран»</strong> или <strong>«Установить приложение»</strong>.
-                  </p>
-                )}
-              </div>
-              <div className="px-6 pb-6">
-                <button
-                  type="button"
-                  className="w-full h-12 rounded-xl font-semibold text-white transition-all active:scale-[0.98]"
-                  style={{
-                    background: KP_MODAL.primary,
-                    boxShadow: '0 4px 16px rgba(0, 25, 0, 0.4)',
-                    fontSize: '15px',
-                  }}
-                  onClick={() => setInstructionsOpen(false)}
-                >
-                  Понятно
-                </button>
-              </div>
+                    <p>3. Подтвердите установку</p>
+                  </div>
+                </>
+              ) : (
+                <p className="add-to-home-instructions__fallback">
+                  Откройте меню браузера и выберите пункт <strong>«Добавить на главный экран»</strong> или <strong>«Установить приложение»</strong>.
+                </p>
+              )}
             </div>
+            <button
+              type="button"
+              className="add-to-home-instructions__btn"
+              onClick={() => setInstructionsOpen(false)}
+            >
+              Понятно
+            </button>
           </div>
         </>
       )}
