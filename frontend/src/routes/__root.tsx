@@ -78,18 +78,26 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
             //    persistent login на iOS PWA.
             // ============================================================
             try {
+                console.log('🔑 Calling /auth/me...');
                 const response = await axiosInstance.get("/auth/me", {
                     skipErrorNotification: true,
                     params: { _t: Date.now() }
                 } as any);
 
+                console.log('🔑 /auth/me response status:', response.status);
+                console.log('🔑 /auth/me response data:', JSON.stringify(response.data));
+                
                 const user = extractUser(response.data);
+                console.log('🔑 extracted user:', user ? (user.email || user.id) : 'null');
+                
                 if (user) {
                     console.log('✅ User authenticated (session/JWT):', user.email || user.id);
                     return { user, success: true };
                 }
+                console.warn('⚠️ /auth/me returned 200 but no user in response');
             } catch (err: any) {
                 console.warn('⚠️ /auth/me failed:', err?.response?.status || err?.message);
+                console.warn('⚠️ /auth/me error details:', err?.response?.data || err?.message);
                 // 401 — переходим к refresh ниже
             }
 

@@ -431,11 +431,14 @@ axiosInstance.interceptors.response.use(
             error.message?.includes('ECONNREFUSED') ||
             !error.response;
 
-        // Авто-фолбэк: если текущий бэкенд недоступен, переключаемся на резервный
-        // Работает для: localhost → remote, /api → api-kindplate.ru
+        // Авто-фолбэк: ТОЛЬКО для localhost → remote (при разработке)
+        // НЕ переключаем /api → api-kindplate.ru на продакшене!
+        // Кросс-доменный URL ломает session cookies (kp.sid привязан к app-kindplate.ru)
         if (
             isNetworkError &&
-            !config._retriedWithFallback
+            !config._retriedWithFallback &&
+            typeof window !== 'undefined' &&
+            isLocalHost(window.location.hostname)
         ) {
             config._retriedWithFallback = true;
             switchBaseURL(fallbackBaseURL);
@@ -451,18 +454,20 @@ axiosInstance.interceptors.response.use(
         const status = error.response?.status;
 
         // ============================================================
-        // 401 обрабатываем ВСЕГДА (независимо от skipNotification),
-        // чтобы автоматический refresh токена работал для всех запросов
+        // 401: пробуем refresh токен, НО НЕ делаем жёсткий редирект.
+        // Редирект на /auth/login приводил к race condition: параллельный
+        // запрос мог получить 401, очистить токены и перенаправить на логин,
+        // даже если /auth/me уже вернул пользователя через session cookie.
+        // Теперь: только тихо пробуем refresh, без clear/redirect.
         // ============================================================
         if (status === 401) {
             const cfg = config;
             const isRefreshUrl = String(cfg?.url || '').includes('/auth/refresh');
             const alreadyRetried = !!cfg?._hasRetriedRefresh;
 
-            // Если это сам refresh-запрос или уже была попытка — сдаёмся
+            // Если это сам refresh-запрос или уже была попытка — просто reject
             if (isRefreshUrl || alreadyRetried) {
-                tokenStorage.clear();
-                if (!skipNotification) window.location.href = '/auth/login';
+                console.warn('🔒 401: refresh failed or already retried, rejecting');
                 return Promise.reject(error);
             }
 
@@ -482,13 +487,14 @@ axiosInstance.interceptors.response.use(
 
             // Пробуем refresh: из клиентского хранилища или через httpOnly cookie (same-origin)
             const rt = tokenStorage.getRefreshToken();
-            // Даже если rt нет в localStorage — httpOnly cookie может содержать refresh token
             isRefreshing = true;
             return (async () => {
                 try {
                     console.log('🔄 Interceptor: refreshing token...', { hasClientRT: !!rt });
                     const body = rt ? { refreshToken: rt } : {};
-                    const r = await axiosInstance.post('/auth/refresh', body);
+                    const r = await axiosInstance.post('/auth/refresh', body, {
+                        skipErrorNotification: true
+                    } as any);
                     const newAccessToken = r.data.accessToken;
                     tokenStorage.setAccessToken(newAccessToken);
                     if (r.data.refreshToken) {
@@ -503,11 +509,8 @@ axiosInstance.interceptors.response.use(
                 } catch {
                     isRefreshing = false;
                     onRefreshFailed();
-                    tokenStorage.clear();
-                    if (!skipNotification) {
-                        notify.error('Ошибка авторизации', 'Необходимо войти в систему');
-                        window.location.href = '/auth/login';
-                    }
+                    // НЕ очищаем токены и НЕ редиректим — session cookie может работать
+                    console.warn('🔒 401: refresh failed, but session cookie may still be valid');
                     return Promise.reject(error);
                 }
             })();
