@@ -9,6 +9,13 @@ services:
       - db:/var/lib/postgresql/data
     restart: unless-stopped
 
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
   backend:
     build:
       context: ./backend
@@ -24,9 +31,11 @@ services:
       DB_PORT: 5432
       SECRET_KEY: ${SECRET_KEY}
       JWT_SECRET: ${JWT_SECRET}
+      REDIS_URL: redis://redis:6379
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-https://app-kindplate.ru}
     depends_on:
       - postgres
+      - redis
     restart: unless-stopped
 
   frontend:
@@ -56,6 +65,7 @@ services:
 
 volumes:
   db:
+  redis_data:
   caddy_data:
   caddy_config:
 

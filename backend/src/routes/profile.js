@@ -350,8 +350,10 @@ profileRouter.delete("/", requireAuth, asyncHandler(async (req, res) => {
     await pool.query('DELETE FROM users WHERE id=$1', [userId]);
 
     // Очищаем сессию
-    req.session.userId = undefined;
-    req.session.isBusiness = undefined;
+    if (req.session) {
+        req.session.userId = undefined;
+        req.session.isBusiness = undefined;
+    }
 
     logger.warn('Account deleted', { userId });
 

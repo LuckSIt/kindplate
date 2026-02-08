@@ -163,8 +163,10 @@ authRouter.post("/login", validateLogin, asyncHandler(async (req, res) => {
 }));
 
 authRouter.get("/logout", (req, res) => {
+    const userId = req.session?.userId;
+    
     // Если пользователь уже не авторизован, просто возвращаем успех
-    if (req.session.userId === undefined) {
+    if (userId === undefined) {
         clearRefreshCookie(res);
         return res.json({
             success: true,
@@ -172,15 +174,18 @@ authRouter.get("/logout", (req, res) => {
         });
     }
     
-    logger.info("User logged out", { userId: req.session.userId });
-    req.session.userId = undefined;
-    req.session.isBusiness = undefined;
-    req.session.role = undefined;
-    clearRefreshCookie(res);
+    logger.info("User logged out", { userId });
     
-    res.json({
-        success: true,
-        message: "Выход выполнен успешно"
+    // express-session: полностью уничтожаем сессию в Redis
+    req.session.destroy((err) => {
+        if (err) {
+            logger.error("Session destroy error:", err);
+        }
+        clearRefreshCookie(res);
+        res.json({
+            success: true,
+            message: "Выход выполнен успешно"
+        });
     });
 });
 
@@ -243,7 +248,7 @@ authRouter.get("/me", asyncHandler(async (req, res) => {
         );
 
         if (result.rowCount === 0) {
-            req.session.userId = undefined; // Очищаем сессию если пользователь не найден
+            if (req.session) req.session.userId = undefined; // Очищаем сессию если пользователь не найден
             return res.json({
                 user: null,
                 success: true,

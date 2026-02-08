@@ -93,7 +93,7 @@ async function businessOnly(req, res, next) {
     const result = await pool.query("SELECT is_business FROM users WHERE id=$1", [userId]);
 
     if (result.rowCount === 0) {
-        req.session.userId = undefined;
+        if (req.session) req.session.userId = undefined;
         return res.status(401).send({
             success: false,
             error: "NOT_AUTHENTICATED",

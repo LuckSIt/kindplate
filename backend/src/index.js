@@ -1,7 +1,9 @@
 require("dotenv").config();
 
 const express = require("express");
-const cookieSession = require("cookie-session");
+const session = require("express-session");
+const RedisStore = require("connect-redis").default;
+const Redis = require("ioredis");
 const cors = require("cors");
 const path = require("path");
 const rateLimit = require("express-rate-limit");
@@ -200,23 +202,49 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads"), {
         }
     }
 }));
-// Определяем настройки кук
-// Теперь API проксируется через app-kindplate.ru/api/* (same-origin), 
-// поэтому используем 'lax' — он безопаснее и работает на iOS PWA
+// ============================================
+// СЕССИИ: express-session + Redis
+// Redis хранит данные сессии на сервере, в cookie только ID (32 байта)
+// Это решает проблему потери сессий на iOS PWA
+// ============================================
 const isProduction = process.env.NODE_ENV === 'production';
-const cookieSameSite = 'lax'; // same-origin: 'lax' работает везде, включая iOS Safari
-const cookieSecure = isProduction; // В продакшене всегда true (HTTPS)
 
-logger.info(`🍪 Cookie settings: sameSite=${cookieSameSite}, secure=${cookieSecure}, NODE_ENV=${process.env.NODE_ENV}`);
+// Подключение к Redis
+const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+const redisClient = new Redis(redisUrl, {
+    maxRetriesPerRequest: 3,
+    retryStrategy(times) {
+        if (times > 10) return null; // Прекращаем попытки после 10
+        return Math.min(times * 200, 5000);
+    },
+    lazyConnect: false,
+});
+
+redisClient.on('connect', () => logger.info('✅ Redis connected'));
+redisClient.on('error', (err) => logger.error('❌ Redis error:', err.message));
+
+const sessionStore = new RedisStore({
+    client: redisClient,
+    prefix: 'kp:sess:',
+    ttl: 30 * 24 * 60 * 60, // 30 дней (в секундах)
+});
+
+logger.info(`🍪 Session: Redis store, secure=${isProduction}, NODE_ENV=${process.env.NODE_ENV}`);
 
 app.use(
-    cookieSession({
-        name: "session",
-        keys: [process.env.SECRET_KEY || process.env.JWT_SECRET || 'kindplate-session-fallback'],
-        sameSite: cookieSameSite,
-        secure: cookieSecure,
-        httpOnly: true,
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
+    session({
+        store: sessionStore,
+        name: 'kp.sid',
+        secret: process.env.SECRET_KEY || process.env.JWT_SECRET || 'kindplate-session-fallback',
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: 'lax',
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
+            path: '/',
+        },
     })
 );
 
