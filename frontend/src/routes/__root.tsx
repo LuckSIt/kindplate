@@ -71,29 +71,34 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
             
             console.log('🔐 Auth check:', { hasAccessToken: !!at, hasRefreshToken: !!rt });
 
-            // 2. Пробуем /auth/me с текущим access-токеном (если есть)
-            //    Даже без токенов в localStorage — session cookie или httpOnly cookie 
-            //    могут сработать (same-origin proxy через Caddy)
-            if (at) {
-                try {
-                    const response = await axiosInstance.get("/auth/me", {
-                        skipErrorNotification: true,
-                        params: { _t: Date.now() }
-                    } as any);
+            // ============================================================
+            // 2. ВСЕГДА пробуем /auth/me — даже без клиентских токенов!
+            //    Браузер автоматически отправит httpOnly cookie (kp.sid),
+            //    которая связана с Redis-сессией. Это главный механизм
+            //    persistent login на iOS PWA.
+            // ============================================================
+            try {
+                const response = await axiosInstance.get("/auth/me", {
+                    skipErrorNotification: true,
+                    params: { _t: Date.now() }
+                } as any);
 
-                    const user = extractUser(response.data);
-                    if (user) {
-                        console.log('✅ User authenticated:', user.email || user.id);
-                        return { user, success: true };
-                    }
-                } catch (err: any) {
-                    console.warn('⚠️ /auth/me failed:', err?.response?.status || err?.message);
-                    // 401 уже обработан интерцептором (включая refresh).
+                const user = extractUser(response.data);
+                if (user) {
+                    console.log('✅ User authenticated (session/JWT):', user.email || user.id);
+                    return { user, success: true };
                 }
+            } catch (err: any) {
+                console.warn('⚠️ /auth/me failed:', err?.response?.status || err?.message);
+                // 401 — переходим к refresh ниже
             }
 
-            // 3. Access-токен отсутствует или протух — пробуем refresh
-            //    Refresh token может быть в localStorage/IndexedDB или в httpOnly cookie
+            // ============================================================
+            // 3. /auth/me не вернул пользователя — пробуем refresh
+            //    Refresh token может быть:
+            //    a) в localStorage/IndexedDB (rt)
+            //    b) в httpOnly cookie kp_refresh (отправится автоматически)
+            // ============================================================
             console.log('🔄 Trying refresh...', { hasClientRT: !!rt });
             try {
                 const body = rt ? { refreshToken: rt } : {};

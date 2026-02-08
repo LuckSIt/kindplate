@@ -91,6 +91,19 @@ authRouter.post("/register", registerLimiter, validateRegistration, asyncHandler
     req.session.isBusiness = false;
     req.session.role = 'customer';
 
+    // Явно сохраняем сессию в Redis ДО отправки ответа
+    await new Promise((resolve, reject) => {
+        req.session.save((err) => {
+            if (err) {
+                logger.error('❌ Session save failed:', err);
+                reject(err);
+            } else {
+                logger.info('✅ Session saved to Redis for user:', userId);
+                resolve();
+            }
+        });
+    });
+
     // Токены для persistent login
     const tokens = await createTokenPair({ id: userId, email, is_business: false });
     // httpOnly cookie — надёжное хранение refresh token для iOS PWA
@@ -136,6 +149,19 @@ authRouter.post("/login", validateLogin, asyncHandler(async (req, res) => {
         req.session.userId = id;
         req.session.isBusiness = is_business;
         req.session.role = userRole;
+
+        // Явно сохраняем сессию в Redis ДО отправки ответа
+        await new Promise((resolve, reject) => {
+            req.session.save((err) => {
+                if (err) {
+                    logger.error('❌ Session save failed:', err);
+                    reject(err);
+                } else {
+                    logger.info('✅ Session saved to Redis for user:', id);
+                    resolve();
+                }
+            });
+        });
 
         // Создаём пару токенов (access + refresh)
         const tokens = await createTokenPair({ id, email, is_business });
