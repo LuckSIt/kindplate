@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/lib/schema";
@@ -9,6 +9,7 @@ import { notify } from "@/lib/notifications";
 import type { LoginForm } from "@/lib/types";
 import arrowBackIcon from "@/figma/arrow-back.svg";
 import { DocumentsModal } from "@/components/ui/documents-modal";
+import { authContext } from "@/lib/auth";
 
 export const Route = createFileRoute("/auth/login/")({
     component: RouteComponent,
@@ -17,7 +18,18 @@ export const Route = createFileRoute("/auth/login/")({
 function RouteComponent() {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const { user, isLoading: authLoading } = useContext(authContext);
     const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
+
+    // Если пользователь уже авторизован — перенаправляем на главную.
+    // Это критично для iOS PWA: предыдущий interceptor мог сохранить URL /auth/login,
+    // и PWA при открытии попадает сюда, даже если сессия валидна.
+    useEffect(() => {
+        if (!authLoading && user) {
+            console.log('🔄 Login page: user already authenticated, redirecting to /home');
+            navigate({ to: "/home" });
+        }
+    }, [user, authLoading, navigate]);
     const methods = useForm({
         resolver: zodResolver(loginSchema),
     });
