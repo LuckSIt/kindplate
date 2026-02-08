@@ -13,18 +13,15 @@ const logger = winston.createLogger({
         // Записываем все логи в файл
         new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
         new winston.transports.File({ filename: 'logs/combined.log' }),
+        // ВСЕГДА выводим в консоль (критично для Docker — docker compose logs)
+        new winston.transports.Console({
+            format: winston.format.combine(
+                winston.format.colorize(),
+                winston.format.simple()
+            )
+        }),
     ],
 });
-
-// В режиме разработки также выводим в консоль
-if (process.env.NODE_ENV !== 'production') {
-    logger.add(new winston.transports.Console({
-        format: winston.format.combine(
-            winston.format.colorize(),
-            winston.format.simple()
-        )
-    }));
-}
 
 module.exports = logger;
 

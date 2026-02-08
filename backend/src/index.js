@@ -2,8 +2,6 @@ require("dotenv").config();
 
 const express = require("express");
 const session = require("express-session");
-const RedisStore = require("connect-redis").default;
-const Redis = require("ioredis");
 const cors = require("cors");
 const path = require("path");
 const rateLimit = require("express-rate-limit");
@@ -212,9 +210,23 @@ const isProduction = process.env.NODE_ENV === 'production';
 let sessionStore;
 try {
     const Redis = require("ioredis");
-    // connect-redis v7-9: ESM default export
     const connectRedis = require("connect-redis");
-    const RedisStoreClass = typeof connectRedis === 'function' ? connectRedis : connectRedis.default;
+    
+    // connect-redis v7+: ESM default export
+    const RedisStoreClass = typeof connectRedis === 'function' 
+        ? connectRedis 
+        : (connectRedis.default || connectRedis.RedisStore);
+    
+    console.log('🔧 Redis init:', {
+        redisModule: typeof Redis,
+        connectRedisModule: typeof connectRedis,
+        RedisStoreClass: typeof RedisStoreClass,
+        REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379'
+    });
+
+    if (!RedisStoreClass) {
+        throw new Error('RedisStore class not found in connect-redis module');
+    }
 
     const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
     const redisClient = new Redis(redisUrl, {
@@ -225,17 +237,19 @@ try {
         },
     });
 
-    redisClient.on('connect', () => logger.info('✅ Redis connected'));
-    redisClient.on('error', (err) => logger.error('❌ Redis error:', err.message));
+    redisClient.on('connect', () => console.log('✅ Redis connected'));
+    redisClient.on('ready', () => console.log('✅ Redis ready'));
+    redisClient.on('error', (err) => console.error('❌ Redis error:', err.message));
 
     sessionStore = new RedisStoreClass({
         client: redisClient,
         prefix: 'kp:sess:',
         ttl: 30 * 24 * 60 * 60, // 30 дней
     });
-    logger.info('🗄️  Session store: Redis');
+    console.log('🗄️  Session store: Redis');
 } catch (err) {
-    logger.warn('⚠️  Redis unavailable, using MemoryStore (sessions won\'t persist across restarts):', err.message);
+    console.error('⚠️  Redis unavailable, using MemoryStore:', err.message);
+    console.error('⚠️  Stack:', err.stack);
     sessionStore = undefined; // express-session будет использовать MemoryStore
 }
 
