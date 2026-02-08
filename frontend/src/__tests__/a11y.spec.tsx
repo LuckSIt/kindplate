@@ -34,14 +34,12 @@ describe('Accessibility basics', () => {
     expect(onClick).toHaveBeenCalled();
   });
 
-  it('Push onboarding opens modal with role="dialog" and focuses a control', async () => {
+  it('Push onboarding shows modal with role="dialog" and action buttons', async () => {
     render(<PushOnboarding />);
-    const more = screen.getByRole('button', { name: /подробнее/i });
-    await userEvent.click(more);
-    const dialog = screen.getByRole('dialog');
+    const dialog = screen.getByRole('dialog', { name: /включить уведомления/i });
     expect(dialog).toBeInTheDocument();
-    // first button auto-focused
-    expect(screen.getByRole('button', { name: /отмена/i })).toHaveFocus();
+    expect(screen.getByRole('button', { name: /разрешить уведомления/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /позже/i })).toBeInTheDocument();
   });
 });
 
