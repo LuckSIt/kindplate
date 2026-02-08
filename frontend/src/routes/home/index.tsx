@@ -291,19 +291,27 @@ function RouteComponent() {
     const isSecureContext = typeof window !== 'undefined' && (window.isSecureContext || location.protocol === 'https:' || /^localhost$/i.test(location.hostname));
 
     const requestLocation = useCallback(() => {
-        if (!navigator.geolocation || !isSecureContext) return;
+        if (typeof navigator === 'undefined' || !navigator.geolocation) return;
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                setUserLocation([position.coords.latitude, position.coords.longitude]);
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+                    setUserLocation([lat, lon]);
+                }
             },
             (error) => {
                 if (import.meta.env.DEV) {
                     console.info("⚠️ Геолокация недоступна:", error.message);
                 }
             },
-            { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
+            {
+                enableHighAccuracy: true,
+                timeout: 20000,
+                maximumAge: 60000,
+            }
         );
-    }, [isSecureContext]);
+    }, []);
 
     useEffect(() => {
         requestLocation();

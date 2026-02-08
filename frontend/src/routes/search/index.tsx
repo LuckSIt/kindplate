@@ -34,22 +34,26 @@ function RouteComponent() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    const loc: [number, number] = [position.coords.latitude, position.coords.longitude];
-                    setUserLocation(loc);
-                    setFilters(prev => ({
-                        ...prev,
-                        lat: loc[0],
-                        lon: loc[1],
-                        radius_km: prev.radius_km || 10
-                    }));
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+                        const loc: [number, number] = [lat, lon];
+                        setUserLocation(loc);
+                        setFilters(prev => ({
+                            ...prev,
+                            lat,
+                            lon,
+                            radius_km: prev.radius_km || 10
+                        }));
+                    }
                 },
                 (error) => {
                     console.warn('Ошибка получения геолокации:', error);
                 },
                 {
-                    enableHighAccuracy: false,
-                    timeout: 15000,
-                    maximumAge: 300000,
+                    enableHighAccuracy: true,
+                    timeout: 20000,
+                    maximumAge: 60000,
                 }
             );
         }
