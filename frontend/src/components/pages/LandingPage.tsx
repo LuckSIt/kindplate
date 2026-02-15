@@ -187,23 +187,24 @@ export function LandingPage() {
                     </div>
                 </header> */}
 
-                {/* Hero — по скриншоту: центрированный заголовок, подпись с подчёркиванием, кнопки внизу */}
+                {/* Hero — как должно быть: заголовок и подпись белым по тёмному фону, без светлого блока; кнопка справа — белая обводка и белый текст */}
                 <section className="px-4 pt-8 pb-10">
                     <div className="max-w-[360px] mx-auto text-center">
                         <h1
                             data-testid="hero-heading"
-                            className="text-white font-extrabold leading-[1.2] mb-5"
+                            className="text-white font-extrabold leading-[1.2] mb-5 no-underline"
                             style={{
                                 fontFamily: 'Manrope, sans-serif',
                                 fontSize: 33,
                                 letterSpacing: '-0.04em',
+                                textDecoration: 'none',
                             }}
                         >
                             <span className="block">Выгодно для тебя</span>
                             <span className="block mt-1">Полезно для планеты</span>
                         </h1>
                         <p
-                            className="mb-10 text-center"
+                            className="mb-10 text-center text-white"
                             style={{
                                 fontFamily: 'Manrope, sans-serif',
                                 fontWeight: 200,
@@ -211,22 +212,16 @@ export function LandingPage() {
                                 lineHeight: '108%',
                                 letterSpacing: 0,
                                 textAlign: 'center',
-                                background: '#ECF4F2',
-                                color: '#10172A',
-                                padding: '12px 16px',
-                                borderRadius: 8,
-                                boxSizing: 'border-box',
                             }}
                         >
-                            <span className="block">Соединяем людей</span>
-                            <span className="block">с кафе и ресторанами</span>
+                            <span className="block">Соединяем людей с кафе и ресторанами</span>
                             <span className="block">
                                 для{' '}
                                 <span style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 700, fontSize: 20, lineHeight: '108%', letterSpacing: 0 }}>выгодной</span>
                                 {' '}и{' '}
                                 <span style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 700, fontSize: 20, lineHeight: '108%', letterSpacing: 0 }}>осознанной</span>
+                                {' '}покупки еды
                             </span>
-                            <span className="block">покупки еды</span>
                         </p>
                         <div className="flex gap-4 justify-center flex-wrap">
                             <Link to="/auth/login">
@@ -241,10 +236,10 @@ export function LandingPage() {
                             <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer">
                                 <button
                                     type="button"
-                                    className="h-[51px] min-w-[160px] px-6 rounded-[8px] text-[15px] font-bold transition-opacity hover:opacity-90 border-[1.5px] border-solid"
+                                    className="h-[51px] min-w-[160px] px-6 rounded-[8px] text-[15px] font-bold text-white transition-opacity hover:opacity-90 border-[1.5px] border-solid"
                                     style={{
                                         fontFamily: 'Manrope, sans-serif',
-                                        borderColor: '#ECF4F2',
+                                        borderColor: '#FFFFFF',
                                         color: '#FFFFFF',
                                         backgroundColor: 'transparent',
                                     }}
