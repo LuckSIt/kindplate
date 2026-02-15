@@ -151,9 +151,9 @@ export function LandingPage() {
                     paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))'
                 }}
             >
-                {/* Header */}
+                {/* Header 
                 <header className="px-[12px] pb-0" style={{ paddingTop: 'calc(env(safe-area-inset-top, 14px) + 14px)' }}>
-                    {/* Навбар из макета Figma (node 322-460) */}
+                    {/* Навбар из макета Figma (node 322-460) 
                     <div
                         className="mx-auto flex h-[58px] w-full max-w-[780px] items-center justify-between rounded-[18px] px-[20px] shadow-[0_12px_26px_rgba(0,0,0,0.16)]"
                         style={{ backgroundColor: "#ffffff" }}
@@ -183,53 +183,116 @@ export function LandingPage() {
                                 style={{ backgroundColor: "#000019" }}
                             />
                         </button>
-                        */}
+                        
                     </div>
-                </header>
+                </header> */}
 
-                {/* Hero — точно по Figma: 337×84, mt 15, ml 28; подзаголовок mt 17, ml 40, 326px */}
+                {/* Hero — стили по макету: Manrope 800, 33px, line-height 137%, letter-spacing -4%; размеры 278×45 и 337×45 */}
                 <section className="pt-[21px] pb-0 px-4 sm:pl-[28px] sm:pr-[28px]">
-                    <div className="max-w-[337px] mx-auto">
-                        <h1
-                            data-testid="hero-heading"
-                            className="relative w-full max-w-[337px] h-[84px] text-[28px] sm:text-[33px] leading-[1.1] text-white font-extrabold text-center sm:text-left"
-                            style={{ fontFamily: 'Manrope, sans-serif', letterSpacing: -1.32 }}
-                        >
-                            <span className="block sm:absolute sm:top-0 sm:left-[29px]">Выгодно для тебя</span>
-                            <span className="block sm:absolute sm:top-[39px] sm:left-0">Полезно для планеты</span>
+                    <div className="relative max-w-[393px] mx-auto" style={{ minHeight: 301 }}>
+                        <h1 data-testid="hero-heading" className="sr-only">
+                            Выгодно для тебя. Полезно для планеты.
                         </h1>
+                        <span
+                            aria-hidden
+                            className="absolute text-white block"
+                            style={{
+                                fontFamily: 'Manrope, sans-serif',
+                                fontWeight: 800,
+                                fontStyle: 'normal',
+                                fontSize: 33,
+                                lineHeight: '137%',
+                                letterSpacing: '-0.04em',
+                                width: 278,
+                                height: 45,
+                                top: 0,
+                                left: 57,
+                            }}
+                        >
+                            Выгодно для тебя
+                        </span>
+                        <span
+                            aria-hidden
+                            className="absolute text-white block"
+                            style={{
+                                fontFamily: 'Manrope, sans-serif',
+                                fontWeight: 800,
+                                fontStyle: 'normal',
+                                fontSize: 33,
+                                lineHeight: '137%',
+                                letterSpacing: '-0.04em',
+                                width: 337,
+                                height: 45,
+                                top: 39,
+                                left: 28,
+                            }}
+                        >
+                            Полезно для планеты
+                        </span>
                         <p
-                            className="mt-[17px] max-w-[326px] mx-auto sm:mx-0 text-[18px] sm:text-[20px] text-center leading-normal font-extralight"
-                            style={{ color: '#ECF4F2', fontFamily: 'Manrope, sans-serif' }}
+                            className="absolute text-center"
+                            style={{
+                                fontFamily: 'Manrope, sans-serif',
+                                fontWeight: 200,
+                                fontSize: 20,
+                                lineHeight: '108%',
+                                letterSpacing: 0,
+                                color: '#ECF4F2',
+                                width: 326,
+                                height: 88,
+                                top: 213,
+                                left: 40,
+                            }}
                         >
                             Соединяем людей с кафе и ресторанами для{' '}
-                            <strong className="font-bold">выгодной</strong> и{' '}
-                            <strong className="font-bold">осознанной</strong> покупки еды
+                            <span style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 700, fontSize: 20, lineHeight: '108%', letterSpacing: 0 }}>выгодной</span> и{' '}
+                            <span style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 700, fontSize: 20, lineHeight: '108%', letterSpacing: 0 }}>осознанной</span> покупки еды
                         </p>
                     </div>
                 </section>
 
-                {/* CTA — по Figma: 361×51, mt 48, ml 16, кнопки по 173px, gap 15px */}
-                <section className="w-full flex justify-center" style={{ marginTop: 48, paddingLeft: 16, paddingRight: 16 }}>
-                    <div className="flex gap-[15px] w-full max-w-[361px]">
-                        <Link to="/auth/login" className="flex-1 min-w-0">
+                {/* CTA — по макету: 173×51, top 349, left 16 / 204, padding 19 44 18 44 */}
+                <section className="w-full relative" style={{ minHeight: 400 }}>
+                    <div className="absolute w-full max-w-[393px] mx-auto" style={{ top: 349, left: 0, right: 0 }}>
+                        <Link
+                            to="/auth/login"
+                            className="absolute inline-block"
+                            style={{ left: 16, width: 173, height: 51 }}
+                        >
                             <button
                                 type="button"
-                                className="w-full h-[51px] min-w-[173px] rounded-[8px] text-[15px] font-bold text-center text-white transition-opacity hover:opacity-90"
-                                style={{ backgroundColor: '#098771', fontFamily: 'Manrope, sans-serif' }}
+                                className="w-full h-full rounded-[8px] text-[15px] font-bold text-center text-white transition-opacity hover:opacity-90 flex items-center justify-center"
+                                style={{
+                                    fontFamily: 'Manrope, sans-serif',
+                                    backgroundColor: '#098771',
+                                    paddingTop: 19,
+                                    paddingRight: 44,
+                                    paddingBottom: 18,
+                                    paddingLeft: 44,
+                                }}
                             >
                                 Начать покупать
                             </button>
                         </Link>
-                        <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer" className="flex-1 min-w-0">
+                        <a
+                            href="mailto:kindplate.io@mail.ru"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="absolute inline-block"
+                            style={{ left: 204, width: 173, height: 51 }}
+                        >
                             <button
                                 type="button"
-                                className="w-full h-[51px] min-w-[173px] rounded-[8px] text-[15px] font-bold text-center transition-opacity hover:opacity-90 border-[1.5px]"
+                                className="w-full h-full rounded-[8px] text-[15px] font-bold text-center transition-opacity hover:opacity-90 flex items-center justify-center border-[1.5px] border-solid"
                                 style={{
+                                    fontFamily: 'Manrope, sans-serif',
                                     borderColor: '#ECF4F2',
                                     color: '#EBF4F2',
                                     backgroundColor: 'transparent',
-                                    fontFamily: 'Manrope, sans-serif'
+                                    paddingTop: 19,
+                                    paddingRight: 44,
+                                    paddingBottom: 18,
+                                    paddingLeft: 44,
                                 }}
                             >
                                 Начать продавать
@@ -451,46 +514,21 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* Blog — по Figma: отступ сверху как в макете */}
-                <section className="px-4 pt-[48px] pb-[20px]" style={{ paddingLeft: 16, paddingRight: 16 }}>
-                    <div className="w-full max-w-[400px] mx-auto flex flex-col items-center gap-0">
-                        <h2 
-                            className="text-[26px] font-bold leading-tight text-center"
-                            style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#DEF4EE', margin: 0 }}
-                        >
-                            Блог
-                        </h2>
-                        <p 
-                            className="text-[18px] font-normal leading-normal text-center mb-0"
-                            style={{ fontFamily: 'Manrope, sans-serif', color: '#ECF4F2', margin: 0 }}
-                        >
-                            Следите за нами в нашем канале
-                        </p>
-                        <div
-                            className="w-full rounded-[24px] overflow-hidden p-4 mt-0"
-                            style={{ backgroundColor: 'rgba(222, 244, 238, 0.2)', border: '1px solid rgba(9, 135, 113, 0.3)' }}
-                        >
-                            <a
-                                href="https://t.me/kindplate"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block w-full cursor-pointer transition-opacity hover:opacity-90 active:opacity-80"
-                            >
-                                <img 
-                                    src={blogImage} 
-                                    alt="KindPlate блог — выгодно для тебя, полезно для планеты"
-                                    className="w-full h-auto block"
-                                />
-                            </a>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Для клиентов — точно по Figma: заголовок mt 60 ml 16, 26px #DEF4EE; подзаголовок 24px #098771; шаги 50px + 16px; кнопка 203×53 */}
-                <section className="px-4 pb-[60px]" style={{ paddingLeft: 16, paddingRight: 16 }}>
+                {/* Для клиентов — по макету: заголовок 210×28, 26px Bold 108%; подпись 353×63; блок шагов #098771, blur */}
+                <section className="px-4 pb-[60px] overflow-x-hidden" style={{ paddingLeft: 16, paddingRight: 16 }}>
                     <h3 
                         className="mb-0 font-bold"
-                        style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontSize: 26, color: '#DEF4EE', marginTop: 60 }}
+                        style={{
+                            fontFamily: 'Montserrat Alternates, sans-serif',
+                            fontWeight: 700,
+                            fontSize: 26,
+                            lineHeight: '108%',
+                            letterSpacing: 0,
+                            color: '#DEF4EE',
+                            marginTop: 60,
+                            width: 210,
+                            height: 28,
+                        }}
                     >
                         Для клиентов
                     </h3>
@@ -499,37 +537,179 @@ export function LandingPage() {
                         style={{ backgroundColor: '#111E42' }}
                     >
                         <h4 
-                            className="mb-2 font-extrabold leading-tight"
-                            style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontSize: 24, color: '#098771' }}
+                            className="mb-2 font-extrabold"
+                            style={{
+                                fontFamily: 'Montserrat Alternates, sans-serif',
+                                fontWeight: 800,
+                                fontSize: 24,
+                                lineHeight: '87%',
+                                letterSpacing: 0,
+                                width: 353,
+                                minHeight: 63,
+                            }}
                         >
-                            Сэкономьте деньги, купив товары в ваших любимых заведениях
+                            <span
+                                style={{
+                                    fontFamily: 'Montserrat Alternates, sans-serif',
+                                    fontWeight: 800,
+                                    fontSize: 24,
+                                    lineHeight: '87%',
+                                    letterSpacing: 0,
+                                    background: '#098771',
+                                    color: '#FFFFFF',
+                                }}
+                            >
+                                Сэкономьте деньги, купив товары в ваших любимых заведениях
+                            </span>
                         </h4>
                         <p 
-                            className="text-[18px] leading-normal mb-8"
-                            style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 400, color: '#FFFFFF', letterSpacing: '0.9px' }}
+                            className="mb-8"
+                            style={{
+                                fontFamily: 'Manrope, sans-serif',
+                                fontWeight: 400,
+                                fontSize: 18,
+                                lineHeight: '107%',
+                                letterSpacing: '0.05em',
+                                background: '#FFFFFF',
+                                color: '#10172A',
+                                width: 361,
+                                minHeight: 114,
+                                padding: '12px 16px',
+                                boxSizing: 'border-box',
+                            }}
                         >
                             Покупайте вкусную еду по невероятным ценам. Просматривайте предложения по близости и покупайте товары прямо в приложении KindPlate. Наши выгодные цены порадуют ваш кошелек.
                         </p>
-                        <div className="space-y-7 mb-6">
-                            <div className="flex items-center gap-[34px]">
-                                <span className="font-normal flex-shrink-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 50, color: '#FFFFFF', letterSpacing: '2.5px' }}>01</span>
-                                <p className="font-semibold m-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 16, color: '#FFFFFF' }}>Смотри предложения рядом с тобой</p>
-                            </div>
-                            <div className="flex items-center gap-[34px]">
-                                <span className="font-normal flex-shrink-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 50, color: '#FFFFFF', letterSpacing: '2.5px' }}>02</span>
-                                <p className="font-semibold m-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 16, color: '#FFFFFF' }}>Выбирай и оплачивай прямо в приложении</p>
-                            </div>
-                            <div className="flex items-center gap-[34px]">
-                                <span className="font-normal flex-shrink-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 50, color: '#FFFFFF', letterSpacing: '2.5px' }}>03</span>
-                                <p className="font-semibold m-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 16, color: '#FFFFFF' }}>Забери в заведении и наслаждайся</p>
+                        {/* Блок шагов: фон #098771, blur, 513×246, radius 10px; строки 349×54, номер 53×54 (Manrope 50px), текст 253×36 (Manrope 600 16px) */}
+                        <div
+                            className="mb-6 overflow-hidden"
+                            style={{
+                                width: '100%',
+                                maxWidth: 513,
+                                minHeight: 246,
+                                marginLeft: -65,
+                                paddingLeft: 65,
+                                paddingRight: 16,
+                                paddingTop: 34,
+                                paddingBottom: 34,
+                                borderRadius: 10,
+                                background: '#098771',
+                                backdropFilter: 'blur(213px)',
+                                WebkitBackdropFilter: 'blur(213px)',
+                                boxSizing: 'border-box',
+                            }}
+                        >
+                            <div className="flex flex-col" style={{ gap: 28 }}>
+                                <div className="flex items-center" style={{ width: 349, height: 54 }}>
+                                    <span
+                                        className="flex-shrink-0 text-white"
+                                        style={{
+                                            fontFamily: 'Manrope, sans-serif',
+                                            fontWeight: 400,
+                                            fontSize: 50,
+                                            lineHeight: '107%',
+                                            letterSpacing: '0.05em',
+                                            width: 53,
+                                            height: 54,
+                                        }}
+                                    >
+                                        01
+                                    </span>
+                                    <p
+                                        className="m-0 text-white flex-shrink-0"
+                                        style={{
+                                            fontFamily: 'Manrope, sans-serif',
+                                            fontWeight: 600,
+                                            fontSize: 16,
+                                            lineHeight: '110%',
+                                            letterSpacing: 0,
+                                            width: 253,
+                                            marginLeft: 43,
+                                        }}
+                                    >
+                                        Смотри предложения рядом с тобой
+                                    </p>
+                                </div>
+                                <div className="flex items-center" style={{ width: 349, height: 54 }}>
+                                    <span
+                                        className="flex-shrink-0 text-white"
+                                        style={{
+                                            fontFamily: 'Manrope, sans-serif',
+                                            fontWeight: 400,
+                                            fontSize: 50,
+                                            lineHeight: '107%',
+                                            letterSpacing: '0.05em',
+                                            width: 53,
+                                            height: 54,
+                                        }}
+                                    >
+                                        02
+                                    </span>
+                                    <p
+                                        className="m-0 text-white flex-shrink-0"
+                                        style={{
+                                            fontFamily: 'Manrope, sans-serif',
+                                            fontWeight: 600,
+                                            fontSize: 16,
+                                            lineHeight: '110%',
+                                            letterSpacing: 0,
+                                            width: 253,
+                                            marginLeft: 43,
+                                        }}
+                                    >
+                                        Выбирай и оплачивай прямо в приложении
+                                    </p>
+                                </div>
+                                <div className="flex items-center" style={{ width: 349, height: 54 }}>
+                                    <span
+                                        className="flex-shrink-0 text-white"
+                                        style={{
+                                            fontFamily: 'Manrope, sans-serif',
+                                            fontWeight: 400,
+                                            fontSize: 50,
+                                            lineHeight: '107%',
+                                            letterSpacing: '0.05em',
+                                            width: 53,
+                                            height: 54,
+                                        }}
+                                    >
+                                        03
+                                    </span>
+                                    <p
+                                        className="m-0 text-white flex-shrink-0"
+                                        style={{
+                                            fontFamily: 'Manrope, sans-serif',
+                                            fontWeight: 600,
+                                            fontSize: 16,
+                                            lineHeight: '110%',
+                                            letterSpacing: 0,
+                                            width: 253,
+                                            marginLeft: 43,
+                                        }}
+                                    >
+                                        Забери в заведении и наслаждайся
+                                    </p>
+                                </div>
                             </div>
                         </div>
                         <div className="flex justify-center">
                             <Link to="/auth/login">
                                 <button 
                                     type="button"
-                                    className="w-[203px] h-[53px] rounded-[8px] text-[15px] font-bold transition-opacity hover:opacity-90 border-[1.5px]"
-                                    style={{ borderColor: '#098771', backgroundColor: '#DEF4EE', color: '#098771', fontFamily: 'Manrope, sans-serif' }}
+                                    className="rounded-[8px] text-[15px] font-bold transition-opacity hover:opacity-90 border-[1.5px] border-solid flex items-center justify-center"
+                                    style={{
+                                        width: 203,
+                                        height: 53,
+                                        borderColor: '#098771',
+                                        backgroundColor: '#DEF4EE',
+                                        color: '#098771',
+                                        fontFamily: 'Manrope, sans-serif',
+                                        paddingTop: 19,
+                                        paddingRight: 20,
+                                        paddingBottom: 18,
+                                        paddingLeft: 20,
+                                        boxSizing: 'border-box',
+                                    }}
                                 >
                                     Подробнее
                                 </button>
@@ -580,8 +760,20 @@ export function LandingPage() {
                             <a href="https://t.me/kindplatesupportbot" target="_blank" rel="noopener noreferrer">
                                 <button 
                                     type="button"
-                                    className="w-[203px] h-[53px] rounded-[8px] text-[15px] font-bold transition-opacity hover:opacity-90 border-[1.5px]"
-                                    style={{ borderColor: '#098771', backgroundColor: '#DEF4EE', color: '#098771', fontFamily: 'Manrope, sans-serif' }}
+                                    className="rounded-[8px] text-[15px] font-bold transition-opacity hover:opacity-90 border-[1.5px] border-solid flex items-center justify-center"
+                                    style={{
+                                        width: 203,
+                                        height: 53,
+                                        borderColor: '#098771',
+                                        backgroundColor: '#DEF4EE',
+                                        color: '#098771',
+                                        fontFamily: 'Manrope, sans-serif',
+                                        paddingTop: 19,
+                                        paddingRight: 20,
+                                        paddingBottom: 18,
+                                        paddingLeft: 20,
+                                        boxSizing: 'border-box',
+                                    }}
                                 >
                                     Подробнее
                                 </button>
