@@ -187,20 +187,19 @@ export function LandingPage() {
                     </div>
                 </header>
 
-                {/* Hero Section — по макету Figma: Manrope, две строки без пилюль */}
-                <section className="px-[15px] pt-[21px] pb-[20px]">
-                    <div className="flex flex-col items-center text-center gap-[6px]">
+                {/* Hero — точно по Figma: 337×84, mt 15, ml 28; подзаголовок mt 17, ml 40, 326px */}
+                <section className="pt-[21px] pb-0 px-4 sm:pl-[28px] sm:pr-[28px]">
+                    <div className="max-w-[337px] mx-auto">
                         <h1
                             data-testid="hero-heading"
-                            className="w-full max-w-[337px] md:max-w-[720px] text-[28px] leading-tight sm:text-[33px] text-white font-extrabold tracking-[-1.32px]"
-                            style={{ fontFamily: 'Manrope, sans-serif' }}
+                            className="relative w-full max-w-[337px] h-[84px] text-[28px] sm:text-[33px] leading-[1.1] text-white font-extrabold text-center sm:text-left"
+                            style={{ fontFamily: 'Manrope, sans-serif', letterSpacing: -1.32 }}
                         >
-                            <span className="block">Выгодно для тебя</span>
-                            <span className="block mt-1">Полезно для планеты</span>
+                            <span className="block sm:absolute sm:top-0 sm:left-[29px]">Выгодно для тебя</span>
+                            <span className="block sm:absolute sm:top-[39px] sm:left-0">Полезно для планеты</span>
                         </h1>
-
                         <p
-                            className="mt-[17px] w-full max-w-[326px] text-[18px] sm:text-[20px] text-center leading-normal font-extralight"
+                            className="mt-[17px] max-w-[326px] mx-auto sm:mx-0 text-[18px] sm:text-[20px] text-center leading-normal font-extralight"
                             style={{ color: '#ECF4F2', fontFamily: 'Manrope, sans-serif' }}
                         >
                             Соединяем людей с кафе и ресторанами для{' '}
@@ -210,22 +209,22 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* CTA Buttons — по Figma: зелёная заливка и обводка, Manrope 15px */}
-                <section className="pb-[40px] w-full flex justify-center">
-                    <div className="flex gap-[15px] justify-center px-[16px] w-full max-w-[361px]">
-                        <Link to="/auth/login" className="flex-1">
+                {/* CTA — по Figma: 361×51, mt 48, ml 16, кнопки по 173px, gap 15px */}
+                <section className="w-full flex justify-center" style={{ marginTop: 48, paddingLeft: 16, paddingRight: 16 }}>
+                    <div className="flex gap-[15px] w-full max-w-[361px]">
+                        <Link to="/auth/login" className="flex-1 min-w-0">
                             <button
                                 type="button"
-                                className="w-full h-[51px] rounded-[8px] text-[15px] font-bold text-center text-white transition-opacity hover:opacity-90"
+                                className="w-full h-[51px] min-w-[173px] rounded-[8px] text-[15px] font-bold text-center text-white transition-opacity hover:opacity-90"
                                 style={{ backgroundColor: '#098771', fontFamily: 'Manrope, sans-serif' }}
                             >
                                 Начать покупать
                             </button>
                         </Link>
-                        <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer" className="flex-1">
+                        <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer" className="flex-1 min-w-0">
                             <button
                                 type="button"
-                                className="w-full h-[51px] rounded-[8px] text-[15px] font-bold text-center transition-opacity hover:opacity-90 border-[1.5px]"
+                                className="w-full h-[51px] min-w-[173px] rounded-[8px] text-[15px] font-bold text-center transition-opacity hover:opacity-90 border-[1.5px]"
                                 style={{
                                     borderColor: '#ECF4F2',
                                     color: '#EBF4F2',
@@ -239,16 +238,18 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* Phone Mockup Section with Product — по Figma: рамка 6px #098771, градиент, radius 36px */}
-                <section className="px-[15px] pb-[30px]">
-                    <div className="flex justify-center items-center">
-                        <div 
-                            className="relative rounded-[36px] p-[6px] mx-auto w-[85vw] max-w-[310px] overflow-hidden"
-                            style={{ 
-                                border: '6px solid #098771',
-                                background: 'linear-gradient(23.17deg, #EFF4F3 0%, #DEF4EE 73.56%)',
-                            }}
-                        >
+                {/* Phone — по Figma: 267×548, mt 11, border 6px #098771, rounded 36px, gradient */}
+                <section className="flex justify-center px-0 pb-[30px]" style={{ marginTop: 11 }}>
+                    <div 
+                        className="relative rounded-[36px] p-[6px] overflow-hidden flex flex-col"
+                        style={{ 
+                            width: 267,
+                            minHeight: 548,
+                            maxWidth: '85vw',
+                            border: '6px solid #098771',
+                            background: 'linear-gradient(23.17deg, #EFF4F3 0%, #DEF4EE 73.56%)',
+                        }}
+                    >
                             {/* Phone Screen — карта + подпись + кнопки */}
                             <div 
                                 className="w-full rounded-[30px] overflow-hidden flex flex-col"
@@ -306,8 +307,8 @@ export function LandingPage() {
                                         className="transition-opacity duration-300"
                                         style={{
                                             background: "#FFFFFF",
-                                            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                                            borderRadius: 14,
+                                            boxShadow: "0px 0px 1px 0px rgba(146,144,144,0.2), 1px 2px 2px 0px rgba(146,144,144,0.17), 2px 4px 3px 0px rgba(146,144,144,0.1)",
+                                            borderRadius: 7.3,
                                             padding: "5px 8px",
                                         }}
                                     >
@@ -355,14 +356,14 @@ export function LandingPage() {
                                             </span>
                                         </div>
                                         
-                                        {/* Цены — зелёная цена #35741F */}
+                                        {/* Цены — по Figma: зачёркнутая 10px, актуальная 17.19px #35741F */}
                                         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
                                             <span
                                                 style={{
-                                                    color: "#9CA3AF",
-                                                    fontSize: 15,
+                                                    color: "#000000",
+                                                    fontSize: 10,
                                                     fontFamily: "Montserrat Alternates, sans-serif",
-                                                    fontWeight: 500,
+                                                    fontWeight: 600,
                                                     textDecoration: "line-through",
                                                 }}
                                             >
@@ -371,9 +372,9 @@ export function LandingPage() {
                                             <span
                                                 style={{
                                                     color: "#35741F",
-                                                    fontSize: 22,
+                                                    fontSize: 17.19,
                                                     fontFamily: "Montserrat Alternates, sans-serif",
-                                                    fontWeight: 700,
+                                                    fontWeight: 600,
                                                 }}
                                             >
                                                 {currentItem.price}
@@ -446,13 +447,12 @@ export function LandingPage() {
                                         </button>
                                     </div>
                                 </div>
-                </div>
-                        </div>
+                            </div>
                     </div>
                 </section>
 
-                {/* Blog Section — по палитре Figma: заголовок #DEF4EE, текст #ECF4F2 */}
-                <section className="px-[15px] pt-[48px] pb-[20px]">
+                {/* Blog — по Figma: отступ сверху как в макете */}
+                <section className="px-4 pt-[48px] pb-[20px]" style={{ paddingLeft: 16, paddingRight: 16 }}>
                     <div className="w-full max-w-[400px] mx-auto flex flex-col items-center gap-0">
                         <h2 
                             className="text-[26px] font-bold leading-tight text-center"
@@ -486,59 +486,50 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* User Benefits Section — по Figma: заголовок 26px #DEF4EE, текст Manrope 18px, кнопка «Подробнее» */}
-                <section className="px-[15px] pb-[60px]">
+                {/* Для клиентов — точно по Figma: заголовок mt 60 ml 16, 26px #DEF4EE; подзаголовок 24px #098771; шаги 50px + 16px; кнопка 203×53 */}
+                <section className="px-4 pb-[60px]" style={{ paddingLeft: 16, paddingRight: 16 }}>
+                    <h3 
+                        className="mb-0 font-bold"
+                        style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontSize: 26, color: '#DEF4EE', marginTop: 60 }}
+                    >
+                        Для клиентов
+                    </h3>
                     <div 
-                        className="rounded-[15px] px-[20px] pt-[5px] pb-[20px]"
+                        className="rounded-[15px] px-4 pt-5 pb-5 mt-[25px]"
                         style={{ backgroundColor: '#111E42' }}
                     >
-                        <h3 
-                            className="text-[26px] leading-tight mb-0 font-bold"
-                            style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#DEF4EE' }}
-                        >
-                            Для клиентов
-                        </h3>
                         <h4 
-                            className="mt-1 mb-1 text-[22px] font-semibold leading-tight"
-                            style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}
+                            className="mb-2 font-extrabold leading-tight"
+                            style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontSize: 24, color: '#098771' }}
                         >
                             Сэкономьте деньги, купив товары в ваших любимых заведениях
                         </h4>
                         <p 
-                            className="text-[18px] leading-normal mb-[32px]"
-                            style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 400, color: '#ECF4F2' }}
+                            className="text-[18px] leading-normal mb-8"
+                            style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 400, color: '#FFFFFF', letterSpacing: '0.9px' }}
                         >
                             Покупайте вкусную еду по невероятным ценам. Просматривайте предложения по близости и покупайте товары прямо в приложении KindPlate. Наши выгодные цены порадуют ваш кошелек.
                         </p>
-                        
-                        <div className="space-y-[14px] mb-[21px]">
-                            <div className="flex items-baseline gap-[22px]">
-                                <span className="text-[12px] font-semibold flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: 'rgba(236, 244, 242, 0.7)' }}>01</span>
-                                <p className="text-[11px] font-semibold" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}>Смотри предложения рядом с тобой</p>
+                        <div className="space-y-7 mb-6">
+                            <div className="flex items-center gap-[34px]">
+                                <span className="font-normal flex-shrink-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 50, color: '#FFFFFF', letterSpacing: '2.5px' }}>01</span>
+                                <p className="font-semibold m-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 16, color: '#FFFFFF' }}>Смотри предложения рядом с тобой</p>
                             </div>
-                            <div className="w-full h-[1px]" style={{ backgroundColor: 'rgba(236, 244, 242, 0.3)' }}></div>
-                            <div className="flex items-baseline gap-[22px]">
-                                <span className="text-[12px] font-semibold flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: 'rgba(236, 244, 242, 0.7)' }}>02</span>
-                                <p className="text-[11px] font-semibold" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}>Выбирай и оплачивай прямо в приложении</p>
+                            <div className="flex items-center gap-[34px]">
+                                <span className="font-normal flex-shrink-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 50, color: '#FFFFFF', letterSpacing: '2.5px' }}>02</span>
+                                <p className="font-semibold m-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 16, color: '#FFFFFF' }}>Выбирай и оплачивай прямо в приложении</p>
                             </div>
-                            <div className="w-full h-[1px]" style={{ backgroundColor: 'rgba(236, 244, 242, 0.3)' }}></div>
-                            <div className="flex items-baseline gap-[22px]">
-                                <span className="text-[12px] font-semibold flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: 'rgba(236, 244, 242, 0.7)' }}>03</span>
-                                <p className="text-[11px] font-semibold" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}>Забери в заведении и наслаждайся</p>
+                            <div className="flex items-center gap-[34px]">
+                                <span className="font-normal flex-shrink-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 50, color: '#FFFFFF', letterSpacing: '2.5px' }}>03</span>
+                                <p className="font-semibold m-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 16, color: '#FFFFFF' }}>Забери в заведении и наслаждайся</p>
                             </div>
                         </div>
-                        
                         <div className="flex justify-center">
                             <Link to="/auth/login">
                                 <button 
                                     type="button"
-                                    className="min-w-[186px] h-[53px] rounded-[8px] text-[15px] font-bold transition-opacity hover:opacity-90 border-[1.5px]"
-                                    style={{ 
-                                        borderColor: '#098771',
-                                        backgroundColor: '#DEF4EE',
-                                        color: '#098771',
-                                        fontFamily: 'Manrope, sans-serif'
-                                    }}
+                                    className="w-[203px] h-[53px] rounded-[8px] text-[15px] font-bold transition-opacity hover:opacity-90 border-[1.5px]"
+                                    style={{ borderColor: '#098771', backgroundColor: '#DEF4EE', color: '#098771', fontFamily: 'Manrope, sans-serif' }}
                                 >
                                     Подробнее
                                 </button>
@@ -547,59 +538,50 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* User Benefits Section — Для бизнеса: по Figma заголовок 26px #DEF4EE, кнопка «Подробнее» */}
-                <section className="px-[15px] pb-[60px]">
+                {/* Для бизнеса — по Figma: заголовок 26px #DEF4EE; подзаголовок 24px #098771 extrabold; шаги 50px + 16px; кнопка 203×53 */}
+                <section className="px-4 pb-[60px]" style={{ paddingLeft: 16, paddingRight: 16 }}>
+                    <h3 
+                        className="mb-0 font-bold"
+                        style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontSize: 26, color: '#DEF4EE' }}
+                    >
+                        Для бизнеса
+                    </h3>
+                    <h4 
+                        className="mt-[30px] mb-0 font-extrabold leading-tight"
+                        style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontSize: 24, color: '#098771' }}
+                    >
+                        Продавайте больше и привлекайте новых гостей
+                    </h4>
                     <div 
-                        className="rounded-[15px] px-[20px] pt-[5px] pb-[20px]"
+                        className="rounded-[15px] px-4 pt-5 pb-5 mt-5"
                         style={{ backgroundColor: '#111E42' }}
                     >
-                        <h3 
-                            className="text-[26px] leading-tight mb-0 font-bold"
-                            style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#DEF4EE' }}
-                        >
-                            Для бизнеса
-                        </h3>
-                        <h4 
-                            className="mt-1 mb-1 text-[22px] font-semibold leading-tight"
-                            style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}
-                        >
-                            Продавайте больше и привлекайте новых гостей
-                        </h4>
                         <p 
-                            className="text-[18px] leading-normal mb-[32px]"
-                            style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 400, color: '#ECF4F2' }}
+                            className="text-[18px] leading-normal mb-8"
+                            style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 400, color: '#FFFFFF', letterSpacing: '0.9px' }}
                         >
                             Kindplate помогает ресторанам и магазинам реализовывать непроданные блюда и готовые продукты со скидкой, вместо того чтобы списывать их. Так вы вносите вклад в осознанное потребление и заботу о планете. Получите дополнительный стабильный источник дохода и привлекайте новых клиентов.
                         </p>
-                        
-                        <div className="space-y-[14px] mb-[21px]">
-                            <div className="flex items-baseline gap-[22px]">
-                                <span className="text-[12px] font-semibold flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: 'rgba(236, 244, 242, 0.7)' }}>01</span>
-                                <p className="text-[11px] font-semibold" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}>Выкладывайте в личном кабинете блюда и наборы со скидкой.</p>
+                        <div className="space-y-7 mb-6">
+                            <div className="flex items-center gap-[39px]">
+                                <span className="font-normal flex-shrink-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 50, color: '#FFFFFF', letterSpacing: '2.5px' }}>01</span>
+                                <p className="font-semibold m-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 16, color: '#FFFFFF' }}>Выкладывайте в личном кабинете блюда и наборы со скидкой.</p>
                             </div>
-                            <div className="w-full h-[1px]" style={{ backgroundColor: 'rgba(236, 244, 242, 0.3)' }}></div>
-                            <div className="flex items-baseline gap-[22px]">
-                                <span className="text-[12px] font-semibold flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: 'rgba(236, 244, 242, 0.7)' }}>02</span>
-                                <p className="text-[11px] font-semibold" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}>Получайте предоплаченные заказы от гостей в приложении.</p>
+                            <div className="flex items-center gap-[32px]">
+                                <span className="font-normal flex-shrink-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 50, color: '#FFFFFF', letterSpacing: '2.5px' }}>02</span>
+                                <p className="font-semibold m-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 16, color: '#FFFFFF' }}>Получайте предоплаченные заказы от гостей в приложении.</p>
                             </div>
-                            <div className="w-full h-[1px]" style={{ backgroundColor: 'rgba(236, 244, 242, 0.3)' }}></div>
-                            <div className="flex items-baseline gap-[22px]">
-                                <span className="text-[12px] font-semibold flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: 'rgba(236, 244, 242, 0.7)' }}>03</span>
-                                <p className="text-[11px] font-semibold" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}>Выдавайте заказы в заведении и снижайте потери еды.</p>
+                            <div className="flex items-center gap-[32px]">
+                                <span className="font-normal flex-shrink-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 50, color: '#FFFFFF', letterSpacing: '2.5px' }}>03</span>
+                                <p className="font-semibold m-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 16, color: '#FFFFFF' }}>Выдавайте заказы в заведении и снижайте потери еды.</p>
                             </div>
                         </div>
-
                         <div className="flex justify-center">
                             <a href="https://t.me/kindplatesupportbot" target="_blank" rel="noopener noreferrer">
                                 <button 
                                     type="button"
-                                    className="min-w-[186px] h-[53px] rounded-[8px] text-[15px] font-bold transition-opacity hover:opacity-90 border-[1.5px]"
-                                    style={{ 
-                                        borderColor: '#098771',
-                                        backgroundColor: '#DEF4EE',
-                                        color: '#098771',
-                                        fontFamily: 'Manrope, sans-serif'
-                                    }}
+                                    className="w-[203px] h-[53px] rounded-[8px] text-[15px] font-bold transition-opacity hover:opacity-90 border-[1.5px]"
+                                    style={{ borderColor: '#098771', backgroundColor: '#DEF4EE', color: '#098771', fontFamily: 'Manrope, sans-serif' }}
                                 >
                                     Подробнее
                                 </button>
@@ -613,29 +595,26 @@ export function LandingPage() {
                     <WhyKindPlate />
                 </section>
 
-                {/* Footer - точное соответствие Figma node 35-753 */}
+                {/* Footer — по палитре Figma: фон #111E42, заголовки #DEF4EE, ссылки #ECF4F2 */}
                 <footer className="px-0 pb-0">
                     <div
                         className="relative w-full"
                         style={{ 
-                            backgroundColor: "#000019",
+                            backgroundColor: "#111E42",
                             minHeight: "201px",
                             paddingTop: "10px",
                             paddingBottom: "calc(20px + env(safe-area-inset-bottom, 0px))"
                         }}
                     >
-                        {/* Два столбца: KindPlate и Нужна помощь? */}
                         <div className="flex px-[26px] gap-[40px]">
-                            {/* Левый столбец - KindPlate */}
                             <div className="flex-1 min-w-0">
-
                                 <p 
                                     style={{ 
                                         fontFamily: 'Montserrat Alternates, sans-serif',
                                         fontWeight: 600,
                                         fontSize: "14px",
                                         lineHeight: "22px",
-                                        color: '#004900',
+                                        color: '#DEF4EE',
                                         textAlign: "left",
                                         marginBottom: "0px"
                                     }}
@@ -647,130 +626,34 @@ export function LandingPage() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="block transition-opacity hover:opacity-80 footer-link"
-                                    style={{ 
-                                        fontFamily: 'Montserrat Alternates, sans-serif',
-                                        fontWeight: 600,
-                                        fontSize: "11px",
-                                        lineHeight: "22px",
-                                        color: '#FFFFFF',
-                                        textAlign: "left"
-                                    }}
+                                    style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontWeight: 600, fontSize: "11px", lineHeight: "22px", color: '#ECF4F2', textAlign: "left" }}
                                 >
                                     Для партнеров
                                 </a>
-                                <Link 
-                                    to="/auth/login"
-                                    className="block transition-opacity hover:opacity-80 footer-link"
-                                    style={{ 
-                                        fontFamily: 'Montserrat Alternates, sans-serif',
-                                        fontWeight: 600,
-                                        fontSize: "11px",
-                                        lineHeight: "22px",
-                                        color: '#FFFFFF',
-                                        textAlign: "left"
-                                    }}
-                                >
+                                <Link to="/auth/login" className="block transition-opacity hover:opacity-80 footer-link" style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontWeight: 600, fontSize: "11px", lineHeight: "22px", color: '#ECF4F2', textAlign: "left" }}>
                                     Для пользователей
                                 </Link>
-                                <button
-                                    onClick={() => setIsDocumentsModalOpen(true)}
-                                    className="block transition-opacity hover:opacity-80 footer-link"
-                                    style={{ 
-                                        fontFamily: 'Montserrat Alternates, sans-serif',
-                                        fontWeight: 600,
-                                        fontSize: "11px",
-                                        lineHeight: "22px",
-                                        color: '#FFFFFF',
-                                        textAlign: "left",
-                                        background: 'none',
-                                        border: 'none',
-                                        padding: 0,
-                                        cursor: 'pointer'
-                                    }}
-                                >
+                                <button onClick={() => setIsDocumentsModalOpen(true)} className="block transition-opacity hover:opacity-80 footer-link" style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontWeight: 600, fontSize: "11px", lineHeight: "22px", color: '#ECF4F2', textAlign: "left", background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
                                     Документы
                                 </button>
-                                <a 
-                                    href="https://t.me/kindplate"
-                                    className="block transition-opacity hover:opacity-80 footer-link"
-                                    style={{ 
-                                        fontFamily: 'Montserrat Alternates, sans-serif',
-                                        fontWeight: 600,
-                                        fontSize: "11px",
-                                        lineHeight: "22px",
-                                        color: '#FFFFFF',
-                                        textAlign: "left"
-                                    }}
-                                >
+                                <a href="https://t.me/kindplate" className="block transition-opacity hover:opacity-80 footer-link" style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontWeight: 600, fontSize: "11px", lineHeight: "22px", color: '#ECF4F2', textAlign: "left" }}>
                                     Блог
                                 </a>
                             </div>
-                            
-                            {/* Правый столбец - Нужна помощь? */}
                             <div className="flex-1 min-w-0">
-
-                                <p 
-                                    style={{ 
-                                        fontFamily: 'Montserrat Alternates, sans-serif',
-                                        fontWeight: 600,
-                                        fontSize: "14px",
-                                        lineHeight: "22px",
-                                        color: '#004900',
-                                        textAlign: "left",
-                                        marginBottom: "0px"
-                                    }}
-                                >
+                                <p style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontWeight: 600, fontSize: "14px", lineHeight: "22px", color: '#DEF4EE', textAlign: "left", marginBottom: "0px" }}>
                                     Нужна помощь?
                                 </p>
-                                <Link 
-                                    to="/legal/faq"
-                                    className="block transition-opacity hover:opacity-80 footer-link"
-                                    style={{ 
-                                        fontFamily: 'Montserrat Alternates, sans-serif',
-                                        fontWeight: 600,
-                                        fontSize: "11px",
-                                        lineHeight: "22px",
-                                        color: '#FFFFFF',
-                                        textAlign: "left"
-                                    }}
-                                >
+                                <Link to="/legal/faq" className="block transition-opacity hover:opacity-80 footer-link" style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontWeight: 600, fontSize: "11px", lineHeight: "22px", color: '#ECF4F2', textAlign: "left" }}>
                                     Ответы на вопросы
                                 </Link>
-                                <a 
-                                    href="https://t.me/kindplatesupportbot"
-                                    className="block transition-opacity hover:opacity-80 footer-link"
-                                    style={{ 
-                                        fontFamily: 'Montserrat Alternates, sans-serif',
-                                        fontWeight: 600,
-                                        fontSize: "11px",
-                                        lineHeight: "22px",
-                                        color: '#FFFFFF',
-                                        textAlign: "left"
-                                    }}
-                                >
+                                <a href="https://t.me/kindplatesupportbot" className="block transition-opacity hover:opacity-80 footer-link" style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontWeight: 600, fontSize: "11px", lineHeight: "22px", color: '#ECF4F2', textAlign: "left" }}>
                                     Контакты
                                 </a>
                             </div>
                         </div>
-                        
-                        {/* Социальные сети (x:27, y:101 - примерно 91px от начала контента) */}
-                        <div 
-                            style={{ 
-                                marginLeft: "26px",
-                                marginRight: "26px",
-                                marginTop: "13px"
-                            }}
-                        >
-                            <p
-                                style={{
-                                    fontFamily: "Montserrat Alternates, sans-serif",
-                                    fontWeight: 600,
-                                    fontSize: "14px",
-                                    lineHeight: "22px",
-                                    color: "#004900",
-                                    marginBottom: "3px"
-                                }}
-                            >
+                        <div style={{ marginLeft: "26px", marginRight: "26px", marginTop: "13px" }}>
+                            <p style={{ fontFamily: "Montserrat Alternates, sans-serif", fontWeight: 600, fontSize: "14px", lineHeight: "22px", color: "#DEF4EE", marginBottom: "3px" }}>
                                 Социальные сети
                             </p>
                             <SocialLinks />
