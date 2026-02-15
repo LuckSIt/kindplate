@@ -187,117 +187,72 @@ export function LandingPage() {
                     </div>
                 </header> */}
 
-                {/* Hero — стили по макету: Manrope 800, 33px, line-height 137%, letter-spacing -4%; размеры 278×45 и 337×45 */}
-                <section className="pt-[21px] pb-0 px-4 sm:pl-[28px] sm:pr-[28px]">
-                    <div className="relative max-w-[393px] mx-auto" style={{ minHeight: 301 }}>
-                        <h1 data-testid="hero-heading" className="sr-only">
-                            Выгодно для тебя. Полезно для планеты.
+                {/* Hero — по скриншоту: центрированный заголовок, подпись с подчёркиванием, кнопки внизу */}
+                <section className="px-4 pt-8 pb-10">
+                    <div className="max-w-[360px] mx-auto text-center">
+                        <h1
+                            data-testid="hero-heading"
+                            className="text-white font-extrabold leading-[1.2] mb-5"
+                            style={{
+                                fontFamily: 'Manrope, sans-serif',
+                                fontSize: 33,
+                                letterSpacing: '-0.04em',
+                            }}
+                        >
+                            <span className="block">Выгодно для тебя</span>
+                            <span className="block mt-1">Полезно для планеты</span>
                         </h1>
-                        <span
-                            aria-hidden
-                            className="absolute text-white block"
-                            style={{
-                                fontFamily: 'Manrope, sans-serif',
-                                fontWeight: 800,
-                                fontStyle: 'normal',
-                                fontSize: 33,
-                                lineHeight: '137%',
-                                letterSpacing: '-0.04em',
-                                width: 278,
-                                height: 45,
-                                top: 0,
-                                left: 57,
-                            }}
-                        >
-                            Выгодно для тебя
-                        </span>
-                        <span
-                            aria-hidden
-                            className="absolute text-white block"
-                            style={{
-                                fontFamily: 'Manrope, sans-serif',
-                                fontWeight: 800,
-                                fontStyle: 'normal',
-                                fontSize: 33,
-                                lineHeight: '137%',
-                                letterSpacing: '-0.04em',
-                                width: 337,
-                                height: 45,
-                                top: 39,
-                                left: 28,
-                            }}
-                        >
-                            Полезно для планеты
-                        </span>
                         <p
-                            className="absolute text-center"
+                            className="mb-10 text-center"
                             style={{
                                 fontFamily: 'Manrope, sans-serif',
                                 fontWeight: 200,
                                 fontSize: 20,
                                 lineHeight: '108%',
                                 letterSpacing: 0,
-                                color: '#ECF4F2',
-                                width: 326,
-                                height: 88,
-                                top: 213,
-                                left: 40,
+                                textAlign: 'center',
+                                background: '#ECF4F2',
+                                color: '#10172A',
+                                padding: '12px 16px',
+                                borderRadius: 8,
+                                boxSizing: 'border-box',
                             }}
                         >
-                            Соединяем людей с кафе и ресторанами для{' '}
-                            <span style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 700, fontSize: 20, lineHeight: '108%', letterSpacing: 0 }}>выгодной</span> и{' '}
-                            <span style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 700, fontSize: 20, lineHeight: '108%', letterSpacing: 0 }}>осознанной</span> покупки еды
+                            <span className="block">Соединяем людей</span>
+                            <span className="block">с кафе и ресторанами</span>
+                            <span className="block">
+                                для{' '}
+                                <span style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 700, fontSize: 20, lineHeight: '108%', letterSpacing: 0 }}>выгодной</span>
+                                {' '}и{' '}
+                                <span style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 700, fontSize: 20, lineHeight: '108%', letterSpacing: 0 }}>осознанной</span>
+                            </span>
+                            <span className="block">покупки еды</span>
                         </p>
-                    </div>
-                </section>
-
-                {/* CTA — по макету: 173×51, top 349, left 16 / 204, padding 19 44 18 44 */}
-                <section className="w-full relative" style={{ minHeight: 400 }}>
-                    <div className="absolute w-full max-w-[393px] mx-auto" style={{ top: 349, left: 0, right: 0 }}>
-                        <Link
-                            to="/auth/login"
-                            className="absolute inline-block"
-                            style={{ left: 16, width: 173, height: 51 }}
-                        >
-                            <button
-                                type="button"
-                                className="w-full h-full rounded-[8px] text-[15px] font-bold text-center text-white transition-opacity hover:opacity-90 flex items-center justify-center"
-                                style={{
-                                    fontFamily: 'Manrope, sans-serif',
-                                    backgroundColor: '#098771',
-                                    paddingTop: 19,
-                                    paddingRight: 44,
-                                    paddingBottom: 18,
-                                    paddingLeft: 44,
-                                }}
-                            >
-                                Начать покупать
-                            </button>
-                        </Link>
-                        <a
-                            href="mailto:kindplate.io@mail.ru"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="absolute inline-block"
-                            style={{ left: 204, width: 173, height: 51 }}
-                        >
-                            <button
-                                type="button"
-                                className="w-full h-full rounded-[8px] text-[15px] font-bold text-center transition-opacity hover:opacity-90 flex items-center justify-center border-[1.5px] border-solid"
-                                style={{
-                                    fontFamily: 'Manrope, sans-serif',
-                                    borderColor: '#ECF4F2',
-                                    color: '#EBF4F2',
-                                    backgroundColor: 'transparent',
-                                    paddingTop: 19,
-                                    paddingRight: 44,
-                                    paddingBottom: 18,
-                                    paddingLeft: 44,
-                                }}
-                            >
-                                Начать продавать
-                            </button>
-                        </a>
+                        <div className="flex gap-4 justify-center flex-wrap">
+                            <Link to="/auth/login">
+                                <button
+                                    type="button"
+                                    className="h-[51px] min-w-[160px] px-6 rounded-[8px] text-[15px] font-bold text-white transition-opacity hover:opacity-90"
+                                    style={{ fontFamily: 'Manrope, sans-serif', backgroundColor: '#098771' }}
+                                >
+                                    Начать покупать
+                                </button>
+                            </Link>
+                            <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer">
+                                <button
+                                    type="button"
+                                    className="h-[51px] min-w-[160px] px-6 rounded-[8px] text-[15px] font-bold transition-opacity hover:opacity-90 border-[1.5px] border-solid"
+                                    style={{
+                                        fontFamily: 'Manrope, sans-serif',
+                                        borderColor: '#ECF4F2',
+                                        color: '#FFFFFF',
+                                        backgroundColor: 'transparent',
+                                    }}
+                                >
+                                    Начать продавать
+                                </button>
+                            </a>
+                        </div>
                     </div>
                 </section>
 
