@@ -130,7 +130,7 @@ export function LandingPage() {
         <div 
             className="w-full overflow-y-auto overflow-x-hidden"
             style={{ 
-                backgroundColor: '#000019',
+                backgroundColor: '#111E42',
                 /* fixed + inset:0 гарантирует, что контейнер занимает весь экран
                    без зависимости от html/body overflow:hidden и --app-height */
                 position: 'fixed',
@@ -146,7 +146,7 @@ export function LandingPage() {
             <div 
                 className="w-full mx-auto max-w-[480px] sm:max-w-[640px] md:max-w-[768px]" 
                 style={{ 
-                    backgroundColor: '#000019',
+                    backgroundColor: '#111E42',
                     minHeight: '100%',
                     paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))'
                 }}
@@ -187,104 +187,72 @@ export function LandingPage() {
                     </div>
                 </header>
 
-                {/* Hero Section */}
+                {/* Hero Section — по макету Figma: Manrope, две строки без пилюль */}
                 <section className="px-[15px] pt-[21px] pb-[20px]">
                     <div className="flex flex-col items-center text-center gap-[6px]">
-                        <div className="flex w-full max-w-[360px] md:max-w-[720px] flex-nowrap items-center justify-center gap-[8px] sm:gap-[10px] md:gap-[14px] text-[26px] leading-[32px] sm:text-[32px] sm:leading-[38px] md:text-[44px] md:leading-[50px] text-white">
-                            <span
-                                data-testid="hero-profitable"
-                                className="font-ramona inline-flex items-center justify-center rounded-full px-[12px] py-[6px] sm:px-[16px] sm:py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"
-                                style={{ backgroundColor: '#001900' }}
-                            >
-                                Выгодно
-                            </span>
-                            <span
-                                data-testid="hero-for-you"
-                                className="font-ramona inline-flex items-center whitespace-nowrap"
-                            >
-                                для тебя,
-                            </span>
-                        </div>
-
-                        <div className="flex w-full max-w-[360px] md:max-w-[720px] flex-nowrap items-center justify-center gap-[8px] sm:gap-[10px] md:gap-[14px] text-[26px] leading-[32px] sm:text-[32px] sm:leading-[38px] md:text-[44px] md:leading-[50px] text-white">
-                            <span
-                                data-testid="hero-useful"
-                                className="font-ramona inline-flex items-center justify-center rounded-full px-[12px] py-[6px] sm:px-[16px] sm:py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"
-                                style={{ backgroundColor: '#001900' }}
-                            >
-                                полезно
-                            </span>
-                            <span
-                                data-testid="hero-for-planet"
-                                className="font-ramona inline-flex items-center whitespace-nowrap"
-                            >
-                                для планеты
-                            </span>
-                        </div>
-
-                        <p 
-                            className="text-[13px] leading-[18px] md:text-[14px] md:leading-[20px] font-normal text-center mt-[5px] font-montserrat-alt"
-                            style={{ color: '#FFFFFF' }}
+                        <h1
+                            data-testid="hero-heading"
+                            className="w-full max-w-[337px] md:max-w-[720px] text-[28px] leading-tight sm:text-[33px] text-white font-extrabold tracking-[-1.32px]"
+                            style={{ fontFamily: 'Manrope, sans-serif' }}
                         >
-                            <span className="block whitespace-nowrap font-montserrat-alt">
-                                Соединяем людей с кафе и ресторанами
-                            </span>
-                            <span className="block whitespace-nowrap font-montserrat-alt">
-                                для выгодной и осознанной покупки еды
-                            </span>
+                            <span className="block">Выгодно для тебя</span>
+                            <span className="block mt-1">Полезно для планеты</span>
+                        </h1>
+
+                        <p
+                            className="mt-[17px] w-full max-w-[326px] text-[18px] sm:text-[20px] text-center leading-normal font-extralight"
+                            style={{ color: '#ECF4F2', fontFamily: 'Manrope, sans-serif' }}
+                        >
+                            Соединяем людей с кафе и ресторанами для{' '}
+                            <strong className="font-bold">выгодной</strong> и{' '}
+                            <strong className="font-bold">осознанной</strong> покупки еды
                         </p>
                     </div>
                 </section>
 
-                {/* CTA Buttons */}
+                {/* CTA Buttons — по Figma: зелёная заливка и обводка, Manrope 15px */}
                 <section className="pb-[40px] w-full flex justify-center">
-                    <div className="flex gap-[14px] justify-center px-[24px] w-full max-w-[400px]">
+                    <div className="flex gap-[15px] justify-center px-[16px] w-full max-w-[361px]">
                         <Link to="/auth/login" className="flex-1">
-                            <button 
-                                className="w-full h-[38px] rounded-[26px] text-[13px] font-bold leading-[1.14] text-center transition-opacity hover:opacity-90 whitespace-nowrap"
-                                style={{ 
-                                    backgroundColor: '#FFFFFF',
-                                    border: '1px solid #001900',
-                                    color: '#001900',
-                                    fontFamily: 'Montserrat Alternates, sans-serif',
-                                    lineHeight: '1.14em'
-                                }}
+                            <button
+                                type="button"
+                                className="w-full h-[51px] rounded-[8px] text-[15px] font-bold text-center text-white transition-opacity hover:opacity-90"
+                                style={{ backgroundColor: '#098771', fontFamily: 'Manrope, sans-serif' }}
                             >
-                                смотреть предложения
+                                Начать покупать
                             </button>
                         </Link>
                         <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer" className="flex-1">
-                            <button 
-                                className="w-full h-[38px] rounded-[26px] border border-white text-[13px] font-bold leading-[1.14] text-center transition-opacity hover:opacity-90 whitespace-nowrap"
-                                style={{ 
-                                    backgroundColor: '#000019',
-                                    color: '#E3E3E3',
-                                    fontFamily: 'Montserrat Alternates, sans-serif',
-                                    borderWidth: '1px',
-                                    lineHeight: '1.14em'
+                            <button
+                                type="button"
+                                className="w-full h-[51px] rounded-[8px] text-[15px] font-bold text-center transition-opacity hover:opacity-90 border-[1.5px]"
+                                style={{
+                                    borderColor: '#ECF4F2',
+                                    color: '#EBF4F2',
+                                    backgroundColor: 'transparent',
+                                    fontFamily: 'Manrope, sans-serif'
                                 }}
                             >
-                                стать партнером
+                                Начать продавать
                             </button>
                         </a>
                     </div>
                 </section>
 
-                {/* Phone Mockup Section with Product */}
+                {/* Phone Mockup Section with Product — по Figma: рамка 6px #098771, градиент, radius 36px */}
                 <section className="px-[15px] pb-[30px]">
                     <div className="flex justify-center items-center">
-                        {/* Phone Frame - responsive, auto height по контенту */}
                         <div 
-                            className="relative rounded-[30px] p-[12px] sm:p-[16px] mx-auto w-[85vw] max-w-[310px]"
+                            className="relative rounded-[36px] p-[6px] mx-auto w-[85vw] max-w-[310px] overflow-hidden"
                             style={{ 
-                                backgroundColor: '#C8EBBB',
-                                overflow: 'hidden',
+                                border: '6px solid #098771',
+                                background: 'linear-gradient(23.17deg, #EFF4F3 0%, #DEF4EE 73.56%)',
                             }}
                         >
-                            {/* Phone Screen — flex column: карта + подпись + кнопки */}
+                            {/* Phone Screen — карта + подпись + кнопки */}
                             <div 
-                                className="w-full rounded-[20px] overflow-hidden flex flex-col"
-                                style={{ backgroundColor: '#C8EBBB' }}
+                                className="w-full rounded-[30px] overflow-hidden flex flex-col"
+                                style={{ background: 'linear-gradient(23.17deg, #EFF4F3 0%, #DEF4EE 73.56%)' }}
                             >
                                 {/* Верхняя часть: карта + продукт */}
                                 <div 
@@ -343,37 +311,35 @@ export function LandingPage() {
                                             padding: "5px 8px",
                                         }}
                                     >
-                                        {/* Категория */}
+                                        {/* Категория — по Figma: #757575, Montserrat Alternates */}
                                         <div
                                             style={{
-                                                color: "#6B7280",
+                                                color: "#757575",
                                                 fontSize: 11,
                                                 fontFamily: "Montserrat Alternates, sans-serif",
                                                 fontWeight: 500,
                                                 marginBottom: 0,
-                                                letterSpacing: "-0.2px",
                                             }}
                                         >
                                             {currentItem.category}
                                         </div>
                                         
-                                        {/* Название + скидка */}
+                                        {/* Название + скидка — текст #10172A, скидка #FA7D00 */}
                                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 0 }}>
                                             <span
                                                 style={{
-                                                    color: "#1F2937",
-                                                    fontSize: 15,
+                                                    color: "#10172A",
+                                                    fontSize: 14,
                                                     fontFamily: "Montserrat Alternates, sans-serif",
                                                     fontWeight: 700,
                                                     lineHeight: "20px",
-                                                    letterSpacing: "-0.3px",
                                                 }}
                                             >
                                                 {currentItem.name}
                                             </span>
                                             <span
                                                 style={{
-                                                    backgroundColor: "#F97316",
+                                                    backgroundColor: "#FA7D00",
                                                     color: "#FFFFFF",
                                                     fontSize: 12,
                                                     fontFamily: "Montserrat Alternates, sans-serif",
@@ -389,7 +355,7 @@ export function LandingPage() {
                                             </span>
                                         </div>
                                         
-                                        {/* Цены */}
+                                        {/* Цены — зелёная цена #35741F */}
                                         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
                                             <span
                                                 style={{
@@ -398,18 +364,16 @@ export function LandingPage() {
                                                     fontFamily: "Montserrat Alternates, sans-serif",
                                                     fontWeight: 500,
                                                     textDecoration: "line-through",
-                                                    letterSpacing: "-0.3px",
                                                 }}
                                             >
                                                 {currentItem.oldPrice}
                                             </span>
                                             <span
                                                 style={{
-                                                    color: "#16A34A",
+                                                    color: "#35741F",
                                                     fontSize: 22,
                                                     fontFamily: "Montserrat Alternates, sans-serif",
                                                     fontWeight: 700,
-                                                    letterSpacing: "-0.5px",
                                                 }}
                                             >
                                                 {currentItem.price}
@@ -471,11 +435,11 @@ export function LandingPage() {
                                             </button>
                                         </div>
                                         <button 
-                                            className="flex-1 h-[32px] rounded-[8px] text-[11px] font-semibold transition-opacity hover:opacity-90"
+                                            className="flex-1 h-[32px] rounded-[8px] text-[11px] font-bold transition-opacity hover:opacity-90"
                                             style={{ 
-                                                backgroundColor: '#000019',
-                                                color: '#FFFFFF',
-                                                fontFamily: 'Montserrat Alternates, sans-serif'
+                                                backgroundColor: '#10172A',
+                                                color: '#E3E3E3',
+                                                fontFamily: 'Manrope, sans-serif'
                                             }}
                                         >
                                             Добавить в заказ
@@ -487,30 +451,24 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* Blog Section — без больших отступов между надписью, картинкой и следующим блоком */}
+                {/* Blog Section — по палитре Figma: заголовок #DEF4EE, текст #ECF4F2 */}
                 <section className="px-[15px] pt-[48px] pb-[20px]">
                     <div className="w-full max-w-[400px] mx-auto flex flex-col items-center gap-0">
                         <h2 
-                            className="text-[32px] font-[700] leading-[1.2] text-center font-montserrat-alt"
-                            style={{ color: '#FFFFFF', margin: 0 }}
+                            className="text-[26px] font-bold leading-tight text-center"
+                            style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#DEF4EE', margin: 0 }}
                         >
                             Блог
                         </h2>
                         <p 
-                            className="text-[22px] font-[600] leading-[1.2] text-center font-montserrat-alt mb-0"
-                            style={{ color: '#FFFFFF', margin: 0 }}
+                            className="text-[18px] font-normal leading-normal text-center mb-0"
+                            style={{ fontFamily: 'Manrope, sans-serif', color: '#ECF4F2', margin: 0 }}
                         >
-                            <span 
-                                className="font-ramona items-center justify-center rounded-full px-[8px] py-[8px] md:px-[18px] md:py-[10px] flex-shrink-0 whitespace-nowrap"
-                                style={{ backgroundColor: '#001900' }}
-                            >
-                                Следите
-                            </span>
-                            {' '}за нами в нашем канале
+                            Следите за нами в нашем канале
                         </p>
                         <div
                             className="w-full rounded-[24px] overflow-hidden p-4 mt-0"
-                            style={{ backgroundColor: '#C8EBBB' }}
+                            style={{ backgroundColor: 'rgba(222, 244, 238, 0.2)', border: '1px solid rgba(9, 135, 113, 0.3)' }}
                         >
                             <a
                                 href="https://t.me/kindplate"
@@ -528,256 +486,125 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* User Benefits Section - White Card */}
+                {/* User Benefits Section — по Figma: заголовок 26px #DEF4EE, текст Manrope 18px, кнопка «Подробнее» */}
                 <section className="px-[15px] pb-[60px]">
                     <div 
                         className="rounded-[15px] px-[20px] pt-[5px] pb-[20px]"
-                        style={{ backgroundColor: '#FFFFFF' }}
+                        style={{ backgroundColor: '#111E42' }}
                     >
                         <h3 
-                            className="text-[16px] leading-[1.08] mb-0 font-montserrat-alt"
-                            style={{ 
-                                fontWeight: 700,
-                                color: '#001900',
-                                lineHeight: '1.08em'
-                            }}
+                            className="text-[26px] leading-tight mb-0 font-bold"
+                            style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#DEF4EE' }}
                         >
                             Для клиентов
                         </h3>
                         <h4 
-                            className="leading-[0.87] mt-[-4px] mb-[6px] font-montserrat-alt"
-                            style={{ 
-                                fontSize: '22px',
-                                fontWeight: 600,
-                                lineHeight: '0.87em'
-                            }}
+                            className="mt-1 mb-1 text-[22px] font-semibold leading-tight"
+                            style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}
                         >
-                            <span className="font-montserrat-alt" style={{ color: '#001900', fontSize: '22px', fontWeight: 600, display: 'inline' }}>Сэкономьте деньги,</span>
-                            {' '}
-                            <span className="font-montserrat-alt" style={{ color: '#000000', fontSize: '22px', fontWeight: 600, display: 'inline' }}>купив товары в ваших любимых заведениях</span>
+                            Сэкономьте деньги, купив товары в ваших любимых заведениях
                         </h4>
                         <p 
-                            className="text-[12px] leading-[0.94] mb-[32px] font-montserrat-alt"
-                            style={{ 
-                                fontWeight: 400,
-                                color: '#000019',
-                                lineHeight: '0.94em'
-                            }}
+                            className="text-[18px] leading-normal mb-[32px]"
+                            style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 400, color: '#ECF4F2' }}
                         >
                             Покупайте вкусную еду по невероятным ценам. Просматривайте предложения по близости и покупайте товары прямо в приложении KindPlate. Наши выгодные цены порадуют ваш кошелек.
                         </p>
                         
-                        {/* Steps */}
                         <div className="space-y-[14px] mb-[21px]">
                             <div className="flex items-baseline gap-[22px]">
-                                <span 
-                                    className="text-[12px] leading-[0.87] flex-shrink-0 font-montserrat-alt"
-                                    style={{ 
-                                        fontWeight: 600,
-                                        color: '#001900',
-                                        lineHeight: '0.87em'
-                                    }}
-                                >
-                                    01
-                                </span>
-                                <p 
-                                    className="text-[11px] leading-[0.87] font-montserrat-alt"
-                                    style={{ 
-                                        fontWeight: 600,
-                                        color: '#000019',
-                                        lineHeight: '0.87em'
-                                    }}
-                                >
-                                    Смотри предложения рядом с тобой
-                                </p>
+                                <span className="text-[12px] font-semibold flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: 'rgba(236, 244, 242, 0.7)' }}>01</span>
+                                <p className="text-[11px] font-semibold" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}>Смотри предложения рядом с тобой</p>
                             </div>
-                            <div className="w-full h-[1px]" style={{ backgroundColor: '#C4CEE8' }}></div>
+                            <div className="w-full h-[1px]" style={{ backgroundColor: 'rgba(236, 244, 242, 0.3)' }}></div>
                             <div className="flex items-baseline gap-[22px]">
-                                <span 
-                                    className="text-[12px] leading-[0.87] flex-shrink-0 font-montserrat-alt"
-                                    style={{ 
-                                        fontWeight: 600,
-                                        color: '#001900',
-                                        lineHeight: '0.87em'
-                                    }}
-                                >
-                                    02
-                                </span>
-                                <p 
-                                    className="text-[11px] leading-[0.87] font-montserrat-alt"
-                                    style={{ 
-                                        fontWeight: 600,
-                                        color: '#000019',
-                                        lineHeight: '0.87em'
-                                    }}
-                                >
-                                    Выбирай и оплачивай прямо в приложении
-                                </p>
+                                <span className="text-[12px] font-semibold flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: 'rgba(236, 244, 242, 0.7)' }}>02</span>
+                                <p className="text-[11px] font-semibold" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}>Выбирай и оплачивай прямо в приложении</p>
                             </div>
-                            <div className="w-full h-[1px]" style={{ backgroundColor: '#C4CEE8' }}></div>
+                            <div className="w-full h-[1px]" style={{ backgroundColor: 'rgba(236, 244, 242, 0.3)' }}></div>
                             <div className="flex items-baseline gap-[22px]">
-                                <span 
-                                    className="text-[12px] leading-[0.87] flex-shrink-0 font-montserrat-alt"
-                                    style={{ 
-                                        fontWeight: 600,
-                                        color: '#001900',
-                                        lineHeight: '0.87em'
-                                    }}
-                                >
-                                    03
-                                </span>
-                                <p 
-                                    className="text-[11px] leading-[0.87] font-montserrat-alt"
-                                    style={{ 
-                                        fontWeight: 600,
-                                        color: '#000019',
-                                        lineHeight: '0.87em'
-                                    }}
-                                >
-                                    Забери в заведении и наслаждайся
-                                </p>
+                                <span className="text-[12px] font-semibold flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: 'rgba(236, 244, 242, 0.7)' }}>03</span>
+                                <p className="text-[11px] font-semibold" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}>Забери в заведении и наслаждайся</p>
                             </div>
                         </div>
                         
                         <div className="flex justify-center">
                             <Link to="/auth/login">
                                 <button 
-                                    className="w-[186px] h-[28px] rounded-[5px] text-[12px] font-semibold leading-[0.94] transition-opacity hover:opacity-90 font-montserrat-alt"
+                                    type="button"
+                                    className="min-w-[186px] h-[53px] rounded-[8px] text-[15px] font-bold transition-opacity hover:opacity-90 border-[1.5px]"
                                     style={{ 
-                                        backgroundColor: '#001900',
-                                        color: '#FFFFFF',
-                                        lineHeight: '0.94em'
+                                        borderColor: '#098771',
+                                        backgroundColor: '#DEF4EE',
+                                        color: '#098771',
+                                        fontFamily: 'Manrope, sans-serif'
                                     }}
                                 >
-                                    смотреть предложения
+                                    Подробнее
                                 </button>
                             </Link>
                         </div>
                     </div>
                 </section>
 
-                {/* User Benefits Section - Dark Card (Repeated) */}
+                {/* User Benefits Section — Для бизнеса: по Figma заголовок 26px #DEF4EE, кнопка «Подробнее» */}
                 <section className="px-[15px] pb-[60px]">
                     <div 
                         className="rounded-[15px] px-[20px] pt-[5px] pb-[20px]"
-                        style={{ backgroundColor: '#000019' }}
+                        style={{ backgroundColor: '#111E42' }}
                     >
                         <h3 
-                            className="text-[16px] leading-[1.08] mb-0 font-montserrat-alt"
-                            style={{ 
-                                fontWeight: 700,
-                                color: '#004900',
-                                lineHeight: '1.08em'
-                            }}
+                            className="text-[26px] leading-tight mb-0 font-bold"
+                            style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#DEF4EE' }}
                         >
                             Для бизнеса
                         </h3>
                         <h4 
-                            className="leading-[0.87] mt-[-4px] mb-[6px] font-montserrat-alt"
-                            style={{ 
-                                fontSize: '22px',
-                                fontWeight: 600,
-                                color: '#F5FBA2',
-                                lineHeight: '0.87em'
-                            }}
+                            className="mt-1 mb-1 text-[22px] font-semibold leading-tight"
+                            style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}
                         >
                             Продавайте больше и привлекайте новых гостей
                         </h4>
                         <p 
-                            className="text-[12px] leading-[0.94] mb-[32px] font-montserrat-alt"
-                            style={{ 
-                                fontWeight: 400,
-                                color: '#FFFFFF',
-                                lineHeight: '0.94em'
-                            }}
+                            className="text-[18px] leading-normal mb-[32px]"
+                            style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 400, color: '#ECF4F2' }}
                         >
                             Kindplate помогает ресторанам и магазинам реализовывать непроданные блюда и готовые продукты со скидкой, вместо того чтобы списывать их. Так вы вносите вклад в осознанное потребление и заботу о планете. Получите дополнительный стабильный источник дохода и привлекайте новых клиентов.
                         </p>
                         
-                        {/* Steps */}
                         <div className="space-y-[14px] mb-[21px]">
                             <div className="flex items-baseline gap-[22px]">
-                                <span 
-                                    className="text-[12px] leading-[0.87] flex-shrink-0 font-montserrat-alt"
-                                    style={{ 
-                                        fontWeight: 600,
-                                        color: 'rgba(245, 251, 162, 0.6)',
-                                        lineHeight: '0.87em'
-                                    }}
-                                >
-                                    01
-                                </span>
-                                <p 
-                                    className="text-[11px] leading-[0.87] font-montserrat-alt"
-                                    style={{ 
-                                        fontWeight: 600,
-                                        color: '#FFFFFF',
-                                        lineHeight: '0.87em'
-                                    }}
-                                >
-                                    Выкладывайте в личном кабинете блюда и наборы со скидкой.
-                                </p>
+                                <span className="text-[12px] font-semibold flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: 'rgba(236, 244, 242, 0.7)' }}>01</span>
+                                <p className="text-[11px] font-semibold" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}>Выкладывайте в личном кабинете блюда и наборы со скидкой.</p>
                             </div>
-                            <div className="w-full h-[1px]" style={{ backgroundColor: '#C4CEE8' }}></div>
+                            <div className="w-full h-[1px]" style={{ backgroundColor: 'rgba(236, 244, 242, 0.3)' }}></div>
                             <div className="flex items-baseline gap-[22px]">
-                                <span 
-                                    className="text-[12px] leading-[0.87] flex-shrink-0 font-montserrat-alt"
-                                    style={{ 
-                                        fontWeight: 600,
-                                        color: 'rgba(245, 251, 162, 0.6)',
-                                        lineHeight: '0.87em'
-                                    }}
-                                >
-                                    02
-                                </span>
-                                <p 
-                                    className="text-[11px] leading-[0.87] font-montserrat-alt"
-                                    style={{ 
-                                        fontWeight: 600,
-                                        color: '#FFFFFF',
-                                        lineHeight: '0.87em'
-                                    }}
-                                >
-                                    Получайте предоплаченные заказы от гостей в приложении.
-                                </p>
+                                <span className="text-[12px] font-semibold flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: 'rgba(236, 244, 242, 0.7)' }}>02</span>
+                                <p className="text-[11px] font-semibold" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}>Получайте предоплаченные заказы от гостей в приложении.</p>
                             </div>
-                            <div className="w-full h-[1px]" style={{ backgroundColor: '#C4CEE8' }}></div>
+                            <div className="w-full h-[1px]" style={{ backgroundColor: 'rgba(236, 244, 242, 0.3)' }}></div>
                             <div className="flex items-baseline gap-[22px]">
-                                <span 
-                                    className="text-[12px] leading-[0.87] flex-shrink-0 font-montserrat-alt"
-                                    style={{ 
-                                        fontWeight: 600,
-                                        color: 'rgba(245, 251, 162, 0.6)',
-                                        lineHeight: '0.87em'
-                                    }}
-                                >
-                                    03
-                                </span>
-                                <p 
-                                    className="text-[11px] leading-[0.87] font-montserrat-alt"
-                                    style={{ 
-                                        fontWeight: 600,
-                                        color: '#FFFFFF',
-                                        lineHeight: '0.87em'
-                                    }}
-                                >
-                                    Выдавайте заказы в заведении и снижайте потери еды.
-                                </p>
+                                <span className="text-[12px] font-semibold flex-shrink-0" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: 'rgba(236, 244, 242, 0.7)' }}>03</span>
+                                <p className="text-[11px] font-semibold" style={{ fontFamily: 'Montserrat Alternates, sans-serif', color: '#ECF4F2' }}>Выдавайте заказы в заведении и снижайте потери еды.</p>
                             </div>
                         </div>
 
-                        <a href="https://t.me/kindplatesupportbot" target="_blank" rel="noopener noreferrer">
-                            <button 
-                                className="w-full h-[31px] rounded-[5px] text-[12px] font-semibold leading-[0.94] transition-opacity hover:opacity-90 font-montserrat-alt"
-                                style={{ 
-                                    backgroundColor: '#F5FBA2',
-                                    color: '#000019',
-                                    lineHeight: '0.94em'
-                                }}
-                            >
-                                написать о сотрудничестве
-                            </button>
-                        </a>
+                        <div className="flex justify-center">
+                            <a href="https://t.me/kindplatesupportbot" target="_blank" rel="noopener noreferrer">
+                                <button 
+                                    type="button"
+                                    className="min-w-[186px] h-[53px] rounded-[8px] text-[15px] font-bold transition-opacity hover:opacity-90 border-[1.5px]"
+                                    style={{ 
+                                        borderColor: '#098771',
+                                        backgroundColor: '#DEF4EE',
+                                        color: '#098771',
+                                        fontFamily: 'Manrope, sans-serif'
+                                    }}
+                                >
+                                    Подробнее
+                                </button>
+                            </a>
+                        </div>
                     </div>
                 </section>
 
