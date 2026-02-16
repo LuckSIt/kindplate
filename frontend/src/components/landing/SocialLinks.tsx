@@ -2,6 +2,8 @@ import instagramFooterIcon from "@/figma/instagram-footer.svg";
 import gmailFooterIcon from "@/figma/gmail-footer.svg";
 import telegramFooterIcon from "@/figma/telegram-footer.svg";
 import vkFooterIcon from "@/figma/vk-footer.svg";
+import telegramFooterMinimalIcon from "@/figma/telegram-footer-minimal.svg";
+import vkFooterMinimalIcon from "@/figma/vk-footer-minimal.svg";
 import clsx from "clsx";
 
 type SocialLinksProps = {
@@ -10,6 +12,8 @@ type SocialLinksProps = {
     gap?: number;
     className?: string;
     style?: React.CSSProperties;
+    /** minimal = прозрачный круг с белой обводкой и белыми иконками (для тёмного фона) */
+    variant?: "default" | "minimal";
 };
 
 export function SocialLinks({
@@ -18,15 +22,25 @@ export function SocialLinks({
     gap = 11,
     className,
     style,
+    variant = "default",
 }: SocialLinksProps) {
+    const isMinimal = variant === "minimal";
     const circleStyle: React.CSSProperties = {
         width: `${circleSize}px`,
         height: `${circleSize}px`,
         borderRadius: "50%",
-        backgroundColor: "#7E879D",
+        backgroundColor: isMinimal ? "transparent" : "#7E879D",
+        ...(isMinimal ? { border: "1.5px solid #FFFFFF", boxSizing: "border-box" } : {}),
     };
 
     const iconStyle: React.CSSProperties = {
+        width: `${iconSize}px`,
+        height: `${iconSize}px`,
+        objectFit: "contain",
+        display: "block",
+        ...(isMinimal ? { filter: "brightness(0) invert(1)" } : {}),
+    };
+    const iconStyleMinimalWhite: React.CSSProperties = {
         width: `${iconSize}px`,
         height: `${iconSize}px`,
         objectFit: "contain",
@@ -38,6 +52,9 @@ export function SocialLinks({
         ...style,
     };
 
+    const vkIcon = isMinimal ? vkFooterMinimalIcon : vkFooterIcon;
+    const telegramIcon = isMinimal ? telegramFooterMinimalIcon : telegramFooterIcon;
+
     return (
         <div className={clsx("flex items-center", className)} style={wrapperStyle}>
             <a
@@ -48,17 +65,17 @@ export function SocialLinks({
                 aria-label="VK"
                 style={circleStyle}
             >
-                <img src={vkFooterIcon} alt="VK" style={iconStyle} />
+                <img src={vkIcon} alt="VK" style={isMinimal ? iconStyleMinimalWhite : iconStyle} />
             </a>
             <a
-                href="https://t.me/kindplatesupportbot" 
+                href="https://t.me/kindplatesupportbot"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center transition-opacity hover:opacity-80"
                 aria-label="Telegram"
                 style={circleStyle}
             >
-                <img src={telegramFooterIcon} alt="Telegram" style={iconStyle} />
+                <img src={telegramIcon} alt="Telegram" style={isMinimal ? iconStyleMinimalWhite : iconStyle} />
             </a>
             <a
                 href="#"

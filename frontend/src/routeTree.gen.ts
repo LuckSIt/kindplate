@@ -13,6 +13,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as OrderRouteImport } from './routes/order'
 import { Route as FavoritesRouteImport } from './routes/favorites'
+import { Route as ContactsRouteImport } from './routes/contacts'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
@@ -63,6 +64,11 @@ const OrderRoute = OrderRouteImport.update({
 const FavoritesRoute = FavoritesRouteImport.update({
   id: '/favorites',
   path: '/favorites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactsRoute = ContactsRouteImport.update({
+  id: '/contacts',
+  path: '/contacts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CartRoute = CartRouteImport.update({
@@ -227,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/cart': typeof CartRoute
+  '/contacts': typeof ContactsRoute
   '/favorites': typeof FavoritesRoute
   '/order': typeof OrderRoute
   '/orders': typeof OrdersRoute
@@ -264,6 +271,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/cart': typeof CartRoute
+  '/contacts': typeof ContactsRoute
   '/favorites': typeof FavoritesRoute
   '/order': typeof OrderRoute
   '/orders': typeof OrdersRoute
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/cart': typeof CartRoute
+  '/contacts': typeof ContactsRoute
   '/favorites': typeof FavoritesRoute
   '/order': typeof OrderRoute
   '/orders': typeof OrdersRoute
@@ -341,6 +350,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/cart'
+    | '/contacts'
     | '/favorites'
     | '/order'
     | '/orders'
@@ -378,6 +388,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/cart'
+    | '/contacts'
     | '/favorites'
     | '/order'
     | '/orders'
@@ -415,6 +426,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/cart'
+    | '/contacts'
     | '/favorites'
     | '/order'
     | '/orders'
@@ -453,6 +465,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
   CartRoute: typeof CartRoute
+  ContactsRoute: typeof ContactsRoute
   FavoritesRoute: typeof FavoritesRoute
   OrderRoute: typeof OrderRoute
   OrdersRoute: typeof OrdersRoute
@@ -510,6 +523,13 @@ declare module '@tanstack/react-router' {
       path: '/favorites'
       fullPath: '/favorites'
       preLoaderRoute: typeof FavoritesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contacts': {
+      id: '/contacts'
+      path: '/contacts'
+      fullPath: '/contacts'
+      preLoaderRoute: typeof ContactsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cart': {
@@ -764,6 +784,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
   CartRoute: CartRoute,
+  ContactsRoute: ContactsRoute,
   FavoritesRoute: FavoritesRoute,
   OrderRoute: OrderRoute,
   OrdersRoute: OrdersRoute,

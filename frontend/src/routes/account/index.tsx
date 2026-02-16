@@ -60,23 +60,18 @@ function RouteComponent() {
         console.log('[Account] User is_business changed:', user?.is_business);
     }, [user]);
     
-    // Mutation для выхода из системы (не используется, но оставлено для будущего использования)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    useMutation({
+    const { mutate: logout, isPending: isLoggingOut } = useMutation({
         mutationFn: () => axiosInstance.get("/auth/logout"),
         onSuccess: () => {
             tokenStorage.clear();
             queryClient.clear();
-            navigate({ to: "/auth/login" });
+            navigate({ to: "/" });
             notify.success("Выход", "Вы вышли из системы");
         },
-        onError: (error: unknown) => {
-            if (import.meta.env.DEV) {
-                console.error("Logout error:", error);
-            }
+        onError: () => {
             tokenStorage.clear();
             queryClient.clear();
-            navigate({ to: "/auth/login" });
+            navigate({ to: "/" });
         },
     });
 
@@ -398,50 +393,39 @@ function RouteComponent() {
         const stats = statsData?.data?.stats;
         
         return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 pb-20">
-                {/* Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-6 shadow-lg sticky top-0 z-10">
-                    <div className="flex items-center gap-3 mb-2">
-                        <button 
+            <div className="stats-page">
+                <div className="stats-page__header">
+                    <div className="stats-page__header-floating">
+                        <button
+                            className="stats-page__back-button"
                             onClick={() => setShowStats(false)}
-                            className="p-2 hover:bg-white/20 rounded-full transition-colors"
+                            aria-label="Назад"
                         >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
+                            <img src={arrowBackIcon} alt="Назад" className="stats-page__back-button-icon" />
                         </button>
-                        <div>
-                            <h1 className="text-2xl font-bold flex items-center gap-2">
-                                <span>📊</span>
-                                Моя статистика
-                            </h1>
-                            <p className="text-blue-100 text-sm">Ваш вклад в спасение планеты</p>
+                        <div className="stats-page__header-title-container">
+                            <h1 className="stats-page__header-name">Моя статистика</h1>
                         </div>
                     </div>
                 </div>
 
-                {/* Stats Content */}
-                <div className="p-4 space-y-4">
+                <div className="stats-page__content">
                     {statsLoading && (
-                        <div className="text-center py-12">
-                            <svg className="mx-auto mb-4 animate-spin" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="#2563eb33" strokeWidth="3" />
-                                <path d="M12 2a10 10 0 0 1 10 10" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" />
-                            </svg>
-                            <p className="text-gray-600 dark:text-gray-300">Загружаем статистику...</p>
+                        <div className="stats-page__loading">
+                            <div className="w-5 h-5 animate-spin" style={{ border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%' }} />
+                            <p>Загружаем статистику...</p>
                         </div>
                     )}
 
                     {!statsLoading && stats && (
                         <>
-                            {/* Level Card */}
-                            <div className="bg-gradient-to-br from-yellow-400 to-orange-500 text-white rounded-3xl p-6 shadow-xl">
+                            <div className="stats-page__level-card">
                                 <div className="flex items-center justify-between mb-4">
                                     <div>
                                         <div className="text-sm opacity-90">Ваш уровень</div>
-                                        <div className="text-3xl font-bold">{stats.level}</div>
+                                        <div className="text-2xl font-bold" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>{stats.level}</div>
                                     </div>
-                                    <div className="text-6xl">
+                                    <div className="text-5xl">
                                         {stats.level === 'Новичок' && '🌱'}
                                         {stats.level === 'Любитель' && '🌿'}
                                         {stats.level === 'Активный' && '🍀'}
@@ -450,92 +434,70 @@ function RouteComponent() {
                                     </div>
                                 </div>
                                 <div className="mb-2">
-                                    <div className="flex justify-between text-sm mb-1">
+                                    <div className="flex justify-between text-sm mb-1 opacity-90">
                                         <span>Прогресс до "{stats.next_level}"</span>
                                         <span>{stats.progress}/{stats.target}</span>
                                     </div>
-                                    <div className="bg-white/30 rounded-full h-3 overflow-hidden">
-                                        <div 
-                                            className="bg-white h-full rounded-full transition-all duration-500"
-                                            style={{ width: `${(stats.progress / stats.target) * 100}%` }}
-                                        ></div>
+                                    <div className="bg-white/25 rounded-full h-2.5 overflow-hidden">
+                                        <div className="bg-white h-full rounded-full transition-all duration-500" style={{ width: `${(stats.progress / stats.target) * 100}%` }} />
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Main Stats Grid */}
-                            <div className="grid grid-cols-2 gap-4">
-                                {/* Orders */}
-                                <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-lg border border-gray-100 dark:border-gray-700">
-                                    <div className="text-4xl mb-2">📦</div>
-                                    <div className="text-3xl font-bold text-primary">{stats.orders_count}</div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-300">Заказов выполнено</div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="stats-page__card">
+                                    <div className="text-2xl mb-1">📦</div>
+                                    <div className="stats-page__card-value">{stats.orders_count}</div>
+                                    <div className="stats-page__card-label">Заказов выполнено</div>
                                 </div>
-
-                                {/* Saved Meals */}
-                                <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-lg border border-gray-100 dark:border-gray-700">
-                                    <div className="text-4xl mb-2">🍽️</div>
-                                    <div className="text-3xl font-bold text-orange-600">{stats.saved_meals}</div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-300">Порций спасено</div>
+                                <div className="stats-page__card">
+                                    <div className="text-2xl mb-1">🍽️</div>
+                                    <div className="stats-page__card-value">{stats.saved_meals}</div>
+                                    <div className="stats-page__card-label">Порций спасено</div>
                                 </div>
-
-                                {/* Saved Money */}
-                                <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-lg border border-gray-100 dark:border-gray-700">
-                                    <div className="text-4xl mb-2">💰</div>
-                                    <div className="text-3xl font-bold text-blue-600">{Math.round(stats.saved_money)}₽</div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-300">Сэкономлено</div>
+                                <div className="stats-page__card">
+                                    <div className="text-2xl mb-1">💰</div>
+                                    <div className="stats-page__card-value">{Math.round(stats.saved_money)}₽</div>
+                                    <div className="stats-page__card-label">Сэкономлено</div>
                                 </div>
-
-                                {/* CO2 */}
-                                <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-lg border border-gray-100 dark:border-gray-700">
-                                    <div className="text-4xl mb-2">🌍</div>
-                                    <div className="text-3xl font-bold text-primary">{stats.co2_saved}кг</div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-300">CO₂ предотвращено</div>
+                                <div className="stats-page__card">
+                                    <div className="text-2xl mb-1">🌍</div>
+                                    <div className="stats-page__card-value">{stats.co2_saved}кг</div>
+                                    <div className="stats-page__card-label">CO₂ предотвращено</div>
                                 </div>
                             </div>
 
-                            {/* Impact Card */}
-                            <div className="bg-gradient-to-br from-primary to-primary-light text-white rounded-2xl p-6 shadow-xl">
-                                <div className="text-xl font-bold mb-3">🌟 Ваш экологический вклад</div>
-                                <div className="space-y-2 text-sm">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-2xl">🌳</span>
-                                        <span>Эквивалентно {Math.round(stats.co2_saved / 20)} посаженным деревьям</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-2xl">💡</span>
-                                        <span>Сэкономлено {Math.round(stats.saved_meals * 0.5)}кВт энергии</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-2xl">💧</span>
-                                        <span>Сохранено {Math.round(stats.saved_meals * 50)}л воды</span>
-                                    </div>
+                            <div className="stats-page__impact-card">
+                                <div className="font-semibold mb-2" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>🌟 Ваш экологический вклад</div>
+                                <div className="space-y-1 text-sm opacity-95">
+                                    <div className="flex items-center gap-2">🌳 Эквивалентно {Math.round(stats.co2_saved / 20)} посаженным деревьям</div>
+                                    <div className="flex items-center gap-2">💡 Сэкономлено {Math.round(stats.saved_meals * 0.5)}кВт энергии</div>
+                                    <div className="flex items-center gap-2">💧 Сохранено {Math.round(stats.saved_meals * 50)}л воды</div>
                                 </div>
                             </div>
 
-                            {/* Achievements */}
-                            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-                                <h3 className="text-xl font-bold mb-4">🏆 Достижения</h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div className={`p-4 rounded-xl border-2 ${stats.orders_count >= 1 ? 'bg-yellow-50 border-yellow-300' : 'bg-gray-50 border-gray-200 opacity-50'}`}>
-                                        <div className="text-3xl mb-1">🎉</div>
-                                        <div className="text-sm font-bold">Первый шаг</div>
-                                        <div className="text-xs text-gray-600 dark:text-gray-300">1 заказ</div>
+                            <div className="stats-page__card" style={{ marginTop: 8 }}>
+                                <h3 className="font-semibold text-white mb-3" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>🏆 Достижения</h3>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <div className={`stats-page__achievement ${stats.orders_count >= 1 ? 'stats-page__achievement--unlocked' : ''}`}>
+                                        <div className="text-2xl mb-1">🎉</div>
+                                        <div className="text-sm font-semibold text-white">Первый шаг</div>
+                                        <div className="stats-page__card-label">1 заказ</div>
                                     </div>
-                                    <div className={`p-4 rounded-xl border-2 ${stats.orders_count >= 5 ? 'bg-primary-50 border-primary-300' : 'bg-gray-50 border-gray-200 opacity-50'}`}>
-                                        <div className="text-3xl mb-1">🌱</div>
-                                        <div className="text-sm font-bold">Энтузиаст</div>
-                                        <div className="text-xs text-gray-600 dark:text-gray-300">5 заказов</div>
+                                    <div className={`stats-page__achievement ${stats.orders_count >= 5 ? 'stats-page__achievement--unlocked' : ''}`}>
+                                        <div className="text-2xl mb-1">🌱</div>
+                                        <div className="text-sm font-semibold text-white">Энтузиаст</div>
+                                        <div className="stats-page__card-label">5 заказов</div>
                                     </div>
-                                    <div className={`p-4 rounded-xl border-2 ${stats.orders_count >= 10 ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-gray-200 opacity-50'}`}>
-                                        <div className="text-3xl mb-1">🔥</div>
-                                        <div className="text-sm font-bold">На пути</div>
-                                        <div className="text-xs text-gray-600 dark:text-gray-300">10 заказов</div>
+                                    <div className={`stats-page__achievement ${stats.orders_count >= 10 ? 'stats-page__achievement--unlocked' : ''}`}>
+                                        <div className="text-2xl mb-1">🔥</div>
+                                        <div className="text-sm font-semibold text-white">На пути</div>
+                                        <div className="stats-page__card-label">10 заказов</div>
                                     </div>
-                                    <div className={`p-4 rounded-xl border-2 ${stats.orders_count >= 20 ? 'bg-purple-50 border-purple-300' : 'bg-gray-50 border-gray-200 opacity-50'}`}>
-                                        <div className="text-3xl mb-1">💎</div>
-                                        <div className="text-sm font-bold">Легенда</div>
-                                        <div className="text-xs text-gray-600 dark:text-gray-300">20 заказов</div>
+                                    <div className={`stats-page__achievement ${stats.orders_count >= 20 ? 'stats-page__achievement--unlocked' : ''}`}>
+                                        <div className="text-2xl mb-1">💎</div>
+                                        <div className="text-sm font-semibold text-white">Легенда</div>
+                                        <div className="stats-page__card-label">20 заказов</div>
                                     </div>
                                 </div>
                             </div>
@@ -789,7 +751,7 @@ function RouteComponent() {
 
     // Основной экран аккаунта
     return (
-        <div className="w-full mx-auto bg-[#000019] flex flex-col items-center" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
+        <div className="w-full mx-auto bg-[#111E42] flex flex-col items-center" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
             {/* Информация о клиенте */}
             <div className="w-full max-w-[350px] h-[50px] rounded-[15px] bg-[#D9D9D9] flex items-center mt-[64px] mx-4 px-[14px] py-[7px]">
                 {/* Avatar */}
@@ -820,13 +782,13 @@ function RouteComponent() {
             {/* Menu Options */}
             <div className="mt-[27px] flex flex-col items-start w-full max-w-[350px] px-4 sm:px-0">
                 {/* Main Menu Card */}
-                <div className="w-full rounded-[15px] border border-white bg-[#000019] flex flex-col divide-y divide-white/30">
+                <div className="w-full rounded-[15px] border border-white bg-[#111E42] flex flex-col divide-y divide-white/30">
                     {/* Избранное */}
                     <button 
                         onClick={() => setShowFavorites(true)}
                         className="flex items-center w-full px-[20px] py-[12px]"
                     >
-                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
+                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#AEC2A6] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[20px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>
@@ -844,7 +806,7 @@ function RouteComponent() {
                         onClick={() => setShowOrders(true)}
                         className="flex items-center w-full px-[20px] py-[12px]"
                     >
-                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
+                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#AEC2A6] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[20px] h-[20px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -862,7 +824,7 @@ function RouteComponent() {
                         onClick={() => setShowDietPrefs(true)}
                         className="flex items-center w-full px-[20px] py-[12px]"
                     >
-                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
+                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#AEC2A6] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
@@ -882,7 +844,7 @@ function RouteComponent() {
                         onClick={() => setShowSubscriptions(true)}
                         className="flex items-center w-full px-[20px] py-[12px]"
                     >
-                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
+                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#AEC2A6] flex items-center justify-center flex-shrink-0">
                             <svg className="w-[16px] h-[20px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
@@ -903,7 +865,7 @@ function RouteComponent() {
                                 onClick={() => navigate({ to: "/panel" })}
                                 className="flex items-center w-full px-[20px] py-[12px]"
                             >
-                                <div className="w-[40px] h-[40px] rounded-[10px] bg-[#001900] flex items-center justify-center flex-shrink-0">
+                                <div className="w-[40px] h-[40px] rounded-[10px] bg-[#AEC2A6] flex items-center justify-center flex-shrink-0">
                                     <svg className="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M3 11h18M3 15h18M7 7V5a2 2 0 012-2h6a2 2 0 012 2v2" />
                                     </svg>
@@ -919,6 +881,28 @@ function RouteComponent() {
                             </button>
                         ) : null;
                     })()}
+
+                    {/* Выход */}
+                    <button 
+                        type="button"
+                        onClick={() => logout()}
+                        disabled={isLoggingOut}
+                        className="flex items-center w-full px-[20px] py-[12px]"
+                    >
+                        <div className="w-[40px] h-[40px] rounded-[10px] bg-[#AEC2A6] flex items-center justify-center flex-shrink-0">
+                            <svg className="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                        </div>
+                        <div className="ml-[14px] text-[16px] font-semibold text-white leading-[20px]" style={{ fontFamily: 'Montserrat Alternates, sans-serif' }}>
+                            {isLoggingOut ? "Выход…" : "Выход"}
+                        </div>
+                        <div className="w-[30px] h-[30px] ml-auto flex justify-end items-center">
+                            <svg className="w-[15px] h-[30px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </button>
                 </div>
 
                 {/* Служба поддержки */}
@@ -971,7 +955,7 @@ function RouteComponent() {
                 <div
                     className="relative w-full"
                     style={{
-                        backgroundColor: "#000019",
+                        backgroundColor: "#111E42",
                         paddingTop: "10px",
                         paddingBottom: "calc(20px + env(safe-area-inset-bottom, 0px))"
                     }}
@@ -987,7 +971,7 @@ function RouteComponent() {
                                     fontWeight: 600,
                                     fontSize: "14px",
                                     lineHeight: "22px",
-                                    color: '#004900',
+                                    color: '#FFFFFF',
                                     textAlign: "left",
                                     marginBottom: "0px"
                                 }}
@@ -1070,7 +1054,7 @@ function RouteComponent() {
                                     fontWeight: 600,
                                     fontSize: "14px",
                                     lineHeight: "22px",
-                                    color: '#004900',
+                                    color: '#FFFFFF',
                                     textAlign: "left",
                                     marginBottom: "0px"
                                 }}
@@ -1092,8 +1076,8 @@ function RouteComponent() {
                             >
                                 Ответы на вопросы
                             </Link>
-                            <a 
-                                href="#"
+                            <Link 
+                                to="/contacts"
                                 className="block transition-opacity hover:opacity-80 no-underline"
                                 style={{ 
                                     fontFamily: 'Montserrat Alternates, sans-serif',
@@ -1106,7 +1090,7 @@ function RouteComponent() {
                                 }}
                             >
                                 Контакты
-                            </a>
+                            </Link>
                         </div>
                     </div>
                     
@@ -1123,13 +1107,13 @@ function RouteComponent() {
                                 fontWeight: 600,
                                 fontSize: "14px",
                                 lineHeight: "22px",
-                                color: "#004900",
+                                color: "#FFFFFF",
                                 marginBottom: "10px"
                             }}
                         >
                             Социальные сети
                         </p>
-                        <SocialLinks circleSize={34} iconSize={22} gap={11} />
+                        <SocialLinks circleSize={34} iconSize={28} gap={11} />
                     </div>
                     
                 </div>

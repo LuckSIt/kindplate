@@ -459,7 +459,7 @@ function RouteComponent() {
             <div 
                 className="flex flex-col"
                 style={{ 
-                    backgroundColor: '#000019',
+                    backgroundColor: '#111E42',
                     height: '100%',
                     minHeight: '100%',
                     position: 'relative',
@@ -658,7 +658,7 @@ function RouteComponent() {
                     >
                         <div 
                             className="p-3 rounded-2xl shadow-2xl"
-                            style={{ backgroundColor: '#000019', border: '1px solid #334155' }}
+                            style={{ backgroundColor: '#111E42', border: '1px solid #334155' }}
                         >
                             <div className="flex items-center gap-3">
                                 {/* Logo */}

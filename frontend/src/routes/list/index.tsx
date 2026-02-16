@@ -274,15 +274,17 @@ function BusinessCard({ business, image, onClick }: BusinessCardProps) {
                     <div className="businesses-list-page__header-right">
                         <div className="businesses-list-page__business-meta">
                             <div className="businesses-list-page__business-meta-item">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" fill="#F5FBA2"/>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CCFF99" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
                                 </svg>
                                 <span>{business.distance_km != null ? `${business.distance_km < 1 ? business.distance_km.toFixed(2) : business.distance_km.toFixed(1)} км` : '—'}</span>
                             </div>
                             {(business as any)?.working_hours && (
                                 <div className="businesses-list-page__business-meta-item">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12.5 7V11.25L16.5 13.5L15.75 14.5L11.5 11.75V7H12.5Z" fill="#F5FBA2"/>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CCFF99" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <path d="M12 6v6l4 2"/>
                                     </svg>
                                     <span>{(business as any).working_hours}</span>
                                 </div>
@@ -290,8 +292,8 @@ function BusinessCard({ business, image, onClick }: BusinessCardProps) {
                         </div>
 
                         <div className="businesses-list-page__rating">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="#DB7E2F">
-                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFA500">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                             </svg>
                             <span>{business.rating || 4.8}</span>
                         </div>
