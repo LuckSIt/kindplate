@@ -1,0 +1,367 @@
+/* Стили лендинга — подключаются в LandingPage.tsx */
+
+/* Hero подзаголовок — весь блок 20px */
+.kp-landing .landing-hero-subtitle,
+.kp-landing .landing-hero-subtitle .landing-hero-text,
+.kp-landing .landing-hero-subtitle .landing-hero-accent {
+  font-size: 20px !important;
+  line-height: 1.08 !important;
+  color: #ECF4F2 !important;
+}
+.kp-landing .landing-hero-subtitle {
+  font-weight: 200 !important;
+}
+.kp-landing .landing-hero-subtitle .landing-hero-accent {
+  font-weight: 700 !important;
+}
+
+.kp-landing .manrope,
+.kp-landing .manrope *,
+.kp-landing .landing-steps,
+.kp-landing .landing-steps * {
+  font-family: "Manrope", sans-serif !important;
+}
+
+.kp-landing .landing-hero-title,
+.kp-landing section.manrope h1,
+.kp-landing .manrope h1 {
+  font-family: Manrope, sans-serif !important;
+  font-size: 33px !important;
+  line-height: 1.37 !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  letter-spacing: -1.32px !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  margin-bottom: 17px !important;
+}
+
+.kp-landing section.manrope p span span {
+  font-weight: 700 !important;
+  color: #ECF4F2 !important;
+}
+
+body .kp-landing .landing-clients-green {
+  font-size: 24px !important;
+}
+
+body .kp-landing .landing-clients-desc {
+  font-size: 18px !important;
+  font-family: Manrope, sans-serif !important;
+}
+
+/* CTA кнопки */
+.kp-landing .landing-cta-buttons {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+.kp-landing .landing-cta-link {
+  flex-shrink: 0 !important;
+  display: inline-block !important;
+}
+.kp-landing .landing-cta-btn {
+  width: 173px !important;
+  height: 51px !important;
+  padding: 19px 44px 18px !important;
+  box-sizing: border-box !important;
+  border-radius: 8px !important;
+  border: none !important;
+  font-family: Manrope, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  line-height: 87% !important;
+  letter-spacing: 0 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+}
+.kp-landing .landing-cta-btn--primary {
+  background: #098771 !important;
+  color: #ffffff !important;
+}
+.kp-landing .landing-cta-btn--secondary {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+
+/* Чтобы блюр в блоках 01/02/03 не обрезался по краям */
+.kp-landing {
+  overflow-x: visible !important;
+}
+
+/* Блок шагов: градиент внутри контейнера */
+.kp-landing .grain-card {
+  position: relative;
+  background: radial-gradient(farthest-corner at 50% 50%, #06a188 5%, #111E42 80%);
+  border-radius: 0 !important;
+  overflow: hidden;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Только блоки 01/02/03 (Для клиентов, Для бизнеса): блюр не обрезается */
+.kp-landing-steps-section {
+  overflow: visible !important;
+}
+.kp-landing .landing-steps.grain-card {
+  overflow: visible !important;
+  background: #111E42 !important;
+}
+.kp-landing .landing-steps.grain-card::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: -25%;
+  top: -25%;
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(farthest-corner at 50% 50%, #06a188 5%, transparent 55%);
+  pointer-events: none;
+}
+.kp-landing .landing-steps.grain-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* «Почему KindPlate?» — два зерна: сверху слева и снизу справа, градиент внутри блока (без выхода за края) */
+.kp-landing .kp-landing-why-two-grains.grain-card {
+  background: radial-gradient(farthest-corner at 10% 20%, #D0FFC7 0%, transparent 30%), radial-gradient(farthest-corner at 90% 80%, #06a188 0%, #111E42 30%) !important;
+}
+
+/* Строка шага: выравнивание цифры и текста */
+.kp-landing .landing-steps .landing-step-row {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 0 !important;
+}
+body .kp-landing .landing-steps .landing-step-num {
+  font-size: 50px !important;
+  line-height: 1 !important;
+  font-weight: 400 !important;
+  color: #ffffff !important;
+  letter-spacing: 0.05em !important;
+  display: block !important;
+  flex-shrink: 0 !important;
+  padding: 0 !important;
+  margin: 0 43px 0 0 !important;
+  width: 53px !important;
+  box-sizing: border-box !important;
+}
+body .kp-landing .landing-steps .landing-step-text {
+  font-size: 16px !important;
+  line-height: 1.35 !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  font-family: "Manrope", sans-serif !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  text-indent: 0 !important;
+  min-width: 0 !important;
+  max-width: 253px !important;
+  flex: 1 !important;
+}
+.kp-landing .landing-steps .step-num {
+  font-size: 50px !important;
+  line-height: 1 !important;
+  font-weight: 400 !important;
+  color: #ffffff !important;
+  letter-spacing: 0.05em !important;
+}
+.kp-landing .landing-steps p {
+  font-size: 16px !important;
+  line-height: 1.35 !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+}
+
+/* Кнопка «Подробнее» на лендинге */
+.kp-landing .kp-landing-more-link {
+  text-decoration: none !important;
+}
+.kp-landing .kp-landing-more-btn {
+  text-decoration: none !important;
+  font-family: Manrope, sans-serif !important;
+}
+
+/* «Почему KindPlate?» pills */
+.kp-landing .kp-landing-why-title {
+  font-family: Manrope, sans-serif !important;
+}
+.kp-landing .kp-landing-why-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 264px;
+  min-height: 63px;
+  height: 63px;
+  padding: 0 20px;
+  border-radius: 36px;
+  background: #DEF4EE;
+  font-family: Manrope, sans-serif !important;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 104%;
+  letter-spacing: 0;
+  color: #098771;
+  text-align: center;
+  white-space: normal;
+}
+.kp-landing .kp-landing-why-pill-text {
+  font-family: Manrope, sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  line-height: 104% !important;
+  letter-spacing: 0 !important;
+  color: #098771 !important;
+}
+
+/* Карточка продукта в рамке телефона */
+body .kp-landing .phone-product-card,
+body .kp-landing .phone-product-card * {
+  font-family: Manrope, sans-serif !important;
+}
+body .kp-landing .phone-product-card .phone-card-category {
+  font-size: 10px !important;
+  line-height: 1.2 !important;
+  font-weight: 500 !important;
+  color: #757575 !important;
+}
+body .kp-landing .phone-product-card .phone-card-name {
+  font-size: 12px !important;
+  line-height: 1.3 !important;
+  font-weight: 700 !important;
+  color: #10172A !important;
+}
+body .kp-landing .phone-product-card .phone-card-badge {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  background: #F97316 !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  flex-shrink: 0;
+}
+body .kp-landing .phone-product-card .phone-card-old-price {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: #9CA3AF !important;
+  text-decoration: line-through !important;
+}
+body .kp-landing .phone-product-card .phone-card-price {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #098771 !important;
+}
+body .kp-landing .phone-qty-symbol {
+  font-family: Manrope, sans-serif !important;
+  font-size: 20px !important;
+  color: #000019 !important;
+}
+body .kp-landing .phone-quantity-value {
+  font-family: Manrope, sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  min-width: 18px !important;
+  text-align: center !important;
+  color: #000019 !important;
+  line-height: 14px !important;
+}
+
+/* Footer — Контакты: карточки + реквизиты */
+.kp-landing-footer {
+  font-family: Manrope, sans-serif;
+  background-color: #111E42;
+  padding: 40px 24px calc(32px + env(safe-area-inset-bottom, 0px)) 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.kp-landing-footer-title {
+  font-family: Manrope, sans-serif !important;
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  font-style: normal !important;
+  color: #ffffff !important;
+  text-align: center !important;
+  margin: 0 0 24px 0 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 137% !important;
+  opacity: 1 !important;
+}
+
+.kp-landing-footer-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 361px;
+  margin: 0 auto;
+}
+
+.kp-landing-footer-card {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 361px !important;
+  max-width: 100%;
+  height: 66px !important;
+  padding: 0 20px !important;
+  background: #DEF4EE !important;
+  border-radius: 15px !important;
+  text-decoration: none !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06) !important;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease !important;
+  box-sizing: border-box !important;
+}
+.kp-landing-footer-card:hover {
+  background-color: #d0ede5 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+}
+.kp-landing-footer-card:active {
+  background-color: #c2e6dc !important;
+}
+.kp-landing-footer-card-text {
+  font-family: Manrope, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  font-style: normal !important;
+  color: #098771 !important;
+  line-height: 100% !important;
+  letter-spacing: 0% !important;
+}
+.kp-landing-footer-card-arrow {
+  flex-shrink: 0 !important;
+  width: 28px !important;
+  height: 28px !important;
+  color: #098771 !important;
+  margin-left: 8px !important;
+}
+.kp-landing-footer-card-arrow svg {
+  stroke-width: 2.41px;
+  stroke: #098771;
+}
+
+.kp-landing-footer-legal-block {
+  margin-top: 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.kp-landing-footer-legal {
+  font-family: var(--font-manrope), Manrope, sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  color: #ffffff !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+}

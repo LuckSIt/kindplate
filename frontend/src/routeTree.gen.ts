@@ -24,6 +24,7 @@ import { Route as CheckoutIndexRouteImport } from './routes/checkout/index'
 import { Route as BizIndexRouteImport } from './routes/biz/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
+import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as VVendorIdRouteImport } from './routes/v/$vendorId'
 import { Route as PaymentOrderIdRouteImport } from './routes/payment/$orderId'
 import { Route as OfferOfferIdRouteImport } from './routes/offer/$offerId'
@@ -117,6 +118,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AccountIndexRoute = AccountIndexRouteImport.update({
   id: '/account/',
   path: '/account/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutIndexRoute = AboutIndexRouteImport.update({
+  id: '/about/',
+  path: '/about/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VVendorIdRoute = VVendorIdRouteImport.update({
@@ -236,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/offer/$offerId': typeof OfferOfferIdRoute
   '/payment/$orderId': typeof PaymentOrderIdRouteWithChildren
   '/v/$vendorId': typeof VVendorIdRoute
+  '/about': typeof AboutIndexRoute
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/biz': typeof BizIndexRoute
@@ -272,6 +279,7 @@ export interface FileRoutesByTo {
   '/offer/$offerId': typeof OfferOfferIdRoute
   '/payment/$orderId': typeof PaymentOrderIdRouteWithChildren
   '/v/$vendorId': typeof VVendorIdRoute
+  '/about': typeof AboutIndexRoute
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/biz': typeof BizIndexRoute
@@ -309,6 +317,7 @@ export interface FileRoutesById {
   '/offer/$offerId': typeof OfferOfferIdRoute
   '/payment/$orderId': typeof PaymentOrderIdRouteWithChildren
   '/v/$vendorId': typeof VVendorIdRoute
+  '/about/': typeof AboutIndexRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/biz/': typeof BizIndexRoute
@@ -347,6 +356,7 @@ export interface FileRouteTypes {
     | '/offer/$offerId'
     | '/payment/$orderId'
     | '/v/$vendorId'
+    | '/about'
     | '/account'
     | '/admin'
     | '/biz'
@@ -383,6 +393,7 @@ export interface FileRouteTypes {
     | '/offer/$offerId'
     | '/payment/$orderId'
     | '/v/$vendorId'
+    | '/about'
     | '/account'
     | '/admin'
     | '/biz'
@@ -419,6 +430,7 @@ export interface FileRouteTypes {
     | '/offer/$offerId'
     | '/payment/$orderId'
     | '/v/$vendorId'
+    | '/about/'
     | '/account/'
     | '/admin/'
     | '/biz/'
@@ -456,6 +468,7 @@ export interface RootRouteChildren {
   OfferOfferIdRoute: typeof OfferOfferIdRoute
   PaymentOrderIdRoute: typeof PaymentOrderIdRouteWithChildren
   VVendorIdRoute: typeof VVendorIdRoute
+  AboutIndexRoute: typeof AboutIndexRoute
   AccountIndexRoute: typeof AccountIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BizIndexRoute: typeof BizIndexRoute
@@ -574,6 +587,13 @@ declare module '@tanstack/react-router' {
       path: '/account'
       fullPath: '/account'
       preLoaderRoute: typeof AccountIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/': {
+      id: '/about/'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/v/$vendorId': {
@@ -759,6 +779,7 @@ const rootRouteChildren: RootRouteChildren = {
   OfferOfferIdRoute: OfferOfferIdRoute,
   PaymentOrderIdRoute: PaymentOrderIdRouteWithChildren,
   VVendorIdRoute: VVendorIdRoute,
+  AboutIndexRoute: AboutIndexRoute,
   AccountIndexRoute: AccountIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
   BizIndexRoute: BizIndexRoute,

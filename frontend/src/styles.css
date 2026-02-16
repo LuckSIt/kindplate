@@ -16,6 +16,22 @@
   text-decoration: none !important;
 }
 
+/* Manrope — переопределяет глобальные правила для div/p/button (должно идти после них в cascade) */
+.manrope,
+.manrope *,
+.manrope p,
+.manrope div,
+.manrope button,
+.manrope span,
+.manrope h1,
+.manrope h2,
+.manrope h3,
+.manrope h4 {
+  font-family: var(--font-manrope) !important;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
 @layer components {
   .all-\[unset\] {
     all: unset;
@@ -131,11 +147,22 @@
   }
 }
 
-/* CSS переменные для шрифтов */
+/* CSS переменные: шрифт Manrope, палитра с лендинга */
 :root {
-  --font-sans: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  --font-display: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-sans: "Manrope", -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: "Manrope", -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-montserrat: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-manrope: "Manrope", sans-serif;
+  /* Палитра лендинга KindPlate */
+  --color-bg: #111E42;
+  --color-bg-card: #111E42;
+  --color-text: #ECF4F2;
+  --color-text-muted: #DEF4EE;
+  --color-primary: #098771;
+  --color-primary-light: #06a188;
+  --color-surface: #DEF4EE;
+  --color-surface-alt: #DEFAF6;
+  --color-text-on-dark: #10172A;
   /* Radii tokens (4px grid) */
   --r-sm: 8px;
   --r-md: 12px;
@@ -172,7 +199,7 @@
 }
 
 html {
-  background: #000019 !important;
+  background: var(--color-bg) !important;
   overflow: hidden;
   height: 100%;
   min-height: 100dvh;
@@ -187,8 +214,8 @@ body {
   font-family: var(--font-sans) !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #000019 !important;
-  color: #f8fafc !important;
+  background: var(--color-bg) !important;
+  color: var(--color-text) !important;
   line-height: 1.5;
   overflow: hidden;
   height: 100%;
@@ -227,25 +254,32 @@ html.landing-active #app {
 }
 
 /* Mobile typography - фиксированные размеры */
-h1 { font-size: 24px !important; line-height: 30px !important; font-weight: 700; color: #f8fafc; }
-h2 { font-size: 20px !important; line-height: 28px !important; font-weight: 700; color: #f8fafc; }
-h3:not(.font-montserrat-alt) { font-size: 18px !important; line-height: 26px !important; font-weight: 600; color: #f8fafc; }
-p:not(.font-montserrat-alt):not(.font-ramona), span:not(.font-montserrat-alt):not(.font-ramona), li:not(.font-montserrat-alt):not(.font-ramona) { font-size: 14px !important; line-height: 20px !important; color: #e2e8f0; }
+h1 { font-size: 24px !important; line-height: 30px !important; font-weight: 700; color: var(--color-text); }
+h2 { font-size: 20px !important; line-height: 28px !important; font-weight: 700; color: var(--color-text); }
+h3:not(.font-montserrat-alt) { font-size: 26px !important; line-height: 26px !important; font-weight: 600; color: var(--color-text); }
+p:not(.font-montserrat-alt):not(.font-ramona):not(.landing-hero-subtitle):not(.kp-landing-footer-legal), span:not(.font-montserrat-alt):not(.font-ramona):not(.kp-landing-why-pill-text):not(.landing-hero-accent):not(.landing-hero-text):not(.phone-quantity-value):not(.landing-step-num):not(.step-num):not(.kp-landing-footer-card-text):not(.phone-card-badge):not(.phone-card-old-price):not(.phone-card-price), li:not(.font-montserrat-alt):not(.font-ramona) { font-size: 33px !important; color: var(--color-text); }
 small, .caption { font-size: 12px !important; line-height: 18px !important; color: #94a3b8; }
+
+/* Лендинг: переопределение размеров и цвета в .manrope (глобальные h1/p/span с !important бьют inline) */
+section.manrope h1 { font-size: 33px !important; line-height: 1.2 !important; color: #fff !important; }
+section.manrope p { font-size: 20px !important; line-height: 1.08 !important; color: #fff !important; }
+section.manrope span { font-size: inherit !important; color: inherit !important; }
+.landing-steps .step-num { font-size: 50px !important; line-height: 1.07 !important; color: #fff !important; }
+.landing-steps p { font-size: 16px !important; line-height: 1.1 !important; color: #fff !important; }
 
 /* iOS input zoom prevention */
 input, select, textarea { font-size: 16px; }
 
 /* Components layer sample */
 @layer components {
-  .kp-card { border-radius: var(--r-xl); box-shadow: var(--shadow-soft); background: #000019; }
+  .kp-card { border-radius: var(--r-xl); box-shadow: var(--shadow-soft); background: var(--color-bg-card); }
   .kp-chip { border-radius: 9999px; padding: 4px 8px; font-size: 12px; line-height: 18px; }
-  .kp-tabbar { height: 56px; border-top: 1px solid #000019; backdrop-filter: saturate(120%) blur(8px); }
+  .kp-tabbar { height: 56px; border-top: 1px solid rgba(236,244,242,0.15); backdrop-filter: saturate(120%) blur(8px); }
   .kp-sheet { 
     border-top-left-radius: var(--r-xl);
     border-top-right-radius: var(--r-xl);
     box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
-    background: #000019;
+    background: var(--color-bg);
     transition: transform var(--dur-normal) var(--ease-smooth), box-shadow var(--dur-fast) var(--ease-smooth);
     will-change: transform;
   }
@@ -257,13 +291,13 @@ input, select, textarea { font-size: 16px; }
     backdrop-filter: blur(12px) saturate(140%);
     box-shadow: 0 10px 30px rgba(0,0,0,0.25);
   }
-  .dark .kp-fab { background: rgba(2,6,23,0.8); }
+  .dark .kp-fab { background: rgba(17, 30, 66, 0.9); }
   .kp-fab .label { font-weight: 600; font-size: 14px; }
   .kp-cluster {
     width: 44px; height: 44px; border-radius: 22px; 
     display:flex; align-items:center; justify-content:center;
-    background: #001900; color:#fff; font-weight:600; font-size:14px;
-    box-shadow: 0 6px 16px rgba(34,197,94,0.35);
+    background: var(--color-primary); color:#fff; font-weight:600; font-size:14px;
+    box-shadow: 0 6px 16px rgba(9, 135, 113, 0.35);
   }
 }
 
@@ -280,16 +314,16 @@ button:not(.font-montserrat-alt) {
   font-family: var(--font-display) !important;
 }
 
-/* Исключение для h4 - используется Montserrat Alternates */
+/* Заголовки h4 — Manrope как и остальные */
 h4 {
-  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--font-display) !important;
   font-variant-ligatures: normal !important;
   -webkit-font-smoothing: antialiased !important;
   -moz-osx-font-smoothing: grayscale !important;
 }
 
 h4 * {
-  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: inherit !important;
   font-variant-ligatures: normal !important;
 }
 
@@ -357,22 +391,22 @@ span[style*="fontFamily"] {
   }
 }
 
-/* Dark theme support */
+/* Dark theme support — палитра лендинга */
 .dark body {
-  background: #000019;
-  color: #f8fafc;
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 .dark {
-  color: #f8fafc;
+  color: var(--color-text);
 }
 
 .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
-  color: #f8fafc;
+  color: var(--color-text);
 }
 
 .dark p, .dark span, .dark div {
-  color: #e2e8f0;
+  color: var(--color-text);
 }
 
 #app {
@@ -386,8 +420,8 @@ span[style*="fontFamily"] {
   padding: 0;
   position: relative;
   font-family: var(--font-sans) !important;
-  background: #000019 !important;
-  color: #f8fafc !important;
+  background: var(--color-bg) !important;
+  color: var(--color-text) !important;
   overflow: hidden; /* Контейнер не скроллится, скроллятся только внутренние элементы */
   display: flex;
   flex-direction: column;
@@ -399,27 +433,27 @@ html.dark * {
   color-scheme: dark !important;
 }
 
-/* Переопределяем Tailwind классы для темной темы */
+/* Переопределяем Tailwind классы для темной темы — палитра лендинга */
 html.dark .bg-white,
 html.dark [class*="bg-white"] {
-  background-color: #000019 !important;
-  color: #f8fafc !important;
+  background-color: var(--color-bg) !important;
+  color: var(--color-text) !important;
 }
 
 html.dark .bg-gray-50,
 html.dark .bg-gray-100,
 html.dark [class*="bg-gray-50"],
 html.dark [class*="bg-gray-100"] {
-  background-color: #000019 !important;
-  color: #f8fafc !important;
+  background-color: var(--color-bg) !important;
+  color: var(--color-text) !important;
 }
 
 html.dark .bg-slate-50,
 html.dark .bg-slate-100,
 html.dark [class*="bg-slate-50"],
 html.dark [class*="bg-slate-100"] {
-  background-color: #000019 !important;
-  color: #f8fafc !important;
+  background-color: var(--color-bg) !important;
+  color: var(--color-text) !important;
 }
 
 html.dark .text-gray-900,
@@ -428,21 +462,21 @@ html.dark .text-gray-700,
 html.dark [class*="text-gray-900"],
 html.dark [class*="text-gray-800"],
 html.dark [class*="text-gray-700"] {
-  color: #f8fafc !important;
+  color: var(--color-text) !important;
 }
 
 html.dark .text-gray-500,
 html.dark .text-gray-600,
 html.dark [class*="text-gray-500"],
 html.dark [class*="text-gray-600"] {
-  color: #94a3b8 !important;
+  color: var(--color-text-muted) !important;
 }
 
 html.dark .border-gray-200,
 html.dark .border-gray-300,
 html.dark [class*="border-gray-200"],
 html.dark [class*="border-gray-300"] {
-  border-color: #000019 !important;
+  border-color: rgba(236, 244, 242, 0.15) !important;
 }
 
 /* Safe-area helpers */
@@ -487,14 +521,35 @@ html {
   font-family: var(--font-sans) !important;
 }
 
-/* Специально для заголовков и кнопок (исключая font-montserrat-alt) */
+/* Специально для заголовков и кнопок: кнопки — Manrope, остальное — display (исключая font-montserrat-alt) */
 [class*="font-bold"]:not(.font-montserrat-alt), 
 [class*="font-semibold"]:not(.font-montserrat-alt), 
 [class*="font-medium"]:not(.font-montserrat-alt), 
-button:not(.font-montserrat-alt), 
 .btn-primary:not(.font-montserrat-alt), 
 .btn-secondary:not(.font-montserrat-alt) {
   font-family: var(--font-display) !important;
+}
+
+button:not(.font-montserrat-alt) {
+  font-family: var(--font-manrope) !important;
+}
+
+/* Manrope для лендинга — после правил выше, чтобы перебить font-sans/display для .manrope и потомков */
+.manrope,
+.manrope * {
+  font-family: var(--font-manrope) !important;
+}
+
+/* Заголовок футера лендинга — Manrope (глобальный h2 иначе даёт var(--font-display)) */
+.kp-landing-footer-title,
+h2.kp-landing-footer-title {
+  font-family: var(--font-manrope) !important;
+}
+
+/* Реквизиты в футере лендинга — Manrope, мелкий шрифт (глобальный p иначе даёт 33px и var(--font-sans)) */
+.kp-landing-footer-legal,
+p.kp-landing-footer-legal {
+  font-family: var(--font-manrope) !important;
 }
 
 /* Custom utilities */
@@ -638,7 +693,7 @@ html {
 }
 
 .btn-secondary {
-  background: #000019;
+  background: var(--color-bg);
   color: #001900;
   border: 2px solid #001900;
   border-radius: 0.75rem;
@@ -664,13 +719,13 @@ html {
 
 /* Card styles */
 .card {
-  background: #000019;
+  background: var(--color-bg);
   border-radius: 1.25rem;
   padding: 1.75rem;
   box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.3);
-  border: 1px solid #000019;
+  border: 1px solid rgba(236,244,242,0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  color: #f8fafc;
+  color: var(--color-text);
 }
 
 
@@ -682,7 +737,7 @@ html {
 
 /* Улучшенная читаемость текста в карточках */
 .card h1, .card h2, .card h3, .card h4, .card h5, .card h6 {
-  color: #f8fafc;
+  color: var(--color-text);
 }
 
 .card p, .card span {
@@ -693,11 +748,11 @@ html {
 .form-input {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #000019;
+  border: 1px solid rgba(236,244,242,0.2);
   border-radius: 0.5rem;
   font-size: 1rem;
-  background: #000019;
-  color: #f8fafc;
+  background: var(--color-bg);
+  color: var(--color-text);
   transition: border-color 0.2s ease;
 }
 
@@ -725,14 +780,14 @@ html {
   left: 1.5rem;
   right: 1.5rem;
   z-index: 10;
-  background: #000019;
+  background: var(--color-bg);
   border-radius: 1rem;
   padding: 1rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   gap: 1rem;
-  border: 1px solid #000019;
+  border: 1px solid rgba(236,244,242,0.2);
 }
 
 .search-icon {
@@ -752,7 +807,7 @@ html {
   border: none;
   outline: none;
   font-size: 1.125rem;
-  color: #f8fafc;
+  color: var(--color-text);
   background: transparent;
 }
 
@@ -783,7 +838,7 @@ html {
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
-  background: #000019;
+  background: var(--color-bg);
   border-radius: 1rem;
   padding: 1rem 1.5rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
@@ -791,7 +846,7 @@ html {
   align-items: center;
   gap: 1rem;
   transition: all 0.3s ease;
-  border: 1px solid #000019;
+  border: 1px solid rgba(236,244,242,0.2);
 }
 
 .floating-button:hover {
@@ -812,7 +867,7 @@ html {
   /* Ограничиваем safe-area, чтобы на устройствах с некорректным значением не было огромного отступа */
   padding-bottom: min(env(safe-area-inset-bottom, 0px), 34px);
   box-sizing: border-box;
-  background-color: #000019;
+  background-color: var(--color-bg);
   isolation: isolate;
 }
 
@@ -826,8 +881,8 @@ html {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #000019;
-  border-top: 1px solid #000019;
+  background: var(--color-bg);
+  border-top: 1px solid rgba(236,244,242,0.2);
   display: flex;
   justify-content: space-around;
   padding: 0.75rem;
@@ -849,7 +904,7 @@ html {
 }
 
 .nav-button:hover {
-  background: #000019;
+  background: var(--color-bg);
 }
 
 .nav-icon {
@@ -869,13 +924,13 @@ html {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #000019;
+  background: var(--color-bg);
   border-radius: 1.5rem 1.5rem 0 0;
   padding: 1.5rem;
   box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.5);
   max-height: 60vh;
   overflow-y: auto;
-  border-top: 1px solid #000019;
+  border-top: 1px solid rgba(236,244,242,0.2);
 }
 
 .seller-header {
@@ -888,7 +943,7 @@ html {
 .seller-name {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #f8fafc;
+  color: var(--color-text);
   margin-bottom: 0.5rem;
 }
 
@@ -924,16 +979,16 @@ html {
 
 /* Menu items */
 .menu-item {
-  background: linear-gradient(135deg, #000019 0%, #000019 100%);
+  background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg) 100%);
   border-radius: 1rem;
   padding: 1rem;
-  border: 1px solid #000019;
+  border: 1px solid rgba(236,244,242,0.2);
   margin-bottom: 1rem;
 }
 
 .menu-item-name {
   font-weight: 600;
-  color: #f8fafc;
+  color: var(--color-text);
   font-size: 1.125rem;
   margin-bottom: 0.25rem;
 }
@@ -954,7 +1009,7 @@ html {
 .menu-item-stock {
   font-size: 0.75rem;
   color: #94a3b8;
-  background: #000019;
+  background: var(--color-bg);
   padding: 0.25rem 0.5rem;
   border-radius: 0.375rem;
 }
@@ -966,7 +1021,7 @@ html {
   align-items: center;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #000019;
+  border-top: 1px solid rgba(236,244,242,0.2);
 }
 
 .favorite-button {
@@ -983,7 +1038,7 @@ html {
 }
 
 .favorite-button:hover {
-  background: #000019;
+  background: var(--color-bg);
 }
 
 .order-button {
@@ -1076,7 +1131,7 @@ html {
   min-height: 100%;
   height: 100%;
   width: 100%;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   overflow-y: auto;
@@ -1117,7 +1172,7 @@ html {
   top: 15px;
   width: 39px;
   height: 39px;
-  background: #000019;
+  background: var(--color-bg);
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -1140,7 +1195,8 @@ html {
   max-width: 370px;
   margin-left: 16px;
   margin-right: 16px;
-  background-color: #2B344D;
+  background-color: var(--color-bg-card);
+  border: 1px solid rgba(236, 244, 242, 0.15);
   border-radius: 15px;
   margin-top: 0;
   padding: 24px 0 36px;
@@ -1158,33 +1214,33 @@ html {
 }
 
 .login-page__title {
-  font-family: 'Montserrat Alternates', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 600;
   font-size: 24px;
   line-height: 28px;
-  color: #FFFFFF;
+  color: var(--color-text);
   margin: 0 0 21px 0;
   text-align: center;
 }
 
 .login-page__subtitle {
-  font-family: 'Montserrat Alternates', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 600;
   font-size: 10px;
   line-height: 18px;
-  color: #D9D9D9;
+  color: var(--color-text-muted);
   margin: 0;
   text-align: center;
 }
 
 .login-page__link {
-  color: #D9D9D9;
+  color: var(--color-text-muted);
   text-decoration: underline;
   transition: color 0.2s ease;
 }
 
 .login-page__link:hover {
-  color: #FFFFFF;
+  color: var(--color-text);
 }
 
 .login-page__form {
@@ -1201,11 +1257,11 @@ html {
 }
 
 .login-page__field-label {
-  font-family: 'Montserrat Alternates', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 600;
   font-size: 17px;
   line-height: 18px;
-  color: #FFFFFF;
+  color: var(--color-text);
   text-align: center;
   margin: 0;
 }
@@ -1214,7 +1270,7 @@ html {
   position: relative;
   width: 100%;
   height: 50px;
-  border: 2px solid #000019;
+  border: 2px solid rgba(236,244,242,0.2);
   border-radius: 15px;
   background: transparent;
   display: flex;
@@ -1226,35 +1282,35 @@ html {
 .login-page__input {
   width: 100%;
   height: 36px;
-  background-color: #000019;
+  background-color: var(--color-bg);
   border: none;
   border-radius: 5px;
   padding: 0 20px;
-  font-family: 'Montserrat Alternates', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 400;
   font-size: 14px;
   line-height: 18px;
-  color: #FFFFFF;
+  color: var(--color-text);
   outline: none;
   transition: background-color 0.2s ease;
 }
 
 .login-page__input::placeholder {
-  color: #C1C1C1;
+  color: var(--color-text-muted);
 }
 
 .login-page__input:focus {
-  background-color: #8A94AA;
+  background-color: rgba(9, 135, 113, 0.25);
 }
 
 .login-page__submit-button {
   width: 211px;
   height: 39px;
-  background-color: #001900;
+  background-color: var(--color-primary);
   border: none;
   border-radius: 10px;
   margin: 20px auto 0;
-  font-family: 'Montserrat Alternates', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 600;
   font-size: 19px;
   line-height: 18px;
@@ -1267,7 +1323,7 @@ html {
 }
 
 .login-page__submit-button:hover:not(:disabled) {
-  background-color: #3d8822;
+  background-color: var(--color-primary-light);
   transform: translateY(-1px);
 }
 
@@ -1295,11 +1351,11 @@ html {
 }
 
 .login-page__footer-text {
-  font-family: 'Montserrat Alternates', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 400;
   font-size: 11px;
   line-height: 12px;
-  color: #C1C1C1;
+  color: var(--color-text-muted);
   text-align: center;
   margin: 20px 15px 20px 15px;
   padding: 0;
@@ -1310,7 +1366,7 @@ html {
   border: none;
   padding: 0;
   margin: 0;
-  color: #C1C1C1;
+  color: var(--color-text-muted);
   text-decoration: underline;
   cursor: pointer;
   font-family: inherit;
@@ -1321,7 +1377,7 @@ html {
 }
 
 .login-page__footer-link:hover {
-  color: #D9D9D9;
+  color: var(--color-text);
 }
 
 /* Responsive adjustments */
@@ -1337,9 +1393,9 @@ html {
   min-height: 100%;
   height: 100%;
   width: 100%;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
-  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   overflow-y: auto;
   overflow-x: hidden;
   padding-top: env(safe-area-inset-top, 0px);
@@ -1377,7 +1433,7 @@ html {
   top: 15px;
   width: 39px;
   height: 39px;
-  background: #000019;
+  background: var(--color-bg);
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -1398,7 +1454,8 @@ html {
 .register-page__card {
   width: 100%;
   max-width: 368px;
-  background-color: #2B344D;
+  background-color: var(--color-bg-card);
+  border: 1px solid rgba(236, 244, 242, 0.15);
   border-radius: 15px;
   margin-top: 0;
   padding: 0;
@@ -1417,33 +1474,33 @@ html {
 }
 
 .register-page__title {
-  font-family: 'Montserrat Alternates', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 600;
   font-size: 24px;
   line-height: 28px;
-  color: #FFFFFF;
+  color: var(--color-text);
   margin: 0 0 21px 0;
   text-align: center;
 }
 
 .register-page__subtitle {
-  font-family: 'Montserrat Alternates', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 600;
   font-size: 10px;
   line-height: 18px;
-  color: #D9D9D9;
+  color: var(--color-text-muted);
   margin: 0;
   text-align: center;
 }
 
 .register-page__link {
-  color: #D9D9D9;
+  color: var(--color-text-muted);
   text-decoration: underline;
   transition: color 0.2s ease;
 }
 
 .register-page__link:hover {
-  color: #FFFFFF;
+  color: var(--color-text);
 }
 
 .register-page__form {
@@ -1461,11 +1518,11 @@ html {
 }
 
 .register-page__field-label {
-  font-family: 'Montserrat Alternates', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 600;
   font-size: 17px;
   line-height: 18px;
-  color: #FFFFFF;
+  color: var(--color-text);
   text-align: center;
   margin: 0;
 }
@@ -1474,7 +1531,7 @@ html {
   position: relative;
   width: 100%;
   height: 50px;
-  border: 2px solid #000019;
+  border: 2px solid rgba(236,244,242,0.2);
   border-radius: 15px;
   background: transparent;
   display: flex;
@@ -1486,35 +1543,35 @@ html {
 .register-page__input {
   width: 100%;
   height: 36px;
-  background-color: #000019;
+  background-color: var(--color-bg);
   border: none;
   border-radius: 5px;
   padding: 0 20px;
-  font-family: 'Montserrat Alternates', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 400;
   font-size: 14px;
   line-height: 18px;
-  color: #FFFFFF;
+  color: var(--color-text);
   outline: none;
   transition: background-color 0.2s ease;
 }
 
 .register-page__input::placeholder {
-  color: #C1C1C1;
+  color: var(--color-text-muted);
 }
 
 .register-page__input:focus {
-  background-color: #8A94AA;
+  background-color: rgba(9, 135, 113, 0.25);
 }
 
 .register-page__submit-button {
   width: 211px;
   height: 39px;
-  background-color: #001900;
+  background-color: var(--color-primary);
   border: none;
   border-radius: 10px;
   margin: 20px auto 0;
-  font-family: 'Montserrat Alternates', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 600;
   font-size: 19px;
   line-height: 18px;
@@ -1528,7 +1585,7 @@ html {
 }
 
 .register-page__submit-button:hover:not(:disabled) {
-  background-color: #3d8822;
+  background-color: var(--color-primary-light);
   transform: translateY(-1px);
 }
 
@@ -1556,11 +1613,11 @@ html {
 }
 
 .register-page__footer-text {
-  font-family: 'Montserrat Alternates', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 400;
   font-size: 11px;
   line-height: 12px;
-  color: #C1C1C1;
+  color: var(--color-text-muted);
   text-align: center;
   margin: 20px 15px 20px 15px;
   padding: 0;
@@ -1571,7 +1628,7 @@ html {
   border: none;
   padding: 0;
   margin: 0;
-  color: #C1C1C1;
+  color: var(--color-text-muted);
   text-decoration: underline;
   cursor: pointer;
   font-family: inherit;
@@ -1582,7 +1639,7 @@ html {
 }
 
 .register-page__footer-link:hover {
-  color: #D9D9D9;
+  color: var(--color-text);
 }
 
 .register-page__consent {
@@ -1594,11 +1651,11 @@ html {
   align-items: flex-start;
   gap: 12px;
   cursor: pointer;
-  font-family: 'Montserrat Alternates', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 400;
   font-size: 12px;
   line-height: 16px;
-  color: #D9D9D9;
+  color: var(--color-text-muted);
 }
 
 .register-page__consent-checkbox {
@@ -1817,7 +1874,7 @@ html {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding-bottom: 0; /* Убираем padding - он уже учтен в main */
@@ -2024,7 +2081,7 @@ html {
   font-weight: 600;
   font-size: 12px;
   line-height: 14px;
-  color: #000019;
+  color: var(--color-text-on-dark);
 }
 
 .businesses-list-page__user-edit {
@@ -2372,7 +2429,7 @@ html {
   width: 100%;
   max-width: 100%;
   height: 52px;
-  background-color: #000019;
+  background-color: var(--color-bg);
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -2456,7 +2513,7 @@ html {
 .pickup-code-page {
   min-height: 100%;
   width: 100%;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding-top: env(safe-area-inset-top, 0px);
@@ -2755,7 +2812,7 @@ html {
 
 .pickup-code-page__code-button--share {
   background-color: #D9D9D9;
-  color: #000019;
+  color: var(--color-text-on-dark);
 }
 
 .pickup-code-page__code-button--close {
@@ -2771,7 +2828,7 @@ html {
   right: 0;
   width: 100%;
   height: 73px;
-  background-color: #000019;
+  background-color: var(--color-bg);
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
@@ -2843,7 +2900,7 @@ html {
 .vendor-page {
   min-height: 100%;
   width: 100%;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding-bottom: 0;
@@ -3260,7 +3317,7 @@ html {
   transform: translate(-50%, -50%);
   width: 7px;
   height: 1px;
-  background-color: #000019;
+  background-color: var(--color-bg);
 }
 
 .vendor-page__quantity-button--plus {
@@ -3275,7 +3332,7 @@ html {
   transform: translate(-50%, -50%);
   width: 1px;
   height: 7px;
-  background-color: #000019;
+  background-color: var(--color-bg);
 }
 
 .vendor-page__quantity-button--plus::after {
@@ -3286,7 +3343,7 @@ html {
   transform: translate(-50%, -50%);
   width: 7px;
   height: 1px;
-  background-color: #000019;
+  background-color: var(--color-bg);
 }
 
 .vendor-page__quantity-value {
@@ -3294,7 +3351,7 @@ html {
   font-weight: 700;
   font-size: 10px;
   line-height: 9px;
-  color: #000019 !important;
+  color: var(--color-text-on-dark) !important;
   text-align: center;
   flex: 1;
   padding: 7px 0;
@@ -3305,7 +3362,7 @@ html {
   flex: 0 0 auto;
   width: auto;
   height: 24px;
-  background-color: #000019;
+  background-color: var(--color-bg);
   border: none;
   border-radius: 5px;
   font-family: 'Montserrat Alternates', sans-serif;
@@ -3348,7 +3405,7 @@ html {
   right: 0;
   width: 100%;
   height: 73px;
-  background-color: #000019;
+  background-color: var(--color-bg);
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
@@ -3429,7 +3486,7 @@ html {
 .cart-page {
   min-height: 100%;
   width: 100%;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding-bottom: 0;
@@ -3742,7 +3799,7 @@ html {
   font-weight: 600;
   font-size: 21px;
   line-height: 22px;
-  color: #000019;
+  color: var(--color-text-on-dark);
   cursor: pointer;
   transition: opacity 0.2s ease, transform 0.1s ease;
   display: flex;
@@ -3792,7 +3849,7 @@ html {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
   font-size: 15px;
-  color: #000019;
+  color: var(--color-text-on-dark);
   cursor: pointer;
   transition: opacity 0.2s ease;
 }
@@ -3808,7 +3865,7 @@ html {
   right: 0;
   width: 100%;
   height: 73px;
-  background-color: #000019;
+  background-color: var(--color-bg);
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
@@ -3887,7 +3944,7 @@ html {
 .payment-page {
   min-height: 100%;
   width: 100%;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding-bottom: 0;
@@ -4156,7 +4213,7 @@ html {
   font-weight: 600;
   font-size: 21px;
   line-height: 22px;
-  color: #000019;
+  color: var(--color-text-on-dark);
   cursor: pointer;
   transition: opacity 0.2s ease, transform 0.1s ease;
   display: flex;
@@ -4299,7 +4356,7 @@ html {
   font-weight: 600;
   font-size: 19px;
   line-height: 22px;
-  color: #000019;
+  color: var(--color-text-on-dark);
   cursor: pointer;
   transition: opacity 0.2s ease;
 }
@@ -4525,7 +4582,7 @@ div.font-montserrat-alt,
 .offer-page {
   min-height: 100%;
   width: 100%;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding-bottom: 100px;
@@ -4639,7 +4696,7 @@ div.font-montserrat-alt,
 .offer-page__info-card {
   margin: 14px;
   padding: 10px 13px 10px 12px;
-  background-color: #000019;
+  background-color: var(--color-bg);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   display: flex;
@@ -4673,7 +4730,7 @@ div.font-montserrat-alt,
 
 .offer-page__discount-badge {
   /*background-color: #D9D9D9;*/
-  color: #000019;
+  color: var(--color-text-on-dark);
   padding: 4px 8px;
   border-radius: 5px;
   font-family: 'Montserrat Alternates', sans-serif;
@@ -4693,7 +4750,7 @@ div.font-montserrat-alt,
 }
 
 .offer-page__pickup-window {
-  background-color: #000019;
+  background-color: var(--color-bg);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 15px;
   padding: 12px;
@@ -4839,7 +4896,7 @@ div.font-montserrat-alt,
 .orders-page {
   min-height: 100%;
   width: 100%;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding-bottom: 100px;
@@ -4999,7 +5056,7 @@ div.font-montserrat-alt,
 }
 
 .orders-page__order-card {
-  background-color: #000019;
+  background-color: var(--color-bg);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   padding: 14px;
@@ -5065,7 +5122,7 @@ div.font-montserrat-alt,
 }
 
 .orders-page__pickup-window {
-  background-color: #000019;
+  background-color: var(--color-bg);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 15px;
   padding: 12px;
@@ -5131,7 +5188,7 @@ div.font-montserrat-alt,
 .favorites-page {
   min-height: 100%;
   width: 100%;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding-bottom: 100px;
@@ -5291,7 +5348,7 @@ div.font-montserrat-alt,
 }
 
 .favorites-page__business-card {
-  background-color: #000019;
+  background-color: var(--color-bg);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   padding: 14px;
@@ -5352,7 +5409,7 @@ div.font-montserrat-alt,
 }
 
 .favorites-page__offers-box {
-  background-color: #000019;
+  background-color: var(--color-bg);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 15px;
   padding: 12px;
@@ -5418,7 +5475,7 @@ div.font-montserrat-alt,
 .diet-prefs-page {
   min-height: 100%;
   width: 100%;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding-bottom: 100px;
@@ -5505,7 +5562,7 @@ div.font-montserrat-alt,
 }
 
 .diet-prefs-page__section {
-  background-color: #000019;
+  background-color: var(--color-bg);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   padding: 14px;
@@ -5598,7 +5655,7 @@ div.font-montserrat-alt,
 .subscriptions-page {
   min-height: 100%;
   width: 100%;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding-bottom: 100px;
@@ -5787,7 +5844,7 @@ div.font-montserrat-alt,
 }
 
 .subscriptions-page__card {
-  background-color: #000019;
+  background-color: var(--color-bg);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   padding: 14px;
@@ -5911,7 +5968,7 @@ div.font-montserrat-alt,
 .profile-page {
   min-height: 100%;
   width: 100%;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding-bottom: 100px;
@@ -5987,7 +6044,7 @@ div.font-montserrat-alt,
 }
 
 .profile-page__section {
-  background-color: #000019;
+  background-color: var(--color-bg);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   padding: 14px;
@@ -6415,7 +6472,7 @@ div.font-montserrat-alt,
 
 /* Dialog Styles */
 .profile-page__dialog {
-  background-color: #000019 !important;
+  background-color: var(--color-bg) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 15px !important;
   padding: 20px !important;
@@ -6514,7 +6571,7 @@ div.font-montserrat-alt,
 .about-page {
   min-height: 100%;
   width: 100%;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding-bottom: 100px;
@@ -6940,7 +6997,7 @@ div.font-montserrat-alt,
 .panel-page {
   min-height: 100%;
   width: 100%;
-  background-color: #000019;
+  background-color: var(--color-bg);
   position: relative;
   font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding: 14px;
@@ -7968,7 +8025,7 @@ div.font-montserrat-alt,
 
 /* Dialog Styles */
 .panel-page__dialog {
-  background-color: #000019 !important;
+  background-color: var(--color-bg) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 15px !important;
   padding: 20px !important;
@@ -8061,7 +8118,7 @@ div.font-montserrat-alt,
 }
 
 .panel-page__form-select option {
-  background-color: #000019;
+  background-color: var(--color-bg);
   color: #FFFFFF;
 }
 
@@ -8215,7 +8272,7 @@ div.font-montserrat-alt,
   width: 100%;
   max-width: 90vw;
   max-height: 90vh;
-  background-color: #000019;
+  background-color: var(--color-bg);
   border-radius: 20px;
   display: flex;
   flex-direction: column;
@@ -8678,22 +8735,35 @@ div.font-montserrat-alt,
   color: rgba(255, 255, 255, 0.8);
 }
 
+/* Кнопка «Подробнее» в плашке — по макету, без подчёркивания */
+/* По макету Figma: светлый теал, текст #009688, без рамки, скруглённые углы */
 .add-to-home-banner__link {
-  background: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 203px;
+  height: 53px;
+  padding: 19px 20px 18px 20px;
+  border-radius: 12px;
   border: none;
-  padding: 0;
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: 600;
-  color: #22C55E;
-  text-decoration: none;
+  background: #DEFAF6;
+  font-family: Manrope, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 87%;
+  letter-spacing: 0;
+  text-align: center;
+  color: #009688;
+  text-decoration: none !important;
   cursor: pointer;
   transition: opacity 0.2s ease;
+  vertical-align: middle;
 }
 
 .add-to-home-banner__link:hover {
-  opacity: 0.8;
-  text-decoration: underline;
+  opacity: 0.9;
+  text-decoration: none !important;
 }
 
 .add-to-home-banner__actions {
@@ -8890,3 +8960,6 @@ div.font-montserrat-alt,
 .add-to-home-instructions__btn:active {
   transform: translateY(0) scale(0.98);
 }
+
+/* «Почему KindPlate?» — градиент через ::before в landing.css, чтобы не обрезался по краям */
+

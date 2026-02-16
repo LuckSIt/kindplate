@@ -1,86 +1,65 @@
-import type { CSSProperties } from "react";
-import { Heart, MapPin, Minimize2, ShoppingBag } from "lucide-react";
-
-const CARD_TEXT_STYLES: CSSProperties = {
-    fontWeight: 600,
-    fontSize: "13px",
-    lineHeight: "0.87em",
-    color: "#000019",
-};
-
-const ICON_SIZE_PX = 44; // увеличенный размер иконок
-
-const WHY_KIND_PLATE_CARDS = [
-    {
-        id: "save",
-        Icon: ShoppingBag,
-        message: "Экономьте\nдо 70% на качественной\nеде",
-    },
-    {
-        id: "waste",
-        Icon: Minimize2,
-        message: "Уменьшайте\nпищевые потери и CO₂",
-    },
-    {
-        id: "local",
-        Icon: MapPin,
-        message: "Поддержи-\nвайте местные бизнесы",
-    },
-    {
-        id: "impact",
-        Icon: Heart,
-        message: "Создавайте\nпозитивное влияние",
-    },
+const WHY_KIND_PLATE_ITEMS = [
+    { id: "save", text: "Экономьте до 70% на качественной еде", align: "left" as const },
+    { id: "local", text: "Поддерживайте местные бизнесы", align: "right" as const },
+    { id: "waste", text: "Уменьшайте пищевые отходы и CO₂", align: "left" as const },
+    { id: "impact", text: "Создавайте позитивное влияние", align: "right" as const },
 ];
 
 export function WhyKindPlate() {
     return (
-        <section
-            data-testid="why-kindplate"
-            className="relative mx-auto flex h-[383px] w-[344px] flex-col rounded-[15px]"
-            style={{ backgroundColor: "#004900" }}
-        >
+        <>
             <h3
-                className="absolute left-[39px] top-[4px] text-center font-montserrat-alt"
+                className="mb-0 font-bold kp-landing-why-title"
                 style={{
+                    fontFamily: "Manrope, sans-serif",
                     fontWeight: 700,
-                    color: "#FFFFFF",
-                    fontSize: "23px",
-                    lineHeight: "1.08em",
-                    width: "267px",
+                    fontSize: 26,
+                    lineHeight: "108%",
+                    letterSpacing: 0,
+                    color: "#DEF4EE",
+                    marginTop: 60,
                 }}
             >
                 Почему KindPlate?
             </h3>
-
-            <div className="absolute left-[32px] top-[68px] grid grid-cols-2 gap-x-[30px] gap-y-[31px]">
-                {WHY_KIND_PLATE_CARDS.map(({ id, Icon, message }) => (
+            <div className="px-4 pt-5 pb-5 mt-[25px]">
+                {/* Градиент и разметка как в «Для клиентов» / «Для бизнеса» */}
+                <div
+                    className="relative mb-6"
+                    style={{ width: "calc(100% + 32px)", marginLeft: -16, marginRight: -16 }}
+                >
                     <div
-                        key={id}
-                        className="flex h-[122px] w-[122px] flex-col items-center rounded-[15px] bg-[#C8EBBB] px-[14px] pt-[15px] text-center"
+                        className="grain-card manrope kp-landing-why-cards kp-landing-why-two-grains"
+                        style={{
+                            width: "100%",
+                            minHeight: 280,
+                            paddingLeft: 24,
+                            paddingRight: 24,
+                            paddingTop: 28,
+                            paddingBottom: 28,
+                            boxSizing: "border-box",
+                        }}
                     >
-                        <span
-                            className="mb-0 flex items-center justify-center"
-                            style={{ width: ICON_SIZE_PX, height: ICON_SIZE_PX }}
+                        <div
+                            className="flex flex-col relative items-stretch"
+                            style={{ gap: 20, zIndex: 20 }}
                         >
-                            <Icon
-                                className="text-[#000019]"
-                                strokeWidth={2}
-                                style={{
-                                    width: ICON_SIZE_PX,
-                                    height: ICON_SIZE_PX,
-                                }}
-                            />
-                        </span>
-                        <p
-                            className="whitespace-pre-line font-montserrat-alt"
-                            style={CARD_TEXT_STYLES}
-                        >
-                            {message}
-                        </p>
+                            {WHY_KIND_PLATE_ITEMS.map(({ id, text, align }) => (
+                                <div
+                                    key={id}
+                                    className="kp-landing-why-pill"
+                                    style={{
+                                        alignSelf: align === "left" ? "flex-start" : "flex-end",
+                                        maxWidth: "85%",
+                                    }}
+                                >
+                                    <span className="kp-landing-why-pill-text">{text}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                ))}
+                </div>
             </div>
-        </section>
+        </>
     );
 }

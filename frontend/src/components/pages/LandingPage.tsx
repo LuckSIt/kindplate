@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
+import { ArrowRight } from "lucide-react";
 import { WhyKindPlate } from "@/components/landing/WhyKindPlate";
 import bunImage from "@/figma/90428C7F-3E7E-49B8-81BC-472D67411732 1.png";
 import saladImage from "@/figma/4A8982E1-D5E6-4397-803C-713423EA08C3 1.png";
@@ -8,9 +9,9 @@ import breadImage from "@/figma/C4B41631-5FC6-4D7A-91CE-6E3D6B94E9A0 1.png";
 import pizzaImage from "@/figma/762ADCA2-E303-44E5-B6E0-272EE15C6913 1.png";
 import cookiesImage from "@/figma/29BD33A8-EE31-48BF-A53C-02BC08740634 1.png";
 import phoneMapImage from "@/figma/image.png";
-import { SocialLinks } from "@/components/landing/SocialLinks";
 import blogImage from "@/figma/blog.png";
 import { DocumentsModal } from "@/components/ui/documents-modal";
+import "./landing.css";
 
 // Данные о продуктах из Figma
 const carouselItems = [
@@ -128,11 +129,9 @@ export function LandingPage() {
 
     return (
         <div 
-            className="w-full overflow-y-auto overflow-x-hidden"
+            className="kp-landing w-full overflow-y-auto"
             style={{ 
                 backgroundColor: '#111E42',
-                /* fixed + inset:0 гарантирует, что контейнер занимает весь экран
-                   без зависимости от html/body overflow:hidden и --app-height */
                 position: 'fixed',
                 top: 0,
                 left: 0,
@@ -142,7 +141,6 @@ export function LandingPage() {
                 WebkitOverflowScrolling: 'touch',
             }}
         >
-            {/* Mobile-first layout - single column, adapts to all screen widths */}
             <div 
                 className="w-full mx-auto max-w-[480px] sm:max-w-[640px] md:max-w-[768px]" 
                 style={{ 
@@ -187,24 +185,19 @@ export function LandingPage() {
                     </div>
                 </header> */}
 
-                {/* Hero — как должно быть: заголовок и подпись белым по тёмному фону, без светлого блока; кнопка справа — белая обводка и белый текст */}
-                <section className="px-4 pt-8 pb-10">
-                    <div className="max-w-[360px] mx-auto text-center">
+                {/* Hero — как должно быть: заголовок и подпись белым по тёмному фону; шрифт Manrope через класс .manrope */}
+                <section className="manrope px-4 pt-8 pb-10 overflow-x-hidden">
+                    <div className="max-w-full mx-auto text-center" style={{ maxWidth: 361 }}>
+                        {/* Заголовок hero — по Figma node 1-1296 */}
                         <h1
                             data-testid="hero-heading"
-                            className="text-white font-extrabold leading-[1.2] mb-5 no-underline"
-                            style={{
-                                fontFamily: 'Manrope, sans-serif',
-                                fontSize: 33,
-                                letterSpacing: '-0.04em',
-                                textDecoration: 'none',
-                            }}
+                            className="landing-hero-title"
                         >
                             <span className="block">Выгодно для тебя</span>
                             <span className="block mt-1">Полезно для планеты</span>
                         </h1>
                         <p
-                            className="mb-10 text-center text-white"
+                            className="landing-hero-subtitle text-center mb-[48px]"
                             style={{
                                 fontFamily: 'Manrope, sans-serif',
                                 fontWeight: 200,
@@ -212,38 +205,26 @@ export function LandingPage() {
                                 lineHeight: '108%',
                                 letterSpacing: 0,
                                 textAlign: 'center',
+                                color: '#ECF4F2',
                             }}
                         >
-                            <span className="block">Соединяем людей с кафе и ресторанами</span>
-                            <span className="block">
+                            <span className="landing-hero-text block">Соединяем людей<br/> с кафе и ресторанами</span>
+                            <span className="landing-hero-text block">
                                 для{' '}
-                                <span style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 700, fontSize: 20, lineHeight: '108%', letterSpacing: 0 }}>выгодной</span>
+                                <span className="landing-hero-accent" style={{ fontWeight: 700 }}>выгодной</span>
                                 {' '}и{' '}
-                                <span style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 700, fontSize: 20, lineHeight: '108%', letterSpacing: 0 }}>осознанной</span>
-                                {' '}покупки еды
+                                <span className="landing-hero-accent" style={{ fontWeight: 700 }}>осознанной</span>
+                                {' '}<br/>покупки еды
                             </span>
                         </p>
-                        <div className="flex gap-4 justify-center flex-wrap">
-                            <Link to="/auth/login">
-                                <button
-                                    type="button"
-                                    className="h-[51px] min-w-[160px] px-6 rounded-[8px] text-[15px] font-bold text-white transition-opacity hover:opacity-90"
-                                    style={{ fontFamily: 'Manrope, sans-serif', backgroundColor: '#098771' }}
-                                >
+                        <div className="landing-cta-buttons">
+                            <Link to="/auth/login" className="landing-cta-link">
+                                <button type="button" className="landing-cta-btn landing-cta-btn--primary">
                                     Начать покупать
                                 </button>
                             </Link>
-                            <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer">
-                                <button
-                                    type="button"
-                                    className="h-[51px] min-w-[160px] px-6 rounded-[8px] text-[15px] font-bold text-white transition-opacity hover:opacity-90 border-[1.5px] border-solid"
-                                    style={{
-                                        fontFamily: 'Manrope, sans-serif',
-                                        borderColor: '#FFFFFF',
-                                        color: '#FFFFFF',
-                                        backgroundColor: 'transparent',
-                                    }}
-                                >
+                            <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer" className="landing-cta-link">
+                                <button type="button" className="landing-cta-btn landing-cta-btn--secondary">
                                     Начать продавать
                                 </button>
                             </a>
@@ -268,9 +249,10 @@ export function LandingPage() {
                                 className="w-full rounded-[30px] overflow-hidden flex flex-col"
                                 style={{ background: 'linear-gradient(23.17deg, #EFF4F3 0%, #DEF4EE 73.56%)' }}
                             >
-                                {/* Верхняя часть: карта + продукт */}
+                                {/* Верхняя часть: карта + продукт (низ карты закруглён) */}
                                 <div 
-                                    className="relative overflow-hidden w-full aspect-[1/1.15]"
+                                    className="relative overflow-hidden w-full aspect-[1/1.6]"
+                                    style={{ borderRadius: '0 0 16px 16px' }}
                                     onTouchStart={onTouchStart}
                                     onTouchMove={onTouchMove}
                                     onTouchEnd={onTouchEnd}
@@ -282,14 +264,14 @@ export function LandingPage() {
                                         className="absolute inset-0 w-full h-full object-cover"
                                     />
                                     
-                                    {/* Продукт поверх карты (карусель) */}
+                                    {/* Продукт поверх карты (карусель) — чуть крупнее и по центру */}
                                     <div 
                                         style={{
                                             position: "absolute",
                                             left: "50%",
-                                            top: "45%",
-                                            transform: "translate(-50%, -50%) scale(0.82)",
-                                            width: "88%",
+                                            top: "50%",
+                                            transform: "translate(-50%, -50%) scale(0.92)",
+                                            width: "94%",
                                             aspectRatio: "1",
                                             cursor: "grab"
                                         }}
@@ -314,8 +296,8 @@ export function LandingPage() {
                                     </div>
                                 </div>
 
-                                {/* Подпись продукта */}
-                                <div className="px-[10px] pt-[6px]">
+                                {/* Подпись продукта — компактная типографика; ценник сдвинут вниз */}
+                                <div className="px-[10px] pt-[6px] phone-product-card" style={{ marginTop: 4 }}>
                                     <div
                                         className="transition-opacity duration-300"
                                         style={{
@@ -325,79 +307,35 @@ export function LandingPage() {
                                             padding: "5px 8px",
                                         }}
                                     >
-                                        {/* Категория — по Figma: #757575, Montserrat Alternates */}
-                                        <div
-                                            style={{
-                                                color: "#757575",
-                                                fontSize: 11,
-                                                fontFamily: "Montserrat Alternates, sans-serif",
-                                                fontWeight: 500,
-                                                marginBottom: 0,
-                                            }}
-                                        >
+                                        {/* Категория */}
+                                        <div className="phone-card-category">
                                             {currentItem.category}
                                         </div>
                                         
-                                        {/* Название + скидка — текст #10172A, скидка #FA7D00 */}
-                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 0 }}>
-                                            <span
-                                                style={{
-                                                    color: "#10172A",
-                                                    fontSize: 14,
-                                                    fontFamily: "Montserrat Alternates, sans-serif",
-                                                    fontWeight: 700,
-                                                    lineHeight: "20px",
-                                                }}
-                                            >
+                                        {/* Название + скидка: название переносится, не налезает на бейдж */}
+                                        <div className="flex items-start justify-between gap-2 mb-0" style={{ minHeight: 0 }}>
+                                            <span className="phone-card-name font-montserrat-alt">
                                                 {currentItem.name}
                                             </span>
-                                            <span
-                                                style={{
-                                                    backgroundColor: "#FA7D00",
-                                                    color: "#FFFFFF",
-                                                    fontSize: 12,
-                                                    fontFamily: "Montserrat Alternates, sans-serif",
-                                                    fontWeight: 700,
-                                                    padding: "4px 10px",
-                                                    borderRadius: "6px 14px 14px 6px",
-                                                    whiteSpace: "nowrap",
-                                                    marginLeft: 8,
-                                                    flexShrink: 0,
-                                                }}
-                                            >
+                                            <span className="phone-card-badge font-montserrat-alt">
                                                 {currentItem.discount}
                                             </span>
                                         </div>
                                         
-                                        {/* Цены — по Figma: зачёркнутая 10px, актуальная 17.19px #35741F */}
-                                        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-                                            <span
-                                                style={{
-                                                    color: "#000000",
-                                                    fontSize: 10,
-                                                    fontFamily: "Montserrat Alternates, sans-serif",
-                                                    fontWeight: 600,
-                                                    textDecoration: "line-through",
-                                                }}
-                                            >
+                                        {/* Цены */}
+                                        <div className="flex items-baseline justify-between">
+                                            <span className="phone-card-old-price font-montserrat-alt">
                                                 {currentItem.oldPrice}
                                             </span>
-                                            <span
-                                                style={{
-                                                    color: "#35741F",
-                                                    fontSize: 17.19,
-                                                    fontFamily: "Montserrat Alternates, sans-serif",
-                                                    fontWeight: 600,
-                                                }}
-                                            >
+                                            <span className="phone-card-price font-montserrat-alt">
                                                 {currentItem.price}
                                             </span>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Кнопки — внутри зелёной рамки */}
-                                <div className="px-[10px] py-[8px]">
+                                {/* Кнопки — шрифт Manrope, цифра количества уменьшена */}
+                                <div className="px-[10px] py-[8px] phone-product-controls">
                                     <div className="flex items-center gap-[8px]">
                                         {/* Quantity Selector */}
                                         <div
@@ -411,7 +349,7 @@ export function LandingPage() {
                                             }}
                                         >
                                             <button 
-                                                className="flex items-center justify-center"
+                                                className="flex items-center justify-center phone-qty-btn"
                                                 onClick={() => setQuantity(q => Math.max(1, q - 1))}
                                                 style={{ 
                                                     width: 18,
@@ -421,21 +359,13 @@ export function LandingPage() {
                                                     cursor: 'pointer'
                                                 }}
                                             >
-                                                <span className="text-[13px] font-bold" style={{ color: '#000019' }}>-</span>
+                                                <span className="phone-qty-symbol font-bold">-</span>
                                             </button>
-                                            <span 
-                                                className="text-[13px] font-semibold text-center"
-                                                style={{ 
-                                                    minWidth: 20,
-                                                    fontFamily: 'Montserrat Alternates, sans-serif',
-                                                    color: '#000019',
-                                                    lineHeight: '16px'
-                                                }}
-                                            >
+                                            <span className="phone-quantity-value">
                                                 {quantity}
                                             </span>
                                             <button 
-                                                className="flex items-center justify-center"
+                                                className="flex items-center justify-center phone-qty-btn"
                                                 onClick={() => setQuantity(q => q + 1)}
                                                 style={{ 
                                                     width: 18,
@@ -445,15 +375,15 @@ export function LandingPage() {
                                                     cursor: 'pointer'
                                                 }}
                                             >
-                                                <span className="text-[13px] font-bold" style={{ color: '#000019' }}>+</span>
+                                                <span className="phone-qty-symbol font-bold">+</span>
                                             </button>
                                         </div>
                                         <button 
-                                            className="flex-1 h-[32px] rounded-[8px] text-[11px] font-bold transition-opacity hover:opacity-90"
+                                            className="flex-1 h-[30px] rounded-[8px] font-bold transition-opacity hover:opacity-90 phone-add-btn"
                                             style={{ 
                                                 backgroundColor: '#10172A',
                                                 color: '#E3E3E3',
-                                                fontFamily: 'Manrope, sans-serif'
+                                                fontSize: 10
                                             }}
                                         >
                                             Добавить в заказ
@@ -464,12 +394,12 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* Для клиентов — по макету: заголовок 210×28, 26px Bold 108%; подпись 353×63; блок шагов #098771, blur */}
-                <section className="px-4 pb-[60px] overflow-x-hidden" style={{ paddingLeft: 16, paddingRight: 16 }}>
+                {/* Для клиентов — блок шагов с блюром без обрезки */}
+                <section className="kp-landing-steps-section px-4 pb-[60px]" style={{ paddingLeft: 16, paddingRight: 16, overflow: 'visible' }}>
                     <h3 
                         className="mb-0 font-bold"
                         style={{
-                            fontFamily: 'Montserrat Alternates, sans-serif',
+                            fontFamily: 'Manrope, sans-serif',
                             fontWeight: 700,
                             fontSize: 26,
                             lineHeight: '108%',
@@ -483,182 +413,95 @@ export function LandingPage() {
                         Для клиентов
                     </h3>
                     <div 
-                        className="rounded-[15px] px-4 pt-5 pb-5 mt-[25px]"
-                        style={{ backgroundColor: '#111E42' }}
+                        className="px-4 pt-5 pb-5 mt-[25px]"
                     >
                         <h4 
-                            className="mb-2 font-extrabold"
+                            className="mb-2 font-extrabold w-full"
                             style={{
-                                fontFamily: 'Montserrat Alternates, sans-serif',
+                                fontFamily: 'Manrope, sans-serif',
                                 fontWeight: 800,
                                 fontSize: 24,
                                 lineHeight: '87%',
                                 letterSpacing: 0,
-                                width: 353,
                                 minHeight: 63,
+                                maxWidth: '100%',
                             }}
                         >
-                            <span
+                            <span className="landing-clients-green font-montserrat-alt"
                                 style={{
-                                    fontFamily: 'Montserrat Alternates, sans-serif',
+                                    fontFamily: 'Manrope, sans-serif',
                                     fontWeight: 800,
-                                    fontSize: 24,
                                     lineHeight: '87%',
                                     letterSpacing: 0,
-                                    background: '#098771',
-                                    color: '#FFFFFF',
+                                    color: '#098771',
                                 }}
                             >
-                                Сэкономьте деньги, купив товары в ваших любимых заведениях
+                                Сэкономьте деньги,<br/> купив товары в ваших любимых заведениях
                             </span>
                         </h4>
                         <p 
-                            className="mb-8"
+                            className="mb-8 landing-clients-desc font-montserrat-alt"
                             style={{
                                 fontFamily: 'Manrope, sans-serif',
                                 fontWeight: 400,
-                                fontSize: 18,
                                 lineHeight: '107%',
                                 letterSpacing: '0.05em',
-                                background: '#FFFFFF',
-                                color: '#10172A',
-                                width: 361,
+                                color: '#FFFFFF',
+                                width: 371,
                                 minHeight: 114,
-                                padding: '12px 16px',
                                 boxSizing: 'border-box',
+                                maxWidth: '100%',
                             }}
                         >
                             Покупайте вкусную еду по невероятным ценам. Просматривайте предложения по близости и покупайте товары прямо в приложении KindPlate. Наши выгодные цены порадуют ваш кошелек.
                         </p>
-                        {/* Блок шагов: фон #098771, blur, 513×246, radius 10px; строки 349×54, номер 53×54 (Manrope 50px), текст 253×36 (Manrope 600 16px) */}
-                        <div
-                            className="mb-6 overflow-hidden"
-                            style={{
-                                width: '100%',
-                                maxWidth: 513,
-                                minHeight: 246,
-                                marginLeft: -65,
-                                paddingLeft: 65,
-                                paddingRight: 16,
-                                paddingTop: 34,
-                                paddingBottom: 34,
-                                borderRadius: 10,
-                                background: '#098771',
-                                backdropFilter: 'blur(213px)',
-                                WebkitBackdropFilter: 'blur(213px)',
-                                boxSizing: 'border-box',
-                            }}
-                        >
-                            <div className="flex flex-col" style={{ gap: 28 }}>
-                                <div className="flex items-center" style={{ width: 349, height: 54 }}>
-                                    <span
-                                        className="flex-shrink-0 text-white"
-                                        style={{
-                                            fontFamily: 'Manrope, sans-serif',
-                                            fontWeight: 400,
-                                            fontSize: 50,
-                                            lineHeight: '107%',
-                                            letterSpacing: '0.05em',
-                                            width: 53,
-                                            height: 54,
-                                        }}
-                                    >
-                                        01
-                                    </span>
-                                    <p
-                                        className="m-0 text-white flex-shrink-0"
-                                        style={{
-                                            fontFamily: 'Manrope, sans-serif',
-                                            fontWeight: 600,
-                                            fontSize: 16,
-                                            lineHeight: '110%',
-                                            letterSpacing: 0,
-                                            width: 253,
-                                            marginLeft: 43,
-                                        }}
-                                    >
-                                        Смотри предложения рядом с тобой
-                                    </p>
+                        {/* Блок шагов: градиент на всю ширину секции, без шума */}
+                        <div className="relative mb-6" style={{ width: 'calc(100% + 32px)', marginLeft: -16, marginRight: -16 }}>
+                            <div
+                                className="grain-card manrope landing-steps"
+                                style={{
+                                    width: '100%',
+                                    minHeight: 246,
+                                    paddingLeft: 24,
+                                    paddingRight: 24,
+                                    paddingTop: 34,
+                                    paddingBottom: 34,
+                                    boxSizing: 'border-box',
+                                }}
+                            >
+                            <div className="flex flex-col relative items-start" style={{ gap: 36, zIndex: 20 }}>
+                                <div className="landing-step-row flex items-start" style={{ width: '100%', maxWidth: 349 }}>
+                                    <span className="step-num landing-step-num flex-shrink-0 text-white">01</span>
+                                    <p className="m-0 text-white landing-step-text font-montserrat-alt">Смотри предложения рядом с тобой</p>
                                 </div>
-                                <div className="flex items-center" style={{ width: 349, height: 54 }}>
-                                    <span
-                                        className="flex-shrink-0 text-white"
-                                        style={{
-                                            fontFamily: 'Manrope, sans-serif',
-                                            fontWeight: 400,
-                                            fontSize: 50,
-                                            lineHeight: '107%',
-                                            letterSpacing: '0.05em',
-                                            width: 53,
-                                            height: 54,
-                                        }}
-                                    >
-                                        02
-                                    </span>
-                                    <p
-                                        className="m-0 text-white flex-shrink-0"
-                                        style={{
-                                            fontFamily: 'Manrope, sans-serif',
-                                            fontWeight: 600,
-                                            fontSize: 16,
-                                            lineHeight: '110%',
-                                            letterSpacing: 0,
-                                            width: 253,
-                                            marginLeft: 43,
-                                        }}
-                                    >
-                                        Выбирай и оплачивай прямо в приложении
-                                    </p>
+                                <div className="landing-step-row flex items-start" style={{ width: '100%', maxWidth: 349 }}>
+                                    <span className="step-num landing-step-num flex-shrink-0 text-white">02</span>
+                                    <p className="m-0 text-white landing-step-text font-montserrat-alt">Выбирай и оплачивай прямо в приложении</p>
                                 </div>
-                                <div className="flex items-center" style={{ width: 349, height: 54 }}>
-                                    <span
-                                        className="flex-shrink-0 text-white"
-                                        style={{
-                                            fontFamily: 'Manrope, sans-serif',
-                                            fontWeight: 400,
-                                            fontSize: 50,
-                                            lineHeight: '107%',
-                                            letterSpacing: '0.05em',
-                                            width: 53,
-                                            height: 54,
-                                        }}
-                                    >
-                                        03
-                                    </span>
-                                    <p
-                                        className="m-0 text-white flex-shrink-0"
-                                        style={{
-                                            fontFamily: 'Manrope, sans-serif',
-                                            fontWeight: 600,
-                                            fontSize: 16,
-                                            lineHeight: '110%',
-                                            letterSpacing: 0,
-                                            width: 253,
-                                            marginLeft: 43,
-                                        }}
-                                    >
-                                        Забери в заведении и наслаждайся
-                                    </p>
+                                <div className="landing-step-row flex items-start" style={{ width: '100%', maxWidth: 349 }}>
+                                    <span className="step-num landing-step-num flex-shrink-0 text-white">03</span>
+                                    <p className="m-0 text-white landing-step-text font-montserrat-alt">Забери в заведении и наслаждайся</p>
                                 </div>
                             </div>
+                            </div>
                         </div>
-                        <div className="flex justify-center">
-                            <Link to="/auth/login">
-                                <button 
+                        <div className="flex justify-center" style={{ marginTop: 32 }}>
+                            <Link to="/auth/login" className="kp-landing-more-link">
+                                <button
                                     type="button"
-                                    className="rounded-[8px] text-[15px] font-bold transition-opacity hover:opacity-90 border-[1.5px] border-solid flex items-center justify-center"
+                                    className="kp-landing-more-btn rounded-[12px] text-[15px] font-bold transition-opacity hover:opacity-90 flex items-center justify-center"
                                     style={{
                                         width: 203,
                                         height: 53,
-                                        borderColor: '#098771',
-                                        backgroundColor: '#DEF4EE',
-                                        color: '#098771',
-                                        fontFamily: 'Manrope, sans-serif',
+                                        backgroundColor: '#DEFAF6',
+                                        color: '#009688',
                                         paddingTop: 19,
                                         paddingRight: 20,
                                         paddingBottom: 18,
                                         paddingLeft: 20,
                                         boxSizing: 'border-box',
+                                        border: 'none',
+                                        textDecoration: 'none',
                                     }}
                                 >
                                     Подробнее
@@ -668,61 +511,111 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* Для бизнеса — по Figma: заголовок 26px #DEF4EE; подзаголовок 24px #098771 extrabold; шаги 50px + 16px; кнопка 203×53 */}
-                <section className="px-4 pb-[60px]" style={{ paddingLeft: 16, paddingRight: 16 }}>
+                {/* Для бизнеса — по шаблону «Для клиентов»: заголовок, зелёный подзаголовок, описание, блок шагов, кнопка */}
+                <section className="kp-landing-steps-section px-4 pb-[60px]" style={{ paddingLeft: 16, paddingRight: 16, overflow: 'visible' }}>
                     <h3 
                         className="mb-0 font-bold"
-                        style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontSize: 26, color: '#DEF4EE' }}
+                        style={{
+                            fontFamily: 'Manrope, sans-serif',
+                            fontWeight: 700,
+                            fontSize: 26,
+                            lineHeight: '108%',
+                            letterSpacing: 0,
+                            color: '#DEF4EE',
+                            marginTop: 60,
+                            width: 210,
+                            height: 28,
+                        }}
                     >
                         Для бизнеса
                     </h3>
-                    <h4 
-                        className="mt-[30px] mb-0 font-extrabold leading-tight"
-                        style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontSize: 24, color: '#098771' }}
-                    >
-                        Продавайте больше и привлекайте новых гостей
-                    </h4>
-                    <div 
-                        className="rounded-[15px] px-4 pt-5 pb-5 mt-5"
-                        style={{ backgroundColor: '#111E42' }}
-                    >
+                    <div className="px-4 pt-5 pb-5 mt-[25px]">
+                        <h4 
+                            className="mb-2 font-extrabold w-full"
+                            style={{
+                                fontFamily: 'Manrope, sans-serif',
+                                fontWeight: 800,
+                                fontSize: 24,
+                                lineHeight: '87%',
+                                letterSpacing: 0,
+                                minHeight: 63,
+                                maxWidth: '100%',
+                            }}
+                        >
+                            <span className="landing-clients-green font-montserrat-alt"
+                                style={{
+                                    fontFamily: 'Manrope, sans-serif',
+                                    fontWeight: 800,
+                                    lineHeight: '87%',
+                                    letterSpacing: 0,
+                                    color: '#098771',
+                                }}
+                            >
+                                Продавайте больше<br/> и привлекайте новых<br/> гостей
+                            </span>
+                        </h4>
                         <p 
-                            className="text-[18px] leading-normal mb-8"
-                            style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 400, color: '#FFFFFF', letterSpacing: '0.9px' }}
+                            className="mb-8 landing-clients-desc font-montserrat-alt"
+                            style={{
+                                fontFamily: 'Manrope, sans-serif',
+                                fontWeight: 400,
+                                lineHeight: '107%',
+                                letterSpacing: '0.05em',
+                                color: '#FFFFFF',
+                                width: 371,
+                                minHeight: 114,
+                                boxSizing: 'border-box',
+                                maxWidth: '100%',
+                            }}
                         >
                             Kindplate помогает ресторанам и магазинам реализовывать непроданные блюда и готовые продукты со скидкой, вместо того чтобы списывать их. Так вы вносите вклад в осознанное потребление и заботу о планете. Получите дополнительный стабильный источник дохода и привлекайте новых клиентов.
                         </p>
-                        <div className="space-y-7 mb-6">
-                            <div className="flex items-center gap-[39px]">
-                                <span className="font-normal flex-shrink-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 50, color: '#FFFFFF', letterSpacing: '2.5px' }}>01</span>
-                                <p className="font-semibold m-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 16, color: '#FFFFFF' }}>Выкладывайте в личном кабинете блюда и наборы со скидкой.</p>
-                            </div>
-                            <div className="flex items-center gap-[32px]">
-                                <span className="font-normal flex-shrink-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 50, color: '#FFFFFF', letterSpacing: '2.5px' }}>02</span>
-                                <p className="font-semibold m-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 16, color: '#FFFFFF' }}>Получайте предоплаченные заказы от гостей в приложении.</p>
-                            </div>
-                            <div className="flex items-center gap-[32px]">
-                                <span className="font-normal flex-shrink-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 50, color: '#FFFFFF', letterSpacing: '2.5px' }}>03</span>
-                                <p className="font-semibold m-0" style={{ fontFamily: 'Manrope, sans-serif', fontSize: 16, color: '#FFFFFF' }}>Выдавайте заказы в заведении и снижайте потери еды.</p>
+                        <div className="relative mb-6" style={{ width: 'calc(100% + 32px)', marginLeft: -16, marginRight: -16 }}>
+                            <div
+                                className="grain-card manrope landing-steps"
+                                style={{
+                                    width: '100%',
+                                    minHeight: 246,
+                                    paddingLeft: 24,
+                                    paddingRight: 24,
+                                    paddingTop: 34,
+                                    paddingBottom: 34,
+                                    boxSizing: 'border-box',
+                                }}
+                            >
+                                <div className="flex flex-col relative items-start" style={{ gap: 36, zIndex: 20 }}>
+                                    <div className="landing-step-row flex items-start" style={{ width: '100%', maxWidth: 349 }}>
+                                        <span className="step-num landing-step-num flex-shrink-0 text-white">01</span>
+                                        <p className="m-0 text-white landing-step-text font-montserrat-alt">Выкладывайте в личном кабинете блюда и наборы со скидкой</p>
+                                    </div>
+                                    <div className="landing-step-row flex items-start" style={{ width: '100%', maxWidth: 349 }}>
+                                        <span className="step-num landing-step-num flex-shrink-0 text-white">02</span>
+                                        <p className="m-0 text-white landing-step-text font-montserrat-alt">Получайте предоплаченные заказы от гостей в приложении</p>
+                                    </div>
+                                    <div className="landing-step-row flex items-start" style={{ width: '100%', maxWidth: 349 }}>
+                                        <span className="step-num landing-step-num flex-shrink-0 text-white">03</span>
+                                        <p className="m-0 text-white landing-step-text font-montserrat-alt">Выдавайте заказы в заведении и снижайте потери еды</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div className="flex justify-center">
-                            <a href="https://t.me/kindplatesupportbot" target="_blank" rel="noopener noreferrer">
-                                <button 
+                        <div className="flex justify-center" style={{ marginTop: 32 }}>
+                            <a href="https://t.me/kindplatesupportbot" target="_blank" rel="noopener noreferrer" className="kp-landing-more-link">
+                                <button
                                     type="button"
-                                    className="rounded-[8px] text-[15px] font-bold transition-opacity hover:opacity-90 border-[1.5px] border-solid flex items-center justify-center"
+                                    className="kp-landing-more-btn rounded-[12px] text-[15px] font-bold transition-opacity hover:opacity-90 flex items-center justify-center"
                                     style={{
                                         width: 203,
                                         height: 53,
-                                        borderColor: '#098771',
-                                        backgroundColor: '#DEF4EE',
-                                        color: '#098771',
-                                        fontFamily: 'Manrope, sans-serif',
+                                        backgroundColor: '#DEFAF6',
+                                        color: '#009688',
                                         paddingTop: 19,
                                         paddingRight: 20,
                                         paddingBottom: 18,
                                         paddingLeft: 20,
                                         boxSizing: 'border-box',
+                                        border: 'none',
+                                        textDecoration: 'none',
                                     }}
                                 >
                                     Подробнее
@@ -732,121 +625,49 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* Why KindPlate Section */}
-                <section className="px-[15px] pb-[60px]">
+                {/* Почему KindPlate? */}
+                <section className="px-4 pb-[60px] overflow-x-hidden" style={{ paddingLeft: 16, paddingRight: 16 }}>
                     <WhyKindPlate />
                 </section>
 
-                {/* Footer — по палитре Figma: фон #111E42, заголовки #DEF4EE, ссылки #ECF4F2 */}
+                {/* Footer — Контакты: карточки + ИП/ИНН/ОГРН */}
                 <footer className="px-0 pb-0">
-                    <div
-                        className="relative w-full"
-                        style={{ 
-                            backgroundColor: "#111E42",
-                            minHeight: "201px",
-                            paddingTop: "10px",
-                            paddingBottom: "calc(20px + env(safe-area-inset-bottom, 0px))"
-                        }}
-                    >
-                        <div className="flex px-[26px] gap-[40px]">
-                            <div className="flex-1 min-w-0">
-                                <p 
-                                    style={{ 
-                                        fontFamily: 'Montserrat Alternates, sans-serif',
-                                        fontWeight: 600,
-                                        fontSize: "14px",
-                                        lineHeight: "22px",
-                                        color: '#DEF4EE',
-                                        textAlign: "left",
-                                        marginBottom: "0px"
-                                    }}
-                                >
-                                    KindPlate
-                                </p>
-                                <a 
-                                    href="https://t.me/kindplatesupportbot"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block transition-opacity hover:opacity-80 footer-link"
-                                    style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontWeight: 600, fontSize: "11px", lineHeight: "22px", color: '#ECF4F2', textAlign: "left" }}
-                                >
-                                    Для партнеров
-                                </a>
-                                <Link to="/auth/login" className="block transition-opacity hover:opacity-80 footer-link" style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontWeight: 600, fontSize: "11px", lineHeight: "22px", color: '#ECF4F2', textAlign: "left" }}>
-                                    Для пользователей
-                                </Link>
-                                <button onClick={() => setIsDocumentsModalOpen(true)} className="block transition-opacity hover:opacity-80 footer-link" style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontWeight: 600, fontSize: "11px", lineHeight: "22px", color: '#ECF4F2', textAlign: "left", background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-                                    Документы
-                                </button>
-                                <a href="https://t.me/kindplate" className="block transition-opacity hover:opacity-80 footer-link" style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontWeight: 600, fontSize: "11px", lineHeight: "22px", color: '#ECF4F2', textAlign: "left" }}>
-                                    Блог
-                                </a>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontWeight: 600, fontSize: "14px", lineHeight: "22px", color: '#DEF4EE', textAlign: "left", marginBottom: "0px" }}>
-                                    Нужна помощь?
-                                </p>
-                                <Link to="/legal/faq" className="block transition-opacity hover:opacity-80 footer-link" style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontWeight: 600, fontSize: "11px", lineHeight: "22px", color: '#ECF4F2', textAlign: "left" }}>
-                                    Ответы на вопросы
-                                </Link>
-                                <a href="https://t.me/kindplatesupportbot" className="block transition-opacity hover:opacity-80 footer-link" style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontWeight: 600, fontSize: "11px", lineHeight: "22px", color: '#ECF4F2', textAlign: "left" }}>
-                                    Контакты
-                                </a>
-                            </div>
+                    <div className="kp-landing-footer">
+                        <h2 className="kp-landing-footer-title">Контакты:</h2>
+                        <div className="kp-landing-footer-cards">
+                            <a
+                                href="https://t.me/kindplatesupportbot"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="kp-landing-footer-card"
+                            >
+                                <span className="kp-landing-footer-card-text">Telegram</span>
+                                <ArrowRight className="kp-landing-footer-card-arrow" size={28} strokeWidth={2.41} />
+                            </a>
+                            <a
+                                href="https://vk.com/kindplate"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="kp-landing-footer-card"
+                            >
+                                <span className="kp-landing-footer-card-text">VK</span>
+                                <ArrowRight className="kp-landing-footer-card-arrow" size={28} strokeWidth={2.41} />
+                            </a>
+                            <a
+                                href="https://www.instagram.com/kindplate/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="kp-landing-footer-card"
+                            >
+                                <span className="kp-landing-footer-card-text">Instagram</span>
+                                <ArrowRight className="kp-landing-footer-card-arrow" size={28} strokeWidth={2.41} />
+                            </a>
                         </div>
-                        <div style={{ marginLeft: "26px", marginRight: "26px", marginTop: "13px" }}>
-                            <p style={{ fontFamily: "Montserrat Alternates, sans-serif", fontWeight: 600, fontSize: "14px", lineHeight: "22px", color: "#DEF4EE", marginBottom: "3px" }}>
-                                Социальные сети
-                            </p>
-                            <SocialLinks />
+                        <div className="kp-landing-footer-legal-block">
+                            <p className="kp-landing-footer-legal">ИП Сатаев А.М.</p>
+                            <p className="kp-landing-footer-legal">ИНН: 784808895487</p>
+                            <p className="kp-landing-footer-legal">ОГРН: 326784700012921</p>
                         </div>
-                        
-                        {/* Copyright - по центру */}
-                        <p
-                            className="font-montserrat-alt"
-                            style={{ 
-                                fontFamily: 'Montserrat Alternates, sans-serif',
-                                fontWeight: 400,
-                                fontSize: "8px",
-                                lineHeight: "20px",
-                                color: '#FFFFFF',
-                                textAlign: "center",
-                                marginTop: "5px",
-                                marginBottom: "0px"
-                            }}
-                        >
-                            ИП Сатаев А.М.
-                        </p>
-                        <p
-                            className="font-montserrat-alt"
-                            style={{ 
-                                fontFamily: 'Montserrat Alternates, sans-serif',
-                                fontWeight: 400,
-                                fontSize: "8px",
-                                lineHeight: "20px",
-                                color: '#FFFFFF',
-                                textAlign: "center",
-                                marginTop: "0px",
-                                marginBottom: "0px"
-                            }}
-                        >
-                            ИНН: 784808895487
-                        </p>
-                        <p
-                            className="font-montserrat-alt"
-                            style={{ 
-                                fontFamily: 'Montserrat Alternates, sans-serif',
-                                fontWeight: 400,
-                                fontSize: "8px",
-                                lineHeight: "20px",
-                                color: '#FFFFFF',
-                                textAlign: "center",
-                                marginTop: "0px",
-                                marginBottom: "0px"
-                            }}
-                        >
-                            ОГРН: 326784700012921
-                        </p>
                     </div>
                 </footer>
             </div>
