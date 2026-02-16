@@ -62,6 +62,7 @@ body .kp-landing .landing-clients-desc {
 .kp-landing .landing-cta-link {
   flex-shrink: 0 !important;
   display: inline-block !important;
+  text-decoration: none !important;
 }
 .kp-landing .landing-cta-btn {
   width: 173px !important;
@@ -91,9 +92,9 @@ body .kp-landing .landing-clients-desc {
   color: #ffffff !important;
 }
 
-/* Чтобы блюр в блоках 01/02/03 не обрезался по краям */
+/* Без горизонтального скролла; блюр в блоках 01/02/03 — через .kp-landing-steps-section */
 .kp-landing {
-  overflow-x: visible !important;
+  overflow-x: hidden !important;
 }
 
 /* Блок шагов: градиент внутри контейнера */

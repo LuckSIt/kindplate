@@ -129,7 +129,7 @@ export function LandingPage() {
 
     return (
         <div 
-            className="kp-landing w-full overflow-y-auto"
+            className="kp-landing w-full overflow-y-auto overflow-x-hidden"
             style={{ 
                 backgroundColor: '#111E42',
                 position: 'fixed',
