@@ -254,10 +254,10 @@ html.landing-active #app {
 }
 
 /* Mobile typography - фиксированные размеры */
-h1 { font-size: 24px !important; line-height: 30px !important; font-weight: 700; color: var(--color-text); }
+h1 { font-size: 32px !important; line-height: 30px !important; font-weight: 700; color: var(--color-text); }
 h2 { font-size: 20px !important; line-height: 28px !important; font-weight: 700; color: var(--color-text); }
 h3:not(.font-montserrat-alt) { font-size: 26px !important; line-height: 26px !important; font-weight: 600; color: var(--color-text); }
-p:not(.font-montserrat-alt):not(.font-ramona):not(.landing-hero-subtitle):not(.kp-landing-footer-legal), span:not(.font-montserrat-alt):not(.font-ramona):not(.kp-landing-why-pill-text):not(.landing-hero-accent):not(.landing-hero-text):not(.phone-quantity-value):not(.landing-step-num):not(.step-num):not(.kp-landing-footer-card-text):not(.phone-card-badge):not(.phone-card-old-price):not(.phone-card-price), li:not(.font-montserrat-alt):not(.font-ramona) { font-size: 33px !important; color: var(--color-text); }
+p:not(.font-montserrat-alt):not(.font-ramona):not(.landing-hero-subtitle):not(.kp-landing-footer-legal):not(.login-page__subtitle):not(.login-page__footer-text):not(.register-page__subtitle):not(.register-page__footer-text), span:not(.font-montserrat-alt):not(.font-ramona):not(.kp-landing-why-pill-text):not(.landing-hero-accent):not(.landing-hero-text):not(.phone-quantity-value):not(.landing-step-num):not(.step-num):not(.kp-landing-footer-card-text):not(.phone-card-badge):not(.phone-card-old-price):not(.phone-card-price):not(.register-page__consent-text), li:not(.font-montserrat-alt):not(.font-ramona) { font-size: 33px !important; color: var(--color-text); }
 small, .caption { font-size: 12px !important; line-height: 18px !important; color: #94a3b8; }
 
 /* Лендинг: переопределение размеров и цвета в .manrope (глобальные h1/p/span с !important бьют inline) */
@@ -1131,9 +1131,9 @@ html {
   min-height: 100%;
   height: 100%;
   width: 100%;
-  background-color: var(--color-bg);
+  background-color: #111E42;
   position: relative;
-  font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   overflow-y: auto;
   overflow-x: hidden;
   padding-top: env(safe-area-inset-top, 0px);
@@ -1167,27 +1167,30 @@ html {
 }
 
 .login-page__back-button {
-  position: absolute;
-  left: 15px;
-  top: 15px;
-  width: 39px;
-  height: 39px;
-  background: var(--color-bg);
+  position: fixed;
+  left: 0;
+  top: env(safe-area-inset-top, 0px);
+  width: 56px;
+  height: 56px;
+  background: transparent;
   border: none;
-  border-radius: 50%;
+  border-radius: 0;
   cursor: pointer;
   padding: 0;
-  z-index: 10;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: #fff;
 }
 
 .login-page__back-button-icon {
-  width: 39px;
-  height: 39px;
+  width: 32px;
+  height: 32px;
   display: block;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  stroke: #FFFFFF;
 }
 
 .login-page__card {
@@ -1195,11 +1198,11 @@ html {
   max-width: 370px;
   margin-left: 16px;
   margin-right: 16px;
-  background-color: var(--color-bg-card);
-  border: 1px solid rgba(236, 244, 242, 0.15);
-  border-radius: 15px;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
   margin-top: 0;
-  padding: 24px 0 36px;
+  padding: 60px 24px 24px 24px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1208,89 +1211,89 @@ html {
 
 .login-page__header {
   text-align: center;
-  margin-top: 32px;
-  margin-bottom: 24px;
-  padding: 0 20px;
+  margin-top: 0;
+  margin-bottom: 28px;
+  padding: 0;
 }
 
 .login-page__title {
   font-family: var(--font-manrope), sans-serif;
-  font-weight: 600;
-  font-size: 24px;
-  line-height: 28px;
-  color: var(--color-text);
-  margin: 0 0 21px 0;
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1.25;
+  color: #FFFFFF;
+  margin: 0 0 12px 0;
   text-align: center;
 }
 
 .login-page__subtitle {
   font-family: var(--font-manrope), sans-serif;
-  font-weight: 600;
-  font-size: 10px;
-  line-height: 18px;
-  color: var(--color-text-muted);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #FFFFFF;
   margin: 0;
   text-align: center;
 }
 
 .login-page__link {
-  color: var(--color-text-muted);
+  color: #FFFFFF;
   text-decoration: underline;
-  transition: color 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
 .login-page__link:hover {
-  color: var(--color-text);
+  opacity: 0.85;
 }
 
 .login-page__form {
-  padding: 0 29px;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 .login-page__field {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .login-page__field-label {
   font-family: var(--font-manrope), sans-serif;
-  font-weight: 600;
-  font-size: 17px;
-  line-height: 18px;
-  color: var(--color-text);
-  text-align: center;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.35;
+  color: #FFFFFF;
+  text-align: left;
   margin: 0;
 }
 
 .login-page__input-wrapper {
   position: relative;
   width: 100%;
-  height: 50px;
-  border: 2px solid rgba(236,244,242,0.2);
-  border-radius: 15px;
-  background: transparent;
+  height: 52px;
+  border: 1px solid rgba(236, 244, 242, 0.25);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 5px;
+  padding: 0 16px;
 }
 
 .login-page__input {
   width: 100%;
-  height: 36px;
-  background-color: var(--color-bg);
+  height: 100%;
+  background: transparent;
   border: none;
-  border-radius: 5px;
-  padding: 0 20px;
+  border-radius: 0;
+  padding: 0;
   font-family: var(--font-manrope), sans-serif;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 18px;
-  color: var(--color-text);
+  font-size: 16px;
+  line-height: 1.35;
+  color: #FFFFFF;
   outline: none;
   transition: background-color 0.2s ease;
 }
@@ -1304,16 +1307,17 @@ html {
 }
 
 .login-page__submit-button {
-  width: 211px;
-  height: 39px;
+  width: 100%;
+  max-width: 100%;
+  height: 52px;
   background-color: var(--color-primary);
   border: none;
-  border-radius: 10px;
-  margin: 20px auto 0;
+  border-radius: 12px;
+  margin: 40px 0 0 0;
   font-family: var(--font-manrope), sans-serif;
   font-weight: 600;
-  font-size: 19px;
-  line-height: 18px;
+  font-size: 18px;
+  line-height: 1.25;
   color: #FFFFFF;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.1s ease;
@@ -1353,11 +1357,11 @@ html {
 .login-page__footer-text {
   font-family: var(--font-manrope), sans-serif;
   font-weight: 400;
-  font-size: 11px;
-  line-height: 12px;
-  color: var(--color-text-muted);
+  font-size: 10px;
+  line-height: 1.4;
+  color: #FFFFFF;
   text-align: center;
-  margin: 20px 15px 20px 15px;
+  margin: 24px 0 0 0;
   padding: 0;
 }
 
@@ -1366,34 +1370,34 @@ html {
   border: none;
   padding: 0;
   margin: 0;
-  color: var(--color-text-muted);
+  color: #FFFFFF;
   text-decoration: underline;
   cursor: pointer;
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
   line-height: inherit;
-  transition: color 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
 .login-page__footer-link:hover {
-  color: var(--color-text);
+  opacity: 0.85;
 }
 
 /* Responsive adjustments */
 @media (max-width: 420px) {
   .login-page__back-button {
-    left: 15px;
-    top: 20px;
+    left: 0;
+    top: env(safe-area-inset-top, 0px);
   }
 }
 
-/* Register Page Styles (BEM naming) */
+/* Register Page Styles — по образцу страницы входа */
 .register-page {
   min-height: 100%;
   height: 100%;
   width: 100%;
-  background-color: var(--color-bg);
+  background-color: #111E42;
   position: relative;
   font-family: var(--font-manrope), sans-serif;
   overflow-y: auto;
@@ -1419,139 +1423,141 @@ html {
   max-width: 100%;
   margin: 0 auto;
   min-height: calc(var(--app-height, 100dvh) - env(safe-area-inset-top, 0px));
-  padding: 20px 16px;
+  padding: 0 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   box-sizing: border-box;
 }
 
 .register-page__back-button {
-  position: absolute;
-  left: 15px;
-  top: 15px;
-  width: 39px;
-  height: 39px;
-  background: var(--color-bg);
+  position: fixed;
+  left: 0;
+  top: env(safe-area-inset-top, 0px);
+  width: 56px;
+  height: 56px;
+  background: transparent;
   border: none;
-  border-radius: 50%;
+  border-radius: 0;
   cursor: pointer;
   padding: 0;
-  z-index: 10;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: #fff;
 }
 
 .register-page__back-button-icon {
-  width: 39px;
-  height: 39px;
+  width: 32px;
+  height: 32px;
   display: block;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  stroke: #FFFFFF;
 }
 
 .register-page__card {
   width: 100%;
-  max-width: 368px;
-  background-color: var(--color-bg-card);
-  border: 1px solid rgba(236, 244, 242, 0.15);
-  border-radius: 15px;
+  max-width: 370px;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
   margin-top: 0;
-  padding: 0;
+  padding: 60px 24px 24px 24px;
   position: relative;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  /* max-height и overflow-y убраны - контент адаптивен, скроллинг на html */
 }
 
 .register-page__header {
   text-align: center;
-  margin-top: 20px;
-  margin-bottom: 24px;
-  padding: 0 20px;
+  margin-top: 0;
+  margin-bottom: 28px;
+  padding: 0;
 }
 
 .register-page__title {
   font-family: var(--font-manrope), sans-serif;
-  font-weight: 600;
-  font-size: 24px;
-  line-height: 28px;
-  color: var(--color-text);
-  margin: 0 0 21px 0;
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1.25;
+  color: #FFFFFF;
+  margin: 0 0 12px 0;
   text-align: center;
 }
 
 .register-page__subtitle {
   font-family: var(--font-manrope), sans-serif;
-  font-weight: 600;
-  font-size: 10px;
-  line-height: 18px;
-  color: var(--color-text-muted);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #FFFFFF;
   margin: 0;
   text-align: center;
 }
 
 .register-page__link {
-  color: var(--color-text-muted);
+  color: #FFFFFF;
   text-decoration: underline;
-  transition: color 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
 .register-page__link:hover {
-  color: var(--color-text);
+  opacity: 0.85;
 }
 
 .register-page__form {
-  padding: 0 29px;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 24px;
   box-sizing: border-box;
 }
 
 .register-page__field {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .register-page__field-label {
   font-family: var(--font-manrope), sans-serif;
-  font-weight: 600;
-  font-size: 17px;
-  line-height: 18px;
-  color: var(--color-text);
-  text-align: center;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.35;
+  color: #FFFFFF;
+  text-align: left;
   margin: 0;
 }
 
 .register-page__input-wrapper {
   position: relative;
   width: 100%;
-  height: 50px;
-  border: 2px solid rgba(236,244,242,0.2);
-  border-radius: 15px;
-  background: transparent;
+  height: 52px;
+  border: 1px solid rgba(236, 244, 242, 0.25);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 5px;
+  padding: 0 16px;
 }
 
 .register-page__input {
   width: 100%;
-  height: 36px;
-  background-color: var(--color-bg);
+  height: 100%;
+  background: transparent;
   border: none;
-  border-radius: 5px;
-  padding: 0 20px;
+  border-radius: 0;
+  padding: 0;
   font-family: var(--font-manrope), sans-serif;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 18px;
-  color: var(--color-text);
+  font-size: 16px;
+  line-height: 1.35;
+  color: #FFFFFF;
   outline: none;
   transition: background-color 0.2s ease;
 }
@@ -1565,23 +1571,23 @@ html {
 }
 
 .register-page__submit-button {
-  width: 211px;
-  height: 39px;
+  width: 100%;
+  max-width: 100%;
+  height: 52px;
   background-color: var(--color-primary);
   border: none;
-  border-radius: 10px;
-  margin: 20px auto 0;
+  border-radius: 12px;
+  margin: 40px 0 0 0;
   font-family: var(--font-manrope), sans-serif;
   font-weight: 600;
-  font-size: 19px;
-  line-height: 18px;
+  font-size: 18px;
+  line-height: 1.25;
   color: #FFFFFF;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.1s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  white-space: nowrap;
 }
 
 .register-page__submit-button:hover:not(:disabled) {
@@ -1615,11 +1621,11 @@ html {
 .register-page__footer-text {
   font-family: var(--font-manrope), sans-serif;
   font-weight: 400;
-  font-size: 11px;
-  line-height: 12px;
-  color: var(--color-text-muted);
+  font-size: 10px;
+  line-height: 1.4;
+  color: #FFFFFF;
   text-align: center;
-  margin: 20px 15px 20px 15px;
+  margin: 24px 0 0 0;
   padding: 0;
 }
 
@@ -1628,22 +1634,22 @@ html {
   border: none;
   padding: 0;
   margin: 0;
-  color: var(--color-text-muted);
+  color: #FFFFFF;
   text-decoration: underline;
   cursor: pointer;
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
   line-height: inherit;
-  transition: color 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
 .register-page__footer-link:hover {
-  color: var(--color-text);
+  opacity: 0.85;
 }
 
 .register-page__consent {
-  margin: 10px 0;
+  margin: 0;
 }
 
 .register-page__consent-label {
@@ -1654,8 +1660,8 @@ html {
   font-family: var(--font-manrope), sans-serif;
   font-weight: 400;
   font-size: 12px;
-  line-height: 16px;
-  color: var(--color-text-muted);
+  line-height: 1.35;
+  color: #FFFFFF;
 }
 
 .register-page__consent-checkbox {
@@ -1665,7 +1671,7 @@ html {
   min-height: 18px;
   margin: 0;
   padding: 0;
-  border: 2px solid #D9D9D9;
+  border: 2px solid rgba(236, 244, 242, 0.5);
   border-radius: 4px;
   background-color: transparent;
   cursor: pointer;
@@ -1682,8 +1688,8 @@ html {
 }
 
 .register-page__consent-checkbox:checked {
-  background-color: #001900;
-  border-color: #001900;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .register-page__consent-checkbox:checked::after {
@@ -1701,13 +1707,15 @@ html {
 }
 
 .register-page__consent-checkbox:focus {
-  outline: 2px solid #001900;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
 .register-page__consent-text {
   flex: 1;
-  line-height: 18px;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  color: #FFFFFF;
 }
 
 .register-page__consent-link {
@@ -1715,22 +1723,22 @@ html {
   border: none;
   padding: 0;
   margin: 0;
-  color: #D9D9D9;
+  color: #FFFFFF;
   text-decoration: underline;
   cursor: pointer;
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
   line-height: inherit;
-  transition: color 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
 .register-page__consent-link:hover {
-  color: #FFFFFF;
+  opacity: 0.85;
 }
 
 .register-page__consent-link:focus {
-  outline: 2px solid #001900;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -1738,29 +1746,28 @@ html {
 /* Responsive adjustments for register page */
 @media (max-width: 480px) {
   .register-page__container {
-    padding: 15px 12px;
+    padding: 0 12px;
   }
 
   .register-page__card {
     max-width: 100%;
-    margin: 0;
+    padding: 56px 20px 20px 20px;
   }
 
   .register-page__header {
-    padding: 0 16px;
-    margin-top: 15px;
-    margin-bottom: 20px;
+    padding: 0;
+    margin-bottom: 24px;
   }
 
   .register-page__title {
-    font-size: 20px;
-    line-height: 24px;
-    margin-bottom: 15px;
+    font-size: 24px;
+    line-height: 1.25;
+    margin-bottom: 12px;
   }
 
   .register-page__subtitle {
-    font-size: 9px;
-    line-height: 16px;
+    font-size: 13px;
+    line-height: 1.4;
   }
 
   .register-page__form {
@@ -1785,9 +1792,9 @@ html {
 
   .register-page__submit-button {
     width: 100%;
-    max-width: 211px;
+    max-width: 100%;
     font-size: 17px;
-    margin: 15px auto 0;
+    margin: 40px 0 0 0;
   }
 
   .register-page__consent {
@@ -1823,15 +1830,13 @@ html {
   }
 
   .register-page__back-button {
-    left: 12px;
-    top: 15px;
-    width: 35px;
-    height: 35px;
+    left: 0;
+    top: env(safe-area-inset-top, 0px);
   }
 
   .register-page__back-button-icon {
-    width: 35px;
-    height: 35px;
+    width: 32px;
+    height: 32px;
   }
 }
 

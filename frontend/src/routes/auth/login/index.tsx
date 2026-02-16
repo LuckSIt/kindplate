@@ -7,7 +7,7 @@ import { axiosInstance, tokenStorage } from "@/lib/axiosInstance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { notify } from "@/lib/notifications";
 import type { LoginForm } from "@/lib/types";
-import arrowBackIcon from "@/figma/arrow-back.svg";
+import { ArrowLeft } from "lucide-react";
 import { DocumentsModal } from "@/components/ui/documents-modal";
 import { authContext } from "@/lib/auth";
 
@@ -89,11 +89,7 @@ function RouteComponent() {
                         onClick={() => (window.history.length > 1 ? window.history.back() : navigate({ to: "/" }))}
                         aria-label="Назад"
                     >
-                        <img 
-                            src={arrowBackIcon} 
-                            alt="Назад" 
-                            className="login-page__back-button-icon"
-                        />
+                        <ArrowLeft className="login-page__back-button-icon" size={32} strokeWidth={2} />
                     </button>
                     {/* Header */}
                     <div className="login-page__header">

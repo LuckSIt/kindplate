@@ -5,7 +5,7 @@ import { customerRegisterSchema } from "@/lib/schema";
 import { axiosInstance, tokenStorage } from "@/lib/axiosInstance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { notify } from "@/lib/notifications";
-import arrowBackIcon from "@/figma/arrow-back.svg";
+import { ArrowLeft } from "lucide-react";
 import { DocumentsModal } from "@/components/ui/documents-modal";
 import { useState } from "react";
 
@@ -66,16 +66,12 @@ function RouteComponent() {
                         onClick={() => (window.history.length > 1 ? window.history.back() : navigate({ to: "/" }))}
                         aria-label="Назад"
                     >
-                        <img 
-                            src={arrowBackIcon} 
-                            alt="Назад" 
-                            className="register-page__back-button-icon"
-                        />
+                        <ArrowLeft className="register-page__back-button-icon" size={32} strokeWidth={2} />
                     </button>
                     {/* Header */}
                     <div className="register-page__header">
                         <h1 className="register-page__title">
-                            Регистрация пользователя
+                            Регистрация
                         </h1>
                         <p className="register-page__subtitle">
                                         Уже есть аккаунт?{" "}
@@ -97,14 +93,14 @@ function RouteComponent() {
                             {/* Name Field */}
                             <div className="register-page__field">
                                 <label className="register-page__field-label">
-                                                Ваше имя
+                                                Ваше ФИО
                                             </label>
                                 <div className="register-page__input-wrapper">
                                     <input
                                                 {...register("name")} 
                                                 type="text" 
                                         className="register-page__input"
-                                        placeholder="Введите ФИО"
+                                        placeholder="Иванов Иван Иванович"
                                             />
                                 </div>
                                         </div>
@@ -183,7 +179,7 @@ function RouteComponent() {
                                                 setIsDocumentsModalOpen(true);
                                             }}
                                         >
-                                            Политикой конфиденциальности
+                                            политикой конфиденциальности
                                         </button>
                                         , в целях регистрации на сайте и предоставления доступа к личному кабинету.
                                     </span>
@@ -208,7 +204,7 @@ function RouteComponent() {
                                     </form>
                                 </FormProvider>
 
-                    {/* Footer Text */}
+                    {/* Footer Text 
                     <p className="register-page__footer-text">
                         Продолжая, вы соглашаетесь с нашими условиями и{" "}
                         <button
@@ -218,7 +214,7 @@ function RouteComponent() {
                         >
                             политикой конфиденциальности
                         </button>
-                    </p>
+                    </p>*/}
                 </div>
             </div>
             
