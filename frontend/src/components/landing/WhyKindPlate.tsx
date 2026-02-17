@@ -23,7 +23,6 @@ export function WhyKindPlate() {
                 Почему KindPlate?
             </h3>
             <div className="px-4 pt-5 pb-5 mt-[25px]">
-                {/* Градиент и разметка как в «Для клиентов» / «Для бизнеса» */}
                 <div
                     className="relative mb-6"
                     style={{ width: "calc(100% + 32px)", marginLeft: -16, marginRight: -16 }}

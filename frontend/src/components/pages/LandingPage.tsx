@@ -129,7 +129,7 @@ export function LandingPage() {
 
     return (
         <div 
-            className="kp-landing w-full overflow-y-auto overflow-x-hidden"
+            className="kp-landing w-full overflow-y-auto"
             style={{ 
                 backgroundColor: '#111E42',
                 position: 'fixed',
@@ -636,8 +636,8 @@ export function LandingPage() {
                     </div>
                 </section>
 
-                {/* Почему KindPlate? */}
-                <section className="px-4 pb-[60px] overflow-x-hidden" style={{ paddingLeft: 16, paddingRight: 16 }}>
+                {/* Почему KindPlate? — overflow: visible, чтобы блюр пилюль не обрезался */}
+                <section className="px-4 pb-[60px] kp-landing-why-wrap" style={{ paddingLeft: 16, paddingRight: 16, overflow: 'visible' }}>
                     <WhyKindPlate />
                 </section>
 

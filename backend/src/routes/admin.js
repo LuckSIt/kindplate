@@ -128,6 +128,49 @@ adminRouter.get('/businesses', requireAdmin, asyncHandler(async (req, res) => {
     }
 }));
 
+// Отчёт по переводам: выручка по каждому бизнесу за периоды сб/вс/пн (к переводу в пн) и вт/ср/чт/пт (к переводу в пт)
+adminRouter.get('/transfer-report', requireAdmin, asyncHandler(async (req, res) => {
+    const columnsRes = await pool.query(`
+        SELECT column_name FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'orders'
+    `);
+    const orderCols = columnsRes.rows.map(r => r.column_name);
+    const hasModernSchema = orderCols.includes('total') && orderCols.includes('subtotal');
+    const totalField = hasModernSchema ? 'total' : (orderCols.includes('total_price') ? 'total_price' : null);
+    if (!totalField) {
+        throw new AppError('Неизвестная схема orders', 500);
+    }
+    const notCancelled = "status NOT IN ('draft', 'cancelled')";
+    const mondayCond = `(created_at::date >= (CURRENT_DATE - ((EXTRACT(DOW FROM CURRENT_DATE)::integer - 1 + 7) % 7) - 2)
+        AND created_at::date <= (CURRENT_DATE - ((EXTRACT(DOW FROM CURRENT_DATE)::integer - 1 + 7) % 7)))`;
+    const fridayCond = `(created_at::date >= (CURRENT_DATE - ((EXTRACT(DOW FROM CURRENT_DATE)::integer - 5 + 7) % 7) - 4)
+        AND created_at::date <= (CURRENT_DATE - ((EXTRACT(DOW FROM CURRENT_DATE)::integer - 5 + 7) % 7)))`;
+
+    const report = await pool.query(
+        `WITH rev AS (
+            SELECT business_id,
+                COALESCE(SUM(CASE WHEN ${mondayCond} THEN ${totalField} ELSE 0 END), 0) AS monday_transfer_revenue,
+                COALESCE(SUM(CASE WHEN ${fridayCond} THEN ${totalField} ELSE 0 END), 0) AS friday_transfer_revenue
+            FROM orders
+            WHERE ${notCancelled}
+            GROUP BY business_id
+        )
+        SELECT u.id, u.name, u.email,
+               COALESCE(rev.monday_transfer_revenue, 0)::float AS monday_transfer_revenue,
+               COALESCE(rev.friday_transfer_revenue, 0)::float AS friday_transfer_revenue
+        FROM users u
+        LEFT JOIN rev ON rev.business_id = u.id
+        WHERE u.is_business = true
+        ORDER BY u.name`,
+        []
+    );
+
+    res.json({
+        success: true,
+        report: report.rows,
+    });
+}));
+
 // Получить статистику по платформе (только для админа)
 adminRouter.get('/stats', requireAdmin, asyncHandler(async (req, res) => {
     // Количество пользователей

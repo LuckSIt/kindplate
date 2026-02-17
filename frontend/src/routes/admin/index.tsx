@@ -47,6 +47,14 @@ function AdminPanel() {
         enabled: !!user && user.role === 'admin',
     });
 
+    // Отчёт по переводам: выручка по периодам сб/вс/пн и вт/ср/чт/пт для составления списка переводов
+    const { data: transferReportData, isLoading: transferReportLoading } = useQuery({
+        queryKey: ["admin", "transfer-report"],
+        queryFn: () => axiosInstance.get<{ success: boolean; report: Array<{ id: number; name: string; email: string; monday_transfer_revenue: number; friday_transfer_revenue: number }> }>("/admin/transfer-report"),
+        enabled: !!user && user.role === 'admin',
+    });
+    const transferReport = transferReportData?.data?.report ?? [];
+
     // Мутация для создания бизнеса
     const createBusinessMutation = useMutation({
         mutationFn: (data) => axiosInstance.post("/admin/register-business", data),
@@ -54,6 +62,7 @@ function AdminPanel() {
             notify.success("Успешно", "Бизнес-аккаунт создан");
             queryClient.invalidateQueries({ queryKey: ["admin", "businesses"] });
             queryClient.invalidateQueries({ queryKey: ["admin", "stats"] });
+            queryClient.invalidateQueries({ queryKey: ["admin", "transfer-report"] });
             setShowForm(false);
             setFormData({
                 email: "",
@@ -77,6 +86,7 @@ function AdminPanel() {
             notify.success("Успешно", "Бизнес удален");
             queryClient.invalidateQueries({ queryKey: ["admin", "businesses"] });
             queryClient.invalidateQueries({ queryKey: ["admin", "stats"] });
+            queryClient.invalidateQueries({ queryKey: ["admin", "transfer-report"] });
         },
         onError: (error: any) => {
             const message = error.response?.data?.message || "Ошибка удаления";
@@ -298,6 +308,50 @@ function AdminPanel() {
                         </form>
                     </div>
                 )}
+
+                {/* Отчёт по переводам: кому сколько переводить (пн — сб/вс/пн, пт — вт/ср/чт/пт) */}
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-8">
+                    <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                            Отчёт по переводам
+                        </h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            Выручка по периодам: к переводу в понедельник (сб/вс/пн), к переводу в пятницу (вт/ср/чт/пт)
+                        </p>
+                    </div>
+                    {transferReportLoading ? (
+                        <div className="p-8 text-center">
+                            <div className="w-5 h-5 animate-spin mx-auto" style={{ border: '2px solid rgba(0, 25, 0, 0.3)', borderTopColor: '#001900', borderRadius: '50%' }}></div>
+                        </div>
+                    ) : transferReport.length === 0 ? (
+                        <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                            Нет данных
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-gray-50 dark:bg-gray-900/50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Название</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">К переводу в пн (сб/вс/пн)</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">К переводу в пт (вт/ср/чт/пт)</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                    {transferReport.map((row) => (
+                                        <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/30">
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{row.name}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{row.email}</td>
+                                            <td className="px-6 py-4 text-sm text-right font-medium text-gray-900 dark:text-white">{Number(row.monday_transfer_revenue || 0).toFixed(0)}₽</td>
+                                            <td className="px-6 py-4 text-sm text-right font-medium text-gray-900 dark:text-white">{Number(row.friday_transfer_revenue || 0).toFixed(0)}₽</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
 
                 {/* Список бизнесов */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">

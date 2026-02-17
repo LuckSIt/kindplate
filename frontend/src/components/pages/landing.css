@@ -92,9 +92,9 @@ body .kp-landing .landing-clients-desc {
   color: #ffffff !important;
 }
 
-/* Без горизонтального скролла; блюр в блоках 01/02/03 — через .kp-landing-steps-section */
+/* overflow-x не на всём лендинге, чтобы блюр в «Почему KindPlate?» не обрезался; секции с выездом задают overflow-x сами */
 .kp-landing {
-  overflow-x: hidden !important;
+  overflow-x: visible;
 }
 
 /* Блок шагов: градиент внутри контейнера */
@@ -132,9 +132,27 @@ body .kp-landing .landing-clients-desc {
   z-index: 1;
 }
 
-/* «Почему KindPlate?» — два зерна: сверху слева и снизу справа, градиент внутри блока (без выхода за края) */
+/* «Почему KindPlate?» — градиент в ::before больше карточки, overflow: visible, чтобы свечение не обрезалось */
 .kp-landing .kp-landing-why-two-grains.grain-card {
-  background: radial-gradient(farthest-corner at 10% 20%, #D0FFC7 0%, transparent 30%), radial-gradient(farthest-corner at 90% 80%, #06a188 0%, #111E42 30%) !important;
+  background: #111e42 !important;
+  overflow: visible !important;
+  position: relative;
+}
+.kp-landing .kp-landing-why-two-grains.grain-card::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: -30%;
+  top: -30%;
+  width: 160%;
+  height: 160%;
+  background: radial-gradient(farthest-corner at 30% 30%, #D0FFC7 -40%, transparent 30%),
+              radial-gradient(farthest-corner at 70% 70%, #06a188 -10%, transparent 30%);
+  pointer-events: none;
+}
+.kp-landing .kp-landing-why-two-grains.grain-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Строка шага: выравнивание цифры и текста */

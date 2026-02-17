@@ -1110,45 +1110,42 @@ function RouteComponent() {
 
                         {!areStatsLoading && !areStatsError && statsData?.data?.stats && (
                             <div className="panel-page__stats">
-                                {/* Daily Stats Section */}
+                                {/* К переводу в понедельник (сб/вс/пн), отправка пн 23:50 */}
                                 <div className="panel-page__stats-section">
                                     <h3 className="panel-page__stats-section-title">
                                         <span></span>
-                                        Статистика за сегодня
+                                        К переводу в понедельник (сб/вс/пн)
                                     </h3>
                                     <div className="panel-page__stats-grid">
-                                        {/* Today Revenue */}
                                         <div className="panel-page__stat-card panel-page__stat-card--today-revenue">
                                             <div className="panel-page__stat-icon"></div>
-                                            <div className="panel-page__stat-value">{statsData.data.stats.today_revenue || 0}₽</div>
-                                            <div className="panel-page__stat-label">Выручка за день</div>
+                                            <div className="panel-page__stat-value">{statsData.data.stats.monday_transfer_revenue ?? 0}₽</div>
+                                            <div className="panel-page__stat-label">Выручка</div>
                                         </div>
-
-                                        {/* Today Sold */}
                                         <div className="panel-page__stat-card panel-page__stat-card--today-sold">
                                             <div className="panel-page__stat-icon"></div>
-                                            <div className="panel-page__stat-value">{statsData.data.stats.today_sold || 0}</div>
-                                            <div className="panel-page__stat-label">Продано за день</div>
+                                            <div className="panel-page__stat-value">{statsData.data.stats.monday_transfer_sold ?? 0}</div>
+                                            <div className="panel-page__stat-label">Продано</div>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Last 3 days */}
+                                {/* К переводу в пятницу (вт/ср/чт/пт), отправка пт вечером */}
                                 <div className="panel-page__stats-section">
                                     <h3 className="panel-page__stats-section-title">
                                         <span></span>
-                                        За последние 3 дня
+                                        К переводу в пятницу (вт/ср/чт/пт)
                                     </h3>
                                     <div className="panel-page__stats-grid">
                                         <div className="panel-page__stat-card panel-page__stat-card--last3days-revenue">
                                             <div className="panel-page__stat-icon"></div>
-                                            <div className="panel-page__stat-value">{statsData.data.stats.last3days_revenue ?? 0}₽</div>
-                                            <div className="panel-page__stat-label">Выручка за 3 дня</div>
+                                            <div className="panel-page__stat-value">{statsData.data.stats.friday_transfer_revenue ?? 0}₽</div>
+                                            <div className="panel-page__stat-label">Выручка</div>
                                         </div>
                                         <div className="panel-page__stat-card panel-page__stat-card--last3days-sold">
                                             <div className="panel-page__stat-icon"></div>
-                                            <div className="panel-page__stat-value">{statsData.data.stats.last3days_sold ?? 0}</div>
-                                            <div className="panel-page__stat-label">Продано за 3 дня</div>
+                                            <div className="panel-page__stat-value">{statsData.data.stats.friday_transfer_sold ?? 0}</div>
+                                            <div className="panel-page__stat-label">Продано</div>
                                         </div>
                                     </div>
                                 </div>

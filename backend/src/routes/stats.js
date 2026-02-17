@@ -180,67 +180,70 @@ statsRouter.get("/business", businessOnly, async (req, res) => {
             }
         }
 
-        // Статистика за сегодня (без отмененных заказов)
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
-        
-        const todayRevenue = await pool.query(
-            `SELECT COALESCE(SUM(${totalField}), 0) as total 
-             FROM orders 
-             WHERE business_id=$1 AND ${notCancelledCondition} AND DATE(created_at) = CURRENT_DATE`,
+        // Периоды для переводов: сб/вс/пн → перевод в понедельник 23:50; вт/ср/чт/пт → перевод в пятницу 23:50
+        // В PostgreSQL DOW: 0=воскресенье, 1=понедельник, ..., 6=суббота
+        const mondayPeriodCondition = `(created_at::date >= (CURRENT_DATE - ((EXTRACT(DOW FROM CURRENT_DATE)::integer - 1 + 7) % 7) - 2)
+             AND created_at::date <= (CURRENT_DATE - ((EXTRACT(DOW FROM CURRENT_DATE)::integer - 1 + 7) % 7)))`;
+        const fridayPeriodCondition = `(created_at::date >= (CURRENT_DATE - ((EXTRACT(DOW FROM CURRENT_DATE)::integer - 5 + 7) % 7) - 4)
+             AND created_at::date <= (CURRENT_DATE - ((EXTRACT(DOW FROM CURRENT_DATE)::integer - 5 + 7) % 7)))`;
+
+        // Выручка к переводу в понедельник (сб, вс, пн)
+        const mondayTransferRevenue = await pool.query(
+            `SELECT COALESCE(SUM(${totalField}), 0) as total
+             FROM orders
+             WHERE business_id=$1 AND ${notCancelledCondition} AND ${mondayPeriodCondition}`,
             [business_id]
         );
 
-        let todaySold = 0;
+        let mondayTransferSold = 0;
         try {
-            const todaySoldResult = await pool.query(
+            const r = await pool.query(
                 `SELECT COALESCE(SUM(oi.quantity), 0) as total_sold
                  FROM order_items oi
                  JOIN orders o ON oi.order_id = o.id
-                 WHERE o.business_id=$1 AND o.${notCancelledCondition} AND DATE(o.created_at) = CURRENT_DATE`,
+                 WHERE o.business_id=$1 AND o.${notCancelledCondition} AND ${mondayPeriodCondition.replace('created_at', 'o.created_at')}`,
                 [business_id]
             );
-            todaySold = parseInt(todaySoldResult.rows[0].total_sold) || 0;
-        } catch (todaySoldError) {
-            console.log("⚠️ Ошибка при подсчете проданных единиц за сегодня:", todaySoldError.message);
+            mondayTransferSold = parseInt(r.rows[0].total_sold) || 0;
+        } catch (e) {
             if (orderCols.includes('quantity')) {
-                const todaySoldResultOld = await pool.query(
+                const r2 = await pool.query(
                     `SELECT COALESCE(SUM(quantity), 0) as total_sold
                      FROM orders
-                     WHERE business_id=$1 AND ${notCancelledCondition} AND DATE(created_at) = CURRENT_DATE`,
+                     WHERE business_id=$1 AND ${notCancelledCondition} AND ${mondayPeriodCondition}`,
                     [business_id]
                 );
-                todaySold = parseInt(todaySoldResultOld.rows[0].total_sold) || 0;
+                mondayTransferSold = parseInt(r2.rows[0].total_sold) || 0;
             }
         }
 
-        // Статистика за последние 3 дня (сегодня + вчера + позавчера), без отмененных
-        const last3daysRevenue = await pool.query(
+        // Выручка к переводу в пятницу (вт, ср, чт, пт)
+        const fridayTransferRevenue = await pool.query(
             `SELECT COALESCE(SUM(${totalField}), 0) as total
              FROM orders
-             WHERE business_id=$1 AND ${notCancelledCondition} AND created_at >= (CURRENT_DATE - INTERVAL '2 days')::date`,
+             WHERE business_id=$1 AND ${notCancelledCondition} AND ${fridayPeriodCondition}`,
             [business_id]
         );
 
-        let last3daysSold = 0;
+        let fridayTransferSold = 0;
         try {
-            const last3daysSoldResult = await pool.query(
+            const r = await pool.query(
                 `SELECT COALESCE(SUM(oi.quantity), 0) as total_sold
                  FROM order_items oi
                  JOIN orders o ON oi.order_id = o.id
-                 WHERE o.business_id=$1 AND o.${notCancelledCondition} AND o.created_at >= (CURRENT_DATE - INTERVAL '2 days')::date`,
+                 WHERE o.business_id=$1 AND o.${notCancelledCondition} AND ${fridayPeriodCondition.replace('created_at', 'o.created_at')}`,
                 [business_id]
             );
-            last3daysSold = parseInt(last3daysSoldResult.rows[0].total_sold) || 0;
+            fridayTransferSold = parseInt(r.rows[0].total_sold) || 0;
         } catch (e) {
             if (orderCols.includes('quantity')) {
-                const r = await pool.query(
+                const r2 = await pool.query(
                     `SELECT COALESCE(SUM(quantity), 0) as total_sold
                      FROM orders
-                     WHERE business_id=$1 AND ${notCancelledCondition} AND created_at >= (CURRENT_DATE - INTERVAL '2 days')::date`,
+                     WHERE business_id=$1 AND ${notCancelledCondition} AND ${fridayPeriodCondition}`,
                     [business_id]
                 );
-                last3daysSold = parseInt(r.rows[0].total_sold) || 0;
+                fridayTransferSold = parseInt(r2.rows[0].total_sold) || 0;
             }
         }
 
@@ -334,10 +337,10 @@ statsRouter.get("/business", businessOnly, async (req, res) => {
                 completed_orders: parseInt(completedOrders.rows[0].count),
                 total_revenue: parseFloat(totalRevenue.rows[0].total),
                 total_sold: totalSold,
-                today_revenue: parseFloat(todayRevenue.rows[0].total),
-                today_sold: todaySold,
-                last3days_revenue: parseFloat(last3daysRevenue.rows[0].total),
-                last3days_sold: last3daysSold,
+                monday_transfer_revenue: parseFloat(mondayTransferRevenue.rows[0].total),
+                monday_transfer_sold: mondayTransferSold,
+                friday_transfer_revenue: parseFloat(fridayTransferRevenue.rows[0].total),
+                friday_transfer_sold: fridayTransferSold,
                 unique_customers: parseInt(uniqueCustomers.rows[0].count),
                 avg_check: Math.round(parseFloat(avgCheck.rows[0].avg)),
                 top_offers: topOffers,
