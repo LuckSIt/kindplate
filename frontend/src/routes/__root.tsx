@@ -328,14 +328,30 @@ function RootRoute() {
                                 >
                                     <div className="mx-auto px-4 flex items-center justify-between w-full" style={{ height: '52px' }}>
                                         <TabLink to="/home" label="Карта" icon={(active) => (
-                                            <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? '#098771' : '#8a8a8a'}>
-                                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                                            </svg>
+                                            active ? (
+                                                <div className="w-[22px] h-[22px] bg-[#098771] rounded-full flex items-center justify-center">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff">
+                                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                                    </svg>
+                                                </div>
+                                            ) : (
+                                                <svg width="22" height="22" viewBox="0 0 24 24" fill="#8a8a8a">
+                                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                                </svg>
+                                            )
                                         )} />
                                         <TabLink to="/list" label="Список" icon={(active) => (
-                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#098771' : '#8a8a8a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M4 6h16M4 12h16M4 18h16" />
-                                            </svg>
+                                            active ? (
+                                                <div className="w-[22px] h-[22px] bg-[#098771] rounded-full flex items-center justify-center">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M4 6h16M4 12h16M4 18h16" />
+                                                    </svg>
+                                                </div>
+                                            ) : (
+                                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8a8a8a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M4 6h16M4 12h16M4 18h16" />
+                                                </svg>
+                                            )
                                         )} />
                                         <TabLink to="/account" label="Профиль" icon={(active) => (
                                             active ? (

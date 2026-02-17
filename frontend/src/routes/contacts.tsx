@@ -39,13 +39,13 @@ function ContactsPage() {
 
                 <div className="contacts-page__block">
                     <div className="contacts-page__label">Горячая линия:</div>
-                    <a href="tel:+79315553322" className="contacts-page__value">8 (931) 555-33-22</a>
+                    <a href="tel:+79990281207" className="contacts-page__value">8(999)028-12-07</a>
                 </div>
 
                 <div className="contacts-page__block">
                     <div className="contacts-page__label">Телеграмм канал:</div>
-                    <a href="https://t.me/kindplatesupportbot" target="_blank" rel="noopener noreferrer" className="contacts-page__value contacts-page__link">
-                        t.me/kindplatesupportbot
+                    <a href="https://t.me/kindplate" target="_blank" rel="noopener noreferrer" className="contacts-page__value contacts-page__link">
+                        t.me/kindplate
                     </a>
                 </div>
 

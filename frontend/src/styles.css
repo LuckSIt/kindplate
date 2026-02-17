@@ -256,7 +256,7 @@ html.landing-active #app {
 /* Mobile typography: нормальные размеры по умолчанию (без 33px — из-за него был наезд текста в карточках и списках) */
 h1:not(.cart-page__header-name):not(.payment-page__header-name) { font-size: 32px !important; line-height: 1.25 !important; font-weight: 700; color: var(--color-text); }
 h2:not(.payment-page__order-business) { font-size: 20px !important; line-height: 1.3 !important; font-weight: 700; color: var(--color-text); }
-h3:not(.font-montserrat-alt):not(.businesses-list-page__business-name):not(.vendor-page__offer-name):not(.cart-page__product-name) { font-size: 26px !important; line-height: 1.25 !important; font-weight: 600; color: var(--color-text); }
+h3:not(.font-montserrat-alt):not(.businesses-list-page__business-name):not(.vendor-page__offer-name):not(.cart-page__product-name):not(.panel-page__offer-title):not(.panel-page__order-title) { font-size: 26px !important; line-height: 1.25 !important; font-weight: 600; color: var(--color-text); }
 p:not(.font-montserrat-alt):not(.font-ramona):not(.landing-hero-subtitle):not(.kp-landing-footer-legal):not(.login-page__subtitle):not(.login-page__footer-text):not(.register-page__subtitle):not(.register-page__footer-text),
 span:not(.font-montserrat-alt):not(.font-ramona):not(.kp-landing-why-pill-text):not(.landing-hero-accent):not(.landing-hero-text):not(.phone-quantity-value):not(.landing-step-num):not(.step-num):not(.kp-landing-footer-card-text):not(.phone-card-badge):not(.phone-card-old-price):not(.phone-card-price):not(.register-page__consent-text),
 li:not(.font-montserrat-alt):not(.font-ramona) {
@@ -2011,8 +2011,8 @@ html {
 
 .businesses-list-page__search-icon {
   flex-shrink: 0;
-  width: 29px;
-  height: 29px;
+  width: 22px;
+  height: 22px;
   margin-left: 4px;
 }
 
@@ -2200,16 +2200,16 @@ html {
 .businesses-list-page__available-title {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 13px;
-  line-height: 18px;
+  font-size: 11px;
+  line-height: 1.3;
   color: #FFFFFF;
 }
 
 .businesses-list-page__available-count {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 15px;
-  line-height: 16px;
+  font-size: 13px;
+  line-height: 1.3;
   background: linear-gradient(90deg, rgba(219, 126, 47, 1) 0%, rgba(245, 251, 162, 1) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -2276,10 +2276,10 @@ html {
 
 .businesses-list-page__favorite-button {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 31px;
-  height: 31px;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
   background: rgba(16, 23, 42, 0.74);
   border: none;
   border-radius: 50%;
@@ -2292,130 +2292,148 @@ html {
 }
 
 .businesses-list-page__favorite-button svg {
-  width: 20px;
-  height: 20px;
+  width: 14px;
+  height: 14px;
   display: block;
 }
 
 .businesses-list-page__business-info {
-  padding: 8px 12px 10px;
+  padding: 8px 10px 10px;
 }
 
 .businesses-list-page__business-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 3px;
+  gap: 8px;
+  margin-bottom: 4px;
+  min-height: 0;
+}
+
+.businesses-list-page__business-header > div:first-child {
+  min-width: 0;
+  flex: 1;
 }
 
 .businesses-list-page__business-name {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 20px;
-  line-height: 13px;
+  font-size: 15px;
+  line-height: 1.25;
   color: #FFFFFF;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .businesses-list-page__business-type {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 11px;
-  color: #FFFFFF;
-  margin: 0;
+  font-size: 10px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 1px 0 0 0;
 }
 
 .businesses-list-page__rating {
-  min-width: 44px;
-  height: 22px;
+  min-width: 36px;
+  height: 18px;
   background-color: #B87C47;
   border: 1px solid #8A5A30;
-  border-radius: 8px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 0 6px;
+  gap: 3px;
+  padding: 0 4px;
+  flex-shrink: 0;
 }
 
 .businesses-list-page__rating svg {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   flex-shrink: 0;
 }
 
 .businesses-list-page__rating span {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 11px;
-  line-height: 14px;
+  font-size: 10px;
+  line-height: 1;
   color: #FFA500;
 }
 
 .businesses-list-page__header-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .businesses-list-page__business-meta {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   margin-bottom: 0;
 }
 
 .businesses-list-page__business-meta-item {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 9px;
-  line-height: 12px;
-  color: #FFFFFF;
+  font-size: 8px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .businesses-list-page__business-meta-item svg {
-  width: 14px;
-  height: 14px;
+  width: 11px;
+  height: 11px;
   flex-shrink: 0;
 }
 
 .businesses-list-page__business-offers {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 13px;
+  gap: 3px;
+  margin-bottom: 10px;
 }
 
 .businesses-list-page__offer-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
 }
 
 .businesses-list-page__offer-name {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 11px;
-  line-height: 14px;
+  font-size: 10px;
+  line-height: 1.3;
   color: #FFFFFF;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .businesses-list-page__offer-prices {
   display: flex;
   flex-direction: row;
   align-items: baseline;
-  gap: 8px;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .businesses-list-page__offer-price-old {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 11px;
-  line-height: 18px;
+  font-size: 10px;
+  line-height: 1.2;
   color: #767676 !important;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   text-decoration: none;
@@ -2435,18 +2453,18 @@ html {
 .businesses-list-page__offer-price {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 13px;
-  line-height: 18px;
+  font-size: 11px;
+  line-height: 1.2;
   color: #FFFFFF;
 }
 
 .businesses-list-page__offer-more {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 9px;
-  line-height: 12px;
-  color: #E3E3E3;
-  margin-top: 5px;
+  font-size: 8px;
+  line-height: 1.2;
+  color: rgba(227, 227, 227, 0.9);
+  margin-top: 4px;
 }
 
 .businesses-list-page__business-divider {
@@ -2509,8 +2527,8 @@ html {
 }
 
 .businesses-list-page__nav-button svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   stroke: #FFFFFF;
 }
 
@@ -7316,14 +7334,14 @@ div.font-montserrat-alt,
 }
 
 .panel-page__header {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .panel-page__header-content {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .panel-page__header-icon {
@@ -7334,23 +7352,24 @@ div.font-montserrat-alt,
 .panel-page__header-title {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 24px;
-  line-height: 30px;
+  font-size: 18px;
+  line-height: 1.25;
   color: #FFFFFF;
   margin: 0;
 }
 
 .panel-page__back-button {
-  width: 59px;
-  height: 59px;
+  width: 52px;
+  height: 52px;
   background-color: #D9D9D9;
-  border-radius: 15px;
+  border-radius: 14px;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
+  transition: opacity 0.2s ease;
 }
 
 .panel-page__back-button:hover {
@@ -7358,40 +7377,40 @@ div.font-montserrat-alt,
 }
 
 .panel-page__back-button-icon {
-  width: 39px;
-  height: 39px;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
 }
 
 .panel-page__tabs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
 }
 
 .panel-page__tab {
-  padding: 12px 8px;
-  border-radius: 12px;
+  padding: 10px 6px;
+  border-radius: 10px;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 14px;
-  line-height: 18px;
-  background-color: rgba(255, 255, 255, 0.05);
+  font-size: 12px;
+  line-height: 1.25;
+  background-color: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: center;
 }
 
 .panel-page__tab:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
 }
 
 .panel-page__tab--active {
-  background-color: #001900;
-  border-color: #001900;
+  background-color: #098771;
+  border-color: #098771;
   color: #FFFFFF;
 }
 
@@ -7487,7 +7506,7 @@ div.font-montserrat-alt,
 .panel-page__orders-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .panel-page__orders-hint {
@@ -7500,27 +7519,45 @@ div.font-montserrat-alt,
 }
 
 .panel-page__offer-card {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  padding: 14px;
+  background-color: #2B344D;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  padding: 12px 14px;
   transition: all 0.2s ease;
 }
 
 .panel-page__offer-card:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(43, 52, 77, 0.9);
   border-color: rgba(255, 255, 255, 0.2);
 }
 
 .panel-page__offer-card--inactive {
-  opacity: 0.6;
-  background-color: rgba(255, 255, 255, 0.03);
+  opacity: 0.65;
+  background-color: rgba(43, 52, 77, 0.6);
 }
 
 .panel-page__offer-content {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: 12px;
+}
+
+.panel-page__offer-info {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 380px) {
+  .panel-page__offer-content {
+    flex-wrap: wrap;
+  }
+  .panel-page__offer-content .panel-page__offer-actions {
+    flex: 1 1 100%;
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    justify-content: flex-start;
+  }
 }
 
 .panel-page__offer-photo {
@@ -7529,9 +7566,9 @@ div.font-montserrat-alt,
 
 .panel-page__offer-photo-container {
   position: relative;
-  width: 96px;
-  height: 96px;
-  border-radius: 10px;
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -7561,17 +7598,17 @@ div.font-montserrat-alt,
 .panel-page__offer-photo-overlay-text {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 400;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 10px;
+  line-height: 1.2;
   color: #FFFFFF;
 }
 
 .panel-page__offer-photo-placeholder {
-  width: 96px;
-  height: 96px;
-  border-radius: 10px;
-  background-color: rgba(0, 25, 0, 0.3);
-  border: 2px dashed rgba(255, 255, 255, 0.3);
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  background-color: rgba(9, 135, 113, 0.2);
+  border: 2px dashed rgba(255, 255, 255, 0.25);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -7581,117 +7618,142 @@ div.font-montserrat-alt,
 }
 
 .panel-page__offer-photo-placeholder:hover {
-  background-color: rgba(0, 25, 0, 0.5);
-  border-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(9, 135, 113, 0.35);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .panel-page__offer-photo-placeholder-icon {
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .panel-page__offer-photo-placeholder-text {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 400;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 10px;
+  line-height: 1.2;
   color: rgba(255, 255, 255, 0.8);
 }
 
-.panel-page__offer-info {
-  flex: 1;
-  min-width: 0;
-}
-
 .panel-page__offer-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 6px 8px;
   margin-bottom: 8px;
-  flex-wrap: wrap;
+  align-items: start;
 }
 
 .panel-page__offer-title {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 18px;
-  line-height: 24px;
+  font-size: 15px;
+  line-height: 1.3;
   color: #FFFFFF;
   margin: 0;
+  grid-column: 1 / -1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .panel-page__offer-discount {
+  display: inline-block;
+  width: max-content;
+  max-width: 100%;
   background: linear-gradient(to right, #FF6B35, #FF8C69);
   color: #FFFFFF;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 16px;
-  padding: 4px 8px;
-  border-radius: 12px;
+  font-size: 8px;
+  line-height: 1;
+  padding: 1px 2px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.panel-page__offer-status-row {
+  margin-bottom: 8px;
 }
 
 .panel-page__offer-status {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  border-radius: 12px;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
   font-size: 12px;
-  line-height: 16px;
-  border: none;
+  line-height: 1.2;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
   transition: all 0.2s ease;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .panel-page__offer-status--active {
-  background-color: rgba(0, 25, 0, 0.3);
+  background-color: rgba(9, 135, 113, 0.35);
+  border-color: rgba(9, 135, 113, 0.6);
   color: #FFFFFF;
 }
 
 .panel-page__offer-status:hover {
-  opacity: 0.8;
+  opacity: 0.9;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.panel-page__offer-status--active:hover {
+  background-color: rgba(9, 135, 113, 0.5);
 }
 
 .panel-page__offer-status-icon {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .panel-page__offer-description {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 20px;
-  color: rgba(255, 255, 255, 0.8);
-  margin: 0 0 12px 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 8px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
 }
 
 .panel-page__offer-price {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
 .panel-page__offer-price-current {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 700;
-  font-size: 20px;
-  line-height: 24px;
-  color: #001900;
+  font-size: 15px;
+  line-height: 1.2;
+  color: #FFFFFF;
 }
 
 .panel-page__offer-price-old {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 11px;
+  line-height: 1.2;
   color: rgba(255, 255, 255, 0.5);
   text-decoration: line-through;
 }
@@ -7702,26 +7764,78 @@ div.font-montserrat-alt,
   gap: 6px;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 20px;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  margin-bottom: 8px;
+}
+
+.panel-page__offer-time span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.panel-page__offer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.panel-page__offer-quantity-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.panel-page__offer-quantity-row .panel-page__offer-action-button {
+  width: 28px;
+  height: 28px;
+}
+
+.panel-page__offer-quantity-row .panel-page__offer-action-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.panel-page__offer-bottom .panel-page__offer-quantity-value {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.2;
+  color: #FFFFFF;
+  min-width: 1.2em;
+  text-align: center;
+}
+
+.panel-page__offer-bottom .panel-page__offer-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 0;
 }
 
 .panel-page__offer-time-icon {
-  width: 16px;
-  height: 16px;
-  color: #001900;
+  width: 12px;
+  height: 12px;
+  color: #098771;
+  flex-shrink: 0;
 }
 
 .panel-page__offer-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .panel-page__offer-action-button {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background-color: transparent;
@@ -7730,7 +7844,7 @@ div.font-montserrat-alt,
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .panel-page__offer-action-button:hover:not(:disabled) {
@@ -7750,14 +7864,14 @@ div.font-montserrat-alt,
 }
 
 .panel-page__offer-action-button--increase:hover:not(:disabled) {
-  background-color: rgba(0, 25, 0, 0.3);
-  border-color: #001900;
-  color: #001900;
+  background-color: rgba(9, 135, 113, 0.3);
+  border-color: #098771;
+  color: #DEF4EE;
 }
 
 .panel-page__offer-action-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 .panel-page__offer-quantity {
@@ -7765,32 +7879,32 @@ div.font-montserrat-alt,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  padding: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
+  min-width: 44px;
+  padding: 4px 6px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
 }
 
 .panel-page__offer-quantity-label {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 400;
-  font-size: 12px;
-  line-height: 14px;
+  font-size: 9px;
+  line-height: 1.2;
   color: rgba(255, 255, 255, 0.6);
 }
 
 .panel-page__offer-quantity-value {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 13px;
+  line-height: 1.2;
   color: #FFFFFF;
 }
 
 .panel-page__add-button-container {
   display: flex;
   justify-content: center;
-  margin-top: 32px;
+  margin-top: 24px;
 }
 
 .panel-page__add-button {
@@ -7798,119 +7912,121 @@ div.font-montserrat-alt,
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 16px 24px;
-  background-color: #D9D9D9;
+  padding: 12px 20px;
+  background-color: #098771;
   border: none;
-  border-radius: 15px;
+  border-radius: 12px;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 18px;
-  line-height: 22px;
-  color: #000000;
+  font-size: 14px;
+  line-height: 1.25;
+  color: #FFFFFF;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .panel-page__add-button:hover {
   opacity: 0.9;
-  transform: translateY(-1px);
+  background-color: #0a9f7a;
 }
 
 .panel-page__add-button-icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
 }
 
 /* Orders Styles */
 .panel-page__order-card {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  padding: 14px;
+  background-color: #2B344D;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 12px;
 }
 
 .panel-page__order-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 16px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .panel-page__order-id {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 11px;
+  line-height: 1.3;
   color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .panel-page__order-title {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 20px;
-  line-height: 26px;
+  font-size: 15px;
+  line-height: 1.25;
   color: #FFFFFF;
-  margin: 0 0 4px 0;
+  margin: 0 0 2px 0;
 }
 
 .panel-page__order-customer {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 1.3;
   color: rgba(255, 255, 255, 0.8);
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .panel-page__order-status {
-  padding: 6px 12px;
-  border-radius: 12px;
+  padding: 4px 8px;
+  border-radius: 8px;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 11px;
+  line-height: 1.2;
   background-color: rgba(255, 255, 255, 0.1);
   color: #FFFFFF;
+  flex-shrink: 0;
 }
 
 .panel-page__order-details {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .panel-page__order-detail-card {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 8px 10px;
 }
 
 .panel-page__order-detail-label {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 400;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 10px;
+  line-height: 1.3;
   color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .panel-page__order-detail-code {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 700;
-  font-size: 24px;
-  line-height: 30px;
-  color: #001900;
+  font-size: 18px;
+  line-height: 1.2;
+  color: #FFFFFF;
   letter-spacing: 0.05em;
 }
 
 .panel-page__order-detail-time {
   font-family: 'Montserrat Alternates', sans-serif;
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 22px;
-  color: #001900;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.25;
+  color: #FFFFFF;
 }
 
 .panel-page__order-summary {

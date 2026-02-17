@@ -150,7 +150,7 @@ function ListPageComponent() {
             <div className="businesses-list-page__green-header">
                 <div className="businesses-list-page__search-container">
                     <div className="businesses-list-page__search">
-                        <svg className="businesses-list-page__search-icon" width="29" height="29" viewBox="0 0 24 24" fill="none">
+                        <svg className="businesses-list-page__search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
                             <path d="M19.6 21L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L21 19.6L19.6 21ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z" fill="#1D1B20"/>
                         </svg>
                         <input
@@ -258,7 +258,7 @@ function BusinessCard({ business, image, onClick }: BusinessCardProps) {
                 className="businesses-list-page__favorite-button"
                 aria-label="Добавить в избранное"
             >
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                     <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5C22 12.27 18.6 15.36 13.45 20.03L12 21.35Z" fill="none" stroke="white" strokeWidth="1.6"/>
                 </svg>
             </button>
@@ -274,7 +274,7 @@ function BusinessCard({ business, image, onClick }: BusinessCardProps) {
                     <div className="businesses-list-page__header-right">
                         <div className="businesses-list-page__business-meta">
                             <div className="businesses-list-page__business-meta-item">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CCFF99" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#CCFF99" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                                     <circle cx="12" cy="10" r="3"/>
                                 </svg>
@@ -282,7 +282,7 @@ function BusinessCard({ business, image, onClick }: BusinessCardProps) {
                             </div>
                             {(business as any)?.working_hours && (
                                 <div className="businesses-list-page__business-meta-item">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CCFF99" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#CCFF99" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <circle cx="12" cy="12" r="10"/>
                                         <path d="M12 6v6l4 2"/>
                                     </svg>
@@ -292,7 +292,7 @@ function BusinessCard({ business, image, onClick }: BusinessCardProps) {
                         </div>
 
                         <div className="businesses-list-page__rating">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFA500">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="#FFA500">
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                             </svg>
                             <span>{business.rating || 4.8}</span>

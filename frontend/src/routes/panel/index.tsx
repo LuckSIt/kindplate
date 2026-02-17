@@ -297,6 +297,7 @@ function OfferSummary({
     const discount = original_price && discounted_price 
         ? Math.round((1 - discounted_price / original_price) * 100) 
         : 0;
+    const timeStr = (t: string) => (t && t.length >= 5 ? t.slice(0, 5) : t);
     
     return (
         <div className={`panel-page__offer-card ${!is_active ? 'panel-page__offer-card--inactive' : ''}`}>
@@ -355,6 +356,15 @@ function OfferSummary({
                                 -{discount}%
                             </span>
                         )}
+                    </div>
+                    {description && (
+                        <p className="panel-page__offer-description">{description}</p>
+                    )}
+                    <div className="panel-page__offer-time">
+                        <Clock className="panel-page__offer-time-icon" />
+                        <span>Самовывоз: {timeStr(pickup_time_start)} – {timeStr(pickup_time_end)}</span>
+                    </div>
+                    <div className="panel-page__offer-status-row">
                         <button
                             onClick={onToggleActive}
                             className={`panel-page__offer-status ${is_active ? 'panel-page__offer-status--active' : ''}`}
@@ -364,37 +374,33 @@ function OfferSummary({
                             {is_active ? 'Активно' : 'Неактивно'}
                         </button>
                     </div>
-                    {description && (
-                        <p className="panel-page__offer-description">{description}</p>
-                    )}
-                    <div className="panel-page__offer-price">
-                        <span className="panel-page__offer-price-current">{discounted_price}₽</span>
-                        <span className="panel-page__offer-price-old">{original_price}₽</span>
-                    </div>
-                    <div className="panel-page__offer-time">
-                        <Clock className="panel-page__offer-time-icon" />
-                        <span>Самовывоз: {pickup_time_start} - {pickup_time_end}</span>
+                    <div className="panel-page__offer-bottom">
+                        <div className="panel-page__offer-quantity-row">
+                            <button 
+                                className="panel-page__offer-action-button panel-page__offer-action-button--decrease"
+                                onClick={onDecreaseQuantity} 
+                                disabled={quantity_available === 0 || !is_active}
+                            >
+                                <Minus className="panel-page__offer-action-icon" />
+                            </button>
+                            <span className="panel-page__offer-quantity-value">{quantity_available}</span>
+                            <button 
+                                className="panel-page__offer-action-button panel-page__offer-action-button--increase"
+                                onClick={onIncreaseQuantity}
+                                disabled={!is_active}
+                            >
+                                <Plus className="panel-page__offer-action-icon" />
+                            </button>
+                        </div>
+                        <div className="panel-page__offer-price">
+                            <span className="panel-page__offer-price-current">{discounted_price}₽</span>
+                            {original_price != null && original_price > 0 && (
+                                <span className="panel-page__offer-price-old">{original_price}₽</span>
+                            )}
+                        </div>
                     </div>
                 </div>
                 <div className="panel-page__offer-actions">
-                    <button 
-                        className="panel-page__offer-action-button panel-page__offer-action-button--decrease"
-                        onClick={onDecreaseQuantity} 
-                        disabled={quantity_available === 0 || !is_active}
-                    >
-                        <Minus className="panel-page__offer-action-icon" />
-                    </button>
-                    <div className="panel-page__offer-quantity">
-                        <span className="panel-page__offer-quantity-label">порций</span>
-                        <span className="panel-page__offer-quantity-value">{quantity_available}</span>
-                    </div>
-                    <button 
-                        className="panel-page__offer-action-button panel-page__offer-action-button--increase"
-                        onClick={onIncreaseQuantity}
-                        disabled={!is_active}
-                    >
-                        <Plus className="panel-page__offer-action-icon" />
-                    </button>
                     <button 
                         className="panel-page__offer-action-button panel-page__offer-action-button--edit"
                         onClick={onEdit}

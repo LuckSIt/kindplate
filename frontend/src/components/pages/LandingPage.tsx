@@ -249,10 +249,13 @@ export function LandingPage() {
                                 className="w-full rounded-[30px] overflow-hidden flex flex-col"
                                 style={{ background: 'linear-gradient(23.17deg, #EFF4F3 0%, #DEF4EE 73.56%)' }}
                             >
-                                {/* Верхняя часть: карта + продукт (низ карты закруглён) */}
+                                {/* Верхняя часть: карта + продукт (низ карты закруглён). Верхние углы 30px — как у экрана, чтобы на iOS не было «ушек» по краям. */}
                                 <div 
                                     className="relative overflow-hidden w-full aspect-[1/1.6]"
-                                    style={{ borderRadius: '0 0 16px 16px' }}
+                                    style={{ 
+                                        borderRadius: '30px 30px 16px 16px',
+                                        isolation: 'isolate',
+                                    } as React.CSSProperties}
                                     onTouchStart={onTouchStart}
                                     onTouchMove={onTouchMove}
                                     onTouchEnd={onTouchEnd}
@@ -262,6 +265,7 @@ export function LandingPage() {
                                         src={phoneMapImage}
                                         alt="Карта Санкт-Петербурга"
                                         className="absolute inset-0 w-full h-full object-cover"
+                                        style={{ borderRadius: 'inherit' }}
                                     />
                                     
                                     {/* Продукт поверх карты (карусель) — чуть крупнее и по центру */}
@@ -636,7 +640,7 @@ export function LandingPage() {
                         <h2 className="kp-landing-footer-title">Контакты:</h2>
                         <div className="kp-landing-footer-cards">
                             <a
-                                href="https://t.me/kindplatesupportbot"
+                                href="https://t.me/kindplate"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="kp-landing-footer-card"

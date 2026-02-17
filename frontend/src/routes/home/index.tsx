@@ -482,7 +482,7 @@ function RouteComponent() {
                 {/* Search bar overlay (same as list page) */}
                 <div className="businesses-list-page__search-container businesses-list-page__search-container--map">
                     <div className="businesses-list-page__search">
-                        <svg className="businesses-list-page__search-icon" width="29" height="29" viewBox="0 0 24 24" fill="none">
+                        <svg className="businesses-list-page__search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
                             <path d="M19.6 21L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16C7.68333 16 6.14583 15.3708 4.8875 14.1125C3.62917 12.8542 3 11.3167 3 9.5C3 7.68333 3.62917 6.14583 4.8875 4.8875C6.14583 3.62917 7.68333 3 9.5 3C11.3167 3 12.8542 3.62917 14.1125 4.8875C15.3708 6.14583 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L21 19.6L19.6 21ZM9.5 14C10.75 14 11.8125 13.5625 12.6875 12.6875C13.5625 11.8125 14 10.75 14 9.5C14 8.25 13.5625 7.1875 12.6875 6.3125C11.8125 5.4375 10.75 5 9.5 5C8.25 5 7.1875 5.4375 6.3125 6.3125C5.4375 7.1875 5 8.25 5 9.5C5 10.75 5.4375 11.8125 6.3125 12.6875C7.1875 13.5625 8.25 14 9.5 14Z" fill="#1D1B20"/>
                         </svg>
                         <input
@@ -806,7 +806,7 @@ function HomeBusinessCard({ business, onClick }: { business: Business; onClick: 
                         <p className="businesses-list-page__business-type">Заведение</p>
                     </div>
                     <div className="businesses-list-page__rating">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#DB7E2F">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="#DB7E2F">
                             <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
                         </svg>
                         <span>{business.rating || 4.8}</span>
@@ -815,13 +815,13 @@ function HomeBusinessCard({ business, onClick }: { business: Business; onClick: 
 
                 <div className="businesses-list-page__business-meta">
                     <div className="businesses-list-page__business-meta-item">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
                             <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" fill="#F5FBA2"/>
                         </svg>
                         <span>{business.distance_km != null ? `${business.distance_km < 1 ? business.distance_km.toFixed(2) : business.distance_km.toFixed(1)} км` : '—'}</span>
                     </div>
                     <div className="businesses-list-page__business-meta-item">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12.5 7V11.25L16.5 13.5L15.75 14.5L11.5 11.75V7H12.5Z" fill="#F5FBA2"/>
                         </svg>
                         <span>{activeOffers[0]?.pickup_time_start?.slice(0, 5) || '10:00'}-{activeOffers[0]?.pickup_time_end?.slice(0, 5) || '22:00'}</span>
