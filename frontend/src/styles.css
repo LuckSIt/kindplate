@@ -2322,9 +2322,8 @@ html {
   line-height: 1.25;
   color: #FFFFFF;
   margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .businesses-list-page__business-type {

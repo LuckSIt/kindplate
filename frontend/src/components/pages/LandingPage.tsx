@@ -244,17 +244,24 @@ export function LandingPage() {
                             background: 'linear-gradient(23.17deg, #EFF4F3 0%, #DEF4EE 73.56%)',
                         }}
                     >
-                            {/* Phone Screen — карта + подпись + кнопки */}
+                            {/* Phone Screen — карта + подпись + кнопки. clip-path убирает артефакты в углах на iOS. */}
                             <div 
                                 className="w-full rounded-[30px] overflow-hidden flex flex-col"
-                                style={{ background: 'linear-gradient(23.17deg, #EFF4F3 0%, #DEF4EE 73.56%)' }}
+                                style={{ 
+                                    background: 'linear-gradient(23.17deg, #EFF4F3 0%, #DEF4EE 73.56%)',
+                                    isolation: 'isolate',
+                                    clipPath: 'inset(0 round 30px)',
+                                    WebkitClipPath: 'inset(0 round 30px)',
+                                } as React.CSSProperties}
                             >
-                                {/* Верхняя часть: карта + продукт (низ карты закруглён). Верхние углы 30px — как у экрана, чтобы на iOS не было «ушек» по краям. */}
+                                {/* Верхняя часть: карта + продукт (низ карты закруглён). */}
                                 <div 
                                     className="relative overflow-hidden w-full aspect-[1/1.6]"
                                     style={{ 
                                         borderRadius: '30px 30px 16px 16px',
                                         isolation: 'isolate',
+                                        clipPath: 'inset(0 round 30px 30px 16px 16px)',
+                                        WebkitClipPath: 'inset(0 round 30px 30px 16px 16px)',
                                     } as React.CSSProperties}
                                     onTouchStart={onTouchStart}
                                     onTouchMove={onTouchMove}
