@@ -310,11 +310,11 @@ function RootRoute() {
                                 }
                                 return null; 
                             })()}
-                            {/* Main content area - fills remaining space */}
+                            {/* Main content area - fills remaining space. На /home карта фиксирована — padding снизу не нужен, иначе виден пустой зазор над навбаром. */}
                             <main 
                                 className="flex-1 overflow-y-auto overflow-x-hidden"
                                 style={{ 
-                                    paddingBottom: hideNav ? '0' : navHeight,
+                                    paddingBottom: (hideNav || location.pathname === '/home') ? '0' : navHeight,
                                     overscrollBehavior: 'contain'
                                 }}
                             >

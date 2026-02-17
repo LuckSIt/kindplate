@@ -1,8 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axiosInstance";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useState, useContext } from "react";
 import { authContext } from "@/lib/auth";
 import { notify } from "@/lib/notifications";
@@ -109,242 +107,190 @@ function AdminPanel() {
 
     if (authLoading || statsLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-                <div className="w-5 h-5 animate-spin" style={{ border: '2px solid rgba(0, 25, 0, 0.3)', borderTopColor: '#001900', borderRadius: '50%' }}></div>
+            <div className="admin-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="admin-page__spinner" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="admin-page">
+            <div className="max-w-4xl mx-auto">
                 {/* Заголовок */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                        Панель администратора
-                    </h1>
-                    <p className="text-gray-600 dark:text-gray-400">
-                        Управление платформой KindPlate
-                    </p>
+                <div className="admin-page__header">
+                    <Link to="/account" className="admin-page__back-button" aria-label="Назад">
+                        <svg className="w-6 h-6 text-[#111E42]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </Link>
+                    <div>
+                        <h1 className="admin-page__title">Панель администратора</h1>
+                        <p className="admin-page__subtitle">Управление платформой KindPlate</p>
+                    </div>
                 </div>
 
                 {/* Статистика */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Пользователи</p>
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                                    {stats?.data?.stats?.users || 0}
-                                </p>
-                            </div>
-                            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                                <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                </svg>
-                            </div>
+                <div className="admin-page__stats-grid">
+                    <div className="admin-page__stat-card">
+                        <div>
+                            <p className="admin-page__stat-label">Пользователи</p>
+                            <p className="admin-page__stat-value">{stats?.data?.stats?.users || 0}</p>
+                        </div>
+                        <div className="admin-page__stat-icon">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
                         </div>
                     </div>
-
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Бизнесы</p>
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                                    {stats?.data?.stats?.businesses || 0}
-                                </p>
-                            </div>
-                            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                                <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                </svg>
-                            </div>
+                    <div className="admin-page__stat-card">
+                        <div>
+                            <p className="admin-page__stat-label">Бизнесы</p>
+                            <p className="admin-page__stat-value">{stats?.data?.stats?.businesses || 0}</p>
+                        </div>
+                        <div className="admin-page__stat-icon">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
                         </div>
                     </div>
-
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Офферы</p>
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                                    {stats?.data?.stats?.offers || 0}
-                                </p>
-                            </div>
-                            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                                <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-                                </svg>
-                            </div>
+                    <div className="admin-page__stat-card">
+                        <div>
+                            <p className="admin-page__stat-label">Офферы</p>
+                            <p className="admin-page__stat-value">{stats?.data?.stats?.offers || 0}</p>
+                        </div>
+                        <div className="admin-page__stat-icon">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                            </svg>
                         </div>
                     </div>
-
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Заказы</p>
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                                    {stats?.data?.stats?.orders || 0}
-                                </p>
-                            </div>
-                            <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                                <svg className="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                </svg>
-                            </div>
+                    <div className="admin-page__stat-card">
+                        <div>
+                            <p className="admin-page__stat-label">Заказы</p>
+                            <p className="admin-page__stat-value">{stats?.data?.stats?.orders || 0}</p>
+                        </div>
+                        <div className="admin-page__stat-icon">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
                         </div>
                     </div>
                 </div>
 
                 {/* Кнопка добавления бизнеса */}
-                <div className="mb-8">
-                    <Button
-                        onClick={() => setShowForm(!showForm)}
-                        className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
-                    >
-                        {showForm ? "Отменить" : "+ Добавить бизнес"}
-                    </Button>
-                </div>
+                <button
+                    type="button"
+                    onClick={() => setShowForm(!showForm)}
+                    className="admin-page__add-btn"
+                >
+                    {showForm ? "Отменить" : "+ Добавить бизнес"}
+                </button>
 
                 {/* Форма создания бизнеса */}
                 {showForm && (
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 mb-8">
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                            Создать новый бизнес-аккаунт
-                        </h2>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Название заведения
-                                </label>
-                                <Input
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    required
-                                    className="w-full"
-                                    placeholder="Название бизнеса"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Email
-                                </label>
-                                <Input
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    required
-                                    className="w-full"
-                                    placeholder="business@example.com"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Пароль
-                                </label>
-                                <Input
-                                    type="password"
-                                    value={formData.password}
-                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                    required
-                                    minLength={6}
-                                    className="w-full"
-                                    placeholder="Минимум 6 символов"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Адрес
-                                </label>
-                                <Input
-                                    type="text"
-                                    value={formData.address}
-                                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                    required
-                                    className="w-full"
-                                    placeholder="г. Санкт-Петербург, ул. Примерная, д. 1"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Широта (опционально)
-                                    </label>
-                                    <Input
-                                        type="number"
-                                        step="0.000001"
-                                        value={formData.coord_0}
-                                        onChange={(e) => setFormData({ ...formData, coord_0: parseFloat(e.target.value) })}
-                                        className="w-full"
-                                        placeholder="59.9311"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Долгота (опционально)
-                                    </label>
-                                    <Input
-                                        type="number"
-                                        step="0.000001"
-                                        value={formData.coord_1}
-                                        onChange={(e) => setFormData({ ...formData, coord_1: parseFloat(e.target.value) })}
-                                        className="w-full"
-                                        placeholder="30.3609"
-                                    />
-                                </div>
-                            </div>
-
-                            <Button
+                    <div className="admin-page__form-card">
+                        <h2 className="admin-page__form-title">Создать новый бизнес-аккаунт</h2>
+                        <form onSubmit={handleSubmit}>
+                            <label className="admin-page__form-label">Название заведения</label>
+                            <input
+                                type="text"
+                                value={formData.name}
+                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                required
+                                className="admin-page__form-input"
+                                placeholder="Название бизнеса"
+                            />
+                            <label className="admin-page__form-label">Email</label>
+                            <input
+                                type="email"
+                                value={formData.email}
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                required
+                                className="admin-page__form-input"
+                                placeholder="business@example.com"
+                            />
+                            <label className="admin-page__form-label">Пароль</label>
+                            <input
+                                type="password"
+                                value={formData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                required
+                                minLength={6}
+                                className="admin-page__form-input"
+                                placeholder="Минимум 6 символов"
+                            />
+                            <label className="admin-page__form-label">Адрес</label>
+                            <input
+                                type="text"
+                                value={formData.address}
+                                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                required
+                                className="admin-page__form-input"
+                                placeholder="г. Санкт-Петербург, ул. Примерная, д. 1"
+                            />
+                            <label className="admin-page__form-label">Широта (опционально)</label>
+                            <input
+                                type="number"
+                                step="0.000001"
+                                value={formData.coord_0}
+                                onChange={(e) => setFormData({ ...formData, coord_0: parseFloat(e.target.value) || 0 })}
+                                className="admin-page__form-input"
+                                placeholder="59.9311"
+                                style={{ marginBottom: 14 }}
+                            />
+                            <label className="admin-page__form-label">Долгота (опционально)</label>
+                            <input
+                                type="number"
+                                step="0.000001"
+                                value={formData.coord_1}
+                                onChange={(e) => setFormData({ ...formData, coord_1: parseFloat(e.target.value) || 0 })}
+                                className="admin-page__form-input"
+                                placeholder="30.3609"
+                            />
+                            <button
                                 type="submit"
                                 disabled={createBusinessMutation.isPending}
-                                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 rounded-xl font-semibold"
+                                className="admin-page__submit-btn"
                             >
                                 {createBusinessMutation.isPending ? "Создание..." : "Создать бизнес"}
-                            </Button>
+                            </button>
                         </form>
                     </div>
                 )}
 
-                {/* Отчёт по переводам: кому сколько переводить (пн — сб/вс/пн, пт — вт/ср/чт/пт) */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-8">
-                    <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                            Отчёт по переводам
-                        </h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                {/* Отчёт по переводам */}
+                <div className="admin-page__section">
+                    <div className="admin-page__section-header">
+                        <h2 className="admin-page__section-title">Отчёт по переводам</h2>
+                        <p className="admin-page__section-desc">
                             Выручка по периодам: к переводу в понедельник (сб/вс/пн), к переводу в пятницу (вт/ср/чт/пт)
                         </p>
                     </div>
                     {transferReportLoading ? (
-                        <div className="p-8 text-center">
-                            <div className="w-5 h-5 animate-spin mx-auto" style={{ border: '2px solid rgba(0, 25, 0, 0.3)', borderTopColor: '#001900', borderRadius: '50%' }}></div>
+                        <div className="admin-page__loading">
+                            <span className="admin-page__spinner" />
+                            Загрузка…
                         </div>
                     ) : transferReport.length === 0 ? (
-                        <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                            Нет данных
-                        </div>
+                        <div className="admin-page__empty">Нет данных</div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-gray-50 dark:bg-gray-900/50">
+                            <table className="admin-page__table">
+                                <thead>
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Название</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">К переводу в пн (сб/вс/пн)</th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">К переводу в пт (вт/ср/чт/пт)</th>
+                                        <th>Название</th>
+                                        <th>Email</th>
+                                        <th style={{ textAlign: 'right' }}>К переводу в пн (сб/вс/пн)</th>
+                                        <th style={{ textAlign: 'right' }}>К переводу в пт (вт/ср/чт/пт)</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody>
                                     {transferReport.map((row) => (
-                                        <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/30">
-                                            <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{row.name}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{row.email}</td>
-                                            <td className="px-6 py-4 text-sm text-right font-medium text-gray-900 dark:text-white">{Number(row.monday_transfer_revenue || 0).toFixed(0)}₽</td>
-                                            <td className="px-6 py-4 text-sm text-right font-medium text-gray-900 dark:text-white">{Number(row.friday_transfer_revenue || 0).toFixed(0)}₽</td>
+                                        <tr key={row.id}>
+                                            <td>{row.name}</td>
+                                            <td className="admin-page__table-cell--muted">{row.email}</td>
+                                            <td style={{ textAlign: 'right' }}>{Number(row.monday_transfer_revenue || 0).toFixed(0)}₽</td>
+                                            <td style={{ textAlign: 'right' }}>{Number(row.friday_transfer_revenue || 0).toFixed(0)}₽</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -354,75 +300,50 @@ function AdminPanel() {
                 </div>
 
                 {/* Список бизнесов */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                            Список бизнесов
-                        </h2>
+                <div className="admin-page__section">
+                    <div className="admin-page__section-header">
+                        <h2 className="admin-page__section-title">Список бизнесов</h2>
                     </div>
-                    
                     {businessesLoading ? (
-                        <div className="p-8 text-center">
-                            <div className="w-5 h-5 animate-spin mx-auto" style={{ border: '2px solid rgba(0, 25, 0, 0.3)', borderTopColor: '#001900', borderRadius: '50%' }}></div>
+                        <div className="admin-page__loading">
+                            <span className="admin-page__spinner" />
+                            Загрузка…
                         </div>
                     ) : businesses.length === 0 ? (
-                        <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                            Нет зарегистрированных бизнесов
-                        </div>
+                        <div className="admin-page__empty">Нет зарегистрированных бизнесов</div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-gray-50 dark:bg-gray-900/50">
+                            <table className="admin-page__table">
+                                <thead>
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            ID
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            Название
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            Email
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            Адрес
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            Действия
-                                        </th>
+                                        <th>ID</th>
+                                        <th>Название</th>
+                                        <th>Email</th>
+                                        <th>Адрес</th>
+                                        <th>Действия</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody>
                                     {businesses.map((business) => (
-                                        <tr key={business.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/30">
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                {business.id}
+                                        <tr key={business.id}>
+                                            <td>{business.id}</td>
+                                            <td>
+                                                <span>{business.name}</span>
+                                                {business.is_top && (
+                                                    <span style={{ marginLeft: 8, padding: '2px 8px', fontSize: 11, background: 'rgba(234, 179, 8, 0.25)', color: '#facc15', borderRadius: 9999 }}>TOP</span>
+                                                )}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center">
-                                                    <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                                        {business.name}
-                                                    </div>
-                                                    {business.is_top && (
-                                                        <span className="ml-2 px-2 py-1 text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 rounded-full">
-                                                            TOP
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                {business.email}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                                {business.address}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                <Button
+                                            <td className="admin-page__table-cell--muted">{business.email}</td>
+                                            <td className="admin-page__table-cell--muted">{business.address}</td>
+                                            <td>
+                                                <button
+                                                    type="button"
                                                     onClick={() => handleDelete(business.id, business.name)}
                                                     disabled={deleteBusinessMutation.isPending}
-                                                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs"
+                                                    className="admin-page__delete-btn"
                                                 >
                                                     Удалить
-                                                </Button>
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}

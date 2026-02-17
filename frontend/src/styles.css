@@ -9388,3 +9388,303 @@ div.font-montserrat-alt,
 
 /* «Почему KindPlate?» — градиент через ::before в landing.css, чтобы не обрезался по краям */
 
+/* Admin page — в стиле приложения (#111E42, #098771, Montserrat Alternates) */
+.admin-page {
+  min-height: 100vh;
+  background-color: #111E42;
+  padding: 14px;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 14px);
+  padding-bottom: 40px;
+}
+
+.admin-page__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.admin-page__back-button {
+  width: 52px;
+  height: 52px;
+  background-color: #D9D9D9;
+  border-radius: 14px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease;
+}
+
+.admin-page__back-button:hover {
+  opacity: 0.9;
+}
+
+.admin-page__title {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.25;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.admin-page__subtitle {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 14px;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 4px 0 0 0;
+}
+
+.admin-page__stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 640px) {
+  .admin-page__stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.admin-page__stat-card {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-page__stat-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 4px;
+}
+
+.admin-page__stat-value {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.2;
+  color: #FFFFFF;
+}
+
+.admin-page__stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: rgba(9, 135, 113, 0.35);
+  border: 1px solid rgba(9, 135, 113, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-page__stat-icon svg {
+  color: #098771;
+}
+
+.admin-page__add-btn {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: linear-gradient(135deg, #098771 0%, #0a9f7a 100%);
+  color: #FFFFFF;
+  margin-bottom: 24px;
+}
+
+.admin-page__add-btn:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.admin-page__add-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.admin-page__section {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.admin-page__section-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-page__section-title {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.admin-page__section-desc {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 6px 0 0 0;
+}
+
+.admin-page__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-page__table th {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 12px 16px;
+  text-align: left;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-page__table td {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 14px;
+  color: #FFFFFF;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.admin-page__table td.admin-page__table-cell--muted {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.admin-page__table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.admin-page__form-card {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.admin-page__form-title {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #FFFFFF;
+  margin: 0 0 16px 0;
+}
+
+.admin-page__form-label {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.admin-page__form-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #FFFFFF;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+.admin-page__form-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.admin-page__form-input:focus {
+  outline: none;
+  border-color: #098771;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.admin-page__submit-btn {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px;
+  width: 100%;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #098771 0%, #0a9f7a 100%);
+  color: #FFFFFF;
+  margin-top: 8px;
+  transition: all 0.2s ease;
+}
+
+.admin-page__submit-btn:hover:not(:disabled) {
+  opacity: 0.95;
+}
+
+.admin-page__submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-page__delete-btn {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background-color: rgba(220, 38, 38, 0.2);
+  color: #f87171;
+  transition: all 0.2s ease;
+}
+
+.admin-page__delete-btn:hover:not(:disabled) {
+  background-color: rgba(220, 38, 38, 0.35);
+}
+
+.admin-page__empty,
+.admin-page__loading {
+  padding: 32px 20px;
+  text-align: center;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.admin-page__spinner {
+  display: block;
+  width: 28px;
+  height: 28px;
+  margin: 0 auto 12px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #098771;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
