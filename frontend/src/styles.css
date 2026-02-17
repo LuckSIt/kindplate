@@ -879,8 +879,8 @@ html {
   width: 100%;
   margin: 0;
   padding: 0;
-  /* Ограничиваем safe-area, чтобы на устройствах с некорректным значением не было огромного отступа */
-  padding-bottom: min(env(safe-area-inset-bottom, 0px), 34px);
+  /* Минимальный safe-area под кнопками, чтобы не было огромного пустого поля над индикатором «Домой» */
+  padding-bottom: min(env(safe-area-inset-bottom, 0px), 16px);
   box-sizing: border-box;
   background-color: var(--color-bg);
   isolation: isolate;
