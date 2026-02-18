@@ -56,6 +56,15 @@
     </head>
     <body>
         <div id="app"></div>
+        <script>
+            (function() {
+                var ua = navigator.userAgent || '';
+                var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                if (isIOS) {
+                    document.documentElement.style.setProperty('--safe-area-inset-bottom', '34px');
+                }
+            })();
+        </script>
         <script type="module" src="/src/main.tsx"></script>
     </body>
 </html>

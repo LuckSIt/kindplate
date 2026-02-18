@@ -871,7 +871,7 @@ html {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-/* Нижняя навигация: высота = 52px + safe-area. На iOS JS задаёт --safe-area-inset-bottom (34px), если env()=0. height вместо padding — надёжнее в PWA. */
+/* Нижняя навигация: 52px + safe-area. В PWA standalone env() часто 0 — задаём через медиа-запрос и JS. */
 .app-bottom-nav {
   position: fixed;
   bottom: 0;
@@ -882,7 +882,8 @@ html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  height: calc(52px + var(--safe-area-inset-bottom, max(env(safe-area-inset-bottom, 20px), 20px)));
+  --nav-safe: var(--safe-area-inset-bottom, max(env(safe-area-inset-bottom, 20px), 20px));
+  height: calc(52px + var(--nav-safe));
   background-color: var(--color-bg);
   isolation: isolate;
   transform: translateZ(0);
@@ -890,6 +891,13 @@ html {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+}
+
+/* PWA standalone (iOS): принудительно 34px снизу, т.к. env() часто не работает */
+@media (display-mode: standalone) {
+  :root {
+    --safe-area-inset-bottom: 34px;
+  }
 }
 
 .app-bottom-nav > div {
