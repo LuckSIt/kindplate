@@ -5,10 +5,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatTimeLeft(pickupTimeEnd: string): string {
+export function formatTimeLeft(pickupTimeEnd: string, nowMs?: number): string {
   try {
     const [hh, mm, ss] = pickupTimeEnd.split(':').map(Number);
-    const now = new Date();
+    const now = nowMs != null ? new Date(nowMs) : new Date();
     const endTime = new Date();
     endTime.setHours(hh || 23, mm || 59, ss || 59, 0);
     

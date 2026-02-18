@@ -9,6 +9,13 @@ import type { Business } from "@/lib/types";
 import businessImage1 from "@/figma/business-image-1.png";
 import { loadDietPreferences } from "@/lib/diet-preferences";
 
+/** Из строки графика работы оставляет только время (например "10:00-20:00"), без текста вроде "Ежедневно". */
+function formatWorkingHoursOnly(workingHours: string | undefined): string {
+    if (!workingHours?.trim()) return '';
+    const match = workingHours.match(/\d{1,2}:\d{2}\s*[-–]\s*\d{1,2}:\d{2}/);
+    return match ? match[0].replace(/\s/g, '') : workingHours;
+}
+
 export const Route = createFileRoute("/list/")({
     component: ListPageComponent,
 });
@@ -286,7 +293,7 @@ function BusinessCard({ business, image, onClick }: BusinessCardProps) {
                                         <circle cx="12" cy="12" r="10"/>
                                         <path d="M12 6v6l4 2"/>
                                     </svg>
-                                    <span>{(business as any).working_hours}</span>
+                                    <span>{formatWorkingHoursOnly((business as any).working_hours)}</span>
                                 </div>
                             )}
                         </div>

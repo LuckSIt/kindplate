@@ -195,7 +195,14 @@ function OfferPage() {
   const discountPercent = offer.original_price > 0 
     ? Math.round((1 - offer.discounted_price / offer.original_price) * 100) 
     : 0;
-  const timeLeft = formatTimeLeft(offer.pickup_time_end);
+
+  // Таймер «До конца» обновляется каждую секунду
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const timeLeft = formatTimeLeft(offer.pickup_time_end ?? '23:59:59', now);
 
   return (
     <div className="offer-page">

@@ -869,7 +869,7 @@ html {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-/* Нижняя навигация приложения: вплотную к низу экрана на всех устройствах, без лишних отступов */
+/* Нижняя навигация: прижата к самому низу экрана (bottom: 0), safe-area внутри бара */
 .app-bottom-nav {
   position: fixed;
   bottom: 0;
@@ -879,8 +879,7 @@ html {
   width: 100%;
   margin: 0;
   padding: 0;
-  /* Минимальный safe-area под кнопками, чтобы не было огромного пустого поля над индикатором «Домой» */
-  padding-bottom: min(env(safe-area-inset-bottom, 0px), 16px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   box-sizing: border-box;
   background-color: var(--color-bg);
   isolation: isolate;
@@ -1905,6 +1904,8 @@ html {
   min-height: 100%;
   width: 100%;
   max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   margin: 0 auto;
   background-color: var(--color-bg);
   position: relative;
@@ -2222,6 +2223,9 @@ html {
   flex-direction: column;
   gap: 15px;
   padding-bottom: 15px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .businesses-list-page__loading,
@@ -2234,6 +2238,9 @@ html {
 
 .businesses-list-page__business-card {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   background-color: #2B344D;
   border-radius: 12px;
   overflow: hidden;
@@ -2301,18 +2308,37 @@ html {
   padding: 8px 10px 10px;
 }
 
+/* Строка заголовка уходит в правый отступ, чтобы мета и рейтинг были у края карточки */
 .businesses-list-page__business-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-start;
   gap: 8px;
   margin-bottom: 4px;
+  margin-right: -10px;
   min-height: 0;
+  min-width: 0;
 }
 
+/* Блок с названием: min-width чтобы «Кофейня» не уходила в вертикальный текст на узком экране */
 .businesses-list-page__business-header > div:first-child {
+  min-width: max(4.5rem, 90px);
+  flex: 1 1 90px;
+  max-width: 100%;
+}
+
+/* Мета + рейтинг: у правого края карточки, минимальный отступ от скругления */
+.businesses-list-page__header-right {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1 1 120px;
   min-width: 0;
-  flex: 1;
+  max-width: 100%;
+  padding-right: 4px;
+  justify-content: flex-end;
 }
 
 .businesses-list-page__business-name {
@@ -2333,6 +2359,10 @@ html {
   line-height: 1.2;
   color: rgba(255, 255, 255, 0.85);
   margin: 1px 0 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .businesses-list-page__rating {
@@ -2363,18 +2393,13 @@ html {
   color: #FFA500;
 }
 
-.businesses-list-page__header-right {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
 .businesses-list-page__business-meta {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 0;
+  min-width: 0;
 }
 
 .businesses-list-page__business-meta-item {
@@ -2386,6 +2411,14 @@ html {
   font-size: 8px;
   line-height: 1.2;
   color: rgba(255, 255, 255, 0.9);
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.businesses-list-page__business-meta-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .businesses-list-page__business-meta-item svg {
