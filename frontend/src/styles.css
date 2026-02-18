@@ -198,6 +198,7 @@
   }
 }
 
+/* Важно для iOS PWA standalone: растяжение до краёв и активация safe-area */
 html {
   background: var(--color-bg) !important;
   overflow: hidden;
@@ -870,7 +871,7 @@ html {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-/* Нижняя навигация: прижата к низу (bottom: 0). Фолбек 20px если env() вернёт 0 (iOS Safari 17/18), макс. 16px. translateZ(0) — обход бага iOS 18 с фикс. элементами. */
+/* Нижняя навигация: только у таб-бара padding-bottom. max(..., 20px) — фолбек при env=0 в PWA standalone. translateZ(0) — обход бага iOS 18. */
 .app-bottom-nav {
   position: fixed;
   bottom: 0;
@@ -880,7 +881,7 @@ html {
   width: 100%;
   margin: 0;
   padding: 0;
-  padding-bottom: min(env(safe-area-inset-bottom, 20px), 16px);
+  padding-bottom: max(env(safe-area-inset-bottom, 20px), 20px);
   box-sizing: border-box;
   background-color: var(--color-bg);
   isolation: isolate;
@@ -893,7 +894,7 @@ html {
   left: 0;
   right: 0;
   bottom: 0;
-  height: min(env(safe-area-inset-bottom, 20px), 16px);
+  height: max(env(safe-area-inset-bottom, 20px), 20px);
   background-color: var(--color-bg);
   pointer-events: none;
 }
