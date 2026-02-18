@@ -81,6 +81,8 @@ export const useUpdateProfile = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(['profile'], data);
       queryClient.invalidateQueries({ queryKey: ['auth'] });
+      queryClient.invalidateQueries({ queryKey: ['offers_search_list'] });
+      queryClient.invalidateQueries({ queryKey: ['vendor'] });
       notify.success('Профиль успешно обновлен');
     },
     onError: (error: any) => {

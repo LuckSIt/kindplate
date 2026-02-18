@@ -178,17 +178,15 @@ app.use(sqlInjectionProtection);
 // Rate limiting для защиты от брутфорса теперь настроен непосредственно в маршрутах auth.
 // Здесь дополнительный лимитер НЕ используем, чтобы не дублировать ограничение.
 
-// Раздача статических файлов (фотографии) с кешированием
-app.use("/uploads", express.static(path.join(__dirname, "../uploads"), {
-    maxAge: '7d',             // Кешировать изображения 7 дней
-    etag: true,               // Включить ETag для условных запросов
-    lastModified: true,       // Включить Last-Modified заголовок
-    immutable: false,         // Файлы могут обновляться
+// Опции раздачи uploads (одинаковые для /uploads и /api/uploads)
+const uploadsStaticOptions = {
+    maxAge: '7d',
+    etag: true,
+    lastModified: true,
+    immutable: false,
     setHeaders: (res, filePath) => {
-        // CORS для изображений (чтобы браузеры могли кешировать кросс-доменные)
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Cache-Control', 'public, max-age=604800, stale-while-revalidate=86400');
-        // Определяем тип контента
         if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
             res.setHeader('Content-Type', 'image/jpeg');
         } else if (filePath.endsWith('.png')) {
@@ -199,7 +197,35 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads"), {
             res.setHeader('Content-Type', 'image/svg+xml');
         }
     }
-}));
+};
+const uploadsDir = path.join(__dirname, "../uploads");
+const storage = require("./lib/storage");
+
+// Раздача загрузок: при включённом S3 сначала пробуем отдать из S3, иначе — с диска
+function serveUploads(staticDir, staticOpts) {
+    return [
+        async (req, res, next) => {
+            if (req.method !== "GET" && req.method !== "HEAD") return next();
+            if (!storage.isS3Enabled()) return next();
+            const key = req.path.replace(/^\/+/, ""); // /offers/123.jpg -> offers/123.jpg
+            if (!key) return next();
+            const result = await storage.getS3Stream(key);
+            if (!result) return next();
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.setHeader("Cache-Control", "public, max-age=604800, stale-while-revalidate=86400");
+            res.setHeader("Content-Type", result.contentType || "application/octet-stream");
+            if (result.contentLength) res.setHeader("Content-Length", String(result.contentLength));
+            result.stream.pipe(res);
+        },
+        express.static(staticDir, staticOpts)
+    ];
+}
+
+// Раздача статических файлов по /uploads (прямые запросы к бэкенду)
+serveUploads(uploadsDir, uploadsStaticOptions).forEach(mw => app.use("/uploads", mw));
+
+// Раздача по /api/uploads — когда фронт (app-kindplate.ru) запрашивает /api/uploads/... и прокси передаёт путь с /api
+serveUploads(uploadsDir, uploadsStaticOptions).forEach(mw => app.use("/api/uploads", mw));
 // ============================================
 // СЕССИИ: express-session + Redis
 // Redis хранит данные сессии на сервере, в cookie только ID (32 байта)
@@ -402,6 +428,7 @@ async function startServer() {
         app.listen(port, "0.0.0.0", () => {
             logger.info(`🚀 Сервер запущен на порту ${port}`);
             console.log("app is running on all interfaces");
+            if (storage.isS3Enabled()) storage.ensureBucket().catch((err) => logger.warn("S3 ensureBucket", err.message));
         });
     } catch (error) {
         logger.error('❌ Ошибка при запуске сервера:', error);

@@ -188,6 +188,9 @@
 :root {
   --app-height: 100vh;
   --nav-height: 52px;
+  /* Единый размер нижнего навбара на всех страницах: 52px контент + 6px отступ снизу */
+  --nav-bar-height: 58px;
+  --nav-bar-content-height: 52px;
   --search-height: 60px;
 }
 
@@ -864,7 +867,7 @@ html {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-/* Нижняя навигация: 52px + чуть отступа снизу (приподнята от самого края). */
+/* Нижняя навигация: единый размер на всех страницах (см. --nav-bar-height). */
 [data-app-bottom-nav].app-bottom-nav {
   position: fixed !important;
   bottom: 0 !important;
@@ -875,8 +878,8 @@ html {
   margin: 0;
   padding: 0 0 6px 0;
   box-sizing: border-box;
-  height: 58px;
-  min-height: 52px;
+  height: var(--nav-bar-height);
+  min-height: var(--nav-bar-content-height);
   background-color: var(--color-bg);
   isolation: isolate;
   transform: translateZ(0);
@@ -886,7 +889,7 @@ html {
 }
 
 [data-app-bottom-nav].app-bottom-nav > div {
-  height: 52px;
+  height: var(--nav-bar-content-height);
   flex-shrink: 0;
 }
 
@@ -1327,6 +1330,30 @@ html {
   background-color: transparent;
 }
 
+.login-page__input-wrapper--password .login-page__input {
+  padding-right: 2.75rem;
+}
+
+.login-page__password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.login-page__password-toggle:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .login-page__submit-button {
   width: 100%;
   max-width: 100%;
@@ -1595,6 +1622,30 @@ html {
 
 .register-page__input:focus {
   background-color: transparent;
+}
+
+.register-page__input-wrapper--password .register-page__input {
+  padding-right: 2.75rem;
+}
+
+.register-page__password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.register-page__password-toggle:hover {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .register-page__submit-button {
@@ -2528,12 +2579,13 @@ html {
   transform: translateX(-50%);
   width: 100%;
   max-width: 100%;
-  height: 52px;
+  height: var(--nav-bar-height);
+  padding: 0 0 6px 0;
+  box-sizing: border-box;
   background-color: var(--color-bg);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding-top: 6px;
   z-index: 50;
 }
 
@@ -2927,12 +2979,13 @@ html {
   left: 0;
   right: 0;
   width: 100%;
-  height: 73px;
+  height: var(--nav-bar-height);
+  padding: 0 0 6px 0;
+  box-sizing: border-box;
   background-color: var(--color-bg);
   display: flex;
   justify-content: space-around;
-  align-items: flex-start;
-  padding-top: 18px;
+  align-items: center;
   z-index: 50;
 }
 
@@ -2940,7 +2993,7 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -2956,16 +3009,16 @@ html {
 .pickup-code-page__nav-label {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 22px;
+  font-size: 9px;
+  line-height: 12px;
   color: #FFFFFF;
   text-align: center;
   text-decoration: none !important;
 }
 
 .pickup-code-page__nav-button svg {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   stroke: #FFFFFF;
 }
 
@@ -3406,6 +3459,11 @@ html {
   flex-shrink: 0;
 }
 
+.vendor-page__quantity-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .vendor-page__quantity-button--minus {
   position: relative;
 }
@@ -3505,12 +3563,13 @@ html {
   left: 0;
   right: 0;
   width: 100%;
-  height: 73px;
+  height: var(--nav-bar-height);
+  padding: 0 0 6px 0;
+  box-sizing: border-box;
   background-color: var(--color-bg);
   display: flex;
   justify-content: space-around;
-  align-items: flex-start;
-  padding-top: 18px;
+  align-items: center;
   z-index: 50;
 }
 
@@ -3518,7 +3577,7 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -3542,16 +3601,16 @@ html {
 .vendor-page__nav-label {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 22px;
+  font-size: 9px;
+  line-height: 12px;
   color: #FFFFFF;
   text-align: center;
   text-decoration: none !important;
 }
 
 .vendor-page__nav-button svg {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   stroke: #FFFFFF;
 }
 
@@ -3966,12 +4025,13 @@ html {
   left: 0;
   right: 0;
   width: 100%;
-  height: 73px;
+  height: var(--nav-bar-height);
+  padding: 0 0 6px 0;
+  box-sizing: border-box;
   background-color: var(--color-bg);
   display: flex;
   justify-content: space-around;
-  align-items: flex-start;
-  padding-top: 18px;
+  align-items: center;
   z-index: 50;
 }
 
@@ -3979,7 +4039,7 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -4003,16 +4063,16 @@ html {
 .cart-page__nav-label {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 600;
-  font-size: 11px;
-  line-height: 1.25;
+  font-size: 9px;
+  line-height: 12px;
   color: #FFFFFF;
   text-align: center;
   text-decoration: none !important;
 }
 
 .cart-page__nav-button svg {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   stroke: #FFFFFF;
 }
 

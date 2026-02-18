@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Input, PasswordInput } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { businessRegisterSchema } from "@/lib/schema";
 import { axiosInstance } from "@/lib/axiosInstance";
@@ -130,10 +130,9 @@ function RouteComponent() {
                                             <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
                                                 Пароль
                                             </label>
-                                            <Input 
+                                            <PasswordInput 
                                                 {...register("password")} 
-                                                type="password" 
-                                                className="w-full border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 py-2 px-3 text-sm"
+                                                className="w-full border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 py-2 px-3 text-sm pr-10"
                                                 placeholder="Минимум 6 символов"
                                             />
                                         </div>
@@ -142,10 +141,9 @@ function RouteComponent() {
                                             <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
                                                 Повторите пароль
                                             </label>
-                                            <Input 
+                                            <PasswordInput 
                                                 {...register("confirmPassword")} 
-                                                type="password" 
-                                                className="w-full border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 py-2 px-3 text-sm"
+                                                className="w-full border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 py-2 px-3 text-sm pr-10"
                                                 placeholder="Повторите пароль"
                                             />
                                         </div>

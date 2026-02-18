@@ -285,7 +285,7 @@ function BusinessCard({ business, onClick }: BusinessCardProps) {
                 <div className="businesses-list-page__business-header">
                     <div>
                         <h3 className="businesses-list-page__business-name">{business.name}</h3>
-                        <p className="businesses-list-page__business-type">Кофейня</p>
+                        <p className="businesses-list-page__business-type">{business.establishment_type || 'Заведение'}</p>
                     </div>
                     
                     <div className="businesses-list-page__header-right">

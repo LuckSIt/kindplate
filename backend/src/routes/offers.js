@@ -5,6 +5,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const logger = require("../lib/logger");
+const storage = require("../lib/storage");
 const { AppError, asyncHandler } = require("../lib/errorHandler");
 const { validateOffer } = require("../lib/validation");
 const { sanitizePlainTextFields } = require("../middleware/sanitization");
@@ -164,7 +165,7 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
         const usersColumnsCheck = await pool.query(`
             SELECT column_name FROM information_schema.columns 
             WHERE table_schema = 'public' AND table_name = 'users'
-            AND column_name IN ('cuisine_tags', 'logo_url', 'rating', 'total_reviews', 'phone', 'working_hours', 'website')
+            AND column_name IN ('cuisine_tags', 'logo_url', 'rating', 'total_reviews', 'phone', 'working_hours', 'website', 'establishment_type')
         `);
         const availableUserColumns = usersColumnsCheck.rows.map(r => r.column_name);
         const userHasCuisineTags = availableUserColumns.includes('cuisine_tags');
@@ -174,6 +175,7 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
         const userHasPhone = availableUserColumns.includes('phone');
         const userHasWorkingHours = availableUserColumns.includes('working_hours');
         const userHasWebsite = availableUserColumns.includes('website');
+        const userHasEstablishmentType = availableUserColumns.includes('establishment_type');
 
         // Формируем SQL запрос
         let query = `
@@ -204,7 +206,8 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
                 ${userHasTotalReviews ? 'u.total_reviews' : '0::integer as business_total_reviews'} as business_total_reviews,
                 ${userHasPhone ? 'u.phone' : 'NULL::text as business_phone'} as business_phone,
                 ${userHasWorkingHours ? 'u.working_hours' : 'NULL::text as business_working_hours'} as business_working_hours,
-                ${userHasWebsite ? 'u.website' : 'NULL::text as business_website'} as business_website
+                ${userHasWebsite ? 'u.website' : 'NULL::text as business_website'} as business_website,
+                ${userHasEstablishmentType ? 'u.establishment_type' : 'NULL::text as business_establishment_type'} as business_establishment_type
         `;
         
         // Добавляем поля локации только если таблица существует
@@ -510,7 +513,8 @@ offersRouter.get("/search", asyncHandler(async (req, res) => {
                     total_reviews: row.business_total_reviews || 0,
                     phone: row.business_phone || null,
                     working_hours: row.business_working_hours || null,
-                    website: row.business_website || null
+                    website: row.business_website || null,
+                    establishment_type: row.business_establishment_type || null
                 },
                 location: row.location_id ? {
                     id: row.location_id,
@@ -599,6 +603,11 @@ offersRouter.post("/upload-photo/:offerId", upload.single("photo"), handleMulter
 
     // Обновляем image_url (используем относительный путь)
     const image_url = `/uploads/offers/${req.file.filename}`;
+    if (storage.isS3Enabled()) {
+        const key = `offers/${req.file.filename}`;
+        const ok = await storage.uploadToS3(req.file.path, key, req.file.mimetype || "image/jpeg");
+        if (ok) try { fs.unlinkSync(req.file.path); } catch (_) {}
+    }
     await pool.query(
         "UPDATE offers SET image_url = $1 WHERE id = $2",
         [image_url, offer_id]
@@ -816,6 +825,11 @@ offersRouter.post("/create", upload.single('image'), handleMulterError, sanitize
 
     // URL загруженного изображения
     const image_url = req.file ? `/uploads/offers/${req.file.filename}` : null;
+    if (req.file && storage.isS3Enabled()) {
+        const key = `offers/${req.file.filename}`;
+        const ok = await storage.uploadToS3(req.file.path, key, req.file.mimetype || "image/jpeg");
+        if (ok) try { fs.unlinkSync(req.file.path); } catch (_) {}
+    }
 
     // Валидация location_id (если указан, проверяем что локация принадлежит бизнесу)
     if (location_id) {
@@ -961,6 +975,11 @@ offersRouter.post("/edit", upload.single('image'), handleMulterError, sanitizePl
     const image_url = req.file 
         ? `/uploads/offers/${req.file.filename}` 
         : checkResult.rows[0].image_url; // Оставляем старое
+    if (req.file && storage.isS3Enabled()) {
+        const key = `offers/${req.file.filename}`;
+        const ok = await storage.uploadToS3(req.file.path, key, req.file.mimetype || "image/jpeg");
+        if (ok) try { fs.unlinkSync(req.file.path); } catch (_) {}
+    }
 
     // Строим запрос динамически для location_id
     const updates = [
@@ -1049,6 +1068,11 @@ offersRouter.patch("/:id", upload.single('image'), handleMulterError, asyncHandl
     }
 
     if (req.file) {
+        if (storage.isS3Enabled()) {
+            const key = `offers/${req.file.filename}`;
+            const ok = await storage.uploadToS3(req.file.path, key, req.file.mimetype || "image/jpeg");
+            if (ok) try { fs.unlinkSync(req.file.path); } catch (_) {}
+        }
         updateFields.push(`image_url = $${paramIndex++}`);
         values.push(`/uploads/offers/${req.file.filename}`);
     }

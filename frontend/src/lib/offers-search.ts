@@ -30,6 +30,7 @@ export type OfferSearchResult = Offer & {
     phone?: string;
     working_hours?: string;
     website?: string;
+    establishment_type?: string | null;
   };
   distance_km?: number | null;
   location?: {
@@ -119,6 +120,7 @@ export const mapOffersToBusinesses = (offers?: OfferSearchResult[]): Business[] 
         phone: offer.business.phone,
         working_hours: offer.business.working_hours,
         website: offer.business.website,
+        establishment_type: offer.business.establishment_type ?? null,
         offers: [],
         distance_km: offer.distance_km ?? null,
       });

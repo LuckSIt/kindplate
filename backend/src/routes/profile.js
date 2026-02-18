@@ -9,6 +9,8 @@ const pool = require("../lib/db");
 const logger = require("../lib/logger");
 const { AppError, asyncHandler } = require("../lib/errorHandler");
 const { requireAuth } = require("../lib/guards");
+const storage = require("../lib/storage");
+const fs = require("fs");
 const { uploadConfigs, handleUploadError } = require("../middleware/upload");
 
 // Валидация телефона (простая проверка)
@@ -53,7 +55,8 @@ profileRouter.get("/", requireAuth, asyncHandler(async (req, res) => {
             ${has('privacy_accepted') ? 'privacy_accepted' : 'false AS privacy_accepted'},
             ${has('profile_updated_at') ? 'profile_updated_at' : 'NULL::timestamp AS profile_updated_at'},
             ${has('created_at') ? 'created_at' : 'NOW() AS created_at'},
-            ${has('logo_url') ? 'logo_url' : 'NULL::text AS logo_url'}
+            ${has('logo_url') ? 'logo_url' : 'NULL::text AS logo_url'},
+            ${has('establishment_type') ? 'establishment_type' : 'NULL::text AS establishment_type'}
         FROM users
         WHERE id = $1
     `;
@@ -80,7 +83,7 @@ profileRouter.get("/", requireAuth, asyncHandler(async (req, res) => {
  */
 profileRouter.put("/", requireAuth, asyncHandler(async (req, res) => {
     const userId = req.session.userId;
-    const { name, phone, address, coords, working_hours, website } = req.body;
+    const { name, phone, address, coords, working_hours, website, establishment_type } = req.body;
 
     logger.info('Updating profile', { userId, updates: Object.keys(req.body) });
 
@@ -143,6 +146,11 @@ profileRouter.put("/", requireAuth, asyncHandler(async (req, res) => {
         values.push(website || null);
     }
 
+    if (establishment_type !== undefined && has('establishment_type')) {
+        updates.push(`establishment_type = $${paramIndex++}`);
+        values.push(establishment_type && String(establishment_type).trim() ? String(establishment_type).trim().slice(0, 100) : null);
+    }
+
     if (updates.length === 0) {
         throw new AppError('Нет данных для обновления', 400, 'NO_UPDATES');
     }
@@ -158,6 +166,7 @@ profileRouter.put("/", requireAuth, asyncHandler(async (req, res) => {
         has('coord_1') ? 'coord_1' : 'NULL::numeric AS coord_1',
         has('working_hours') ? 'working_hours' : 'NULL::text AS working_hours',
         has('website') ? 'website' : 'NULL::text AS website',
+        has('establishment_type') ? 'establishment_type' : 'NULL::text AS establishment_type',
         has('profile_updated_at') ? 'profile_updated_at' : 'NULL::timestamp AS profile_updated_at'
     ].join(', ');
 
@@ -221,6 +230,11 @@ profileRouter.post("/logo", requireAuth, uploadConfigs.logos.single("logo"), han
     }
 
     const logo_url = "/uploads/logos/" + req.file.filename;
+    if (storage.isS3Enabled()) {
+        const key = "logos/" + req.file.filename;
+        const ok = await storage.uploadToS3(req.file.path, key, req.file.mimetype || "image/jpeg");
+        if (ok) try { fs.unlinkSync(req.file.path); } catch (_) {}
+    }
     await pool.query("UPDATE users SET logo_url = $1 WHERE id = $2", [logo_url, userId]);
 
     logger.info("Profile logo uploaded", { userId, logo_url });

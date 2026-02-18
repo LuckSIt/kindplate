@@ -5,7 +5,7 @@ import { customerRegisterSchema } from "@/lib/schema";
 import { axiosInstance, tokenStorage } from "@/lib/axiosInstance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { notify } from "@/lib/notifications";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { DocumentsModal } from "@/components/ui/documents-modal";
 import { useState } from "react";
 
@@ -17,6 +17,8 @@ function RouteComponent() {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const methods = useForm({
         resolver: zodResolver(customerRegisterSchema),
     });
@@ -125,13 +127,21 @@ function RouteComponent() {
                                 <label className="register-page__field-label">
                                                 Пароль
                                             </label>
-                                <div className="register-page__input-wrapper">
+                                <div className="register-page__input-wrapper register-page__input-wrapper--password">
                                     <input
                                                 {...register("password")} 
-                                                type="password" 
+                                                type={showPassword ? "text" : "password"} 
                                         className="register-page__input"
                                                 placeholder="Минимум 6 символов"
                                             />
+                                    <button
+                                        type="button"
+                                        className="register-page__password-toggle"
+                                        onClick={() => setShowPassword((v) => !v)}
+                                        aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
+                                    >
+                                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                    </button>
                                 </div>
                                         </div>
 
@@ -140,13 +150,21 @@ function RouteComponent() {
                                 <label className="register-page__field-label">
                                                 Повторите пароль
                                             </label>
-                                <div className="register-page__input-wrapper">
+                                <div className="register-page__input-wrapper register-page__input-wrapper--password">
                                     <input
                                                 {...register("confirmPassword")} 
-                                                type="password" 
+                                                type={showConfirmPassword ? "text" : "password"} 
                                         className="register-page__input"
                                         placeholder="Повторить пароль"
                                             />
+                                    <button
+                                        type="button"
+                                        className="register-page__password-toggle"
+                                        onClick={() => setShowConfirmPassword((v) => !v)}
+                                        aria-label={showConfirmPassword ? "Скрыть пароль" : "Показать пароль"}
+                                    >
+                                        {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                    </button>
                                 </div>
                                         </div>
 

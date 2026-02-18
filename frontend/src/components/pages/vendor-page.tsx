@@ -86,11 +86,11 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     setIsFavorite(prev => !prev);
   };
 
-  const handleQuantityChange = (offerId: number, delta: number) => {
+  const handleQuantityChange = (offerId: number, delta: number, maxQuantity: number) => {
     setOfferQuantities(prev => {
       const newMap = new Map(prev);
       const current = newMap.get(offerId) || 0;
-      const newValue = Math.max(0, current + delta);
+      const newValue = Math.max(0, Math.min(maxQuantity, current + delta));
       if (newValue === 0) {
         newMap.delete(offerId);
       } else {
@@ -101,9 +101,9 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
   };
 
   const handleAddToOrder = (offer: Offer) => {
-    const quantity = offerQuantities.get(offer.id) || 1;
-    
-    if (!business) return;
+    const maxQty = Math.max(0, offer.quantity_available ?? 0);
+    const quantity = Math.min(offerQuantities.get(offer.id) || 1, maxQty || 1);
+    if (quantity < 1 || !business) return;
 
     // Если в корзине уже есть товары другого заведения — не даём смешивать
     if (hasDifferentBusiness(business.id)) {
@@ -285,7 +285,9 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
           <div className="vendor-page__empty">Нет доступных предложений</div>
         ) : (
           offers.map((offer) => {
-            const quantity = offerQuantities.get(offer.id) || 1;
+            const maxQty = Math.max(0, offer.quantity_available ?? 0);
+            const rawQuantity = offerQuantities.get(offer.id) || 1;
+            const quantity = maxQty < 1 ? 0 : Math.min(rawQuantity, maxQty);
             const showQuantitySelector = quantity > 0;
             // Используем только image_url из API, без статических изображений
             const imageUrl = offer.image_url 
@@ -296,11 +298,12 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
               <OfferCard
                 key={`${offer.id}-${offer.image_url || 'no-image'}`}
                 offer={offer}
-                image={imageUrl}
+                image={imageUrl ?? ''}
                 quantity={quantity}
+                maxQuantity={maxQty}
                 showQuantitySelector={showQuantitySelector}
-                onQuantityIncrease={() => handleQuantityChange(offer.id, 1)}
-                onQuantityDecrease={() => handleQuantityChange(offer.id, -1)}
+                onQuantityIncrease={() => handleQuantityChange(offer.id, 1, maxQty)}
+                onQuantityDecrease={() => handleQuantityChange(offer.id, -1, maxQty)}
                 onAddToOrder={() => handleAddToOrder(offer)}
                 isAdding={isAddingToCart}
               />
@@ -351,6 +354,7 @@ interface OfferCardProps {
   offer: Offer;
   image: string;
   quantity: number;
+  maxQuantity: number;
   showQuantitySelector: boolean;
   onQuantityIncrease: () => void;
   onQuantityDecrease: () => void;
@@ -362,6 +366,7 @@ function OfferCard({
   offer, 
   image, 
   quantity, 
+  maxQuantity,
   showQuantitySelector, 
   onQuantityIncrease, 
   onQuantityDecrease, 
@@ -441,6 +446,7 @@ function OfferCard({
                     e.stopPropagation();
                     onQuantityDecrease();
                   }}
+                  disabled={quantity <= 1}
                   aria-label="Уменьшить количество"
                 ></button>
                 <div className="vendor-page__quantity-value">{quantity}</div>
@@ -450,6 +456,7 @@ function OfferCard({
                     e.stopPropagation();
                     onQuantityIncrease();
                   }}
+                  disabled={quantity >= maxQuantity}
                   aria-label="Увеличить количество"
                 ></button>
               </div>

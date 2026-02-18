@@ -37,6 +37,7 @@ export function ProfilePage() {
       address: profile?.address || '',
       working_hours: (profile as any)?.working_hours || '',
       website: (profile as any)?.website || '',
+      establishment_type: (profile as any)?.establishment_type || '',
     },
   });
 
@@ -54,6 +55,7 @@ export function ProfilePage() {
         address: profile.address || '',
         working_hours: (profile as any)?.working_hours || '',
         website: (profile as any)?.website || '',
+        establishment_type: (profile as any)?.establishment_type || '',
       });
     }
   }, [profile, profileMethods]);
@@ -325,6 +327,30 @@ export function ProfilePage() {
                       {profileMethods.formState.errors.working_hours.message}
                     </p>
                   )}
+                </div>
+              )}
+
+              {/* Тип заведения — отображается в списке бизнесов */}
+              {profile.is_business && (
+                <div className="profile-page__field">
+                  <label className="profile-page__field-label">
+                    Тип заведения
+                  </label>
+                  <input
+                    {...profileMethods.register('establishment_type')}
+                    type="text"
+                    placeholder="Например: Кофейня, Пекарня, Ресторан"
+                    className="profile-page__input"
+                    maxLength={100}
+                  />
+                  {profileMethods.formState.errors.establishment_type && (
+                    <p className="profile-page__error-message">
+                      {profileMethods.formState.errors.establishment_type.message}
+                    </p>
+                  )}
+                  <p className="profile-page__field-hint">
+                    Отображается в списке заведений под названием
+                  </p>
                 </div>
               )}
 

@@ -33,6 +33,11 @@ export const profileUpdateSchema = z.object({
     .url('Некорректный URL сайта')
     .optional()
     .or(z.literal('')),
+
+  establishment_type: z.string()
+    .max(100, 'Слишком длинное значение')
+    .optional()
+    .or(z.literal('')),
 });
 
 // Схема для изменения пароля

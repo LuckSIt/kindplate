@@ -7,7 +7,7 @@ import { axiosInstance, tokenStorage } from "@/lib/axiosInstance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { notify } from "@/lib/notifications";
 import type { LoginForm } from "@/lib/types";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { DocumentsModal } from "@/components/ui/documents-modal";
 import { authContext } from "@/lib/auth";
 
@@ -20,6 +20,7 @@ function RouteComponent() {
     const navigate = useNavigate();
     const { user, isLoading: authLoading } = useContext(authContext);
     const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     // Если пользователь уже авторизован — перенаправляем на главную.
     // Это критично для iOS PWA: предыдущий interceptor мог сохранить URL /auth/login,
@@ -131,13 +132,21 @@ function RouteComponent() {
                                 <label className="login-page__field-label">
                                     Пароль
                                 </label>
-                                <div className="login-page__input-wrapper">
+                                <div className="login-page__input-wrapper login-page__input-wrapper--password">
                                     <input
                                         {...register("password")}
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         className="login-page__input"
                                         placeholder="Минимум 6 символов"
                                     />
+                                    <button
+                                        type="button"
+                                        className="login-page__password-toggle"
+                                        onClick={() => setShowPassword((v) => !v)}
+                                        aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
+                                    >
+                                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                    </button>
                                 </div>
                             </div>
 

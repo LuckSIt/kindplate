@@ -170,8 +170,8 @@ function RootRoute() {
     const [_hasShadow, _setHasShadow] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const location = useLocation();
-    // Высота навбара: 52px контент + 6px отступ снизу
-    const navHeight = '58px';
+    // Единая высота навбара на всех страницах (--nav-bar-height в styles.css)
+    const navHeight = 'var(--nav-bar-height, 58px)';
     // Устанавливаем CSS переменную --app-height для точной высоты viewport на мобильных устройствах
     useEffect(() => {
         const updateViewportVars = () => {
@@ -325,7 +325,7 @@ function RootRoute() {
                                     data-app-bottom-nav
                                     className="app-bottom-nav"
                                 >
-                                    <div className="mx-auto px-4 flex items-center justify-between w-full" style={{ height: '52px' }}>
+                                    <div className="mx-auto px-4 flex items-center justify-between w-full" style={{ height: 'var(--nav-bar-content-height)' }}>
                                         <TabLink to="/home" label="Карта" icon={(active) => (
                                             active ? (
                                                 <div className="w-[22px] h-[22px] bg-[#098771] rounded-full flex items-center justify-center">

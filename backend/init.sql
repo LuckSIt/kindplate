@@ -21,6 +21,7 @@ CREATE TABLE users (
     phone VARCHAR(20),
     working_hours VARCHAR(200),
     website VARCHAR(500),
+    establishment_type VARCHAR(100),
     rating DECIMAL(3, 2) DEFAULT 0.00,
     total_reviews INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

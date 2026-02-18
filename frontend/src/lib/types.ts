@@ -20,6 +20,10 @@ export type User = {
   rating?: number;
   total_reviews?: number;
   logo_url?: string;
+  working_hours?: string;
+  website?: string;
+  /** Тип заведения (для бизнес-аккаунтов), отображается в списке */
+  establishment_type?: string | null;
   terms_accepted?: boolean;
   privacy_accepted?: boolean;
   profile_updated_at?: string;
@@ -54,6 +58,8 @@ export type Business = {
   phone?: string;
   working_hours?: string;
   website?: string;
+  /** Тип заведения (Кофейня, Пекарня и т.д.) — задаётся в настройках профиля бизнеса */
+  establishment_type?: string | null;
   offers?: Offer[];
   /** Расстояние в км от точки отсчёта (центр карты или геолокация пользователя) */
   distance_km?: number | null;
