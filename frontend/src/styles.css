@@ -189,8 +189,6 @@
   --app-height: 100vh;
   --nav-height: 52px;
   --search-height: 60px;
-  /* Нижний safe-area: по умолчанию 0. На iOS JS в index.html переопределяет на 34px. Не удалять. */
-  --safe-area-inset-bottom: 0px;
 }
 
 /* Поддержка dvh для современных браузеров */
@@ -200,13 +198,10 @@
   }
 }
 
-/* Важно для iOS PWA standalone: растяжение до краёв и активация safe-area */
+/* Как в рабочей старой версии: только height от переменной, без min-height (чтобы не было лишнего отступа снизу на iOS) */
 html {
   background: var(--color-bg) !important;
   overflow: hidden;
-  height: 100%;
-  min-height: 100dvh;
-  min-height: -webkit-fill-available;
   height: var(--app-height);
   width: 100%;
 }
@@ -221,10 +216,6 @@ body {
   color: var(--color-text) !important;
   line-height: 1.5;
   overflow: hidden;
-  height: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
-  min-height: -webkit-fill-available;
   height: var(--app-height);
   width: 100%;
   /* Предотвращаем масштабирование */
@@ -873,7 +864,7 @@ html {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-/* Нижняя навигация: 52px + safe-area. Специфичность [data-app-bottom-nav] чтобы не перетиралось другими правилами. */
+/* Нижняя навигация: как в рабочей старой версии — 52px + env(), без JS. status-bar-style: default в index. */
 [data-app-bottom-nav].app-bottom-nav {
   position: fixed !important;
   bottom: 0 !important;
@@ -883,12 +874,13 @@ html {
   width: 100%;
   margin: 0;
   padding: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   box-sizing: border-box;
-  height: calc(52px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))) !important;
+  min-height: 52px;
+  height: auto;
   background-color: var(--color-bg);
   isolation: isolate;
   transform: translateZ(0);
-  will-change: transform;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;

@@ -449,8 +449,8 @@ function RouteComponent() {
         }
     }, [activeSnap]);
 
-    // Высота навигации совпадает с __root.tsx (--safe-area-inset-bottom задаётся в index.html для iOS)
-    const navHeight = 'calc(52px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))';
+    // Высота навигации совпадает с __root.tsx
+    const navHeight = 'calc(52px + env(safe-area-inset-bottom, 0px))';
 
     return (
         <>
