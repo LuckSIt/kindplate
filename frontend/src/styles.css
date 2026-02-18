@@ -864,7 +864,7 @@ html {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-/* Нижняя навигация: строго 52px, прижата к низу без safe-area (убираем пустую полосу на iOS). */
+/* Нижняя навигация: 52px + чуть отступа снизу (приподнята от самого края). */
 [data-app-bottom-nav].app-bottom-nav {
   position: fixed !important;
   bottom: 0 !important;
@@ -873,9 +873,10 @@ html {
   z-index: 50;
   width: 100%;
   margin: 0;
-  padding: 0;
+  padding: 0 0 6px 0;
   box-sizing: border-box;
-  height: 52px;
+  height: 58px;
+  min-height: 52px;
   background-color: var(--color-bg);
   isolation: isolate;
   transform: translateZ(0);
@@ -2275,6 +2276,19 @@ html {
   height: 100%;
   object-fit: cover;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.businesses-list-page__business-image-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2B344D;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 48px;
+  font-weight: 600;
 }
 
 .businesses-list-page__business-card:hover .businesses-list-page__business-image img {

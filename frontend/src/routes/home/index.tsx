@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useMemo, useRef, useContext } from "r
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authContext } from "@/lib/auth";
 import { PushOnboarding } from "@/components/ui/push-onboarding";
-import { axiosInstance, getImageURL } from "@/lib/axiosInstance";
+import { axiosInstance } from "@/lib/axiosInstance";
 import { notify } from "@/lib/notifications";
 import { fetchOffersSearch, mapOffersToBusinesses } from "@/lib/offers-search";
 import { MapView } from "@/components/ui/map-view";
@@ -449,8 +449,8 @@ function RouteComponent() {
         }
     }, [activeSnap]);
 
-    // Высота навигации совпадает с __root.tsx (52px)
-    const navHeight = '52px';
+    // Высота навигации совпадает с __root.tsx (58px)
+    const navHeight = '58px';
 
     return (
         <>
@@ -768,22 +768,18 @@ function HomeBusinessCard({ business, onClick }: { business: Business; onClick: 
     const activeOffers = business.offers?.filter(o => o.quantity_available > 0 && o.is_active) || [];
     const firstOffers = activeOffers.slice(0, 2);
     const remainingCount = activeOffers.length - 2;
-    // Use first offer image or business logo as fallback
-    const image = activeOffers[0]?.image_url 
-        ? getImageURL(activeOffers[0].image_url) 
-        : business.logo_url 
-            ? getImageURL(business.logo_url) 
-            : null;
+    // Та же логика, что в списке: фото первого оффера или лого (сырой путь — ReliableImg сам разрешит URL)
+    const imageSrc = activeOffers[0]?.image_url || business.logo_url || '';
 
     return (
         <div className="businesses-list-page__business-card" onClick={onClick}>
             {/* Image */}
             <div className="businesses-list-page__business-image">
-                {image ? (
+                {imageSrc ? (
                     <ReliableImg 
-                        src={image} 
+                        src={imageSrc} 
                         alt={business.name} 
-                        key={activeOffers[0]?.image_url || business.logo_url}
+                        key={imageSrc}
                         fallbackElement={
                             <div className="w-full h-full bg-gray-700 flex items-center justify-center text-3xl">🏪</div>
                         }

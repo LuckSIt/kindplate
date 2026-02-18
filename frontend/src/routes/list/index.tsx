@@ -4,9 +4,8 @@ import { useMapQuery } from "@/lib/hooks/use-optimized-query";
 import { fetchOffersSearch, mapOffersToBusinesses } from "@/lib/offers-search";
 import { authContext } from "@/lib/auth";
 import { useCart } from "@/lib/hooks/use-cart";
-import { getImageURL } from "@/lib/axiosInstance";
+import { ReliableImg } from "@/components/ui/optimized-image";
 import type { Business } from "@/lib/types";
-import businessImage1 from "@/figma/business-image-1.png";
 import { loadDietPreferences } from "@/lib/diet-preferences";
 
 /** Из строки графика работы оставляет только время (например "10:00-20:00"), без текста вроде "Ежедневно". */
@@ -231,7 +230,6 @@ function ListPageComponent() {
                         <BusinessCard 
                             key={business.id || index}
                             business={business}
-                            image={business.logo_url ? getImageURL(business.logo_url) : businessImage1}
                             onClick={() => handleBusinessClick(business.id)}
                         />
                     ))
@@ -244,20 +242,32 @@ function ListPageComponent() {
 
 interface BusinessCardProps {
     business: Business;
-    image: string;
     onClick: () => void;
 }
 
-function BusinessCard({ business, image, onClick }: BusinessCardProps) {
+function BusinessCard({ business, onClick }: BusinessCardProps) {
     const activeOffers = business.offers?.filter(o => o.quantity_available > 0) || [];
     const firstOffers = activeOffers.slice(0, 2);
     const remainingCount = activeOffers.length - 2;
+    // Та же логика, что на карте: фото первого оффера или лого бизнеса (синхрон с API)
+    const imageSrc = activeOffers[0]?.image_url || business.logo_url || '';
 
     return (
         <div className="businesses-list-page__business-card" onClick={onClick}>
             {/* Image */}
             <div className="businesses-list-page__business-image">
-                <img src={image} alt={business.name} />
+                {imageSrc ? (
+                    <ReliableImg
+                        src={imageSrc}
+                        alt={business.name}
+                        className="businesses-list-page__business-image-img"
+                        fallbackElement={
+                            <div className="businesses-list-page__business-image-placeholder">?</div>
+                        }
+                    />
+                ) : (
+                    <div className="businesses-list-page__business-image-placeholder">?</div>
+                )}
             </div>
 
             {/* Favorite Button */}

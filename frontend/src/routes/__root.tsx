@@ -170,8 +170,8 @@ function RootRoute() {
     const [_hasShadow, _setHasShadow] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const location = useLocation();
-    // Высота навбара: только 52px, без safe-area (навбар вплотную к низу экрана)
-    const navHeight = '52px';
+    // Высота навбара: 52px контент + 6px отступ снизу
+    const navHeight = '58px';
     // Устанавливаем CSS переменную --app-height для точной высоты viewport на мобильных устройствах
     useEffect(() => {
         const updateViewportVars = () => {
