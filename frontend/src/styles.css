@@ -871,7 +871,7 @@ html {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-/* Нижняя навигация: только у таб-бара padding-bottom. max(..., 20px) — фолбек при env=0 в PWA standalone. translateZ(0) — обход бага iOS 18. */
+/* Нижняя навигация: высота = 52px + safe-area. На iOS JS задаёт --safe-area-inset-bottom (34px), если env()=0. height вместо padding — надёжнее в PWA. */
 .app-bottom-nav {
   position: fixed;
   bottom: 0;
@@ -881,26 +881,20 @@ html {
   width: 100%;
   margin: 0;
   padding: 0;
-  padding-bottom: max(env(safe-area-inset-bottom, 20px), 20px);
   box-sizing: border-box;
+  height: calc(52px + var(--safe-area-inset-bottom, max(env(safe-area-inset-bottom, 20px), 20px)));
   background-color: var(--color-bg);
   isolation: isolate;
   transform: translateZ(0);
   will-change: transform;
-}
-.app-bottom-nav::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: max(env(safe-area-inset-bottom, 20px), 20px);
-  background-color: var(--color-bg);
-  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .app-bottom-nav > div {
   height: 52px;
+  flex-shrink: 0;
 }
 
 /* Bottom navigation (legacy) */

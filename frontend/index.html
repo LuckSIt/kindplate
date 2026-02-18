@@ -1,13 +1,19 @@
 <!doctype html>
 <html lang="en" class="dark">
     <head>
-        <script>
-            // Принудительно устанавливаем темную тему сразу при загрузке
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        </script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+        <script>
+            (function() {
+                document.documentElement.classList.add('dark');
+                try { localStorage.setItem('theme', 'dark'); } catch (e) {}
+                var ua = navigator.userAgent || '';
+                var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                if (isIOS) {
+                    document.documentElement.style.setProperty('--safe-area-inset-bottom', '34px');
+                }
+            })();
+        </script>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -16,8 +22,7 @@
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Expires" content="0" />
         <link rel="icon" href="/favicon.ico" />
-        <meta name="theme-color" content="#001900" />
-        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: dark)" />
+        <meta name="theme-color" content="#111E42" />
         <meta
             name="description"
             content="Web site created using create-tsrouter-app"

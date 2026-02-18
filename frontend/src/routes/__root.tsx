@@ -170,9 +170,8 @@ function RootRoute() {
     const [_hasShadow, _setHasShadow] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const location = useLocation();
-    // Высота навбара: 52px + safe-area (фолбек 20px при env=0 в PWA standalone)
-    //const navHeight = 'calc(52px + max(env(safe-area-inset-bottom, 20px), 20px))';
-    const navHeight = '52px';
+    // Высота навбара: 52px + safe-area (на iOS в index.html задаётся --safe-area-inset-bottom)
+    const navHeight = 'calc(52px + var(--safe-area-inset-bottom, max(env(safe-area-inset-bottom, 20px), 20px)))';
     // Устанавливаем CSS переменную --app-height для точной высоты viewport на мобильных устройствах
     useEffect(() => {
         const updateViewportVars = () => {
