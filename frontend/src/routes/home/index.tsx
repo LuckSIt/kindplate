@@ -449,8 +449,8 @@ function RouteComponent() {
         }
     }, [activeSnap]);
 
-    // Высота навигации совпадает с __root.tsx
-    const navHeight = 'calc(52px + env(safe-area-inset-bottom, 0px))';
+    // Высота навигации совпадает с __root.tsx (52px)
+    const navHeight = '52px';
 
     return (
         <>

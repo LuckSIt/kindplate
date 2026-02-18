@@ -864,7 +864,7 @@ html {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-/* Нижняя навигация: как в рабочей старой версии — 52px + env(), без JS. status-bar-style: default в index. */
+/* Нижняя навигация: строго 52px, прижата к низу без safe-area (убираем пустую полосу на iOS). */
 [data-app-bottom-nav].app-bottom-nav {
   position: fixed !important;
   bottom: 0 !important;
@@ -874,16 +874,14 @@ html {
   width: 100%;
   margin: 0;
   padding: 0;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
   box-sizing: border-box;
-  min-height: 52px;
-  height: auto;
+  height: 52px;
   background-color: var(--color-bg);
   isolation: isolate;
   transform: translateZ(0);
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 [data-app-bottom-nav].app-bottom-nav > div {
