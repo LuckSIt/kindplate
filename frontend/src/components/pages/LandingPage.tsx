@@ -129,7 +129,7 @@ export function LandingPage() {
 
     return (
         <div 
-            className="kp-landing w-full overflow-y-auto"
+            className="kp-landing w-full overflow-y-auto overflow-x-hidden"
             style={{ 
                 backgroundColor: '#111E42',
                 position: 'fixed',
@@ -142,11 +142,12 @@ export function LandingPage() {
             }}
         >
             <div 
-                className="w-full mx-auto max-w-[480px] sm:max-w-[640px] md:max-w-[768px]" 
+                className="w-full mx-auto max-w-[480px] sm:max-w-[640px] md:max-w-[768px] overflow-x-hidden min-w-0" 
                 style={{ 
                     backgroundColor: '#111E42',
                     minHeight: '100%',
-                    paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))'
+                    paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
+                    boxSizing: 'border-box',
                 }}
             >
                 {/* Header 
@@ -233,13 +234,13 @@ export function LandingPage() {
                 </section>
 
                 {/* Phone — по Figma: 267×548, mt 11, border 6px #098771, rounded 36px, gradient */}
-                <section className="flex justify-center px-0 pb-[30px]" style={{ marginTop: 11 }}>
+                <section className="flex justify-center px-4 pb-[30px] overflow-x-hidden" style={{ marginTop: 11 }}>
                     <div 
-                        className="relative rounded-[36px] p-[6px] overflow-hidden flex flex-col"
+                        className="relative rounded-[36px] p-[6px] overflow-hidden flex flex-col min-w-0"
                         style={{ 
                             width: 267,
                             minHeight: 548,
-                            maxWidth: '85vw',
+                            maxWidth: 'min(85vw, 267px)',
                             border: '6px solid #098771',
                             background: 'linear-gradient(23.17deg, #EFF4F3 0%, #DEF4EE 73.56%)',
                         }}
@@ -307,10 +308,10 @@ export function LandingPage() {
                                     </div>
                                 </div>
 
-                                {/* Подпись продукта — компактная типографика; ценник сдвинут вниз */}
-                                <div className="px-[10px] pt-[6px] phone-product-card" style={{ marginTop: 4 }}>
+                                {/* Подпись продукта — компактная типографика; ценник сдвинут вниз; min-width: 0 чтобы не вылезать вправо */}
+                                <div className="px-[10px] pt-[6px] phone-product-card min-w-0 overflow-hidden" style={{ marginTop: 4 }}>
                                     <div
-                                        className="transition-opacity duration-300"
+                                        className="transition-opacity duration-300 min-w-0"
                                         style={{
                                             background: "#FFFFFF",
                                             boxShadow: "0px 0px 1px 0px rgba(146,144,144,0.2), 1px 2px 2px 0px rgba(146,144,144,0.17), 2px 4px 3px 0px rgba(146,144,144,0.1)",
@@ -324,21 +325,21 @@ export function LandingPage() {
                                         </div>
                                         
                                         {/* Название + скидка: название переносится, не налезает на бейдж */}
-                                        <div className="flex items-start justify-between gap-2 mb-0" style={{ minHeight: 0 }}>
-                                            <span className="phone-card-name font-montserrat-alt">
+                                        <div className="flex items-start justify-between gap-2 mb-0 min-w-0" style={{ minHeight: 0 }}>
+                                            <span className="phone-card-name font-montserrat-alt min-w-0 truncate">
                                                 {currentItem.name}
                                             </span>
-                                            <span className="phone-card-badge font-montserrat-alt">
+                                            <span className="phone-card-badge font-montserrat-alt flex-shrink-0">
                                                 {currentItem.discount}
                                             </span>
                                         </div>
                                         
                                         {/* Цены */}
-                                        <div className="flex items-baseline justify-between">
-                                            <span className="phone-card-old-price font-montserrat-alt">
+                                        <div className="flex items-baseline justify-between gap-2 min-w-0">
+                                            <span className="phone-card-old-price font-montserrat-alt truncate">
                                                 {currentItem.oldPrice}
                                             </span>
-                                            <span className="phone-card-price font-montserrat-alt">
+                                            <span className="phone-card-price font-montserrat-alt flex-shrink-0">
                                                 {currentItem.price}
                                             </span>
                                         </div>
@@ -467,7 +468,7 @@ export function LandingPage() {
                             Покупайте вкусную еду по невероятным ценам. Просматривайте предложения по близости и покупайте товары прямо в приложении KindPlate. Наши выгодные цены порадуют ваш кошелек.
                         </p>
                         {/* Блок шагов: градиент на всю ширину секции, без шума */}
-                        <div className="relative mb-6" style={{ width: 'calc(100% + 32px)', marginLeft: -16, marginRight: -16 }}>
+                        <div className="relative mb-6 w-full">
                             <div
                                 className="grain-card manrope landing-steps"
                                 style={{
@@ -581,7 +582,7 @@ export function LandingPage() {
                         >
                             Kindplate помогает ресторанам и магазинам реализовывать непроданные блюда и готовые продукты со скидкой, вместо того чтобы списывать их. Так вы вносите вклад в осознанное потребление и заботу о планете. Получите дополнительный стабильный источник дохода и привлекайте новых клиентов.
                         </p>
-                        <div className="relative mb-6" style={{ width: 'calc(100% + 32px)', marginLeft: -16, marginRight: -16 }}>
+                        <div className="relative mb-6 w-full">
                             <div
                                 className="grain-card manrope landing-steps"
                                 style={{

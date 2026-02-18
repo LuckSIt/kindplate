@@ -92,9 +92,10 @@ body .kp-landing .landing-clients-desc {
   color: #ffffff !important;
 }
 
-/* overflow-x не на всём лендинге, чтобы блюр в «Почему KindPlate?» не обрезался; секции с выездом задают overflow-x сами */
+/* Запрет горизонтального скролла и съезжания контента */
 .kp-landing {
-  overflow-x: visible;
+  overflow-x: hidden !important;
+  min-width: 0;
 }
 
 /* Блок шагов: градиент внутри контейнера */
