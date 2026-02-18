@@ -869,7 +869,7 @@ html {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-/* Нижняя навигация: прижата к самому низу (bottom: 0), safe-area внутри бара; псевдоэлемент заполняет зону под индикатором «Домой» */
+/* Нижняя навигация: прижата к низу (bottom: 0). Ограничиваем safe-area 16px, чтобы не было огромной пустой полосы на iPhone */
 .app-bottom-nav {
   position: fixed;
   bottom: 0;
@@ -879,7 +879,7 @@ html {
   width: 100%;
   margin: 0;
   padding: 0;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: min(env(safe-area-inset-bottom, 0px), 16px);
   box-sizing: border-box;
   background-color: var(--color-bg);
   isolation: isolate;
@@ -890,7 +890,7 @@ html {
   left: 0;
   right: 0;
   bottom: 0;
-  height: env(safe-area-inset-bottom, 0px);
+  height: min(env(safe-area-inset-bottom, 0px), 16px);
   background-color: var(--color-bg);
   pointer-events: none;
 }

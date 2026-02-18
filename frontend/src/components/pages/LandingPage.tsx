@@ -186,10 +186,10 @@ export function LandingPage() {
                     </div>
                 </header> */}
 
-                {/* Hero — отступ сверху с учётом safe-area (вырез/статус-бар на iPhone), чтобы заголовок не обрезался */}
+                {/* Hero — компактный отступ сверху: safe-area + 1rem, чтобы заголовок не уходил под вырез */}
                 <section 
                     className="manrope px-4 pb-10 overflow-x-hidden" 
-                    style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 2rem)' }}
+                    style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1rem)' }}
                 >
                     <div className="max-w-full mx-auto text-center" style={{ maxWidth: 361 }}>
                         {/* Заголовок hero — по Figma node 1-1296 */}
