@@ -5,7 +5,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const logger = require("../lib/logger");
-const storage = require("../lib/storage");
+const storageLib = require("../lib/storage");
 const { AppError, asyncHandler } = require("../lib/errorHandler");
 const { validateOffer } = require("../lib/validation");
 const { sanitizePlainTextFields } = require("../middleware/sanitization");
@@ -15,7 +15,7 @@ const searchCache = new Map();
 const CACHE_TTL = 60000; // 60 секунд
 
 // Настройка multer для загрузки файлов
-const storage = multer.diskStorage({
+const multerStorage = multer.diskStorage({
     destination: function (req, file, cb) {
         const uploadDir = path.join(__dirname, "../../uploads/offers");
         // Создаем папку если не существует
@@ -32,7 +32,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({
-    storage: storage,
+    storage: multerStorage,
     limits: {
         fileSize: 5 * 1024 * 1024, // 5MB
     },
@@ -603,9 +603,9 @@ offersRouter.post("/upload-photo/:offerId", upload.single("photo"), handleMulter
 
     // Обновляем image_url (используем относительный путь)
     const image_url = `/uploads/offers/${req.file.filename}`;
-    if (storage.isS3Enabled()) {
+    if (storageLib.isS3Enabled()) {
         const key = `offers/${req.file.filename}`;
-        const ok = await storage.uploadToS3(req.file.path, key, req.file.mimetype || "image/jpeg");
+        const ok = await storageLib.uploadToS3(req.file.path, key, req.file.mimetype || "image/jpeg");
         if (ok) try { fs.unlinkSync(req.file.path); } catch (_) {}
     }
     await pool.query(
@@ -825,9 +825,9 @@ offersRouter.post("/create", upload.single('image'), handleMulterError, sanitize
 
     // URL загруженного изображения
     const image_url = req.file ? `/uploads/offers/${req.file.filename}` : null;
-    if (req.file && storage.isS3Enabled()) {
+    if (req.file && storageLib.isS3Enabled()) {
         const key = `offers/${req.file.filename}`;
-        const ok = await storage.uploadToS3(req.file.path, key, req.file.mimetype || "image/jpeg");
+        const ok = await storageLib.uploadToS3(req.file.path, key, req.file.mimetype || "image/jpeg");
         if (ok) try { fs.unlinkSync(req.file.path); } catch (_) {}
     }
 
@@ -975,9 +975,9 @@ offersRouter.post("/edit", upload.single('image'), handleMulterError, sanitizePl
     const image_url = req.file 
         ? `/uploads/offers/${req.file.filename}` 
         : checkResult.rows[0].image_url; // Оставляем старое
-    if (req.file && storage.isS3Enabled()) {
+    if (req.file && storageLib.isS3Enabled()) {
         const key = `offers/${req.file.filename}`;
-        const ok = await storage.uploadToS3(req.file.path, key, req.file.mimetype || "image/jpeg");
+        const ok = await storageLib.uploadToS3(req.file.path, key, req.file.mimetype || "image/jpeg");
         if (ok) try { fs.unlinkSync(req.file.path); } catch (_) {}
     }
 
@@ -1068,9 +1068,9 @@ offersRouter.patch("/:id", upload.single('image'), handleMulterError, asyncHandl
     }
 
     if (req.file) {
-        if (storage.isS3Enabled()) {
+        if (storageLib.isS3Enabled()) {
             const key = `offers/${req.file.filename}`;
-            const ok = await storage.uploadToS3(req.file.path, key, req.file.mimetype || "image/jpeg");
+            const ok = await storageLib.uploadToS3(req.file.path, key, req.file.mimetype || "image/jpeg");
             if (ok) try { fs.unlinkSync(req.file.path); } catch (_) {}
         }
         updateFields.push(`image_url = $${paramIndex++}`);
