@@ -2,13 +2,13 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const sharp = require('sharp');
-const storage = require('../lib/storage');
+const storageLib = require('../lib/storage');
 
 // Настройка multer для загрузки фото отзывов
-const storage = multer.memoryStorage(); // Используем память для обработки через Sharp
+const multerStorage = multer.memoryStorage(); // Используем память для обработки через Sharp
 
 const upload = multer({
-    storage: storage,
+    storage: multerStorage,
     limits: {
         fileSize: 10 * 1024 * 1024, // 10MB максимум
         files: 5 // Максимум 5 фото на отзыв
@@ -64,9 +64,9 @@ async function processReviewPhotos(req, res, next) {
                 }) // Конвертируем в JPEG с качеством 85%
                 .toFile(filepath);
 
-            if (storage.isS3Enabled()) {
+            if (storageLib.isS3Enabled()) {
                 const key = `reviews/${filename}`;
-                const ok = await storage.uploadToS3(filepath, key, 'image/jpeg');
+                const ok = await storageLib.uploadToS3(filepath, key, 'image/jpeg');
                 if (ok) try { fs.unlinkSync(filepath); } catch (_) {}
             }
 
