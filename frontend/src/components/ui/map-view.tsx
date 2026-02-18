@@ -361,9 +361,9 @@ export function MapView({
                 marker: (feature: any) => {
                     const business = feature.properties.business as Business;
                     const isSelected = selectedBusinessRef.current?.id === business.id;
-                    // Проверяем, есть ли активные предложения
-                    const hasActiveOffers = business.offers && business.offers.length > 0 && 
-                                          business.offers.some(offer => offer.is_active && offer.quantity_available > 0);
+                    // Считаем активным, если есть оффер с остатком; is_active учитываем только если явно false
+                    const hasActiveOffers = business.offers && business.offers.length > 0 &&
+                                          business.offers.some(offer => (offer.quantity_available ?? 0) > 0 && offer.is_active !== false);
                     const element = createMarkerElement(isSelected, hasActiveOffers, () => {
                         onBusinessClickRef.current(business);
                     });
@@ -376,7 +376,7 @@ export function MapView({
                     const hasAnyActiveOffers = features.some((f: any) => {
                         const b = f.properties?.business as Business | undefined;
                         return b?.offers && b.offers.length > 0 &&
-                            b.offers.some((o: any) => o.is_active && (o.quantity_available ?? 0) > 0);
+                            b.offers.some((o: any) => (o.quantity_available ?? 0) > 0 && o.is_active !== false);
                     });
                     const element = createClusterElement(features.length, hasAnyActiveOffers, () => {
                         map.setLocation({
@@ -396,9 +396,9 @@ export function MapView({
             points.forEach((point) => {
                 const business = point.properties.business;
                 const isSelected = selectedBusinessRef.current?.id === business.id;
-                // Проверяем, есть ли активные предложения
-                const hasActiveOffers = business.offers && business.offers.length > 0 && 
-                                      business.offers.some(offer => offer.is_active && offer.quantity_available > 0);
+                // Считаем активным, если есть оффер с остатком; is_active учитываем только если явно false
+                const hasActiveOffers = business.offers && business.offers.length > 0 &&
+                                      business.offers.some(offer => (offer.quantity_available ?? 0) > 0 && offer.is_active !== false);
                 const element = createMarkerElement(isSelected, hasActiveOffers, () => {
                     onBusinessClickRef.current(business);
                 });
