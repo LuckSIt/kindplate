@@ -25,6 +25,7 @@ function OfferPage() {
   const [vendorConflict, setVendorConflict] = useState<{isOpen:boolean; currentVendor:string; newVendor:string}>(
     { isOpen: false, currentVendor: '', newVendor: '' }
   );
+  const [now, setNow] = useState(() => Date.now());
 
   // Fetch offer data
   const { data: offer, isLoading: offerLoading, error: offerError } = useQuery({
@@ -71,6 +72,12 @@ function OfferPage() {
     return () => {
       document.body.style.overflow = '';
     };
+  }, []);
+
+  // Таймер «До конца» — хуки должны быть до любых return
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
   }, []);
 
   const handleAddToCart = async () => {
@@ -195,13 +202,6 @@ function OfferPage() {
   const discountPercent = offer.original_price > 0 
     ? Math.round((1 - offer.discounted_price / offer.original_price) * 100) 
     : 0;
-
-  // Таймер «До конца» обновляется каждую секунду
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
   const timeLeft = formatTimeLeft(offer.pickup_time_end ?? '23:59:59', now);
 
   return (

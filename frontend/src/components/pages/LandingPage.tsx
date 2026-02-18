@@ -186,8 +186,11 @@ export function LandingPage() {
                     </div>
                 </header> */}
 
-                {/* Hero — как должно быть: заголовок и подпись белым по тёмному фону; шрифт Manrope через класс .manrope */}
-                <section className="manrope px-4 pt-8 pb-10 overflow-x-hidden">
+                {/* Hero — отступ сверху с учётом safe-area (вырез/статус-бар на iPhone), чтобы заголовок не обрезался */}
+                <section 
+                    className="manrope px-4 pb-10 overflow-x-hidden" 
+                    style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 2rem)' }}
+                >
                     <div className="max-w-full mx-auto text-center" style={{ maxWidth: 361 }}>
                         {/* Заголовок hero — по Figma node 1-1296 */}
                         <h1
