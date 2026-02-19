@@ -1,7 +1,7 @@
 {
   "short_name": "KindPlate",
   "name": "KindPlate",
-  "description": "Приложение для покупки еды из ресторанов и кафе по сниженным ценам",
+  "description": "KindPlate — заведения отдают нераспроданную еду со скидкой. Экономьте и помогайте планете.",
   "icons": [
     {
       "src": "/icons/icon72.png",

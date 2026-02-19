@@ -31,9 +31,9 @@ interface SEOProps {
 const DEFAULT_SEO = {
     siteName: 'KindPlate',
     defaultTitle: 'KindPlate',
-    defaultDescription: 'Покупайте готовую еду со скидкой до 70%. Спасайте еду от выбрасывания и экономьте деньги!',
-    defaultImage: '/kindplate.png',
-    baseUrl: import.meta.env.VITE_BASE_URL || 'http://localhost:3000',
+    defaultDescription: 'KindPlate помогает ресторанам и магазинам реализовывать непроданные блюда и готовые продукты со скидкой. Экономьте и помогайте планете.',
+    defaultImage: '/logo192.png',
+    baseUrl: import.meta.env.VITE_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://app-kindplate.ru'),
     locale: 'ru_RU',
     twitterSite: '@kindplate',
 };
@@ -86,7 +86,7 @@ export function SEO({
 
             {/* Open Graph */}
             <meta property="og:type" content={type} />
-            <meta property="og:title" content={title || DEFAULT_SEO.defaultTitle} />
+            <meta property="og:title" content={title ? `${title} | ${DEFAULT_SEO.siteName}` : DEFAULT_SEO.defaultTitle} />
             <meta property="og:description" content={description} />
             <meta property="og:image" content={fullImage} />
             <meta property="og:url" content={fullUrl} />

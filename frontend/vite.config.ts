@@ -21,7 +21,7 @@ export default defineConfig({
       manifest: {
         name: 'KindPlate',
         short_name: 'KindPlate',
-        description: 'Платформа для покупки готовой еды с коротким сроком годности',
+        description: 'KindPlate — заведения отдают нераспроданную еду со скидкой. Экономьте и помогайте планете.',
         theme_color: '#10b981',
         background_color: '#111827',
         display: 'standalone',

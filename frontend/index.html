@@ -14,16 +14,21 @@
         <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Expires" content="0" />
-        <!-- Только PNG логотипа (без favicon.ico), чтобы во вкладке не подставлялся дефолтный React. ?v=4 — сброс кэша -->
-        <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png?v=4" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png?v=4" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/logo192.png?v=4" />
+        <!-- Единый фавикон KindPlate для всех браузеров (Safari, Yandex, Chrome). Без favicon.ico — чтобы не подставлялся React. ?v=5 — сброс кэша -->
+        <link rel="icon" type="image/png" href="/icons/favicon-32x32.png?v=5" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png?v=5" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png?v=5" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/logo192.png?v=5" />
         <meta name="theme-color" content="#111E42" />
-        <meta name="description" content="Kindplate — приложение, чтобы заведения могли отдавать нераспроданную еду со скидкой. Экономьте и помогайте планете." />
-        <meta property="og:title" content="Kindplate" />
-        <meta property="og:description" content="Заведения отдают нераспроданную еду со скидкой. Скачивайте приложение и забирайте вкусное по выгодной цене." />
+        <!-- Заголовок и описание только «KindPlate» — без «Спаси еду»; одинаково для Google, Yandex, Safari -->
+        <title>KindPlate</title>
+        <meta name="description" content="KindPlate помогает ресторанам и магазинам реализовывать непроданные блюда и готовые продукты со скидкой, вместо того чтобы списывать их. Экономьте и помогайте планете." />
+        <meta property="og:title" content="KindPlate" />
+        <meta property="og:description" content="KindPlate помогает ресторанам и магазинам реализовывать непроданные блюда и готовые продукты со скидкой. Забирайте вкусное по выгодной цене." />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="/logo192.png" />
+        <meta property="og:image" content="https://app-kindplate.ru/logo192.png" />
+        <meta property="og:url" content="https://app-kindplate.ru/" />
+        <meta property="og:site_name" content="KindPlate" />
         <script src="https://api-maps.yandex.ru/v3/?apikey=1f4f3bd3-66fd-4301-ab9d-7727aa0154c3&lang=ru_RU"></script>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,7 +50,6 @@
         <link rel="mask-icon" href="/icons/icon-512x512.png" color="#001900" />
         
         <link rel="manifest" href="/manifest.json" />
-        <title>KindPlate</title>
     </head>
     <body>
         <div id="app"></div>
