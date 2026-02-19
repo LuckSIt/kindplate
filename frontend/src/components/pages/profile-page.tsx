@@ -69,7 +69,26 @@ export function ProfilePage() {
   };
 
   const onProfileSubmit = (data: ProfileUpdateFormData) => {
-    updateProfileMutation.mutate(data);
+    const payload = {
+      name: data.name,
+      phone: data.phone ?? '',
+      address: data.address ?? '',
+      working_hours: data.working_hours ?? '',
+      website: data.website ?? '',
+      establishment_type: (data.establishment_type ?? '').trim(),
+    };
+    updateProfileMutation.mutate(payload, {
+      onSuccess: (updatedProfile) => {
+        profileMethods.reset({
+          name: updatedProfile.name,
+          phone: updatedProfile.phone || '',
+          address: updatedProfile.address || '',
+          working_hours: (updatedProfile as any)?.working_hours || '',
+          website: (updatedProfile as any)?.website || '',
+          establishment_type: (updatedProfile as any)?.establishment_type ?? '',
+        });
+      },
+    });
   };
 
   const onPasswordSubmit = (data: ChangePasswordFormData) => {

@@ -83,9 +83,11 @@ profileRouter.get("/", requireAuth, asyncHandler(async (req, res) => {
  */
 profileRouter.put("/", requireAuth, asyncHandler(async (req, res) => {
     const userId = req.session.userId;
-    const { name, phone, address, coords, working_hours, website, establishment_type } = req.body;
+    const { name, phone, address, coords, working_hours, website } = req.body;
+    // Явно читаем тип заведения (иногда приходит вложенно или под другим content-type)
+    const establishment_type = req.body.establishment_type ?? req.body.data?.establishment_type;
 
-    logger.info('Updating profile', { userId, updates: Object.keys(req.body) });
+    logger.info('Updating profile', { userId, updates: Object.keys(req.body), establishment_type });
 
     // Проверяем наличие колонок в БД
     const columnsRes = await pool.query(
@@ -146,9 +148,15 @@ profileRouter.put("/", requireAuth, asyncHandler(async (req, res) => {
         values.push(website || null);
     }
 
-    if (establishment_type !== undefined && has('establishment_type')) {
-        updates.push(`establishment_type = $${paramIndex++}`);
-        values.push(establishment_type && String(establishment_type).trim() ? String(establishment_type).trim().slice(0, 100) : null);
+    if (establishment_type !== undefined) {
+        if (has('establishment_type')) {
+            updates.push(`establishment_type = $${paramIndex++}`);
+            values.push(establishment_type != null && String(establishment_type).trim() ? String(establishment_type).trim().slice(0, 100) : null);
+        } else {
+            logger.warn('establishment_type передан, но колонки нет в БД. Выполните миграцию: backend/migrations/add-establishment-type.sql');
+            // Отдаём клиенту понятную ошибку, чтобы в интерфейсе не «залипало» значение
+            throw new AppError('Сохранение типа заведения временно недоступно. Обратитесь к администратору.', 400, 'MIGRATION_REQUIRED');
+        }
     }
 
     if (updates.length === 0) {

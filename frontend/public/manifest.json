@@ -1,7 +1,7 @@
 {
   "short_name": "KindPlate",
-  "name": "KindPlate - Спаси еду",
-  "description": "Приложение для спасения еды из ресторанов и кафе по сниженным ценам",
+  "name": "KindPlate",
+  "description": "Приложение для покупки еды из ресторанов и кафе по сниженным ценам",
   "icons": [
     {
       "src": "/icons/icon72.png",
