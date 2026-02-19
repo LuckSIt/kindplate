@@ -41,6 +41,8 @@
 /* Default animation tokens */
 :root {
   --animate-spin: spin 1s linear infinite;
+  /* Резерв снизу под панель автозаполнения и клавиатуру на страницах входа/регистрации */
+  --auth-page-keyboard-reserve: 320px;
 }
 
 .animate-fade-in {
@@ -1155,6 +1157,9 @@ html {
   overflow-y: auto;
   overflow-x: hidden;
   padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--auth-page-keyboard-reserve));
+  box-sizing: border-box;
+  scroll-padding-bottom: var(--auth-page-keyboard-reserve);
 }
 
 .login-page__status-bar {
@@ -1174,14 +1179,13 @@ html {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  height: 100%;
   min-height: calc(var(--app-height, 100dvh) - env(safe-area-inset-top, 0px));
   padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .login-page__back-button {
@@ -1451,6 +1455,9 @@ html {
   overflow-y: auto;
   overflow-x: hidden;
   padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--auth-page-keyboard-reserve));
+  box-sizing: border-box;
+  scroll-padding-bottom: var(--auth-page-keyboard-reserve);
 }
 
 .register-page__status-bar {
@@ -1472,11 +1479,13 @@ html {
   margin: 0 auto;
   min-height: calc(var(--app-height, 100dvh) - env(safe-area-inset-top, 0px));
   padding: 0 16px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .register-page__back-button {
@@ -2263,7 +2272,7 @@ html {
   font-weight: 600;
   font-size: 13px;
   line-height: 1.3;
-  background: linear-gradient(90deg, rgba(219, 126, 47, 1) 0%, rgba(245, 251, 162, 1) 100%);
+  background: #DEF4EE;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -3253,7 +3262,7 @@ html {
   font-weight: 600;
   font-size: 15px;
   line-height: 22px;
-  background: linear-gradient(90deg, rgba(219, 126, 47, 1) 0%, rgba(245, 251, 162, 1) 100%);
+  background: #DEF4EE;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
