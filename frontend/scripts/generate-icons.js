@@ -1,8 +1,7 @@
 import sharp from 'sharp';
-import toIco from 'to-ico';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { mkdirSync, existsSync, writeFileSync } from 'fs';
+import { mkdirSync, existsSync } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -110,19 +109,9 @@ async function generateIcons() {
     .toFile(join(publicDir, 'apple-touch-icon.png'));
   console.log('✓ Создан apple-touch-icon.png');
 
-  // favicon.ico для вкладки браузера (чтобы во вкладке был логотип компании, а не дефолтный)
-  const png32 = await sharp(sourceImage)
-    .resize(32, 32, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
-    .png()
-    .toBuffer();
-  const png16 = await sharp(sourceImage)
-    .resize(16, 16, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
-    .png()
-    .toBuffer();
-  const icoBuffer = await toIco([png32, png16]);
-  writeFileSync(join(publicDir, 'favicon.ico'), icoBuffer);
-  console.log('✓ Создан favicon.ico (для вкладки браузера)');
-  
+  // favicon.ico не генерируем (пакет to-ico убран из зависимостей для совместимости с Docker).
+  // Во вкладке используются PNG: /icons/favicon-32x32.png и /logo192.png (см. index.html).
+
   console.log('\n✅ Все иконки успешно сгенерированы!');
 }
 
