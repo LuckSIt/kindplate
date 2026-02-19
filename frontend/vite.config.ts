@@ -19,7 +19,7 @@ export default defineConfig({
       includeAssets: ['favicon.ico', 'kandlate.png', 'logo192.png', 'logo512.png'],
       
       manifest: {
-        name: 'KindPlate - Спасаем еду от выбрасывания',
+        name: 'KindPlate',
         short_name: 'KindPlate',
         description: 'Платформа для покупки готовой еды с коротким сроком годности',
         theme_color: '#10b981',
