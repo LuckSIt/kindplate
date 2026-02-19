@@ -71,8 +71,8 @@ function ListPageComponent() {
             const filters: Parameters<typeof fetchOffersSearch>[0] = {
                 sort: 'distance',
                 page: 1,
-                limit: 100,
-                radius_km: 50,
+                limit: 500,
+                radius_km: 5000, // тот же радиус, что и на карте — список и карта показывают одни и те же заведения
             };
             
             if (userLocation) {
@@ -206,7 +206,11 @@ function ListPageComponent() {
             {/* Available Now Section */}
             <div className="businesses-list-page__available-section">
                 <div className="businesses-list-page__available-title">Доступно сейчас:</div>
-                <div className="businesses-list-page__available-count">{businesses.length} рядом</div>
+                <div className="businesses-list-page__available-count">
+                    {userLocation
+                        ? `${businesses.length} ${businesses.length === 1 ? 'заведение' : businesses.length < 5 ? 'заведения' : 'заведений'}`
+                        : `${businesses.length} ${businesses.length === 1 ? 'заведение' : businesses.length < 5 ? 'заведения' : 'заведений'}`}
+                </div>
             </div>
 
             {/* Businesses List */}
