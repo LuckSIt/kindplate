@@ -111,6 +111,14 @@ function RouteComponent() {
                         <form 
                             onSubmit={handleSubmit(onSubmit)} 
                             className="login-page__form"
+                            onFocus={(e) => {
+                                const el = e.target;
+                                if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+                                    setTimeout(() => {
+                                        el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                                    }, 450);
+                                }
+                            }}
                         >
                             {/* Email Field */}
                             <div className="login-page__field">

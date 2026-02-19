@@ -42,7 +42,7 @@
 :root {
   --animate-spin: spin 1s linear infinite;
   /* Резерв снизу под панель автозаполнения и клавиатуру на страницах входа/регистрации */
-  --auth-page-keyboard-reserve: 320px;
+  --auth-page-keyboard-reserve: 420px;
 }
 
 .animate-fade-in {
@@ -1324,6 +1324,7 @@ html {
   color: #FFFFFF;
   outline: none;
   transition: background-color 0.2s ease;
+  scroll-margin-bottom: 160px;
 }
 
 .login-page__input::placeholder {
@@ -1623,6 +1624,7 @@ html {
   color: #FFFFFF;
   outline: none;
   transition: background-color 0.2s ease;
+  scroll-margin-bottom: 160px;
 }
 
 .register-page__input::placeholder {

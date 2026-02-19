@@ -92,6 +92,14 @@ function RouteComponent() {
                             onSubmit={handleSubmit(onSubmit)} 
                             className="register-page__form"
                             autoComplete="off"
+                            onFocus={(e) => {
+                                const el = e.target;
+                                if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+                                    setTimeout(() => {
+                                        el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                                    }, 450);
+                                }
+                            }}
                         >
                             {/* Name Field — autocomplete off, чтобы не показывалась панель «Автозаполнить контакт» */}
                             <div className="register-page__field">
