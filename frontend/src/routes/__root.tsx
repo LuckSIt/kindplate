@@ -403,46 +403,8 @@ function RootRoute() {
     );
 }
 
+/** Раньше ограничивал доступ только мобильными; теперь приложение доступно и на десктопе. */
 function MobileOnly({ children }: { children: React.ReactNode }) {
-    const [isMobile, setIsMobile] = useState(true);
-
-    useEffect(() => {
-        const check = () => {
-            const width = window.innerWidth;
-            
-            // Проверяем: либо мобильное устройство (по user agent), либо узкий экран
-            const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const isNarrowScreen = width <= 768;
-            
-            // Разрешаем доступ если:
-            // 1. Мобильное устройство (по user agent)
-            // 2. Узкий экран (ширина <= 768px)
-            // 3. Портретная ориентация на узком экране
-            setIsMobile(isMobileDevice || isNarrowScreen);
-        };
-        check();
-        window.addEventListener('resize', check);
-        window.addEventListener('orientationchange', check);
-        return () => {
-            window.removeEventListener('resize', check);
-            window.removeEventListener('orientationchange', check);
-        };
-    }, []);
-
-    if (!isMobile) {
-        return (
-            <div className="h-full w-full flex items-center justify-center bg-gray-900 p-6" style={{ height: 'var(--app-height, 100vh)' }}>
-                <div className="max-w-sm w-full text-center bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-700">
-                    <div className="text-5xl mb-4">📱</div>
-                    <h1 className="text-xl font-semibold text-white mb-2">Доступно только на мобильных</h1>
-                    <p className="text-sm text-gray-300">
-                        Откройте приложение на смартфоне или уменьшите ширину окна браузера (≤ 768px).
-                    </p>
-                </div>
-            </div>
-        );
-    }
-
     return <>{children}</>;
 }
 
