@@ -5,8 +5,24 @@ import { fetchOffersSearch, mapOffersToBusinesses } from "@/lib/offers-search";
 import { authContext } from "@/lib/auth";
 import { useCart } from "@/lib/hooks/use-cart";
 import { ReliableImg } from "@/components/ui/optimized-image";
-import type { Business } from "@/lib/types";
+import type { Business, Offer } from "@/lib/types";
 import { loadDietPreferences } from "@/lib/diet-preferences";
+import { axiosInstance } from "@/lib/axiosInstance";
+
+/** Расстояние в км между двумя точками (формула гаверсинусов). */
+function distanceKm(
+    lat1: number, lon1: number,
+    lat2: number, lon2: number
+): number {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
 
 /** Из строки графика работы оставляет только время (например "10:00-20:00"), без текста вроде "Ежедневно". */
 function formatWorkingHoursOnly(workingHours: string | undefined): string {
@@ -64,21 +80,16 @@ function ListPageComponent() {
         return () => clearTimeout(timer);
     }, [searchQuery]);
 
-    // Fetch offers data
-    const { data: offersData, isLoading, isError, error } = useMapQuery(
-        ["offers_search_list", debouncedSearchQuery, userLocation],
+    // Источник 1: поиск офферов (без геолокации — все активные)
+    const { data: offersData, isLoading: isLoadingOffers, isError, error } = useMapQuery(
+        ["offers_search_list", debouncedSearchQuery],
         () => {
             const filters: Parameters<typeof fetchOffersSearch>[0] = {
-                sort: 'distance',
+                sort: 'rating',
                 page: 1,
                 limit: 500,
-                radius_km: 5000, // тот же радиус, что и на карте — список и карта показывают одни и те же заведения
             };
-            
-            if (userLocation) {
-                filters.lat = userLocation[0];
-                filters.lon = userLocation[1];
-            }
+            // На списке не передаём lat/lon и radius_km — получаем все активные офферы, как при просмотре карты
             
             if (debouncedSearchQuery) {
                 filters.q = debouncedSearchQuery;
@@ -103,21 +114,74 @@ function ListPageComponent() {
             });
         },
         {
-            enabled: !!userLocation || true, // Включаем только когда есть геолокация или принудительно
-            staleTime: 60000, // 60 секунд кэш (увеличено для уменьшения запросов)
-            retry: false, // Отключаем автоматические повторные попытки при ошибках
-            retryOnMount: false, // Не повторяем при монтировании
-            refetchOnWindowFocus: false, // Не обновляем при фокусе окна
-            refetchOnMount: false, // Не обновляем при монтировании
-            refetchOnReconnect: false, // Не обновляем при восстановлении соединения
+            enabled: true,
+            staleTime: 30000,
+            retry: 1,
+            retryOnMount: true, // при открытии списка всегда подтягиваем свежие данные
+            refetchOnWindowFocus: false,
+            refetchOnReconnect: true,
         }
     );
 
-    // Process businesses data и дополнительная фильтрация по тексту на клиенте
+    // Поддержка обоих форматов ответа API (data.offers и сразу offers)
+    const rawOffers = offersData && ('data' in offersData && offersData.data && Array.isArray((offersData as any).data.offers))
+        ? (offersData as any).data.offers
+        : (offersData?.offers ?? []);
     const normalizedQuery = debouncedSearchQuery.trim().toLowerCase();
 
+    // Источник 2: те же данные, что и на карте — все продавцы с офферами (fallback, если поиск офферов вернул пустоту)
+    const { data: sellersData, isLoading: isLoadingSellers } = useMapQuery(
+        ["customer_sellers_list"],
+        () => axiosInstance.get<{ success: boolean; sellers?: Array<{
+            id: number;
+            name: string;
+            address?: string;
+            coords?: [string, string];
+            rating?: number;
+            logo_url?: string;
+            working_hours?: string;
+            offers?: Array<{ id: number; title?: string; description?: string; image_url?: string; original_price?: number; discounted_price?: number; quantity_available?: number; pickup_time_start?: string; pickup_time_end?: string; is_active?: boolean }>;
+        }> }>("/customer/sellers").then((res) => res.data),
+        { enabled: true, staleTime: 30000 }
+    );
+
+    // Преобразуем sellers в Business[] (только с активными предложениями), как на карте
+    const businessesFromSellers: Business[] = useMemo(() => {
+        const raw = sellersData && typeof sellersData === "object" && "sellers" in sellersData && Array.isArray((sellersData as any).sellers)
+            ? (sellersData as any).sellers
+            : [];
+        return raw
+            .filter((s: any) => (s.offers || []).some((o: any) => (o.quantity_available ?? 0) > 0))
+            .map((s: any) => ({
+                id: s.id,
+                name: s.name,
+                address: s.address,
+                coords: s.coords,
+                rating: s.rating,
+                logo_url: s.logo_url,
+                working_hours: s.working_hours,
+                offers: (s.offers || []).map((o: any) => ({
+                    id: o.id,
+                    title: o.title,
+                    description: o.description,
+                    image_url: o.image_url,
+                    original_price: o.original_price,
+                    discounted_price: o.discounted_price,
+                    quantity_available: o.quantity_available,
+                    pickup_time_start: o.pickup_time_start,
+                    pickup_time_end: o.pickup_time_end,
+                    is_active: o.is_active,
+                    business_id: s.id,
+                } as Offer)),
+            } as Business));
+    }, [sellersData]);
+
+    // Process businesses data: приоритет — поиск офферов; если пусто — список из /customer/sellers (как на карте)
+    const isLoading = isLoadingOffers || (rawOffers.length === 0 && isLoadingSellers);
+
     const businesses: Business[] = useMemo(() => {
-        const base = mapOffersToBusinesses(offersData?.offers);
+        const fromOffers = mapOffersToBusinesses(rawOffers);
+        const base = fromOffers.length > 0 ? fromOffers : businessesFromSellers;
 
         if (!normalizedQuery) {
             return base;
@@ -137,7 +201,7 @@ function ListPageComponent() {
 
             return nameMatch || addressMatch || offersMatch;
         });
-    }, [offersData?.offers, normalizedQuery]);
+    }, [rawOffers, businessesFromSellers, normalizedQuery]);
 
     const handleBusinessClick = useCallback((businessId: number) => {
         navigate({ to: '/v/$vendorId', params: { vendorId: businessId.toString() } });
@@ -207,9 +271,11 @@ function ListPageComponent() {
             <div className="businesses-list-page__available-section">
                 <div className="businesses-list-page__available-title">Доступно сейчас:</div>
                 <div className="businesses-list-page__available-count">
-                    {userLocation
-                        ? `${businesses.length} ${businesses.length === 1 ? 'заведение' : businesses.length < 5 ? 'заведения' : 'заведений'}`
-                        : `${businesses.length} ${businesses.length === 1 ? 'заведение' : businesses.length < 5 ? 'заведения' : 'заведений'}`}
+                    {(() => {
+                        const n = businesses.length;
+                        const word = n === 0 ? 'заведений' : n === 1 ? 'заведение' : n >= 2 && n <= 4 ? 'заведения' : 'заведений';
+                        return `${n} ${word}`;
+                    })()}
                 </div>
             </div>
 
@@ -234,6 +300,7 @@ function ListPageComponent() {
                         <BusinessCard 
                             key={business.id || index}
                             business={business}
+                            userLocation={userLocation}
                             onClick={() => handleBusinessClick(business.id)}
                         />
                     ))
@@ -246,15 +313,24 @@ function ListPageComponent() {
 
 interface BusinessCardProps {
     business: Business;
+    userLocation: [number, number] | null;
     onClick: () => void;
 }
 
-function BusinessCard({ business, onClick }: BusinessCardProps) {
+function BusinessCard({ business, userLocation, onClick }: BusinessCardProps) {
     const activeOffers = business.offers?.filter(o => o.quantity_available > 0) || [];
     const firstOffers = activeOffers.slice(0, 2);
     const remainingCount = activeOffers.length - 2;
-    // Та же логика, что на карте: фото первого оффера или лого бизнеса (синхрон с API)
-    const imageSrc = activeOffers[0]?.image_url || business.logo_url || '';
+    // В карточке списка — фото бизнеса (логотип), при отсутствии — фото первого предложения
+    const imageSrc = business.logo_url || activeOffers[0]?.image_url || '';
+    // Расстояние: из API или по геолокации пользователя и координатам бизнеса
+    const displayDistanceKm: number | null = (() => {
+        if (business.distance_km != null) return business.distance_km;
+        if (!userLocation || !business.coords?.length) return null;
+        const [lat, lon] = business.coords.map(Number);
+        if (Number.isNaN(lat) || Number.isNaN(lon)) return null;
+        return distanceKm(userLocation[0], userLocation[1], lat, lon);
+    })();
 
     return (
         <div className="businesses-list-page__business-card" onClick={onClick}>
@@ -299,7 +375,7 @@ function BusinessCard({ business, onClick }: BusinessCardProps) {
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                                     <circle cx="12" cy="10" r="3"/>
                                 </svg>
-                                <span>{business.distance_km != null ? `${business.distance_km < 1 ? business.distance_km.toFixed(2) : business.distance_km.toFixed(1)} км` : '—'}</span>
+                                <span>{displayDistanceKm != null ? `${displayDistanceKm < 1 ? displayDistanceKm.toFixed(2) : displayDistanceKm.toFixed(1)} км` : '—'}</span>
                             </div>
                             {(business as any)?.working_hours && (
                                 <div className="businesses-list-page__business-meta-item">

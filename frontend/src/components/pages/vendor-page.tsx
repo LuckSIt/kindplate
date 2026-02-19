@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { axiosInstance, getImageURL } from '@/lib/axiosInstance';
+import { axiosInstance } from '@/lib/axiosInstance';
 import { notify } from '@/lib/notifications';
 import type { Business, Offer } from '@/lib/types';
 import { useCart } from '@/lib/hooks/use-cart';
@@ -49,7 +49,14 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
     queryFn: () => axiosInstance.get(`/customer/vendors/${vendorId}/offers?active=true`),
     enabled: !!vendorId,
     refetchOnMount: 'always',
-    select: (res) => res.data.data.offers as Offer[]
+    select: (res): Offer[] => {
+      const data = res?.data?.data ?? res?.data;
+      const list = Array.isArray(data?.offers) ? data.offers : [];
+      return list.map((o: Record<string, unknown>) => ({
+        ...o,
+        image_url: (o.image_url ?? o.imageUrl ?? o.photo_url) as string | undefined,
+      })) as Offer[];
+    }
   });
 
   // Process data
@@ -289,16 +296,14 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
             const rawQuantity = offerQuantities.get(offer.id) || 1;
             const quantity = maxQty < 1 ? 0 : Math.min(rawQuantity, maxQty);
             const showQuantitySelector = quantity > 0;
-            // Используем только image_url из API, без статических изображений
-            const imageUrl = offer.image_url 
-              ? getImageURL(offer.image_url) 
-              : undefined;
+            // Путь/URL фото оффера — в ReliableImg внутри OfferCard сам вызовет getImageURL для относительных путей
+            const imageSrc = offer.image_url?.trim() ?? '';
 
             return (
               <OfferCard
                 key={`${offer.id}-${offer.image_url || 'no-image'}`}
                 offer={offer}
-                image={imageUrl ?? ''}
+                image={imageSrc}
                 quantity={quantity}
                 maxQuantity={maxQty}
                 showQuantitySelector={showQuantitySelector}
@@ -381,12 +386,12 @@ function OfferCard({
       className="vendor-page__offer-card"
       onClick={() => navigate({ to: "/offer/$offerId", params: { offerId: String(offer.id) } })}
     >
-      {/* Image */}
+      {/* Image — ReliableImg сам разрешает относительные пути через getImageURL */}
       <div className="vendor-page__offer-image">
         {image ? (
-          <ReliableImg 
+          <ReliableImg
             src={image}
-            alt={offer.title}
+            alt={offer.title ?? 'Предложение'}
             key={`${offer.id}-${offer.image_url || 'no-image'}`}
             fallbackElement={
               <div className="vendor-page__offer-image-placeholder">
