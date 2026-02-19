@@ -91,8 +91,9 @@ function RouteComponent() {
                         <form 
                             onSubmit={handleSubmit(onSubmit)} 
                             className="register-page__form"
+                            autoComplete="off"
                         >
-                            {/* Name Field */}
+                            {/* Name Field — autocomplete off, чтобы не показывалась панель «Автозаполнить контакт» */}
                             <div className="register-page__field">
                                 <label className="register-page__field-label">
                                                 Ваше ФИО
@@ -103,6 +104,7 @@ function RouteComponent() {
                                                 type="text" 
                                         className="register-page__input"
                                         placeholder="Иванов Иван Иванович"
+                                        autoComplete="off"
                                             />
                                 </div>
                                         </div>
