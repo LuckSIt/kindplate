@@ -678,11 +678,11 @@ export function LandingPage() {
                                 <ArrowRight className="kp-landing-footer-card-arrow" size={28} strokeWidth={2.41} />
                             </a>
                         </div>
-                        <div className="kp-landing-footer-legal-block">
+                        {/* <div className="kp-landing-footer-legal-block">
                             <p className="kp-landing-footer-legal">ИП Сатаев А.М.</p>
                             <p className="kp-landing-footer-legal">ИНН: 784808895487</p>
                             <p className="kp-landing-footer-legal">ОГРН: 326784700012921</p>
-                        </div>
+                        </div> */}
                     </div>
                 </footer>
             </div>
