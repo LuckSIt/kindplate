@@ -757,7 +757,7 @@ offersRouter.post("/:id/schedule", asyncHandler(async (req, res) => {
 // Получить все предложения текущего бизнеса
 offersRouter.get("/mine", asyncHandler(async (req, res) => {
     const businessId = req.session?.userId;
-    
+
     if (!businessId) {
         return res.status(401).json({
             success: false,
@@ -767,6 +767,21 @@ offersRouter.get("/mine", asyncHandler(async (req, res) => {
     }
 
     try {
+        // Поддержка БД без колонки offer_type (до применения миграции add-offer-type.sql)
+        let hasOfferType = false;
+        try {
+            const colCheck = await pool.query(`
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_schema = 'public' AND table_name = 'offers' AND column_name = 'offer_type'
+            `);
+            hasOfferType = colCheck.rows.length > 0;
+        } catch (e) {
+            logger.warn("Offer type column check failed:", e.message);
+        }
+
+        const offerTypeSelect = hasOfferType ? `COALESCE(offer_type, 'dish') as offer_type` : `'dish'::text as offer_type`;
+        const orderBy = hasOfferType ? `ORDER BY offer_type, created_at DESC` : `ORDER BY created_at DESC`;
+
         const result = await pool.query(
             `SELECT 
                 id, 
@@ -779,11 +794,11 @@ offersRouter.get("/mine", asyncHandler(async (req, res) => {
                 pickup_time_start,
                 pickup_time_end,
                 is_active,
-                COALESCE(offer_type, 'dish') as offer_type,
+                ${offerTypeSelect},
                 created_at
             FROM offers 
             WHERE business_id = $1 
-            ORDER BY offer_type, created_at DESC`,
+            ${orderBy}`,
             [businessId]
         );
 

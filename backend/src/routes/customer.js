@@ -211,7 +211,20 @@ customerRouter.get("/vendors/:id/offers", async (req, res) => {
         const vendorId = req.params.id;
         const active = req.query.active === 'true';
         console.log("🔍 Запрос /customer/vendors/:id/offers", { vendorId, active });
-        
+
+        // Поддержка БД без колонки offer_type (до применения миграции add-offer-type.sql)
+        let hasOfferType = false;
+        try {
+            const colCheck = await pool.query(`
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_schema = 'public' AND table_name = 'offers' AND column_name = 'offer_type'
+            `);
+            hasOfferType = colCheck.rows.length > 0;
+        } catch (e) {
+            console.warn("⚠️ Проверка колонки offer_type:", e.message);
+        }
+
+        const offerTypeSelect = hasOfferType ? `COALESCE(o.offer_type, 'dish') as offer_type` : `'dish'::text as offer_type`;
         let query = `
             SELECT 
                 o.id,
@@ -224,19 +237,19 @@ customerRouter.get("/vendors/:id/offers", async (req, res) => {
                 o.pickup_time_start,
                 o.pickup_time_end,
                 o.is_active,
-                COALESCE(o.offer_type, 'dish') as offer_type,
+                ${offerTypeSelect},
                 false as is_best,
                 o.created_at
             FROM offers o
             WHERE o.business_id = $1
         `;
-        
+
         const params = [vendorId];
-        
+
         if (active) {
             query += ` AND o.is_active = true AND o.quantity_available > 0`;
         }
-        
+
         query += ` ORDER BY o.created_at DESC`;
 
         const result = await pool.query(query, params);
