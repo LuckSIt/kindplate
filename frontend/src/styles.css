@@ -3576,7 +3576,7 @@ html {
   margin-bottom: 24px;
 }
 
-/* Спецбокс: такой же дизайн, как карточка блюда — тёмный фон, фото слева, название и кнопка как у блюда */
+/* Спецбокс: светлая карточка (как на референсе) — тёмный текст, оранжевая цена со скидкой */
 .vendor-page__specbox-card {
   width: 100%;
   display: flex;
@@ -3599,12 +3599,28 @@ html {
 .vendor-page__specbox-card .vendor-page__dish-image {
   margin-right: 12px;
 }
+.vendor-page__specbox-card .vendor-page__dish-image-placeholder {
+  background: #c2e6dc;
+  color: #098771;
+}
+.vendor-page__specbox-card .vendor-page__dish-name {
+  color: #10172A !important;
+}
 .vendor-page__specbox-desc {
   font-family: 'Montserrat Alternates', sans-serif;
   font-size: 12px !important;
   line-height: 1.3;
-  color: #9CA3AF;
+  color: #5a7a73;
   margin: 0 0 4px 0;
+}
+.vendor-page__specbox-card .vendor-page__dish-price-old {
+  color: #8C8C8C;
+}
+.vendor-page__specbox-card .vendor-page__dish-price {
+  color: #E85D04 !important;
+}
+.vendor-page__specbox-card .vendor-page__dish-pickup {
+  color: #5a7a73;
 }
 
 /* Блюдо со скидкой: горизонтальная карточка — слева фото, справа контент */
