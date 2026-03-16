@@ -401,37 +401,39 @@ function SpecialBoxCard({ offer, image, onAddToOrder, isAdding }: SpecialBoxCard
       className="vendor-page__specbox-card"
       onClick={() => navigate({ to: "/offer/$offerId", params: { offerId: String(offer.id) } })}
     >
-      <div className="vendor-page__specbox-image">
+      <div className="vendor-page__dish-image">
         {image ? (
           <ReliableImg
             src={image}
             alt={offer.title ?? 'Спецбокс'}
             key={offer.id}
             fallbackElement={
-              <div className="vendor-page__specbox-image-placeholder"><span>Нет фото</span></div>
+              <div className="vendor-page__dish-image-placeholder"><span>Нет фото</span></div>
             }
           />
         ) : (
-          <div className="vendor-page__specbox-image-placeholder"><span>Нет фото</span></div>
+          <div className="vendor-page__dish-image-placeholder"><span>Нет фото</span></div>
         )}
       </div>
-      <div className="vendor-page__specbox-info">
-        <h3 className="vendor-page__specbox-name">{offer.title}</h3>
-        {offer.description && <p className="vendor-page__specbox-desc">{offer.description}</p>}
-        <div className="vendor-page__specbox-prices">
+      <div className="vendor-page__dish-info">
+        <h3 className="vendor-page__dish-name">{offer.title}</h3>
+        <p className="vendor-page__specbox-desc">{offer.description?.trim() || "Набор из нескольких позиций"}</p>
+        <div className="vendor-page__dish-prices">
           {offer.original_price > offer.discounted_price && (
-            <span className="vendor-page__specbox-price-old">{offer.original_price}₽</span>
+            <span className="vendor-page__dish-price-old">{offer.original_price}₽</span>
           )}
-          <span className="vendor-page__specbox-price">{offer.discounted_price}₽</span>
+          <span className="vendor-page__dish-price">{offer.discounted_price}₽</span>
         </div>
-        <div className="vendor-page__specbox-pickup">{formatPickupTime(offer.pickup_time_end)}</div>
-        <button
-          className="vendor-page__specbox-add"
-          onClick={(e) => { e.stopPropagation(); onAddToOrder(); }}
-          disabled={isAdding || (offer.quantity_available ?? 0) < 1}
-        >
-          {isAdding ? 'Добавление...' : 'Добавить'}
-        </button>
+        <div className="vendor-page__dish-pickup">{formatPickupTime(offer.pickup_time_end)}</div>
+        <div className="vendor-page__dish-actions" onClick={(e) => e.stopPropagation()}>
+          <button
+            className="vendor-page__add-button vendor-page__add-button--full"
+            onClick={(e) => { e.stopPropagation(); onAddToOrder(); }}
+            disabled={isAdding || (offer.quantity_available ?? 0) < 1}
+          >
+            {isAdding ? 'Добавление...' : 'Добавить'}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -89,7 +89,8 @@ function OfferPropertiesForm({ offer, onSave, children }: OfferPropertiesFormPro
         resolver: zodResolver(offerSchema),
         defaultValues: offer,
     });
-    const { register, handleSubmit } = methods;
+    const { register, handleSubmit, watch } = methods;
+    const selectedOfferType = watch("offer_type") || "dish";
 
     // Получаем список локаций для выбора
     const { data: locationsData } = useQuery({
@@ -125,8 +126,8 @@ function OfferPropertiesForm({ offer, onSave, children }: OfferPropertiesFormPro
                     <label className="panel-page__form-label">
                         Тип *
                     </label>
-                    <div className="panel-page__form-row" style={{ gap: 16 }}>
-                        <label className="panel-page__form-radio-label">
+                    <div className="panel-page__form-radio-group">
+                        <label className={`panel-page__form-radio-option ${selectedOfferType === "dish" ? "panel-page__form-radio-option--selected" : ""}`}>
                             <input
                                 {...register("offer_type")}
                                 type="radio"
@@ -135,7 +136,7 @@ function OfferPropertiesForm({ offer, onSave, children }: OfferPropertiesFormPro
                             />
                             <span>Блюдо со скидкой</span>
                         </label>
-                        <label className="panel-page__form-radio-label">
+                        <label className={`panel-page__form-radio-option ${selectedOfferType === "special_box" ? "panel-page__form-radio-option--selected" : ""}`}>
                             <input
                                 {...register("offer_type")}
                                 type="radio"
