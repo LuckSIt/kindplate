@@ -34,6 +34,7 @@ const offerSchema = z.object({
     pickup_time_start: z.string().min(1, "Укажите время начала"),
     pickup_time_end: z.string().min(1, "Укажите время окончания"),
     location_id: z.number().optional().nullable(),
+    offer_type: z.enum(["dish", "special_box"]).optional(),
 });
 
 type OfferFormData = z.infer<typeof offerSchema>;
@@ -61,6 +62,7 @@ const defaultOffer: OfferFormData = {
     pickup_time_start: "18:00",
     pickup_time_end: "20:00",
     location_id: null,
+    offer_type: "dish",
 };
 
 enum DialogMode {
@@ -119,6 +121,35 @@ function OfferPropertiesForm({ offer, onSave, children }: OfferPropertiesFormPro
                 onSubmit={handleSubmit(onSubmit)}
                 className="panel-page__form"
             >
+                <div className="panel-page__form-field">
+                    <label className="panel-page__form-label">
+                        Тип *
+                    </label>
+                    <div className="panel-page__form-row" style={{ gap: 16 }}>
+                        <label className="panel-page__form-radio-label">
+                            <input
+                                {...register("offer_type")}
+                                type="radio"
+                                value="dish"
+                                className="panel-page__form-radio"
+                            />
+                            <span>Блюдо со скидкой</span>
+                        </label>
+                        <label className="panel-page__form-radio-label">
+                            <input
+                                {...register("offer_type")}
+                                type="radio"
+                                value="special_box"
+                                className="panel-page__form-radio"
+                            />
+                            <span>Спецбокс</span>
+                        </label>
+                    </div>
+                    <p className="panel-page__form-hint" style={{ marginTop: 4 }}>
+                        Спецбокс — набор из нескольких позиций (например, «Сладкий бокс»). Можно добавить фото.
+                    </p>
+                </div>
+
                 <div className="panel-page__form-field">
                     <label className="panel-page__form-label">
                         Название предложения *
@@ -268,6 +299,7 @@ interface OfferSummaryProps {
     pickup_time_start: string;
     pickup_time_end: string;
     is_active: boolean;
+    offer_type?: "dish" | "special_box";
     onIncreaseQuantity: () => void;
     onDecreaseQuantity: () => void;
     onEdit: () => void;
@@ -287,6 +319,7 @@ function OfferSummary({
     pickup_time_start,
     pickup_time_end,
     is_active,
+    offer_type = "dish",
     onIncreaseQuantity,
     onDecreaseQuantity,
     onEdit,
@@ -351,6 +384,9 @@ function OfferSummary({
                 <div className="panel-page__offer-info">
                     <div className="panel-page__offer-header">
                         <h3 className="panel-page__offer-title">{title}</h3>
+                        <span className={`panel-page__offer-type-badge panel-page__offer-type-badge--${offer_type}`}>
+                            {offer_type === "special_box" ? "Спецбокс" : "Блюдо"}
+                        </span>
                         {discount > 0 && (
                             <span className="panel-page__offer-discount">
                                 -{discount}%
@@ -434,21 +470,54 @@ interface OfferListProps {
 }
 
 function OfferList({ offers, onIncrement, onDecrement, onEdit, onToggleActive, onPhotoUpload, onSchedule }: OfferListProps) {
+    const list = offers || [];
+    const specboxes = list.filter((o: Offer) => (o.offer_type || "dish") === "special_box");
+    const dishes = list.filter((o: Offer) => (o.offer_type || "dish") === "dish");
+    const getIndex = (offer: Offer) => list.findIndex((x: Offer) => x.id === offer.id);
+
     return (
         <div className="panel-page__offers-list">
-            {(offers || []).map((offer: Offer, i: number) => (
-                <OfferSummary
-                    key={offer.id}
-                    {...offer}
-                    onIncreaseQuantity={() => onIncrement(i)}
-                    onDecreaseQuantity={() => onDecrement(i)}
-                    onEdit={() => onEdit(i)}
-                    onToggleActive={() => onToggleActive(i)}
-                    onPhotoUpload={(event) => onPhotoUpload(offer.id, event)}
-                    onSchedule={onSchedule ? () => onSchedule(offer.id) : undefined}
-                />
-            ))}
-            {(!offers || offers.length === 0) && (
+            {specboxes.length > 0 && (
+                <div className="panel-page__offers-section">
+                    <h3 className="panel-page__offers-section-title">Спецбоксы</h3>
+                    {specboxes.map((offer: Offer) => {
+                        const i = getIndex(offer);
+                        return (
+                            <OfferSummary
+                                key={offer.id}
+                                {...offer}
+                                onIncreaseQuantity={() => onIncrement(i)}
+                                onDecreaseQuantity={() => onDecrement(i)}
+                                onEdit={() => onEdit(i)}
+                                onToggleActive={() => onToggleActive(i)}
+                                onPhotoUpload={(event) => onPhotoUpload(offer.id, event)}
+                                onSchedule={onSchedule ? () => onSchedule(offer.id) : undefined}
+                            />
+                        );
+                    })}
+                </div>
+            )}
+            {dishes.length > 0 && (
+                <div className="panel-page__offers-section">
+                    <h3 className="panel-page__offers-section-title">Блюда со скидкой</h3>
+                    {dishes.map((offer: Offer) => {
+                        const i = getIndex(offer);
+                        return (
+                            <OfferSummary
+                                key={offer.id}
+                                {...offer}
+                                onIncreaseQuantity={() => onIncrement(i)}
+                                onDecreaseQuantity={() => onDecrement(i)}
+                                onEdit={() => onEdit(i)}
+                                onToggleActive={() => onToggleActive(i)}
+                                onPhotoUpload={(event) => onPhotoUpload(offer.id, event)}
+                                onSchedule={onSchedule ? () => onSchedule(offer.id) : undefined}
+                            />
+                        );
+                    })}
+                </div>
+            )}
+            {list.length === 0 && (
                 <div className="panel-page__empty">
                     <span className="panel-page__empty-icon"></span>
                     <p className="panel-page__empty-title">Предложений пока нет</p>

@@ -29,9 +29,9 @@ interface SEOProps {
 }
 
 const DEFAULT_SEO = {
-    siteName: 'KindPlate',
-    defaultTitle: 'KindPlate',
-    defaultDescription: 'KindPlate помогает ресторанам и магазинам реализовывать непроданные блюда и готовые продукты со скидкой. Экономьте и помогайте планете.',
+    siteName: 'Соммил',
+    defaultTitle: 'Соммил',
+    defaultDescription: 'Соммил помогает ресторанам и магазинам реализовывать непроданные блюда и готовые продукты со скидкой. Экономьте и помогайте планете.',
     defaultImage: '/logo192.png',
     baseUrl: import.meta.env.VITE_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://app-kindplate.ru'),
     locale: 'ru_RU',
@@ -168,8 +168,8 @@ export function BusinessPageSEO({
     image?: string;
     rating?: number;
 }) {
-    const title = `${name} - KindPlate`;
-    const desc = description || `${name} на KindPlate. ${address}. ${rating ? `Рейтинг: ${rating.toFixed(1)} ⭐` : ''}`;
+    const title = `${name} - Соммил`;
+    const desc = description || `${name} на Соммил. ${address}. ${rating ? `Рейтинг: ${rating.toFixed(1)} ⭐` : ''}`;
 
     return (
         <SEO

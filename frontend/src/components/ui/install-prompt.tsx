@@ -58,7 +58,7 @@ export function InstallPrompt() {
         <img src="/kandlate.png" alt="KindPlate" className="w-12 h-12 rounded-xl" />
         <div>
           <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-1">
-            Установить KindPlate?
+            Установить Соммил?
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Добавьте приложение на главный экран для быстрого доступа и работы офлайн

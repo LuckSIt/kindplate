@@ -8,6 +8,7 @@ import { routeTree } from "./routeTree.gen";
 // PWA SW отключен
 
 import "./styles.css";
+import "./components/pages/landing.css";
 
 // Глобальный компонент ошибки, чтобы не показывать стандартную «лупу» TanStack Router
 function AppErrorComponent({ error }: { error: unknown }) {

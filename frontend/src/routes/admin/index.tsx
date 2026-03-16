@@ -125,7 +125,7 @@ function AdminPanel() {
                     </Link>
                     <div>
                         <h1 className="admin-page__title">Панель администратора</h1>
-                        <p className="admin-page__subtitle">Управление платформой KindPlate</p>
+                        <p className="admin-page__subtitle">Управление платформой Соммил</p>
                     </div>
                 </div>
 

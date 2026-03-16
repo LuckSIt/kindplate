@@ -23,7 +23,7 @@ function RouteComponent() {
         mutationKey: ["register.business"],
         mutationFn: (data) => axiosInstance.post("/auth/register", data),
         onSuccess: (res) => {
-            notify.success("Регистрация успешна", "Добро пожаловать в KindPlate!");
+            notify.success("Регистрация успешна", "Добро пожаловать в Соммил!");
             queryClient.invalidateQueries({ queryKey: ["auth"] });
             navigate({ to: "/panel" });
         },
@@ -53,7 +53,7 @@ function RouteComponent() {
                     <div className="flex items-center justify-between">
                         <Link to="/" className="flex items-center gap-3">
                             <img src="/kandlate.png" alt="KindPlate" className="w-8 h-8" />
-                            <span className="text-xl font-bold text-white">KindPlate</span>
+                            <span className="text-xl font-bold text-white">Соммил</span>
                         </Link>
                     </div>
                 </div>
@@ -76,7 +76,7 @@ function RouteComponent() {
                                     </div>
                                     <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                                         <span className="bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent">
-                                            KindPlate
+                                            Соммил
                                         </span>
                                     </h1>
                                     <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Регистрация бизнеса</h2>

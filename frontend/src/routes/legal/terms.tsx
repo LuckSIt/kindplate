@@ -10,7 +10,7 @@ function TermsPage() {
         <>
             <LegalPageSEO 
                 title="Пользовательское соглашение" 
-                description="Условия использования платформы KindPlate. Права и обязанности пользователей, правила работы с сервисом."
+                description="Условия использования платформы Соммил. Права и обязанности пользователей, правила работы с сервисом."
             />
             <div className="min-h-screen bg-gray-50">
             <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -28,7 +28,7 @@ function TermsPage() {
                         Последнее обновление: 27 октября 2025 г.
                     </p>
                     <p className="text-gray-600 mt-4">
-                        Используя платформу KindPlate, вы соглашаетесь с настоящими условиями.
+                        Используя платформу Соммил, вы соглашаетесь с настоящими условиями.
                         Пожалуйста, внимательно ознакомьтесь с ними перед использованием сервиса.
                     </p>
                 </div>
@@ -37,7 +37,7 @@ function TermsPage() {
                     <h2 className="text-xl font-bold text-gray-900 mb-4">1. Общие положения</h2>
                     <div className="text-gray-700 space-y-3">
                         <p>
-                            1.1. KindPlate (далее — «Платформа») предоставляет онлайн-сервис для связи
+                            1.1. Соммил (далее — «Платформа») предоставляет онлайн-сервис для связи
                             покупателей с заведениями общественного питания, продающими готовую еду
                             с коротким сроком годности.
                         </p>
@@ -154,7 +154,7 @@ function TermsPage() {
                 <div className="bg-green-50 border border-green-200 rounded-lg p-6">
                     <h2 className="text-xl font-bold text-gray-900 mb-3">Контакты</h2>
                     <p className="text-gray-700">
-                        ООО "КиндПлейт"<br />
+                        ООО "Соммил"<br />
                         ИНН: 1234567890<br />
                         Адрес: Россия, Санкт-Петербург<br />
                         Email: <a href="mailto:legal@kindplate.ru" className="text-green-600 hover:text-green-700 font-medium">legal@kindplate.ru</a>

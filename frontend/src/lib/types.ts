@@ -74,6 +74,9 @@ export type Business = {
   }>; // Бейджи качества
 }
 
+/** Тип предложения: блюдо или спецбокс */
+export type OfferType = 'dish' | 'special_box';
+
 // Предложение
 export type Offer = {
   id: number;
@@ -87,6 +90,8 @@ export type Offer = {
   pickup_time_start: string;
   pickup_time_end: string;
   is_active: boolean;
+  /** dish = блюдо со скидкой, special_box = спецбокс */
+  offer_type?: OfferType;
   is_best?: boolean; // Лучшие предложения
   created_at: string;
   updated_at?: string;

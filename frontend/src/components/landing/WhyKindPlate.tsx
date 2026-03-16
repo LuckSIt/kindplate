@@ -1,3 +1,5 @@
+import { TypewriterText } from "@/components/ui/typewriter-text";
+
 const WHY_KIND_PLATE_ITEMS = [
     { id: "save", text: "Экономьте до 70% на качественной еде", align: "left" as const },
     { id: "local", text: "Поддерживайте местные бизнесы", align: "right" as const },
@@ -5,7 +7,12 @@ const WHY_KIND_PLATE_ITEMS = [
     { id: "impact", text: "Создавайте позитивное влияние", align: "right" as const },
 ];
 
-export function WhyKindPlate() {
+type WhyKindPlateProps = {
+    stage: number;
+    setStage: (n: number) => void;
+};
+
+export function WhyKindPlate({ stage, setStage }: WhyKindPlateProps) {
     return (
         <>
             <h3
@@ -13,15 +20,22 @@ export function WhyKindPlate() {
                 style={{
                     fontFamily: "Manrope, sans-serif",
                     fontWeight: 700,
-                    fontSize: 26,
+                    fontSize: 24,
                     lineHeight: "108%",
                     letterSpacing: 0,
                     color: "#DEF4EE",
                     marginTop: 60,
                 }}
             >
-                Почему KindPlate?
+                <TypewriterText
+                    text="Почему Соммил?"
+                    speed={45}
+                    delay={0}
+                    hideCursorOnComplete={true}
+                    onComplete={() => setStage(8)}
+                />
             </h3>
+            {stage >= 8 && (
             <div className="px-4 pt-5 pb-5 mt-[25px]">
                 <div
                     className="relative mb-6"
@@ -40,13 +54,13 @@ export function WhyKindPlate() {
                         }}
                     >
                         <div
-                            className="flex flex-col relative items-stretch"
+                            className="flex flex-col relative items-stretch kp-landing-why-pills-reveal"
                             style={{ gap: 20, zIndex: 20 }}
                         >
                             {WHY_KIND_PLATE_ITEMS.map(({ id, text, align }) => (
                                 <div
                                     key={id}
-                                    className="kp-landing-why-pill"
+                                    className={`kp-landing-why-pill kp-landing-why-pill--${align}`}
                                     style={{
                                         alignSelf: align === "left" ? "flex-start" : "flex-end",
                                         maxWidth: "85%",
@@ -59,6 +73,7 @@ export function WhyKindPlate() {
                     </div>
                 </div>
             </div>
+            )}
         </>
     );
 }

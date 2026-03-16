@@ -779,10 +779,11 @@ offersRouter.get("/mine", asyncHandler(async (req, res) => {
                 pickup_time_start,
                 pickup_time_end,
                 is_active,
+                COALESCE(offer_type, 'dish') as offer_type,
                 created_at
             FROM offers 
             WHERE business_id = $1 
-            ORDER BY created_at DESC`,
+            ORDER BY offer_type, created_at DESC`,
             [businessId]
         );
 
@@ -820,7 +821,8 @@ offersRouter.post("/create", upload.single('image'), handleMulterError, sanitize
         pickup_time_start,
         pickup_time_end,
         is_active,
-        location_id
+        location_id,
+        offer_type
     } = req.body;
 
     // URL загруженного изображения
@@ -862,6 +864,7 @@ offersRouter.post("/create", upload.single('image'), handleMulterError, sanitize
         }
     }
 
+    const typeVal = offer_type === 'special_box' ? 'special_box' : 'dish';
     const result = await pool.query(
         `INSERT INTO offers(
             business_id, 
@@ -874,8 +877,9 @@ offersRouter.post("/create", upload.single('image'), handleMulterError, sanitize
             quantity_available,
             pickup_time_start,
             pickup_time_end,
-            is_active
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
+            is_active,
+            offer_type
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) 
         RETURNING 
             id, 
             location_id,
@@ -888,6 +892,7 @@ offersRouter.post("/create", upload.single('image'), handleMulterError, sanitize
             pickup_time_start,
             pickup_time_end,
             is_active,
+            offer_type,
             created_at`,
         [
             req.session.userId,
@@ -900,7 +905,8 @@ offersRouter.post("/create", upload.single('image'), handleMulterError, sanitize
             quantity_available,
             pickup_time_start,
             pickup_time_end,
-            is_active !== undefined ? is_active : true
+            is_active !== undefined ? is_active : true,
+            typeVal
         ]
     );
 
@@ -930,7 +936,8 @@ offersRouter.post("/edit", upload.single('image'), handleMulterError, sanitizePl
         pickup_time_start,
         pickup_time_end,
         is_active,
-        location_id
+        location_id,
+        offer_type
     } = req.body;
 
     // Базовая валидация
@@ -981,7 +988,7 @@ offersRouter.post("/edit", upload.single('image'), handleMulterError, sanitizePl
         if (ok) try { fs.unlinkSync(req.file.path); } catch (_) {}
     }
 
-    // Строим запрос динамически для location_id
+    const typeVal = offer_type === 'special_box' ? 'special_box' : 'dish';
     const updates = [
         'title = $1',
         'description = $2',
@@ -992,6 +999,7 @@ offersRouter.post("/edit", upload.single('image'), handleMulterError, sanitizePl
         'pickup_time_start = $7',
         'pickup_time_end = $8',
         'is_active = $9',
+        'offer_type = $10',
         'updated_at = CURRENT_TIMESTAMP'
     ];
     const values = [
@@ -1003,7 +1011,8 @@ offersRouter.post("/edit", upload.single('image'), handleMulterError, sanitizePl
         quantity_available,
         pickup_time_start,
         pickup_time_end,
-        is_active !== undefined ? is_active : true
+        is_active !== undefined ? is_active : true,
+        typeVal
     ];
 
     if (location_id !== undefined) {

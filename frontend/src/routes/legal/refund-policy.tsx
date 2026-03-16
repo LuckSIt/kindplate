@@ -10,7 +10,7 @@ function RefundPolicyPage() {
         <>
             <LegalPageSEO 
                 title="Политика возвратов и отмен" 
-                description="Условия возврата средств и отмены заказов на KindPlate. Правила оформления возвратов, сроки и процедура рассмотрения."
+                description="Условия возврата средств и отмены заказов на Соммил. Правила оформления возвратов, сроки и процедура рассмотрения."
             />
             <div className="min-h-screen bg-gray-50">
             {/* Header */}
@@ -28,13 +28,13 @@ function RefundPolicyPage() {
                 {/* Intro */}
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                     <p className="text-gray-600 text-lg">
-                        KindPlate стремится обеспечить справедливые условия для всех участников платформы.
+                        Соммил стремится обеспечить справедливые условия для всех участников платформы.
                         Данная политика описывает правила возврата средств и отмены заказов в соответствии с
                         законодательством Российской Федерации.
                     </p>
                     <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                         <p className="text-sm text-blue-900">
-                            <strong>Обратите внимание:</strong> Еда на KindPlate продается по сниженным ценам,
+                            <strong>Обратите внимание:</strong> Еда на Соммил продается по сниженным ценам,
                             так как имеет короткий срок годности. Это влияет на условия возврата.
                         </p>
                     </div>
@@ -188,7 +188,7 @@ function RefundPolicyPage() {
                             <h3 className="font-semibold text-gray-900 mb-2">4.3. Спорные ситуации</h3>
                             <p>
                                 Если продавец не согласен с возвратом, спор рассматривается службой поддержки
-                                KindPlate. Решение принимается в течение 3 рабочих дней на основании:
+                                Соммил. Решение принимается в течение 3 рабочих дней на основании:
                             </p>
                             <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
                                 <li>Переписки между покупателем и продавцом</li>
@@ -262,7 +262,7 @@ function RefundPolicyPage() {
             <footer className="bg-white border-t border-gray-200 mt-12">
                 <div className="max-w-4xl mx-auto px-4 py-6">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600">
-                        <div>© 2025 KindPlate. Все права защищены.</div>
+                        <div>© 2026 Соммил. Все права защищены.</div>
                         <div className="flex gap-4">
                             <a href="/legal/faq" className="hover:text-green-600">FAQ</a>
                             <a href="/legal/privacy" className="hover:text-green-600">Конфиденциальность</a>

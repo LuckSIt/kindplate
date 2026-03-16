@@ -224,6 +224,7 @@ customerRouter.get("/vendors/:id/offers", async (req, res) => {
                 o.pickup_time_start,
                 o.pickup_time_end,
                 o.is_active,
+                COALESCE(o.offer_type, 'dish') as offer_type,
                 false as is_best,
                 o.created_at
             FROM offers o
@@ -252,6 +253,7 @@ customerRouter.get("/vendors/:id/offers", async (req, res) => {
             pickup_time_start: row.pickup_time_start,
             pickup_time_end: row.pickup_time_end,
             is_active: row.is_active,
+            offer_type: row.offer_type === 'special_box' ? 'special_box' : 'dish',
             is_best: row.is_best || false,
             created_at: row.created_at,
             discount_percent: Math.round((1 - parseFloat(row.discounted_price) / parseFloat(row.original_price)) * 100)

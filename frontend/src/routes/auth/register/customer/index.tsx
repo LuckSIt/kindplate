@@ -30,7 +30,7 @@ function RouteComponent() {
             const tokens = res.data?.tokens;
             if (tokens?.accessToken) tokenStorage.setAccessToken(tokens.accessToken);
             if (tokens?.refreshToken) tokenStorage.setRefreshToken(tokens.refreshToken);
-            notify.success("Регистрация успешна", "Добро пожаловать в KindPlate!");
+            notify.success("Регистрация успешна", "Добро пожаловать в Соммил!");
             queryClient.invalidateQueries({ queryKey: ["auth"] });
             navigate({ to: "/home" });
         },

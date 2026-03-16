@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Share, Plus, MoreVertical } from 'lucide-react';
+import { TypewriterText } from './typewriter-text';
 
 const STORAGE_KEY = 'add-to-home-screen-dismissed';
 const STORAGE_EXPIRY_DAYS = 7;
@@ -82,10 +83,18 @@ export function AddToHomeScreenPrompt() {
       <div
         className="add-to-home-banner"
         role="dialog"
-        aria-label="Добавить KindPlate на главный экран"
+        aria-label="Добавить Соммил на главный экран"
       >
         <p className="add-to-home-banner__text">
-          Добавьте KindPlate на главный экран для быстрого доступа.{' '}
+          <TypewriterText
+            text="Добавьте Соммил на главный экран для быстрого доступа."
+            delay={200}
+            speed={55}
+            className="add-to-home-banner__typewriter"
+            cursorClassName="add-to-home-banner__cursor"
+          />
+        </p>
+        <div className="add-to-home-banner__actions">
           <button
             type="button"
             className="add-to-home-banner__link"
@@ -93,8 +102,6 @@ export function AddToHomeScreenPrompt() {
           >
             Подробнее
           </button>
-        </p>
-        <div className="add-to-home-banner__actions">
           <button
             type="button"
             className="add-to-home-banner__btn add-to-home-banner__btn--secondary"

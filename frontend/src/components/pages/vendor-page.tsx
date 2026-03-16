@@ -55,6 +55,7 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
       return list.map((o: Record<string, unknown>) => ({
         ...o,
         image_url: (o.image_url ?? o.imageUrl ?? o.photo_url) as string | undefined,
+        offer_type: (o.offer_type === 'special_box' ? 'special_box' : 'dish') as Offer['offer_type'],
       })) as Offer[];
     }
   });
@@ -78,7 +79,10 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
   } : null;
 
   const offers: Offer[] = offersData || [];
-  const activeOffersCount = offers.filter(o => o.quantity_available > 0).length;
+  const specialBoxes = offers.filter(o => o.offer_type === 'special_box');
+  const dishes = offers.filter(o => o.offer_type !== 'special_box');
+  const activeSpecialBoxesCount = specialBoxes.filter(o => o.quantity_available > 0).length;
+  const activeDishesCount = dishes.filter(o => o.quantity_available > 0).length;
 
   // Handlers
   const handleFavoriteToggle = () => {
@@ -280,28 +284,49 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
         </button>
               </div>
 
-      {/* Available Offers Section */}
+      {/* Спецбоксы */}
       <div className="vendor-page__available-section">
-        <h2 className="vendor-page__available-title">Доступные обьявления:</h2>
-        <div className="vendor-page__available-count">{activeOffersCount} активных</div>
-            </div>
-
-      {/* Offers List */}
-      <div className="vendor-page__content">
-        {offers.length === 0 ? (
-          <div className="vendor-page__empty">Нет доступных предложений</div>
+        <h2 className="vendor-page__available-title vendor-page__available-title--green">СПЕЦБОКСЫ:</h2>
+        <div className="vendor-page__available-count">{activeSpecialBoxesCount} активных</div>
+      </div>
+      <div className="vendor-page__content vendor-page__content--specbox">
+        {specialBoxes.length === 0 ? (
+          <div className="vendor-page__empty">Нет спецбоксов</div>
         ) : (
-          offers.map((offer) => {
+          specialBoxes.map((offer) => {
+            const maxQty = Math.max(0, offer.quantity_available ?? 0);
+            const imageSrc = offer.image_url?.trim() ?? '';
+            return (
+              <SpecialBoxCard
+                key={`spec-${offer.id}`}
+                offer={offer}
+                image={imageSrc}
+                onAddToOrder={() => handleAddToOrder(offer)}
+                isAdding={isAddingToCart}
+              />
+            );
+          })
+        )}
+      </div>
+
+      {/* Блюда со скидкой */}
+      <div className="vendor-page__available-section">
+        <h2 className="vendor-page__available-title vendor-page__available-title--green">Блюда со скидкой:</h2>
+        <div className="vendor-page__available-count">{activeDishesCount} активных</div>
+      </div>
+      <div className="vendor-page__content">
+        {dishes.length === 0 ? (
+          <div className="vendor-page__empty">Нет доступных блюд</div>
+        ) : (
+          dishes.map((offer) => {
             const maxQty = Math.max(0, offer.quantity_available ?? 0);
             const rawQuantity = offerQuantities.get(offer.id) || 1;
             const quantity = maxQty < 1 ? 0 : Math.min(rawQuantity, maxQty);
             const showQuantitySelector = quantity > 0;
-            // Путь/URL фото оффера — в ReliableImg внутри OfferCard сам вызовет getImageURL для относительных путей
             const imageSrc = offer.image_url?.trim() ?? '';
-
             return (
-              <OfferCard
-                key={`${offer.id}-${offer.image_url || 'no-image'}`}
+              <DishCard
+                key={`dish-${offer.id}-${offer.image_url || 'no-image'}`}
                 offer={offer}
                 image={imageSrc}
                 quantity={quantity}
@@ -355,7 +380,64 @@ export const VendorPage: React.FC<VendorPageProps> = ({ vendorId }) => {
   );
 };
 
-interface OfferCardProps {
+function formatPickupTime(end: string): string {
+  if (!end) return '';
+  const match = String(end).match(/^(\d{1,2}):(\d{2})/);
+  if (match) return `Забрать до ${match[1]}:${match[2]}`;
+  return `Забрать до ${end}`;
+}
+
+interface SpecialBoxCardProps {
+  offer: Offer;
+  image: string;
+  onAddToOrder: () => void;
+  isAdding: boolean;
+}
+
+function SpecialBoxCard({ offer, image, onAddToOrder, isAdding }: SpecialBoxCardProps) {
+  const navigate = useNavigate();
+  return (
+    <div
+      className="vendor-page__specbox-card"
+      onClick={() => navigate({ to: "/offer/$offerId", params: { offerId: String(offer.id) } })}
+    >
+      <div className="vendor-page__specbox-image">
+        {image ? (
+          <ReliableImg
+            src={image}
+            alt={offer.title ?? 'Спецбокс'}
+            key={offer.id}
+            fallbackElement={
+              <div className="vendor-page__specbox-image-placeholder"><span>Нет фото</span></div>
+            }
+          />
+        ) : (
+          <div className="vendor-page__specbox-image-placeholder"><span>Нет фото</span></div>
+        )}
+      </div>
+      <div className="vendor-page__specbox-info">
+        <h3 className="vendor-page__specbox-name">{offer.title}</h3>
+        {offer.description && <p className="vendor-page__specbox-desc">{offer.description}</p>}
+        <div className="vendor-page__specbox-prices">
+          {offer.original_price > offer.discounted_price && (
+            <span className="vendor-page__specbox-price-old">{offer.original_price}₽</span>
+          )}
+          <span className="vendor-page__specbox-price">{offer.discounted_price}₽</span>
+        </div>
+        <div className="vendor-page__specbox-pickup">{formatPickupTime(offer.pickup_time_end)}</div>
+        <button
+          className="vendor-page__specbox-add"
+          onClick={(e) => { e.stopPropagation(); onAddToOrder(); }}
+          disabled={isAdding || (offer.quantity_available ?? 0) < 1}
+        >
+          {isAdding ? 'Добавление...' : 'Добавить'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+interface DishCardProps {
   offer: Offer;
   image: string;
   quantity: number;
@@ -367,7 +449,7 @@ interface OfferCardProps {
   isAdding: boolean;
 }
 
-function OfferCard({ 
+function DishCard({ 
   offer, 
   image, 
   quantity, 
@@ -377,42 +459,38 @@ function OfferCard({
   onQuantityDecrease, 
   onAddToOrder,
   isAdding 
-}: OfferCardProps) {
+}: DishCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
   const navigate = useNavigate();
+  const discountPercent = offer.discount_percent ?? (offer.original_price > 0
+    ? Math.round((1 - offer.discounted_price / offer.original_price) * 100)
+    : 0);
 
   return (
     <div 
-      className="vendor-page__offer-card"
+      className="vendor-page__dish-card"
       onClick={() => navigate({ to: "/offer/$offerId", params: { offerId: String(offer.id) } })}
     >
-      {/* Image — ReliableImg сам разрешает относительные пути через getImageURL */}
-      <div className="vendor-page__offer-image">
+      <div className="vendor-page__dish-image">
         {image ? (
           <ReliableImg
             src={image}
-            alt={offer.title ?? 'Предложение'}
+            alt={offer.title ?? 'Блюдо'}
             key={`${offer.id}-${offer.image_url || 'no-image'}`}
             fallbackElement={
-              <div className="vendor-page__offer-image-placeholder">
-                <span>Нет фото</span>
-              </div>
+              <div className="vendor-page__dish-image-placeholder"><span>Нет фото</span></div>
             }
           />
         ) : (
-          <div className="vendor-page__offer-image-placeholder">
-            <span>Нет фото</span>
-          </div>
+          <div className="vendor-page__dish-image-placeholder"><span>Нет фото</span></div>
+        )}
+        {discountPercent > 0 && (
+          <span className="vendor-page__dish-badge">-{discountPercent}%</span>
         )}
       </div>
-
-      {/* Favorite Button */}
-                  <button
-        className="vendor-page__offer-favorite"
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsFavorite(!isFavorite);
-        }}
+      <button
+        className="vendor-page__dish-favorite"
+        onClick={(e) => { e.stopPropagation(); setIsFavorite(!isFavorite); }}
         aria-label={isFavorite ? "Удалить из избранного" : "Добавить в избранное"}
       >
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
@@ -426,64 +504,45 @@ function OfferCard({
             clipRule="evenodd"
           />
         </svg>
-                  </button>
-
-      {/* Offer Info */}
-      <div className="vendor-page__offer-info">
-        <div className="vendor-page__offer-header">
-          <h3 className="vendor-page__offer-name">{offer.title}</h3>
-          <div className="vendor-page__offer-prices">
-            {offer.original_price && offer.original_price > offer.discounted_price && (
-              <span className="vendor-page__offer-price-old">{offer.original_price}₽</span>
-            )}
-            <span className="vendor-page__offer-price">{offer.discounted_price}₽</span>
-                </div>
-              </div>
-              
-        {/* Quantity Selector and Add Button */}
-        <div className="vendor-page__offer-actions" onClick={(e) => e.stopPropagation()}>
+      </button>
+      <div className="vendor-page__dish-info">
+        <div className="vendor-page__dish-header">
+          <h3 className="vendor-page__dish-name">{offer.title}</h3>
+          <span className="vendor-page__dish-remaining">осталось {offer.quantity_available ?? 0} шт</span>
+        </div>
+        <div className="vendor-page__dish-prices">
+          {offer.original_price > offer.discounted_price && (
+            <span className="vendor-page__dish-price-old">{offer.original_price}₽</span>
+          )}
+          <span className="vendor-page__dish-price">{offer.discounted_price}₽</span>
+        </div>
+        <div className="vendor-page__dish-pickup">{formatPickupTime(offer.pickup_time_end)}</div>
+        <div className="vendor-page__dish-actions" onClick={(e) => e.stopPropagation()}>
           {showQuantitySelector ? (
             <>
               <div className="vendor-page__quantity-selector">
                 <button 
                   className="vendor-page__quantity-button vendor-page__quantity-button--minus"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onQuantityDecrease();
-                  }}
+                  onClick={(e) => { e.stopPropagation(); onQuantityDecrease(); }}
                   disabled={quantity <= 1}
-                  aria-label="Уменьшить количество"
-                ></button>
+                  aria-label="Уменьшить"
+                />
                 <div className="vendor-page__quantity-value">{quantity}</div>
                 <button 
                   className="vendor-page__quantity-button vendor-page__quantity-button--plus"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onQuantityIncrease();
-                  }}
+                  onClick={(e) => { e.stopPropagation(); onQuantityIncrease(); }}
                   disabled={quantity >= maxQuantity}
-                  aria-label="Увеличить количество"
-                ></button>
+                  aria-label="Увеличить"
+                />
               </div>
-            <button
-                className="vendor-page__add-button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAddToOrder();
-                }}
-                disabled={isAdding}
-            >
+              <button className="vendor-page__add-button" onClick={(e) => { e.stopPropagation(); onAddToOrder(); }} disabled={isAdding}>
                 {isAdding ? "Добавление..." : "Добавить"}
-            </button>
+              </button>
             </>
           ) : (
             <button
               className="vendor-page__add-button vendor-page__add-button--full"
-              onClick={(e) => {
-                e.stopPropagation();
-                onQuantityIncrease();
-                onAddToOrder();
-              }}
+              onClick={(e) => { e.stopPropagation(); onQuantityIncrease(); onAddToOrder(); }}
               disabled={isAdding}
             >
               {isAdding ? "Добавление..." : "Добавить"}

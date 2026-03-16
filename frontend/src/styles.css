@@ -256,9 +256,9 @@ html.landing-active #app {
 /* Mobile typography: нормальные размеры по умолчанию (без 33px — из-за него был наезд текста в карточках и списках) */
 h1:not(.cart-page__header-name):not(.payment-page__header-name) { font-size: 32px !important; line-height: 1.25 !important; font-weight: 700; color: var(--color-text); }
 h2:not(.payment-page__order-business) { font-size: 20px !important; line-height: 1.3 !important; font-weight: 700; color: var(--color-text); }
-h3:not(.font-montserrat-alt):not(.businesses-list-page__business-name):not(.vendor-page__offer-name):not(.cart-page__product-name):not(.panel-page__offer-title):not(.panel-page__order-title) { font-size: 26px !important; line-height: 1.25 !important; font-weight: 600; color: var(--color-text); }
+h3:not(.font-montserrat-alt):not(.businesses-list-page__business-name):not(.vendor-page__offer-name):not(.vendor-page__dish-name):not(.cart-page__product-name):not(.panel-page__offer-title):not(.panel-page__order-title) { font-size: 26px !important; line-height: 1.25 !important; font-weight: 600; color: var(--color-text); }
 p:not(.font-montserrat-alt):not(.font-ramona):not(.landing-hero-subtitle):not(.kp-landing-footer-legal):not(.login-page__subtitle):not(.login-page__footer-text):not(.register-page__subtitle):not(.register-page__footer-text),
-span:not(.font-montserrat-alt):not(.font-ramona):not(.kp-landing-why-pill-text):not(.landing-hero-accent):not(.landing-hero-text):not(.phone-quantity-value):not(.landing-step-num):not(.step-num):not(.kp-landing-footer-card-text):not(.phone-card-badge):not(.phone-card-old-price):not(.phone-card-price):not(.register-page__consent-text),
+span:not(.font-montserrat-alt):not(.font-ramona):not(.kp-landing-why-pill-text):not(.landing-hero-accent):not(.landing-hero-text):not(.landing-hero-title__typewriter):not(.landing-hero-subtitle__typewriter):not(.landing-clients-desc__typewriter):not(.landing-clients-green):not(.phone-quantity-value):not(.landing-step-num):not(.step-num):not(.kp-landing-footer-card-text):not(.phone-card-badge):not(.phone-card-old-price):not(.phone-card-price):not(.register-page__consent-text),
 li:not(.font-montserrat-alt):not(.font-ramona) {
   font-size: 16px;
   line-height: 1.45;
@@ -3519,7 +3519,7 @@ html {
 .vendor-page__quantity-value {
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 700;
-  font-size: 10px;
+  font-size: 10px !important;
   line-height: 9px;
   color: var(--color-text-on-dark) !important;
   text-align: center;
@@ -3533,12 +3533,12 @@ html {
   width: auto;
   min-width: 88px;
   height: 28px;
-  background-color: #0d1835;
+  background-color: #098771;
   border: none;
   border-radius: 8px;
   font-family: 'Montserrat Alternates', sans-serif;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 16px !important;
   line-height: 1.25;
   color: #FFFFFF;
   cursor: pointer;
@@ -3566,6 +3566,268 @@ html {
 
 .vendor-page__add-button--full {
   width: 100%;
+}
+
+.vendor-page__available-title--green {
+  color: #098771 !important;
+}
+
+.vendor-page__content--specbox {
+  margin-bottom: 24px;
+}
+
+/* Спецбокс: светлая карточка с фото слева, инфо справа */
+.vendor-page__specbox-card {
+  display: flex;
+  width: 100%;
+  background: #DEF4EE;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.vendor-page__specbox-card:active {
+  transform: scale(0.98);
+}
+.vendor-page__specbox-image {
+  width: 140px;
+  min-width: 140px;
+  height: 140px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #c2e6dc;
+}
+.vendor-page__specbox-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.vendor-page__specbox-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #c2e6dc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #098771;
+}
+.vendor-page__specbox-info {
+  flex: 1;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.vendor-page__specbox-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.2;
+  color: #10172A;
+  margin: 0;
+}
+.vendor-page__specbox-desc {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 13px;
+  line-height: 1.3;
+  color: #098771;
+  margin: 0;
+}
+.vendor-page__specbox-prices {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vendor-page__specbox-price-old {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 13px;
+  color: #8C8C8C;
+  text-decoration: line-through;
+}
+.vendor-page__specbox-price {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #098771;
+}
+.vendor-page__specbox-pickup {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 12px;
+  color: #5a7a73;
+}
+.vendor-page__specbox-add {
+  margin-top: auto;
+  width: 100%;
+  max-width: 120px;
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: #098771;
+  color: #fff;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.vendor-page__specbox-add:hover:not(:disabled) {
+  opacity: 0.9;
+}
+.vendor-page__specbox-add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Блюдо со скидкой: горизонтальная карточка — слева фото, справа контент */
+.vendor-page__dish-card {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #2B344D;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 120px;
+  padding: 10px 0 10px 10px;
+  box-sizing: border-box;
+}
+.vendor-page__dish-card:active {
+  transform: scale(0.98);
+}
+.vendor-page__dish-image {
+  width: 120px;
+  min-width: 120px;
+  height: 130px;
+  max-height: 120px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 16px;
+  flex-shrink: 0;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1e2742;
+  margin-right: 12px;
+}
+.vendor-page__dish-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.vendor-page__dish-image-placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #1e2742;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 12px;
+  color: #8C8C8C;
+}
+.vendor-page__dish-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #098771;
+  color: #fff;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 10px !important;
+  font-weight: 700;
+  padding: 3px 6px;
+  border-radius: 6px;
+}
+.vendor-page__dish-favorite {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 36px;
+  height: 36px;
+  background: rgba(16, 23, 42, 0.75);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  z-index: 5;
+}
+.vendor-page__dish-info {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.vendor-page__dish-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.vendor-page__dish-name {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 15px !important;
+  line-height: 1.25;
+  color: #FFFFFF;
+  margin: 0;
+}
+.vendor-page__dish-remaining {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 8px !important;
+  color: #9CA3AF;
+}
+.vendor-page__dish-prices {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.vendor-page__dish-price-old {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 13px !important;
+  color: #8C8C8C;
+  text-decoration: line-through;
+}
+.vendor-page__dish-price {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 700;
+  font-size: 14px !important;
+  color: #098771;
+}
+.vendor-page__dish-pickup {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 8px !important;
+  color: #9CA3AF;
+  margin-bottom: 12px;
+}
+.vendor-page__dish-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .vendor-page__bottom-nav {
@@ -7619,6 +7881,23 @@ div.font-montserrat-alt,
   opacity: 0.9;
 }
 
+.panel-page__offers-section {
+  margin-bottom: 20px;
+}
+
+.panel-page__offers-section:last-child {
+  margin-bottom: 0;
+}
+
+.panel-page__offers-section-title {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.3;
+  color: #098771;
+  margin: 0 0 12px 0;
+}
+
 .panel-page__offers-list,
 .panel-page__orders-list {
   display: flex;
@@ -7754,12 +8033,11 @@ div.font-montserrat-alt,
 }
 
 .panel-page__offer-header {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: auto auto;
+  display: flex;
+  flex-wrap: wrap;
   gap: 6px 8px;
   margin-bottom: 8px;
-  align-items: start;
+  align-items: center;
 }
 
 .panel-page__offer-title {
@@ -7769,8 +8047,8 @@ div.font-montserrat-alt,
   line-height: 1.3;
   color: #FFFFFF;
   margin: 0;
-  grid-column: 1 / -1;
   min-width: 0;
+  flex: 1 1 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -7778,6 +8056,26 @@ div.font-montserrat-alt,
   -webkit-box-orient: vertical;
   white-space: normal;
   word-break: break-word;
+}
+
+.panel-page__offer-type-badge {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.panel-page__offer-type-badge--dish {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.panel-page__offer-type-badge--special_box {
+  background: rgba(9, 135, 113, 0.4);
+  color: #FFFFFF;
 }
 
 .panel-page__offer-discount {
@@ -8674,6 +8972,23 @@ div.font-montserrat-alt,
   margin: 0;
 }
 
+.panel-page__form-radio-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+}
+
+.panel-page__form-radio {
+  width: 18px;
+  height: 18px;
+  accent-color: #098771;
+}
+
 .panel-page__form-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -9254,18 +9569,16 @@ div.font-montserrat-alt,
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 14px;
   animation: slideInDown 0.3s ease-out;
 }
 
 @media (min-width: 480px) {
   .add-to-home-banner {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
     max-width: 440px;
     padding: 18px 24px;
+    gap: 16px;
   }
 }
 
@@ -9276,32 +9589,44 @@ div.font-montserrat-alt,
   font-size: 13px;
   line-height: 19px;
   color: rgba(255, 255, 255, 0.8);
+  text-align: center;
 }
 
-/* Кнопка «Подробнее» в плашке — по макету, без подчёркивания */
-/* По макету Figma: светлый теал, текст #009688, без рамки, скруглённые углы */
+/* Мигающий курсор для эффекта печати */
+@keyframes typewriter-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.typewriter-cursor {
+  display: inline-block;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.9);
+  animation: typewriter-blink 1s step-end infinite;
+  margin-left: 1px;
+}
+
+/* Кнопка «Подробнее» в одном ряду с «Позже» и «Понятно» */
 .add-to-home-banner__link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  width: 203px;
-  height: 53px;
-  padding: 19px 20px 18px 20px;
+  height: 44px;
+  padding: 0 18px;
   border-radius: 12px;
   border: none;
   background: #DEFAF6;
   font-family: Manrope, sans-serif;
   font-weight: 700;
-  font-size: 15px;
-  line-height: 87%;
-  letter-spacing: 0;
+  font-size: 14px;
+  line-height: 1;
   text-align: center;
   color: #009688;
   text-decoration: none !important;
   cursor: pointer;
   transition: opacity 0.2s ease;
-  vertical-align: middle;
+  flex-shrink: 0;
 }
 
 .add-to-home-banner__link:hover {
@@ -9312,8 +9637,10 @@ div.font-montserrat-alt,
 .add-to-home-banner__actions {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   flex-shrink: 0;
+  width: 100%;
 }
 
 .add-to-home-banner__btn {
@@ -9804,5 +10131,37 @@ div.font-montserrat-alt,
   border-top-color: #098771;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+}
+
+/* Плавные переходы между страницами (fade + лёгкий сдвиг) */
+@keyframes route-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.route-fade {
+  animation: route-fade-in 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Лендинг: один шрифт на весь контейнер, перебивает все глобальные правила */
+.kp-landing,
+.kp-landing * {
+  font-family: Manrope, sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+.kp-landing .landing-clients-green,
+.kp-landing .landing-clients-green * {
+  font-family: "Montserrat Alternates", sans-serif !important;
+  color: #098771 !important;
+}
+.kp-landing .kp-landing-steps-section h3,
+.kp-landing .kp-landing-steps-section h3 * {
+  font-family: "Montserrat Alternates", sans-serif !important;
 }
 

@@ -287,7 +287,10 @@ function RootRoute() {
                                 }
                                 return null; 
                             })()}
-                            <Outlet />
+                            {/* Плавный переход между страницами лендинга */}
+                            <div key={location.pathname} className="route-fade">
+                                <Outlet />
+                            </div>
                         </>
                     ) : (
                         <MobileOnly>
@@ -317,7 +320,10 @@ function RootRoute() {
                                     overscrollBehavior: 'contain'
                                 }}
                             >
-                                <Outlet />
+                                {/* Плавный переход между страницами приложения */}
+                                <div key={location.pathname} className="route-fade">
+                                    <Outlet />
+                                </div>
                             </main>
                             {/* Bottom Tab Bar: компактный, вплотную к нижнему краю */}
                             {!hideNav && (

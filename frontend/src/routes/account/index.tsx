@@ -999,7 +999,7 @@ function RouteComponent() {
                                     marginBottom: "0px"
                                 }}
                             >
-                                KindPlate
+                                Соммил
                             </p>
                             <a 
                                     href="https://t.me/kindplatesupportbot"

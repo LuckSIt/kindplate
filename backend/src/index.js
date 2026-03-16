@@ -356,7 +356,7 @@ app.get("/health", async (req, res) => {
 app.get("/", (req, res) => {
     res.json({
         success: true,
-        message: "KindPlate API работает!",
+        message: "Соммил API работает!",
         version: "1.0.0",
         endpoints: {
             auth: "/auth",

@@ -24,7 +24,7 @@ function AboutPage() {
         {
             icon: <Users className="w-8 h-8" />,
             title: "Сообщество",
-            description: "KindPlate объединяет людей, которые ценят качество, заботятся об экологии и хотят делать мир лучше."
+            description: "Соммил объединяет людей, которые ценят качество, заботятся об экологии и хотят делать мир лучше."
         },
         {
             icon: <Target className="w-8 h-8" />,
@@ -53,8 +53,8 @@ function AboutPage() {
     return (
         <>
             <LegalPageSEO 
-                title="О нас - KindPlate" 
-                description="Узнайте больше о KindPlate — платформе для спасения еды и борьбы с пищевыми потерями. Наша миссия, ценности и команда."
+                title="О нас - Соммил" 
+                description="Узнайте больше о Соммил — платформе для спасения еды и борьбы с пищевыми потерями. Наша миссия, ценности и команда."
             />
             <div className="about-page">
                 {/* Header */}
@@ -81,7 +81,7 @@ function AboutPage() {
                 <div className="about-page__content">
                     <section className="about-page__hero">
                         <h2 className="about-page__hero-title">
-                            KindPlate
+                            Соммил
                         </h2>
                         <p className="about-page__hero-description">
                             Платформа, которая помогает заведениям продавать нераспроданную еду, 
@@ -239,7 +239,7 @@ function AboutPage() {
                     {/* Footer */}
                     <footer className="about-page__footer">
                         <div className="about-page__footer-content">
-                            <div className="about-page__footer-text">© 2025 KindPlate. Все права защищены.</div>
+                            <div className="about-page__footer-text">© 2026 Соммил. Все права защищены.</div>
                             <div className="about-page__footer-links">
                                 <Link to="/legal/privacy" className="about-page__footer-link">
                                     Конфиденциальность

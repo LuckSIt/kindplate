@@ -9,14 +9,14 @@ function PrivacyPolicyPage() {
     return (
         <>
             <LegalPageSEO 
-                title="Политика конфиденциальности - KindPlate" 
-                description="Политика конфиденциальности KindPlate. Узнайте, как мы собираем, используем, передаем и защищаем вашу информацию."
+                title="Политика конфиденциальности - Соммил" 
+                description="Политика конфиденциальности Соммил. Узнайте, как мы собираем, используем, передаем и защищаем вашу информацию."
             />
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
                 <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
                     <div className="max-w-4xl mx-auto px-4 py-6">
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                            Политика Конфиденциальности KindPlate
+                            Политика Конфиденциальности Соммил
                         </h1>
                     </div>
                 </header>
@@ -30,9 +30,9 @@ function PrivacyPolicyPage() {
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">1. Введение</h2>
                         <div className="text-gray-700 dark:text-gray-300 space-y-3 leading-relaxed">
                             <p>
-                                Компания KindPlate ценит вашу конфиденциальность и обязуется защищать ваши персональные данные. 
+                                Компания Соммил ценит вашу конфиденциальность и обязуется защищать ваши персональные данные. 
                                 Настоящая Политика конфиденциальности объясняет, как мы собираем, используем, передаем и защищаем 
-                                вашу информацию, когда вы используете наше мобильное приложение KindPlate (далее – «Приложение») 
+                                вашу информацию, когда вы используете наше мобильное приложение Соммил (далее – «Приложение») 
                                 и связанные с ним услуги (далее – «Услуги»).
                             </p>
                             <p>

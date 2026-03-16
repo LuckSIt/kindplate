@@ -11,6 +11,7 @@ import cookiesImage from "@/figma/29BD33A8-EE31-48BF-A53C-02BC08740634 1.png";
 import phoneMapImage from "@/figma/image.png";
 import blogImage from "@/figma/blog.png";
 import { DocumentsModal } from "@/components/ui/documents-modal";
+import { TypewriterText } from "@/components/ui/typewriter-text";
 import "./landing.css";
 
 // Данные о продуктах из Figma
@@ -79,6 +80,26 @@ export function LandingPage() {
     const [isPaused, setIsPaused] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
+    /** Этапы появления: 0=заголовок, 1=подзаголовок, 2=кнопки+телефон, 3=заголовок «Для клиентов», 4=текст+шаги+кнопка «Для клиентов» */
+    const [stage, setStage] = useState(0);
+
+    // Шрифты лендинга: инжект в конец document.head, чтобы перебить все глобальные правила
+    useEffect(() => {
+        const id = "kp-landing-fonts";
+        if (document.getElementById(id)) return;
+        const style = document.createElement("style");
+        style.id = id;
+        style.textContent = `
+.kp-landing,.kp-landing *{font-family:Manrope,sans-serif !important;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.kp-landing .landing-clients-green,.kp-landing .landing-clients-green *{font-family:"Montserrat Alternates",sans-serif !important;color:#098771 !important}
+.kp-landing .kp-landing-steps-section h3,.kp-landing .kp-landing-steps-section h3 *{font-family:"Montserrat Alternates",sans-serif !important}
+`;
+        document.head.appendChild(style);
+        return () => {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        };
+    }, []);
 
     // Минимальное расстояние для распознавания свайпа
     const minSwipeDistance = 50;
@@ -126,6 +147,55 @@ export function LandingPage() {
     };
 
     const currentItem = carouselItems[currentSlide];
+
+    // После появления кнопок и телефона (этап 2) даём время анимации, затем разрешаем «Для клиентов»
+    useEffect(() => {
+        if (stage !== 2) return;
+        const t = setTimeout(() => setStage(3), 1400);
+        return () => clearTimeout(t);
+    }, [stage]);
+
+    useEffect(() => {
+        if (stage !== 4) return;
+        const t = setTimeout(() => setStage(5), 3500);
+        return () => clearTimeout(t);
+    }, [stage]);
+
+    useEffect(() => {
+        if (stage !== 6) return;
+        const t = setTimeout(() => setStage(7), 3500);
+        return () => clearTimeout(t);
+    }, [stage]);
+
+    useEffect(() => {
+        if (stage !== 8) return;
+        const t = setTimeout(() => setStage(9), 2500);
+        return () => clearTimeout(t);
+    }, [stage]);
+
+    // Плавное появление блоков при скролле (для элементов с классом .kp-scroll-reveal)
+    useEffect(() => {
+        const elements = Array.from(document.querySelectorAll<HTMLElement>('.kp-landing .kp-scroll-reveal'));
+        if (!elements.length) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            {
+                threshold: 0.2,
+            }
+        );
+
+        elements.forEach((el) => observer.observe(el));
+
+        return () => observer.disconnect();
+    }, []);
 
     return (
         <div 
@@ -192,14 +262,25 @@ export function LandingPage() {
                     style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1rem)' }}
                 >
                     <div className="max-w-full mx-auto text-center" style={{ maxWidth: 361 }}>
-                        {/* Заголовок hero — по Figma node 1-1296 */}
+                        {/* Этап 0: заголовок hero */}
+                        {stage >= 0 && (
                         <h1
                             data-testid="hero-heading"
                             className="landing-hero-title"
                         >
-                            <span className="block">Выгодно для тебя</span>
-                            <span className="block mt-1">Полезно для планеты</span>
+                            <TypewriterText
+                                text={"Еда по пути домой\nсо скидкой\nдо 70%"}
+                                speed={55}
+                                delay={200}
+                                className="landing-hero-title__typewriter"
+                                cursorClassName="landing-hero-title__cursor"
+                                hideCursorOnComplete={true}
+                                onComplete={() => setStage(1)}
+                            />
                         </h1>
+                        )}
+                        {/* Этап 1: подзаголовок hero */}
+                        {stage >= 1 && (
                         <p
                             className="landing-hero-subtitle text-center mb-[48px]"
                             style={{
@@ -212,32 +293,41 @@ export function LandingPage() {
                                 color: '#ECF4F2',
                             }}
                         >
-                            <span className="landing-hero-text block">Соединяем людей<br/> с кафе и ресторанами</span>
-                            <span className="landing-hero-text block">
-                                для{' '}
-                                <span className="landing-hero-accent" style={{ fontWeight: 700 }}>выгодной</span>
-                                {' '}и{' '}
-                                <span className="landing-hero-accent" style={{ fontWeight: 700 }}>осознанной</span>
-                                {' '}<br/>покупки еды
-                            </span>
+                            <TypewriterText
+                                text={
+                                    "Соединяем людей с кафе и ресторанами\n" +
+                                    "для выгодной и осознанной покупки еды"
+                                }
+                                speed={45}
+                                delay={0}
+                                className="landing-hero-subtitle__typewriter"
+                                cursorClassName="landing-hero-subtitle__cursor"
+                                hideCursorOnComplete={false}
+                                onComplete={() => setStage(2)}
+                            />
                         </p>
-                        <div className="landing-cta-buttons">
-                            <Link to="/auth/login" className="landing-cta-link">
-                                <button type="button" className="landing-cta-btn landing-cta-btn--primary">
-                                    Начать покупать
-                                </button>
-                            </Link>
-                            <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer" className="landing-cta-link">
-                                <button type="button" className="landing-cta-btn landing-cta-btn--secondary">
-                                    Начать продавать
-                                </button>
-                            </a>
-                        </div>
+                        )}
+                        {/* Этап 2: кнопки hero */}
+                        {stage >= 2 && (
+                            <div className="landing-cta-buttons">
+                                <Link to="/auth/login" className="landing-cta-link">
+                                    <button type="button" className="landing-cta-btn landing-cta-btn--primary">
+                                        Смотреть <br/> предложения
+                                    </button>
+                                </Link>
+                                <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer" className="landing-cta-link">
+                                    <button type="button" className="landing-cta-btn landing-cta-btn--secondary">
+                                        Для бизнеса
+                                    </button>
+                                </a>
+                            </div>
+                        )}
                     </div>
                 </section>
 
-                {/* Phone — по Figma: 267×548, mt 11, border 6px #098771, rounded 36px, gradient */}
-                <section className="flex justify-center px-4 pb-[30px] overflow-x-hidden" style={{ marginTop: 11 }}>
+                {/* Этап 2: телефон */}
+                {stage >= 2 && (
+                <section className="landing-hero-phone flex justify-center px-4 pb-[30px] overflow-x-hidden" style={{ marginTop: 11 }}>
                     <div 
                         className="relative rounded-[36px] p-[6px] overflow-hidden flex flex-col min-w-0"
                         style={{ 
@@ -408,13 +498,15 @@ export function LandingPage() {
                             </div>
                     </div>
                 </section>
+                )}
 
-                {/* Для клиентов — блок шагов с блюром без обрезки */}
+                {/* Этап 3+: секция «Для клиентов» — показывается только после hero + кнопок + телефон */}
+                {stage >= 3 && (
                 <section className="kp-landing-steps-section px-4 pb-[60px]" style={{ paddingLeft: 16, paddingRight: 16, overflow: 'visible' }}>
                     <h3 
-                        className="mb-0 font-bold"
+                        className="mb-0 font-bold font-montserrat-alt kp-landing-section-title"
                         style={{
-                            fontFamily: 'Manrope, sans-serif',
+                            fontFamily: 'Montserrat Alternates, sans-serif',
                             fontWeight: 700,
                             fontSize: 26,
                             lineHeight: '108%',
@@ -430,6 +522,7 @@ export function LandingPage() {
                     <div 
                         className="px-4 pt-5 pb-5 mt-[25px]"
                     >
+                        {/* Этап 3: заголовок «Сэкономьте деньги...» */}
                         <h4 
                             className="mb-2 font-extrabold w-full"
                             style={{
@@ -442,18 +535,18 @@ export function LandingPage() {
                                 maxWidth: '100%',
                             }}
                         >
-                            <span className="landing-clients-green font-montserrat-alt"
-                                style={{
-                                    fontFamily: 'Manrope, sans-serif',
-                                    fontWeight: 800,
-                                    lineHeight: '87%',
-                                    letterSpacing: 0,
-                                    color: '#098771',
-                                }}
-                            >
-                                Сэкономьте деньги,<br/> купив товары в ваших любимых заведениях
-                            </span>
+                            <TypewriterText
+                                text={"Сэкономьте деньги, купив позиции в ваших любимых заведениях"}
+                                speed={45}
+                                delay={0}
+                                className="landing-clients-green font-montserrat-alt"
+                                hideCursorOnComplete={true}
+                                onComplete={() => setStage(4)}
+                            />
                         </h4>
+                        {/* Этап 4: абзац + шаги + кнопка */}
+                        {stage >= 4 && (
+                        <>
                         <p 
                             className="mb-8 landing-clients-desc font-montserrat-alt"
                             style={{
@@ -468,7 +561,15 @@ export function LandingPage() {
                                 maxWidth: '100%',
                             }}
                         >
-                            Покупайте вкусную еду по невероятным ценам. Просматривайте предложения по близости и покупайте товары прямо в приложении KindPlate. Наши выгодные цены порадуют ваш кошелек.
+                            <TypewriterText
+                                text={
+                                    "Смотрите предложения рядом, выбирайте блюда или спецбоксы и забирайте их по пути домой.\nБыстро и выгодно."
+                                }
+                                speed={40}
+                                delay={0}
+                                className="landing-clients-desc__typewriter"
+                                hideCursorOnComplete={true}
+                            />
                         </p>
                         {/* Блок шагов: градиент на всю ширину секции, без шума */}
                         <div className="relative mb-6 w-full">
@@ -484,23 +585,23 @@ export function LandingPage() {
                                     boxSizing: 'border-box',
                                 }}
                             >
-                            <div className="flex flex-col relative items-start" style={{ gap: 36, zIndex: 20 }}>
-                                <div className="landing-step-row flex items-start" style={{ width: '100%', maxWidth: 349 }}>
+                            <div className="flex flex-col relative items-start kp-landing-steps-reveal" style={{ gap: 36, zIndex: 20 }}>
+                                <div className="landing-step-row landing-step-row--left flex items-start" style={{ width: '100%', maxWidth: 349 }}>
                                     <span className="step-num landing-step-num flex-shrink-0 text-white">01</span>
                                     <p className="m-0 text-white landing-step-text font-montserrat-alt">Смотри предложения рядом с тобой</p>
                                 </div>
-                                <div className="landing-step-row flex items-start" style={{ width: '100%', maxWidth: 349 }}>
+                                <div className="landing-step-row landing-step-row--right flex items-start" style={{ width: '100%', maxWidth: 349 }}>
                                     <span className="step-num landing-step-num flex-shrink-0 text-white">02</span>
                                     <p className="m-0 text-white landing-step-text font-montserrat-alt">Выбирай и оплачивай прямо в приложении</p>
                                 </div>
-                                <div className="landing-step-row flex items-start" style={{ width: '100%', maxWidth: 349 }}>
+                                <div className="landing-step-row landing-step-row--left flex items-start" style={{ width: '100%', maxWidth: 349 }}>
                                     <span className="step-num landing-step-num flex-shrink-0 text-white">03</span>
                                     <p className="m-0 text-white landing-step-text font-montserrat-alt">Забери в заведении и наслаждайся</p>
                                 </div>
                             </div>
                             </div>
                         </div>
-                        <div className="flex justify-center" style={{ marginTop: 32 }}>
+                        <div className="flex justify-center kp-landing-more-reveal" style={{ marginTop: 32 }}>
                             <Link to="/auth/login" className="kp-landing-more-link">
                                 <button
                                     type="button"
@@ -523,15 +624,19 @@ export function LandingPage() {
                                 </button>
                             </Link>
                         </div>
+                        </>
+                        )}
                     </div>
                 </section>
+                )}
 
-                {/* Для бизнеса — по шаблону «Для клиентов»: заголовок, зелёный подзаголовок, описание, блок шагов, кнопка */}
+                {/* Для бизнеса — та же анимация, что и «Для клиентов»: stage 5 → заголовок + typewriter, stage 6 → абзац + шаги + кнопка */}
+                {stage >= 5 && (
                 <section className="kp-landing-steps-section px-4 pb-[60px]" style={{ paddingLeft: 16, paddingRight: 16, overflow: 'visible' }}>
                     <h3 
-                        className="mb-0 font-bold"
+                        className="mb-0 font-bold font-montserrat-alt kp-landing-section-title"
                         style={{
-                            fontFamily: 'Manrope, sans-serif',
+                            fontFamily: 'Montserrat Alternates, sans-serif',
                             fontWeight: 700,
                             fontSize: 26,
                             lineHeight: '108%',
@@ -557,18 +662,17 @@ export function LandingPage() {
                                 maxWidth: '100%',
                             }}
                         >
-                            <span className="landing-clients-green font-montserrat-alt"
-                                style={{
-                                    fontFamily: 'Manrope, sans-serif',
-                                    fontWeight: 800,
-                                    lineHeight: '87%',
-                                    letterSpacing: 0,
-                                    color: '#098771',
-                                }}
-                            >
-                                Продавайте больше<br/> и привлекайте новых<br/> гостей
-                            </span>
+                            <TypewriterText
+                                text="Зарабатывайте на вечерних продажах"
+                                speed={45}
+                                delay={0}
+                                className="landing-clients-green font-montserrat-alt"
+                                hideCursorOnComplete={true}
+                                onComplete={() => setStage(6)}
+                            />
                         </h4>
+                        {stage >= 6 && (
+                        <>
                         <p 
                             className="mb-8 landing-clients-desc font-montserrat-alt"
                             style={{
@@ -583,7 +687,13 @@ export function LandingPage() {
                                 maxWidth: '100%',
                             }}
                         >
-                            Kindplate помогает ресторанам и магазинам реализовывать непроданные блюда и готовые продукты со скидкой, вместо того чтобы списывать их. Так вы вносите вклад в осознанное потребление и заботу о планете. Получите дополнительный стабильный источник дохода и привлекайте новых клиентов.
+                            <TypewriterText
+                                text="Публикуйте блюда и спецбоксы со скидкой. Получайте заказы и привлекайте новых гостей без лишних затрат на маркетинг."
+                                speed={40}
+                                delay={0}
+                                className="landing-clients-desc__typewriter"
+                                hideCursorOnComplete={true}
+                            />
                         </p>
                         <div className="relative mb-6 w-full">
                             <div
@@ -598,23 +708,23 @@ export function LandingPage() {
                                     boxSizing: 'border-box',
                                 }}
                             >
-                                <div className="flex flex-col relative items-start" style={{ gap: 36, zIndex: 20 }}>
-                                    <div className="landing-step-row flex items-start" style={{ width: '100%', maxWidth: 349 }}>
+                                <div className="flex flex-col relative items-start kp-landing-steps-reveal" style={{ gap: 36, zIndex: 20 }}>
+                                    <div className="landing-step-row landing-step-row--left flex items-start" style={{ width: '100%', maxWidth: 349 }}>
                                         <span className="step-num landing-step-num flex-shrink-0 text-white">01</span>
                                         <p className="m-0 text-white landing-step-text font-montserrat-alt">Выкладывайте в личном кабинете блюда и наборы со скидкой</p>
                                     </div>
-                                    <div className="landing-step-row flex items-start" style={{ width: '100%', maxWidth: 349 }}>
+                                    <div className="landing-step-row landing-step-row--right flex items-start" style={{ width: '100%', maxWidth: 349 }}>
                                         <span className="step-num landing-step-num flex-shrink-0 text-white">02</span>
                                         <p className="m-0 text-white landing-step-text font-montserrat-alt">Получайте предоплаченные заказы от гостей в приложении</p>
                                     </div>
-                                    <div className="landing-step-row flex items-start" style={{ width: '100%', maxWidth: 349 }}>
+                                    <div className="landing-step-row landing-step-row--left flex items-start" style={{ width: '100%', maxWidth: 349 }}>
                                         <span className="step-num landing-step-num flex-shrink-0 text-white">03</span>
                                         <p className="m-0 text-white landing-step-text font-montserrat-alt">Выдавайте заказы в заведении и снижайте потери еды</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex justify-center" style={{ marginTop: 32 }}>
+                        <div className="flex justify-center kp-landing-more-reveal" style={{ marginTop: 32 }}>
                             <a href="https://t.me/kindplatesupportbot" target="_blank" rel="noopener noreferrer" className="kp-landing-more-link">
                                 <button
                                     type="button"
@@ -637,19 +747,34 @@ export function LandingPage() {
                                 </button>
                             </a>
                         </div>
+                        </>
+                        )}
                     </div>
                 </section>
+                )}
 
-                {/* Почему KindPlate? — overflow: visible, чтобы блюр пилюль не обрезался */}
+                {/* Почему Соммил? — только после «Для бизнеса» (stage 7), пилюли после typewriter (stage 8) */}
+                {stage >= 7 && (
                 <section className="px-4 pb-[60px] kp-landing-why-wrap" style={{ paddingLeft: 16, paddingRight: 16, overflow: 'visible' }}>
-                    <WhyKindPlate />
+                    <WhyKindPlate stage={stage} setStage={setStage} />
                 </section>
+                )}
 
-                {/* Footer — Контакты: карточки + ИП/ИНН/ОГРН */}
+                {/* Footer — Контакты: только после «Почему Соммил» (stage 9), карточки после typewriter (stage 10) */}
+                {stage >= 9 && (
                 <footer className="px-0 pb-0">
                     <div className="kp-landing-footer">
-                        <h2 className="kp-landing-footer-title">Контакты:</h2>
-                        <div className="kp-landing-footer-cards">
+                        <h2 className="kp-landing-footer-title">
+                            <TypewriterText
+                                text="Контакты:"
+                                speed={45}
+                                delay={0}
+                                hideCursorOnComplete={true}
+                                onComplete={() => setStage(10)}
+                            />
+                        </h2>
+                        {stage >= 10 && (
+                        <div className="kp-landing-footer-cards kp-landing-footer-cards-reveal">
                             <a
                                 href="https://t.me/kindplate"
                                 target="_blank"
@@ -678,6 +803,7 @@ export function LandingPage() {
                                 <ArrowRight className="kp-landing-footer-card-arrow" size={28} strokeWidth={2.41} />
                             </a>
                         </div>
+                        )}
                         {/* <div className="kp-landing-footer-legal-block">
                             <p className="kp-landing-footer-legal">ИП Сатаев А.М.</p>
                             <p className="kp-landing-footer-legal">ИНН: 784808895487</p>
@@ -685,6 +811,7 @@ export function LandingPage() {
                         </div> */}
                     </div>
                 </footer>
+                )}
             </div>
             
             {/* Documents Modal */}

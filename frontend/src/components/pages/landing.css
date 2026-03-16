@@ -1,30 +1,146 @@
 /* Стили лендинга — подключаются в LandingPage.tsx */
 
+/* Анимация появления блоков при скролле */
+@keyframes landing-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.kp-landing .kp-scroll-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.kp-landing .kp-scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Typewriter для hero — шрифт Manrope и сглаживание (body для приоритета над styles.css) */
+body .kp-landing .landing-hero-title,
+body .kp-landing .landing-hero-title * {
+  font-family: Manrope, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body .kp-landing .landing-hero-title__typewriter {
+  white-space: pre-line;
+  font-family: Manrope, sans-serif !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  color: inherit !important;
+}
+body .kp-landing .landing-hero-subtitle,
+body .kp-landing .landing-hero-subtitle * {
+  font-family: Manrope, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body .kp-landing .landing-hero-subtitle__typewriter {
+  white-space: pre-line;
+  font-family: Manrope, sans-serif !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  color: inherit !important;
+}
+
+/* Появление кнопок и телефона после допечатывания текста */
+@keyframes landing-slide-from-left {
+  from { opacity: 0; transform: translateX(-48px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes landing-slide-from-right {
+  from { opacity: 0; transform: translateX(48px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes landing-phone-enter {
+  from { opacity: 0; transform: translateY(40px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.kp-landing .landing-cta-buttons .landing-cta-link:first-child {
+  opacity: 0;
+  animation: landing-slide-from-left 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+}
+.kp-landing .landing-cta-buttons .landing-cta-link:last-child {
+  opacity: 0;
+  animation: landing-slide-from-right 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+}
+
+.kp-landing .landing-hero-phone {
+  opacity: 0;
+  animation: landing-phone-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.35s forwards;
+}
+
+/* Анимации шагов «Для клиентов» */
+@keyframes landing-step-left {
+  from { opacity: 0; transform: translateX(-48px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes landing-step-right {
+  from { opacity: 0; transform: translateX(48px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.kp-landing .kp-landing-steps-reveal .landing-step-row {
+  opacity: 0;
+}
+.kp-landing .kp-landing-steps-reveal .landing-step-row--left {
+  animation: landing-step-left 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.kp-landing .kp-landing-steps-reveal .landing-step-row--right {
+  animation: landing-step-right 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.kp-landing .kp-landing-steps-reveal .landing-step-row:nth-child(1) {
+  animation-delay: 0s;
+}
+.kp-landing .kp-landing-steps-reveal .landing-step-row:nth-child(2) {
+  animation-delay: 0.5s;
+}
+.kp-landing .kp-landing-steps-reveal .landing-step-row:nth-child(3) {
+  animation-delay: 1s;
+}
+
+.kp-landing .kp-landing-more-reveal {
+  opacity: 0;
+  animation: landing-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 1.6s forwards;
+}
+
 /* Hero подзаголовок — весь блок 20px */
-.kp-landing .landing-hero-subtitle,
-.kp-landing .landing-hero-subtitle .landing-hero-text,
-.kp-landing .landing-hero-subtitle .landing-hero-accent {
+body .kp-landing .landing-hero-subtitle,
+body .kp-landing .landing-hero-subtitle .landing-hero-text,
+body .kp-landing .landing-hero-subtitle .landing-hero-accent {
   font-size: 20px !important;
   line-height: 1.08 !important;
   color: #ECF4F2 !important;
+  font-family: Manrope, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-.kp-landing .landing-hero-subtitle {
+body .kp-landing .landing-hero-subtitle {
   font-weight: 200 !important;
 }
-.kp-landing .landing-hero-subtitle .landing-hero-accent {
+body .kp-landing .landing-hero-subtitle .landing-hero-accent {
   font-weight: 700 !important;
 }
 
-.kp-landing .manrope,
-.kp-landing .manrope *,
-.kp-landing .landing-steps,
-.kp-landing .landing-steps * {
+body .kp-landing .manrope,
+body .kp-landing .manrope *,
+body .kp-landing .landing-steps,
+body .kp-landing .landing-steps * {
   font-family: "Manrope", sans-serif !important;
 }
 
-.kp-landing .landing-hero-title,
-.kp-landing section.manrope h1,
-.kp-landing .manrope h1 {
+body .kp-landing .landing-hero-title,
+body .kp-landing section.manrope h1,
+body .kp-landing .manrope h1 {
   font-family: Manrope, sans-serif !important;
   font-size: 33px !important;
   line-height: 1.37 !important;
@@ -34,6 +150,8 @@
   text-align: center !important;
   text-decoration: none !important;
   margin-bottom: 17px !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .kp-landing section.manrope p span span {
@@ -41,13 +159,24 @@
   color: #ECF4F2 !important;
 }
 
-body .kp-landing .landing-clients-green {
+body .kp-landing .landing-clients-green,
+body .kp-landing .landing-clients-green * {
+  font-family: "Montserrat Alternates", sans-serif !important;
   font-size: 24px !important;
+  color: #098771 !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-body .kp-landing .landing-clients-desc {
+body .kp-landing .landing-clients-desc,
+body .kp-landing .landing-clients-desc *,
+body .kp-landing .landing-clients-desc__typewriter,
+body .kp-landing p.landing-clients-desc,
+body .kp-landing p.landing-clients-desc * {
   font-size: 18px !important;
   font-family: Manrope, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* CTA кнопки */
@@ -96,6 +225,14 @@ body .kp-landing .landing-clients-desc {
 .kp-landing {
   overflow-x: hidden !important;
   min-width: 0;
+}
+
+/* Заголовки секций «Для клиентов», «Для бизнеса» — Manrope и сглаживание */
+body .kp-landing .kp-landing-steps-section h3,
+body .kp-landing .kp-landing-steps-section h3 * {
+  font-family: "Montserrat Alternates", sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Блок шагов: градиент внутри контейнера */
@@ -212,9 +349,27 @@ body .kp-landing .landing-steps .landing-step-text {
   font-family: Manrope, sans-serif !important;
 }
 
-/* «Почему KindPlate?» pills */
-.kp-landing .kp-landing-why-title {
-  font-family: Manrope, sans-serif !important;
+/* «Почему Соммил?» pills — анимация появления как у шагов */
+.kp-landing .kp-landing-why-pills-reveal .kp-landing-why-pill {
+  opacity: 0;
+}
+.kp-landing .kp-landing-why-pills-reveal .kp-landing-why-pill--left {
+  animation: landing-step-left 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.kp-landing .kp-landing-why-pills-reveal .kp-landing-why-pill--right {
+  animation: landing-step-right 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.kp-landing .kp-landing-why-pills-reveal .kp-landing-why-pill:nth-child(1) { animation-delay: 0s; }
+.kp-landing .kp-landing-why-pills-reveal .kp-landing-why-pill:nth-child(2) { animation-delay: 0.5s; }
+.kp-landing .kp-landing-why-pills-reveal .kp-landing-why-pill:nth-child(3) { animation-delay: 1s; }
+.kp-landing .kp-landing-why-pills-reveal .kp-landing-why-pill:nth-child(4) { animation-delay: 1.5s; }
+
+body .kp-landing .kp-landing-why-title,
+body .kp-landing .kp-landing-why-title * {
+  font-family: Montserrat Alternates, sans-serif !important;
+  font-size: 24px !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .kp-landing .kp-landing-why-pill {
   display: inline-flex;
@@ -306,17 +461,22 @@ body .kp-landing .phone-quantity-value {
   box-sizing: border-box;
 }
 
-.kp-landing-footer-title {
+body .kp-landing .kp-landing-footer-title,
+body .kp-landing .kp-landing-footer-title * {
   font-family: Manrope, sans-serif !important;
   font-size: 24px !important;
   font-weight: 800 !important;
   font-style: normal !important;
   color: #ffffff !important;
   text-align: center !important;
-  margin: 0 0 24px 0 !important;
   letter-spacing: -0.04em !important;
   line-height: 137% !important;
   opacity: 1 !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.kp-landing-footer-title {
+  margin: 0 0 24px 0 !important;
 }
 
 .kp-landing-footer-cards {
@@ -325,6 +485,10 @@ body .kp-landing .phone-quantity-value {
   gap: 12px;
   max-width: 361px;
   margin: 0 auto;
+}
+.kp-landing-footer-cards-reveal {
+  opacity: 0;
+  animation: landing-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
 }
 
 .kp-landing-footer-card {
