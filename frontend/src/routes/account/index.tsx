@@ -991,10 +991,10 @@ function RouteComponent() {
                             <p 
                                 style={{ 
                                     fontFamily: 'Montserrat Alternates, sans-serif',
-                                    fontWeight: 600,
+                                    fontWeight: 400,
                                     fontSize: "14px",
                                     lineHeight: "22px",
-                                    color: '#FFFFFF',
+                                    color: '#098771',
                                     textAlign: "left",
                                     marginBottom: "0px"
                                 }}

@@ -254,7 +254,7 @@ html.landing-active #app {
 }
 
 /* Mobile typography: нормальные размеры по умолчанию (без 33px — из-за него был наезд текста в карточках и списках) */
-h1:not(.cart-page__header-name):not(.payment-page__header-name) { font-size: 32px !important; line-height: 1.25 !important; font-weight: 700; color: var(--color-text); }
+h1:not(.cart-page__header-name):not(.payment-page__header-name) { font-size: 18px !important; line-height: 1.25 !important; font-weight: 700; color: var(--color-text); }
 h2:not(.payment-page__order-business) { font-size: 20px !important; line-height: 1.3 !important; font-weight: 700; color: var(--color-text); }
 h3:not(.font-montserrat-alt):not(.businesses-list-page__business-name):not(.vendor-page__offer-name):not(.vendor-page__dish-name):not(.cart-page__product-name):not(.panel-page__offer-title):not(.panel-page__order-title) { font-size: 26px !important; line-height: 1.25 !important; font-weight: 600; color: var(--color-text); }
 p:not(.font-montserrat-alt):not(.font-ramona):not(.landing-hero-subtitle):not(.kp-landing-footer-legal):not(.login-page__subtitle):not(.login-page__footer-text):not(.register-page__subtitle):not(.register-page__footer-text),

@@ -270,8 +270,8 @@ export function LandingPage() {
                         >
                             <TypewriterText
                                 text={"Еда по пути домой\nсо скидкой\nдо 70%"}
-                                speed={55}
-                                delay={200}
+                                speed={30}
+                                delay={120}
                                 className="landing-hero-title__typewriter"
                                 cursorClassName="landing-hero-title__cursor"
                                 hideCursorOnComplete={true}
@@ -298,7 +298,7 @@ export function LandingPage() {
                                     "Соединяем людей с кафе и ресторанами\n" +
                                     "для выгодной и осознанной покупки еды"
                                 }
-                                speed={45}
+                                speed={26}
                                 delay={0}
                                 className="landing-hero-subtitle__typewriter"
                                 cursorClassName="landing-hero-subtitle__cursor"
@@ -537,7 +537,7 @@ export function LandingPage() {
                         >
                             <TypewriterText
                                 text={"Сэкономьте деньги, купив позиции в ваших любимых заведениях"}
-                                speed={45}
+                                speed={24}
                                 delay={0}
                                 className="landing-clients-green font-montserrat-alt"
                                 hideCursorOnComplete={true}
@@ -565,7 +565,7 @@ export function LandingPage() {
                                 text={
                                     "Смотрите предложения рядом, выбирайте блюда или спецбоксы и забирайте их по пути домой.\nБыстро и выгодно."
                                 }
-                                speed={40}
+                                speed={22}
                                 delay={0}
                                 className="landing-clients-desc__typewriter"
                                 hideCursorOnComplete={true}
@@ -664,7 +664,7 @@ export function LandingPage() {
                         >
                             <TypewriterText
                                 text="Зарабатывайте на вечерних продажах"
-                                speed={45}
+                                speed={24}
                                 delay={0}
                                 className="landing-clients-green font-montserrat-alt"
                                 hideCursorOnComplete={true}
@@ -689,7 +689,7 @@ export function LandingPage() {
                         >
                             <TypewriterText
                                 text="Публикуйте блюда и спецбоксы со скидкой. Получайте заказы и привлекайте новых гостей без лишних затрат на маркетинг."
-                                speed={40}
+                                speed={22}
                                 delay={0}
                                 className="landing-clients-desc__typewriter"
                                 hideCursorOnComplete={true}
@@ -767,7 +767,7 @@ export function LandingPage() {
                         <h2 className="kp-landing-footer-title">
                             <TypewriterText
                                 text="Контакты:"
-                                speed={45}
+                                speed={26}
                                 delay={0}
                                 hideCursorOnComplete={true}
                                 onComplete={() => setStage(10)}
