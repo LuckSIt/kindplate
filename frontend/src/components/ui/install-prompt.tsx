@@ -55,7 +55,7 @@ export function InstallPrompt() {
       </button>
 
       <div className="flex items-start gap-4 mb-4">
-        <img src="/kandlate.png" alt="KindPlate" className="w-12 h-12 rounded-xl" />
+        <img src="/icons/icon192.png" alt="Соммил" className="w-12 h-12 rounded-xl" />
         <div>
           <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-1">
             Установить Соммил?

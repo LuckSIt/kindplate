@@ -16,7 +16,20 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'prompt', // Используем prompt вместо autoUpdate для избежания ошибок
-      includeAssets: ['favicon.ico', 'kandlate.png', 'logo192.png', 'logo512.png'],
+      includeAssets: [
+        'icons/favicon-16x16.png',
+        'icons/favicon-32x32.png',
+        'icons/icon72.png',
+        'icons/icon96.png',
+        'icons/icon128.png',
+        'icons/icon144.png',
+        'icons/icon152.png',
+        'icons/icon192.png',
+        'icons/icon384.png',
+        'icons/icon512.png',
+        'icons/maskable-icon-192x192.png',
+        'icons/maskable-icon-512x512.png'
+      ],
       
       manifest: {
         name: 'KindPlate',
@@ -30,16 +43,64 @@ export default defineConfig({
         orientation: 'portrait',
         icons: [
           {
-            src: 'kandlate.png',
-            sizes: '192x192',
+            src: '/icons/icon72.png',
+            sizes: '72x72',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any'
           },
           {
-            src: 'logo512.png',
+            src: '/icons/icon96.png',
+            sizes: '96x96',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/icons/icon128.png',
+            sizes: '128x128',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/icons/icon144.png',
+            sizes: '144x144',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/icons/icon152.png',
+            sizes: '152x152',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/icons/icon192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/icons/icon384.png',
+            sizes: '384x384',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/icons/icon512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any'
+          },
+          {
+            src: '/icons/maskable-icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable'
+          },
+          {
+            src: '/icons/maskable-icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           }
         ],
         categories: ['food', 'shopping', 'lifestyle']

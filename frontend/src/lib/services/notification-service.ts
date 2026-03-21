@@ -153,8 +153,8 @@ class NotificationService {
     }
 
     const notification = new Notification(title, {
-      icon: '/favicon.ico',
-      badge: '/favicon.ico',
+      icon: '/icons/icon192.png',
+      badge: '/icons/icon72.png',
       ...options
     });
 

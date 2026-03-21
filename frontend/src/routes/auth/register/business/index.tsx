@@ -52,7 +52,7 @@ function RouteComponent() {
                 <div className="container mx-auto px-4 py-3">
                     <div className="flex items-center justify-between">
                         <Link to="/" className="flex items-center gap-3">
-                            <img src="/kandlate.png" alt="KindPlate" className="w-8 h-8" />
+                            <img src="/icons/icon192.png" alt="Соммил" className="w-8 h-8" />
                             <span className="text-xl font-bold text-white">Соммил</span>
                         </Link>
                     </div>
@@ -72,7 +72,7 @@ function RouteComponent() {
                             <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50 p-5">
                                 <div className="text-center mb-4">
                                     <div className="inline-flex items-center justify-center mb-3">
-                                        <img src="/kandlate.png" alt="KindPlate" className="w-12 h-12" />
+                                        <img src="/icons/icon192.png" alt="Соммил" className="w-12 h-12" />
                                     </div>
                                     <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                                         <span className="bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent">

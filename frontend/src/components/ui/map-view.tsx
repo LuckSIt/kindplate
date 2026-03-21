@@ -31,7 +31,7 @@ const DEFAULT_CENTER: [number, number] = [30.3351, 59.9343]; // [lon, lat]
 const DEFAULT_ZOOM = 12;
 
 // Logo URL for markers
-const MARKER_LOGO_URL = '/logo192.png';
+const MARKER_LOGO_URL = '/icons/icon192.png';
 
 // Convert [lat, lon] to [lon, lat] for ymaps3
 function toYmapsCoords(coords: [number, number]): [number, number] {

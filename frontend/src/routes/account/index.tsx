@@ -931,7 +931,7 @@ function RouteComponent() {
                 {/* Служба поддержки */}
                 <button 
                     onClick={() => {
-                        const telegramBotUrl = 'https://t.me/kindplatesupportbot';
+                        const telegramBotUrl = 'https://t.me/sommil_support_bot';
                         window.open(telegramBotUrl, '_blank');
                     }}
                     className="mt-[19px] flex items-center justify-between w-full h-[24px]"
@@ -1002,7 +1002,7 @@ function RouteComponent() {
                                 Соммил
                             </p>
                             <a 
-                                    href="https://t.me/kindplatesupportbot"
+                                    href="https://t.me/sommil_support_bot"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="block transition-opacity hover:opacity-80 footer-link"

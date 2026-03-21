@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { WhyKindPlate } from "@/components/landing/WhyKindPlate";
 import bunImage from "@/figma/90428C7F-3E7E-49B8-81BC-472D67411732 1.png";
@@ -80,8 +80,16 @@ export function LandingPage() {
     const [isPaused, setIsPaused] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
-    /** Этапы появления: 0=заголовок, 1=подзаголовок, 2=кнопки+телефон, 3=заголовок «Для клиентов», 4=текст+шаги+кнопка «Для клиентов» */
+    /** Этапы появления hero-блока */
     const [stage, setStage] = useState(0);
+    const [clientsVisible, setClientsVisible] = useState(false);
+    const [businessVisible, setBusinessVisible] = useState(false);
+    const [whyVisible, setWhyVisible] = useState(false);
+    const [footerVisible, setFooterVisible] = useState(false);
+    const clientsRef = useRef<HTMLElement | null>(null);
+    const businessRef = useRef<HTMLElement | null>(null);
+    const whyRef = useRef<HTMLElement | null>(null);
+    const footerRef = useRef<HTMLElement | null>(null);
 
     // Шрифты лендинга: инжект в конец document.head, чтобы перебить все глобальные правила
     useEffect(() => {
@@ -148,31 +156,6 @@ export function LandingPage() {
 
     const currentItem = carouselItems[currentSlide];
 
-    // После появления кнопок и телефона (этап 2) даём время анимации, затем разрешаем «Для клиентов»
-    useEffect(() => {
-        if (stage !== 2) return;
-        const t = setTimeout(() => setStage(3), 1400);
-        return () => clearTimeout(t);
-    }, [stage]);
-
-    useEffect(() => {
-        if (stage !== 4) return;
-        const t = setTimeout(() => setStage(5), 3500);
-        return () => clearTimeout(t);
-    }, [stage]);
-
-    useEffect(() => {
-        if (stage !== 6) return;
-        const t = setTimeout(() => setStage(7), 3500);
-        return () => clearTimeout(t);
-    }, [stage]);
-
-    useEffect(() => {
-        if (stage !== 8) return;
-        const t = setTimeout(() => setStage(9), 2500);
-        return () => clearTimeout(t);
-    }, [stage]);
-
     // Плавное появление блоков при скролле (для элементов с классом .kp-scroll-reveal)
     useEffect(() => {
         const elements = Array.from(document.querySelectorAll<HTMLElement>('.kp-landing .kp-scroll-reveal'));
@@ -193,6 +176,29 @@ export function LandingPage() {
         );
 
         elements.forEach((el) => observer.observe(el));
+
+        return () => observer.disconnect();
+    }, []);
+
+    // Секции появляются, когда пользователь доскроллил до них (без блокировки скролла)
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+                    if (entry.target === clientsRef.current) setClientsVisible(true);
+                    if (entry.target === businessRef.current) setBusinessVisible(true);
+                    if (entry.target === whyRef.current) setWhyVisible(true);
+                    if (entry.target === footerRef.current) setFooterVisible(true);
+                });
+            },
+            { threshold: 0.2 }
+        );
+
+        if (clientsRef.current) observer.observe(clientsRef.current);
+        if (businessRef.current) observer.observe(businessRef.current);
+        if (whyRef.current) observer.observe(whyRef.current);
+        if (footerRef.current) observer.observe(footerRef.current);
 
         return () => observer.disconnect();
     }, []);
@@ -275,7 +281,7 @@ export function LandingPage() {
                                 className="landing-hero-title__typewriter"
                                 cursorClassName="landing-hero-title__cursor"
                                 hideCursorOnComplete={true}
-                                onComplete={() => setStage(1)}
+                                onComplete={() => setStage((prev) => Math.max(prev, 1))}
                             />
                         </h1>
                         )}
@@ -303,30 +309,27 @@ export function LandingPage() {
                                 className="landing-hero-subtitle__typewriter"
                                 cursorClassName="landing-hero-subtitle__cursor"
                                 hideCursorOnComplete={false}
-                                onComplete={() => setStage(2)}
+                                onComplete={() => setStage((prev) => Math.max(prev, 2))}
                             />
                         </p>
                         )}
-                        {/* Этап 2: кнопки hero */}
-                        {stage >= 2 && (
-                            <div className="landing-cta-buttons">
-                                <Link to="/auth/login" className="landing-cta-link">
-                                    <button type="button" className="landing-cta-btn landing-cta-btn--primary">
-                                        Смотреть <br/> предложения
-                                    </button>
-                                </Link>
-                                <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer" className="landing-cta-link">
-                                    <button type="button" className="landing-cta-btn landing-cta-btn--secondary">
-                                        Для бизнеса
-                                    </button>
-                                </a>
-                            </div>
-                        )}
+                        {/* Кнопки hero: отображаются сразу, независимо от заголовков */}
+                        <div className="landing-cta-buttons">
+                            <Link to="/auth/login" className="landing-cta-link">
+                                <button type="button" className="landing-cta-btn landing-cta-btn--primary">
+                                    Смотреть <br/> предложения
+                                </button>
+                            </Link>
+                            <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer" className="landing-cta-link">
+                                <button type="button" className="landing-cta-btn landing-cta-btn--secondary">
+                                    Для бизнеса
+                                </button>
+                            </a>
+                        </div>
                     </div>
                 </section>
 
-                {/* Этап 2: телефон */}
-                {stage >= 2 && (
+                {/* Телефон: отображается сразу, независимо от заголовков */}
                 <section className="landing-hero-phone flex justify-center px-4 pb-[30px] overflow-x-hidden" style={{ marginTop: 11 }}>
                     <div 
                         className="relative rounded-[36px] p-[6px] overflow-hidden flex flex-col min-w-0"
@@ -498,11 +501,13 @@ export function LandingPage() {
                             </div>
                     </div>
                 </section>
-                )}
 
-                {/* Этап 3+: секция «Для клиентов» — показывается только после hero + кнопок + телефон */}
-                {stage >= 3 && (
-                <section className="kp-landing-steps-section px-4 pb-[60px]" style={{ paddingLeft: 16, paddingRight: 16, overflow: 'visible' }}>
+                {/* Секция «Для клиентов»: появляется при прокрутке до блока */}
+                <section
+                    ref={clientsRef}
+                    className="kp-landing-steps-section px-4 pb-[60px]"
+                    style={{ paddingLeft: 16, paddingRight: 16, overflow: 'visible' }}
+                >
                     <h3 
                         className="mb-0 font-bold font-montserrat-alt kp-landing-section-title"
                         style={{
@@ -535,17 +540,18 @@ export function LandingPage() {
                                 maxWidth: '100%',
                             }}
                         >
-                            <TypewriterText
-                                text={"Сэкономьте деньги, купив позиции в ваших любимых заведениях"}
-                                speed={24}
-                                delay={0}
-                                className="landing-clients-green font-montserrat-alt"
-                                hideCursorOnComplete={true}
-                                onComplete={() => setStage(4)}
-                            />
+                            {clientsVisible && (
+                                <TypewriterText
+                                    text={"Сэкономьте деньги, купив позиции в ваших любимых заведениях"}
+                                    speed={24}
+                                    delay={0}
+                                    className="landing-clients-green font-montserrat-alt"
+                                    hideCursorOnComplete={true}
+                                />
+                            )}
                         </h4>
-                        {/* Этап 4: абзац + шаги + кнопка */}
-                        {stage >= 4 && (
+                        {/* Абзац + шаги + кнопка */}
+                        {clientsVisible && (
                         <>
                         <p 
                             className="mb-8 landing-clients-desc font-montserrat-alt"
@@ -628,11 +634,13 @@ export function LandingPage() {
                         )}
                     </div>
                 </section>
-                )}
 
-                {/* Для бизнеса — та же анимация, что и «Для клиентов»: stage 5 → заголовок + typewriter, stage 6 → абзац + шаги + кнопка */}
-                {stage >= 5 && (
-                <section className="kp-landing-steps-section px-4 pb-[60px]" style={{ paddingLeft: 16, paddingRight: 16, overflow: 'visible' }}>
+                {/* Секция «Для бизнеса»: появляется при прокрутке до блока */}
+                <section
+                    ref={businessRef}
+                    className="kp-landing-steps-section px-4 pb-[60px]"
+                    style={{ paddingLeft: 16, paddingRight: 16, overflow: 'visible' }}
+                >
                     <h3 
                         className="mb-0 font-bold font-montserrat-alt kp-landing-section-title"
                         style={{
@@ -662,16 +670,17 @@ export function LandingPage() {
                                 maxWidth: '100%',
                             }}
                         >
-                            <TypewriterText
-                                text="Зарабатывайте на вечерних продажах"
-                                speed={24}
-                                delay={0}
-                                className="landing-clients-green font-montserrat-alt"
-                                hideCursorOnComplete={true}
-                                onComplete={() => setStage(6)}
-                            />
+                            {businessVisible && (
+                                <TypewriterText
+                                    text="Зарабатывайте на вечерних продажах"
+                                    speed={24}
+                                    delay={0}
+                                    className="landing-clients-green font-montserrat-alt"
+                                    hideCursorOnComplete={true}
+                                />
+                            )}
                         </h4>
-                        {stage >= 6 && (
+                        {businessVisible && (
                         <>
                         <p 
                             className="mb-8 landing-clients-desc font-montserrat-alt"
@@ -725,7 +734,7 @@ export function LandingPage() {
                             </div>
                         </div>
                         <div className="flex justify-center kp-landing-more-reveal" style={{ marginTop: 32 }}>
-                            <a href="https://t.me/kindplatesupportbot" target="_blank" rel="noopener noreferrer" className="kp-landing-more-link">
+                            <a href="https://t.me/sommil_support_bot" target="_blank" rel="noopener noreferrer" className="kp-landing-more-link">
                                 <button
                                     type="button"
                                     className="kp-landing-more-btn rounded-[12px] text-[15px] font-bold transition-opacity hover:opacity-90 flex items-center justify-center"
@@ -751,29 +760,30 @@ export function LandingPage() {
                         )}
                     </div>
                 </section>
-                )}
 
-                {/* Почему Соммил? — только после «Для бизнеса» (stage 7), пилюли после typewriter (stage 8) */}
-                {stage >= 7 && (
-                <section className="px-4 pb-[60px] kp-landing-why-wrap" style={{ paddingLeft: 16, paddingRight: 16, overflow: 'visible' }}>
-                    <WhyKindPlate stage={stage} setStage={setStage} />
+                {/* Почему Соммил? — появляется при прокрутке до блока */}
+                <section
+                    ref={whyRef}
+                    className="px-4 pb-[60px] kp-landing-why-wrap"
+                    style={{ paddingLeft: 16, paddingRight: 16, overflow: 'visible' }}
+                >
+                    {whyVisible && <WhyKindPlate stage={stage} setStage={setStage} />}
                 </section>
-                )}
 
-                {/* Footer — Контакты: только после «Почему Соммил» (stage 9), карточки после typewriter (stage 10) */}
-                {stage >= 9 && (
-                <footer className="px-0 pb-0">
+                {/* Footer — появляется при прокрутке до блока */}
+                <footer ref={footerRef} className="px-0 pb-0">
                     <div className="kp-landing-footer">
                         <h2 className="kp-landing-footer-title">
-                            <TypewriterText
-                                text="Контакты:"
-                                speed={26}
-                                delay={0}
-                                hideCursorOnComplete={true}
-                                onComplete={() => setStage(10)}
-                            />
+                            {footerVisible && (
+                                <TypewriterText
+                                    text="Контакты:"
+                                    speed={26}
+                                    delay={0}
+                                    hideCursorOnComplete={true}
+                                />
+                            )}
                         </h2>
-                        {stage >= 10 && (
+                        {footerVisible && (
                         <div className="kp-landing-footer-cards kp-landing-footer-cards-reveal">
                             <a
                                 href="https://t.me/kindplate"
@@ -811,7 +821,6 @@ export function LandingPage() {
                         </div> */}
                     </div>
                 </footer>
-                )}
             </div>
             
             {/* Documents Modal */}

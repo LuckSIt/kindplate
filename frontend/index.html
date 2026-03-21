@@ -14,11 +14,19 @@
         <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Expires" content="0" />
-        <!-- Единый фавикон KindPlate для всех браузеров (Safari, Yandex, Chrome). Без favicon.ico — чтобы не подставлялся React. ?v=5 — сброс кэша -->
-        <link rel="icon" type="image/png" href="/icons/favicon-32x32.png?v=5" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png?v=5" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png?v=5" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/logo192.png?v=5" />
+        <!-- Иконки приложения: только из /public/icons, набор размеров для всех платформ -->
+        <link rel="icon" type="image/png" href="/icons/favicon-32x32.png?v=6" />
+        <link rel="shortcut icon" type="image/png" href="/icons/favicon-32x32.png?v=6" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png?v=6" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png?v=6" />
+        <link rel="icon" type="image/png" sizes="72x72" href="/icons/icon72.png?v=6" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/icons/icon96.png?v=6" />
+        <link rel="icon" type="image/png" sizes="128x128" href="/icons/icon128.png?v=6" />
+        <link rel="icon" type="image/png" sizes="144x144" href="/icons/icon144.png?v=6" />
+        <link rel="icon" type="image/png" sizes="152x152" href="/icons/icon152.png?v=6" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon192.png?v=6" />
+        <link rel="icon" type="image/png" sizes="384x384" href="/icons/icon384.png?v=6" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon512.png?v=6" />
         <meta name="theme-color" content="#111E42" />
         <!-- Заголовок и описание только «KindPlate» — без «Спаси еду»; одинаково для Google, Yandex, Safari -->
         <title>Соммил</title>
@@ -26,7 +34,7 @@
         <meta property="og:title" content="Соммил" />
         <meta property="og:description" content="Соммил — это сервис, который помогает ресторанам и магазинам реализовывать непроданные блюда и готовые продукты со скидкой. Забирайте вкусное по выгодной цене." />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://app-kindplate.ru/logo192.png" />
+        <meta property="og:image" content="https://app-kindplate.ru/icons/icon512.png" />
         <meta property="og:url" content="https://app-kindplate.ru/" />
         <meta property="og:site_name" content="Соммил" />
         <script src="https://api-maps.yandex.ru/v3/?apikey=1f4f3bd3-66fd-4301-ab9d-7727aa0154c3&lang=ru_RU"></script>
@@ -39,15 +47,14 @@
         <link rel="preload" href="/fonts/Ramona-Light.ttf" as="font" type="font/ttf" crossorigin>
         
         <!-- Apple Touch Icons для iOS -->
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png" />
-        <link rel="apple-touch-icon" sizes="167x167" href="/icons/apple-touch-icon-167x167.png" />
-        <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152x152.png" />
-        <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-touch-icon-120x120.png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-touch-icon-120x120.png?v=6" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152x152.png?v=6" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/icons/apple-touch-icon-167x167.png?v=6" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png?v=6" />
         
         <!-- iOS PWA настройки -->
         <meta name="apple-mobile-web-app-title" content="Соммил" />
-        <link rel="mask-icon" href="/icons/icon-512x512.png" color="#001900" />
+        <link rel="mask-icon" href="/icons/icon512.png?v=6" color="#001900" />
         
         <link rel="manifest" href="/manifest.json" />
     </head>

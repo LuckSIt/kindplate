@@ -32,7 +32,7 @@ const DEFAULT_SEO = {
     siteName: 'Соммил',
     defaultTitle: 'Соммил',
     defaultDescription: 'Соммил помогает ресторанам и магазинам реализовывать непроданные блюда и готовые продукты со скидкой. Экономьте и помогайте планете.',
-    defaultImage: '/logo192.png',
+    defaultImage: '/icons/icon512.png',
     baseUrl: import.meta.env.VITE_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://app-kindplate.ru'),
     locale: 'ru_RU',
     twitterSite: '@kindplate',

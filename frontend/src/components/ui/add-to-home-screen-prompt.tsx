@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { X, Share, Plus, MoreVertical } from 'lucide-react';
-import { TypewriterText } from './typewriter-text';
 
 const STORAGE_KEY = 'add-to-home-screen-dismissed';
 const STORAGE_EXPIRY_DAYS = 7;
@@ -86,13 +85,7 @@ export function AddToHomeScreenPrompt() {
         aria-label="Добавить Соммил на главный экран"
       >
         <p className="add-to-home-banner__text">
-          <TypewriterText
-            text="Добавьте Соммил на главный экран для быстрого доступа."
-            delay={200}
-            speed={55}
-            className="add-to-home-banner__typewriter"
-            cursorClassName="add-to-home-banner__cursor"
-          />
+          Добавьте Соммил на главный экран для быстрого доступа.
         </p>
         <div className="add-to-home-banner__actions">
           <button
