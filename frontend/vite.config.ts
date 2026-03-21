@@ -32,11 +32,12 @@ export default defineConfig({
       ],
       
       manifest: {
-        name: 'KindPlate',
-        short_name: 'KindPlate',
-        description: 'KindPlate — заведения отдают нераспроданную еду со скидкой. Экономьте и помогайте планете.',
-        theme_color: '#10b981',
-        background_color: '#111827',
+        id: '/',
+        name: 'Соммил',
+        short_name: 'Соммил',
+        description: 'Соммил — заведения отдают нераспроданную еду со скидкой. Экономьте и помогайте планете.',
+        theme_color: '#111E42',
+        background_color: '#111E42',
         display: 'standalone',
         scope: '/',
         start_url: '/',
@@ -109,6 +110,21 @@ export default defineConfig({
       workbox: {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         runtimeCaching: [
+          {
+            urlPattern: /^https?:\/\/.*\/icons\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'icons-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 7
+              },
+              networkTimeoutSeconds: 3,
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
           {
             urlPattern: /^https?:\/\/.*\/uploads\/offers\/.*/i,
             handler: 'CacheFirst',

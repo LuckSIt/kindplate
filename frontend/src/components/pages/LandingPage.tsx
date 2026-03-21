@@ -235,8 +235,8 @@ export function LandingPage() {
                     >
                         <div className="flex items-center">
                             <img
-                                src="/@kindplate_for_bar.png"
-                                alt="KindPlate логотип"
+                                src="/icons/icon192.png"
+                                alt="Соммил логотип"
                                 className="h-[44px] w-auto"
                             />
                         </div>
@@ -320,7 +320,7 @@ export function LandingPage() {
                                     Смотреть <br/> предложения
                                 </button>
                             </Link>
-                            <a href="mailto:kindplate.io@mail.ru" target="_blank" rel="noopener noreferrer" className="landing-cta-link">
+                            <a href="mailto:sommeal.io@mail.ru" target="_blank" rel="noopener noreferrer" className="landing-cta-link">
                                 <button type="button" className="landing-cta-btn landing-cta-btn--secondary">
                                     Для бизнеса
                                 </button>

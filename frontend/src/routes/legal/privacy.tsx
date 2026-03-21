@@ -323,10 +323,10 @@ function PrivacyPolicyPage() {
                         <ul className="space-y-2 text-gray-700 dark:text-gray-300">
                             <li>
                                 По электронной почте: <a 
-                                    href="mailto:kindplate.io@mail.ru" 
+                                    href="mailto:sommeal.io@mail.ru" 
                                     className="text-green-600 dark:text-green-400 hover:underline font-medium"
                                 >
-                                    kindplate.io@mail.ru
+                                    sommeal.io@mail.ru
                                 </a>
                             </li>
                             <li>

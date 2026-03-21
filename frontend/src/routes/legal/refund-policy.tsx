@@ -236,7 +236,7 @@ function RefundPolicyPage() {
                         Если у вас возникли вопросы по возврату или отмене заказа, свяжитесь с нами:
                     </p>
                     <ul className="space-y-2 text-gray-700">
-                        <li>📧 Email: <a href="mailto:refunds@kindplate.ru" className="text-green-600 hover:text-green-700 font-medium">refunds@kindplate.ru</a></li>
+                        <li>📧 Email: <a href="mailto:sommeal.io@mail.ru" className="text-green-600 hover:text-green-700 font-medium">sommeal.io@mail.ru</a></li>
                         <li>📱 Telegram: <a href="https://t.me/kindplate_support" className="text-green-600 hover:text-green-700 font-medium">@kindplate_support</a></li>
                         <li>⏰ Время работы: Пн-Пт, 9:00-21:00 МСК</li>
                     </ul>

@@ -215,10 +215,10 @@ function AboutPage() {
                                 <div className="about-page__contact-item">
                                     <h3 className="about-page__contact-label">Email</h3>
                                     <a
-                                        href="mailto:kindplate.io@mail.ru"
+                                        href="mailto:sommeal.io@mail.ru"
                                         className="about-page__contact-link"
                                     >
-                                        kindplate.io@mail.ru
+                                        sommeal.io@mail.ru
                                     </a>
                                 </div>
                                 <div className="about-page__contact-item">

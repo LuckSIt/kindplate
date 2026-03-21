@@ -108,7 +108,7 @@ function FAQPage() {
                 },
                 {
                     question: "Как связаться с поддержкой?",
-                    answer: "Напишите нам на kindplate.io@mail.ru или воспользуйтесь формой обратной связи на сайте. Мы отвечаем в течение 24 часов."
+                    answer: "Напишите нам на sommeal.io@mail.ru или воспользуйтесь формой обратной связи на сайте. Мы отвечаем в течение 24 часов."
                 }
             ]
         }
@@ -136,8 +136,8 @@ function FAQPage() {
                     <p className="text-gray-600 text-lg">
                         Здесь вы найдете ответы на самые популярные вопросы о работе платформы Соммил.
                         Если вы не нашли ответ на свой вопрос, напишите нам на{" "}
-                        <a href="mailto:kindplate.io@mail.ru" className="text-green-600 hover:text-green-700 font-medium">
-                            kindplate.io@mail.ru
+                        <a href="mailto:sommeal.io@mail.ru" className="text-green-600 hover:text-green-700 font-medium">
+                            sommeal.io@mail.ru
                         </a>
                     </p>
                 </div>
@@ -174,7 +174,7 @@ function FAQPage() {
                         Мы всегда готовы помочь! Свяжитесь с нами удобным способом:
                     </p>
                     <ul className="space-y-2 text-gray-700">
-                        <li>📧 Email: <a href="mailto:kindplate.io@mail.ru" className="text-green-600 hover:text-green-700 font-medium">kindplate.io@mail.ru</a></li>
+                        <li>📧 Email: <a href="mailto:sommeal.io@mail.ru" className="text-green-600 hover:text-green-700 font-medium">sommeal.io@mail.ru</a></li>
                         <li>📱 Telegram: <a href="https://t.me/kindplatesupportbot" className="text-green-600 hover:text-green-700 font-medium">@kindplatesupportbot</a></li>
                         <li>⏰ Время работы: Пн-Пт, 9:00-21:00 МСК</li>
                     </ul>

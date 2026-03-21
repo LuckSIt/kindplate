@@ -51,8 +51,8 @@ function ContactsPage() {
 
                 <div className="contacts-page__block">
                     <div className="contacts-page__label">Почта:</div>
-                    <a href="mailto:kindplate.io@mail.ru" className="contacts-page__value contacts-page__link">
-                        kindplate.io@mail.ru
+                    <a href="mailto:sommeal.io@mail.ru" className="contacts-page__value contacts-page__link">
+                        sommeal.io@mail.ru
                     </a>
                 </div>
 

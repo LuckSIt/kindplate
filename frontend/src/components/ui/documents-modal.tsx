@@ -244,7 +244,7 @@ export function DocumentsModal({ isOpen, onClose, initialTab }: DocumentsModalPr
                 <strong>Телефон:</strong> +7 999 028 1207
               </p>
               <p className="documents-modal__content-text">
-                <strong>Email:</strong> <a href="mailto:kindplate.io@mail.ru" className="documents-modal__content-link">kindplate.io@mail.ru</a>
+                <strong>Email:</strong> <a href="mailto:sommeal.io@mail.ru" className="documents-modal__content-link">sommeal.io@mail.ru</a>
               </p>
               <p className="documents-modal__content-text" style={{ marginTop: '20px' }}>
                 Используя Платформу Соммил, пользователь подтверждает, что внимательно ознакомился с настоящей Политикой, полностью её понимает и соглашается с условиями обработки своих персональных данных.
@@ -505,7 +505,7 @@ export function DocumentsModal({ isOpen, onClose, initialTab }: DocumentsModalPr
                 По вопросам обращайтесь:
               </p>
               <p className="documents-modal__content-text">
-                <strong>Email:</strong> <a href="mailto:kindplate.io@mail.ru" className="documents-modal__content-link">kindplate.io@mail.ru</a>
+                <strong>Email:</strong> <a href="mailto:sommeal.io@mail.ru" className="documents-modal__content-link">sommeal.io@mail.ru</a>
               </p>
               <p className="documents-modal__content-text">
                 Ответ в течение 10 рабочих дней.
@@ -533,7 +533,7 @@ export function DocumentsModal({ isOpen, onClose, initialTab }: DocumentsModalPr
             <div className="documents-modal__content-section">
               <h3 className="documents-modal__content-heading">1. Общие положения</h3>
               <p className="documents-modal__content-text">
-                <strong>1.1.</strong> Настоящий документ является официальной публичной офертой индивидуального предпринимателя ИП А. М. Сатаев (ИНН: 784808895487, ОГРН: 326784700012921, тел.: +7 999 028 1207, email: kindplate.io@mail.ru, далее — «Компания»), адресованной юридическим и физическим лицам (далее — «Покупатель») о предоставлении доступа к платформе Соммил для поиска, бронирования и оплаты продуктов.
+                <strong>1.1.</strong> Настоящий документ является официальной публичной офертой индивидуального предпринимателя ИП А. М. Сатаев (ИНН: 784808895487, ОГРН: 326784700012921, тел.: +7 999 028 1207, email: sommeal.io@mail.ru, далее — «Компания»), адресованной юридическим и физическим лицам (далее — «Покупатель») о предоставлении доступа к платформе Соммил для поиска, бронирования и оплаты продуктов.
               </p>
               <p className="documents-modal__content-text">
                 <strong>1.2.</strong> Акцепт оферты (полное и безоговорочное принятие) происходит путём: регистрации на Платформе, оплаты услуг, либо совершения покупки. С момента акцепта считается заключённым договор на указанных условиях.
@@ -645,7 +645,7 @@ export function DocumentsModal({ isOpen, onClose, initialTab }: DocumentsModalPr
             <div className="documents-modal__content-section">
               <h3 className="documents-modal__content-heading">9. Разрешение споров</h3>
               <p className="documents-modal__content-text">
-                <strong>9.1.</strong> Претензии направлять на email: <a href="mailto:info@kindplate.ru" className="documents-modal__content-link">info@kindplate.ru</a> или +7 999 028 1207. Срок рассмотрения — 10 дней.
+                <strong>9.1.</strong> Претензии направлять на email: <a href="mailto:sommeal.io@mail.ru" className="documents-modal__content-link">sommeal.io@mail.ru</a> или +7 999 028 1207. Срок рассмотрения — 10 дней.
               </p>
               <p className="documents-modal__content-text">
                 <strong>9.2.</strong> Споры — в Арбитражном суде г. Санкт-Петербурга.
@@ -677,7 +677,7 @@ export function DocumentsModal({ isOpen, onClose, initialTab }: DocumentsModalPr
                 <strong>Телефон:</strong> +7 999 028 1207
               </p>
               <p className="documents-modal__content-text">
-                <strong>Email:</strong> <a href="mailto:kindplate.io@mail.ru" className="documents-modal__content-link">kindplate.io@mail.ru</a>
+                <strong>Email:</strong> <a href="mailto:sommeal.io@mail.ru" className="documents-modal__content-link">sommeal.io@mail.ru</a>
               </p>
               <p className="documents-modal__content-text" style={{ marginTop: '20px' }}>
                 Акцептуя оферту, Покупатель подтверждает понимание рисков и ответственности Продавца за продукты.

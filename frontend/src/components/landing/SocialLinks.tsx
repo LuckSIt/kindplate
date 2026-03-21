@@ -88,7 +88,7 @@ export function SocialLinks({
                 <img src={instagramFooterIcon} alt="Instagram" style={iconStyle} />
             </a>
             <a
-                href="mailto:kindplate.io@mail.ru"
+                href="mailto:sommeal.io@mail.ru"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center transition-opacity hover:opacity-80"

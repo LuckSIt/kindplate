@@ -157,7 +157,7 @@ function TermsPage() {
                         ООО "Соммил"<br />
                         ИНН: 1234567890<br />
                         Адрес: Россия, Санкт-Петербург<br />
-                        Email: <a href="mailto:legal@kindplate.ru" className="text-green-600 hover:text-green-700 font-medium">legal@kindplate.ru</a>
+                        Email: <a href="mailto:sommeal.io@mail.ru" className="text-green-600 hover:text-green-700 font-medium">sommeal.io@mail.ru</a>
                     </p>
                 </div>
 
