@@ -68,7 +68,7 @@ export function SocialLinks({
                 <img src={vkIcon} alt="VK" style={isMinimal ? iconStyleMinimalWhite : iconStyle} />
             </a>
             <a
-                href="https://t.me/sommil_support_bot"
+                href="https://t.me/kindplate"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center transition-opacity hover:opacity-80"

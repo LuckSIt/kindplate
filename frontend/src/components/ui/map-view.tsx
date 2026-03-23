@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useCallback, useState, CSSProperties } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { waitForYmaps } from '@/lib/ymaps';
 import type { Business } from '@/lib/types';
 
@@ -32,14 +33,10 @@ const DEFAULT_ZOOM = 12;
 
 // Logo URL for markers
 const MARKER_LOGO_URL = '/kandlate.png';
+const MARKER_COLOR = '#098771';
 
 // Convert [lat, lon] to [lon, lat] for ymaps3
 function toYmapsCoords(coords: [number, number]): [number, number] {
-    return [coords[1], coords[0]];
-}
-
-// Convert [lon, lat] to [lat, lon] from ymaps3
-function fromYmapsCoords(coords: [number, number]): [number, number] {
     return [coords[1], coords[0]];
 }
 
@@ -50,7 +47,7 @@ function createMarkerElement(isSelected: boolean, hasActiveOffers: boolean = tru
     // Определяем фильтр в зависимости от состояния
     let filter = 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))';
     if (isSelected) {
-        filter = 'drop-shadow(0 0 8px #f97316) brightness(1.1)';
+        filter = 'drop-shadow(0 0 8px #098771) brightness(1.1)';
     } else if (!hasActiveOffers) {
         // Серый фильтр для неактивных бизнесов
         filter = 'drop-shadow(0 2px 4px rgba(0,0,0,0.3)) grayscale(100%) brightness(1.5)';
@@ -65,15 +62,21 @@ function createMarkerElement(isSelected: boolean, hasActiveOffers: boolean = tru
         transition: filter 0.2s, transform 0.2s;
     `;
     
-    const img = document.createElement('img');
-    img.src = MARKER_LOGO_URL;
-    img.style.cssText = `
+    const logo = document.createElement('div');
+    logo.style.cssText = `
         width: 100%;
         height: 100%;
-        object-fit: contain;
+        background-color: ${MARKER_COLOR};
+        -webkit-mask-image: url('${MARKER_LOGO_URL}');
+        mask-image: url('${MARKER_LOGO_URL}');
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
     `;
-    img.alt = 'Marker';
-    element.appendChild(img);
+    element.appendChild(logo);
     
     if (onClick) {
         element.addEventListener('click', (e) => {
@@ -107,7 +110,7 @@ function createClusterElement(count: number, hasAnyActiveOffers: boolean = true,
     `;
     
     // Цвет кружка: зелёный, если есть бизнесы с офферами; серый, если все без офферов
-    const bgColor = hasAnyActiveOffers ? '#1b5525' : '#5a5a5a';
+    const bgColor = hasAnyActiveOffers ? '#098771' : '#5a5a5a';
     const bg = document.createElement('div');
     bg.style.cssText = `
         width: 100%;
