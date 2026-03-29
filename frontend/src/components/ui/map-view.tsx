@@ -33,7 +33,7 @@ const DEFAULT_ZOOM = 12;
 
 // Logo URL for markers
 const MARKER_LOGO_URL = '/kandlate.png';
-const MARKER_COLOR = '#098771';
+const MARKER_COLOR = '#00BB9A';
 
 // Convert [lat, lon] to [lon, lat] for ymaps3
 function toYmapsCoords(coords: [number, number]): [number, number] {
