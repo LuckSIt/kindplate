@@ -23,7 +23,7 @@ let currentBaseURL = (() => {
     return fallback;
 })();
 
-const fallbackBaseURL = envFallbackUrl || "https://api-kindplate.ru";
+const fallbackBaseURL = envFallbackUrl || "https://sommeal.ru/api";
 
 const switchBaseURL = (nextBaseURL: string) => {
     if (!nextBaseURL || nextBaseURL === currentBaseURL) return;
@@ -41,7 +41,7 @@ export const getBackendURL = getBaseURL;
 
 /**
  * URL картинок всегда через текущий origin (same-origin), чтобы на мобильных не было
- * запросов на другой домен (api-kindplate.ru), которые могут не открываться или блокироваться.
+ * запросов на другой origin, которые могут не открываться или блокироваться.
  */
 export const getImageURL = (path?: string) => {
     if (!path) return '';
@@ -459,8 +459,7 @@ axiosInstance.interceptors.response.use(
             !error.response;
 
         // Авто-фолбэк: ТОЛЬКО для localhost → remote (при разработке)
-        // НЕ переключаем /api → api-kindplate.ru на продакшене!
-        // Кросс-доменный URL ломает session cookies (kp.sid привязан к app-kindplate.ru)
+        // На продакшене держим same-origin /api — кросс-доменный API-URL ломает session cookies (kp.sid)
         if (
             isNetworkError &&
             !config._retriedWithFallback &&

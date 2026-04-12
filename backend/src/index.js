@@ -73,7 +73,7 @@ const corsOptions = {
             "http://localhost:3001", 
             "http://localhost:5173",
             "http://172.20.10.2:5173",
-            "https://app-kindplate.ru", // Явно добавляем продакшен домен
+            "https://sommeal.ru", // Явно добавляем продакшен домен
             envOrigin
         ].filter(Boolean);
 
@@ -126,7 +126,7 @@ app.use((req, res, next) => {
             "http://localhost:3001", 
             "http://localhost:5173",
             "http://172.20.10.2:5173",
-            "https://app-kindplate.ru",
+            "https://sommeal.ru",
             process.env.FRONTEND_ORIGIN
         ].filter(Boolean);
         
@@ -224,7 +224,7 @@ function serveUploads(staticDir, staticOpts) {
 // Раздача статических файлов по /uploads (прямые запросы к бэкенду)
 serveUploads(uploadsDir, uploadsStaticOptions).forEach(mw => app.use("/uploads", mw));
 
-// Раздача по /api/uploads — когда фронт (app-kindplate.ru) запрашивает /api/uploads/... и прокси передаёт путь с /api
+// Раздача по /api/uploads — когда фронт (sommeal.ru) запрашивает /api/uploads/... и прокси передаёт путь с /api
 serveUploads(uploadsDir, uploadsStaticOptions).forEach(mw => app.use("/api/uploads", mw));
 // ============================================
 // СЕССИИ: express-session + Redis

@@ -1,8 +1,9 @@
 {
-  email vldmrelizarov@yandex.ru
+  # Переменные из docker-compose (см. deploy.example.env)
+  email {$CADDY_ACME_EMAIL}
 }
 
-app-kindplate.ru {
+{$APP_DOMAIN} {
   # API-запросы проксируем на бэкенд (same-origin — cookie работают на iOS!)
   handle_path /api/* {
     reverse_proxy backend:5000 {
@@ -25,33 +26,3 @@ app-kindplate.ru {
     Referrer-Policy "strict-origin-when-cross-origin"
   }
 }
-
-api-kindplate.ru {
-  reverse_proxy backend:5000 {
-    header_up X-Forwarded-Proto {scheme}
-    header_up X-Forwarded-For {remote_host}
-    header_up X-Real-IP {remote_host}
-    transport http {
-      dial_timeout 10s
-      response_header_timeout 30s
-    }
-    # Health check для проверки доступности бэкенда
-    health_uri /health
-    health_interval 10s
-    health_timeout 5s
-    # Увеличиваем время ожидания для медленных ответов
-    health_status 200
-  }
-  
-  encode gzip zstd
-  
-  # Безопасность заголовки (CORS обрабатывается в Express)
-  header {
-    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-    X-Content-Type-Options "nosniff"
-    X-Frame-Options "SAMEORIGIN"
-    Referrer-Policy "strict-origin-when-cross-origin"
-  }
-}
-
-

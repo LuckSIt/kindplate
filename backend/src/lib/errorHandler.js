@@ -25,7 +25,7 @@ const errorHandler = (err, req, res, next) => {
             "http://localhost:3001", 
             "http://localhost:5173",
             "http://172.20.10.2:5173",
-            "https://app-kindplate.ru",
+            "https://sommeal.ru",
             process.env.FRONTEND_ORIGIN
         ].filter(Boolean);
         
@@ -109,7 +109,7 @@ const notFound = (req, res, next) => {
             "http://localhost:3001", 
             "http://localhost:5173",
             "http://172.20.10.2:5173",
-            "https://app-kindplate.ru",
+            "https://sommeal.ru",
             process.env.FRONTEND_ORIGIN
         ].filter(Boolean);
         

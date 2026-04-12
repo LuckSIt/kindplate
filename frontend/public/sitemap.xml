@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://app-kindplate.ru/</loc>
+    <loc>https://sommeal.ru/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://app-kindplate.ru/legal/terms</loc>
+    <loc>https://sommeal.ru/legal/terms</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://app-kindplate.ru/legal/privacy</loc>
+    <loc>https://sommeal.ru/legal/privacy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://app-kindplate.ru/legal/refund-policy</loc>
+    <loc>https://sommeal.ru/legal/refund-policy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://app-kindplate.ru/legal/faq</loc>
+    <loc>https://sommeal.ru/legal/faq</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>

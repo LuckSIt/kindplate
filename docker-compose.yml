@@ -45,7 +45,7 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       JWT_SECRET: ${JWT_SECRET}
       REDIS_URL: redis://redis:6379
-      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-https://app-kindplate.ru}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-https://sommeal.ru}
       # MinIO (S3-совместимое хранилище для загрузок — фото не пропадают после перезапуска)
       S3_BUCKET: ${S3_BUCKET:-kindplate}
       S3_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
@@ -66,12 +66,17 @@ services:
       args:
         VITE_BACKEND_BASE_URL: /api
         VITE_VAPID_PUBLIC_KEY: ${VITE_VAPID_PUBLIC_KEY:-}
+        # Редкий фолбэк в axios: тот же origin + /api (отдельный поддомен API не используем)
+        VITE_BACKEND_FALLBACK_URL: ${VITE_BACKEND_FALLBACK_URL:-https://sommeal.ru/api}
     depends_on:
       - backend
     restart: unless-stopped
 
   caddy:
     image: caddy:2-alpine
+    environment:
+      CADDY_ACME_EMAIL: ${CADDY_ACME_EMAIL:-vldmrelizarov@yandex.ru}
+      APP_DOMAIN: ${APP_DOMAIN:-sommeal.ru}
     ports:
       - "80:80"
       - "443:443"

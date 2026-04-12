@@ -402,7 +402,7 @@ export function DocumentsModal({ isOpen, onClose, initialTab }: DocumentsModalPr
                 <strong>Владелец сайта:</strong> ИП А. М. Сатаев (далее — «Мы», «Kindplate»), ИНН 784808895487
               </p>
               <p className="documents-modal__content-text">
-                <strong>Пользователь сайта:</strong> любое лицо, посещающее сайт <a href="http://app-kindplate.ru" className="documents-modal__content-link">app-kindplate.ru</a> (далее — «Вы», «Пользователь»)
+                <strong>Пользователь сайта:</strong> любое лицо, посещающее сайт <a href="https://sommeal.ru" className="documents-modal__content-link">sommeal.ru</a> (далее — «Вы», «Пользователь»)
               </p>
               <p className="documents-modal__content-text">
                 Настоящее Соглашение об использовании файлов cookie (далее — «Соглашение») регулирует порядок использования файлов cookie на сайте Соммил — современной технологичной платформе, объединяющей рестораны, кафе, магазины и покупателей для спасения качественной еды от утилизации и стимулирования осознанного потребления.
@@ -418,7 +418,7 @@ export function DocumentsModal({ isOpen, onClose, initialTab }: DocumentsModalPr
                 <strong>1.1.</strong> Файлы cookie — небольшие текстовые файлы, которые веб-сервер размещает на устройстве Пользователя для идентификации, анализа поведения и улучшения функциональности сайта.
               </p>
               <p className="documents-modal__content-text">
-                <strong>1.2.</strong> Сайт — интернет-ресурс <a href="http://app-kindplate.ru" className="documents-modal__content-link">app-kindplate.ru</a>, включая все поддомены и мобильную версию.
+                <strong>1.2.</strong> Сайт — интернет-ресурс <a href="https://sommeal.ru" className="documents-modal__content-link">sommeal.ru</a>, включая все поддомены и мобильную версию.
               </p>
               <p className="documents-modal__content-text">
                 <strong>1.3.</strong> Персональные данные — любая информация, относящаяся к Пользователю, обрабатываемая в соответствии с Политикой конфиденциальности Соммил.

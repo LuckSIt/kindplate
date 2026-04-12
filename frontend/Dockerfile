@@ -10,11 +10,13 @@ COPY . ./
 # /api — same-origin proxy через Caddy, решает проблему cookie на iOS PWA
 ARG VITE_BACKEND_BASE_URL=/api
 ARG VITE_VAPID_PUBLIC_KEY=
+ARG VITE_BACKEND_FALLBACK_URL=
 
 # Передаём в ENV для использования в npm run build
 ENV NODE_ENV=production
 ENV VITE_BACKEND_BASE_URL=${VITE_BACKEND_BASE_URL}
 ENV VITE_VAPID_PUBLIC_KEY=${VITE_VAPID_PUBLIC_KEY}
+ENV VITE_BACKEND_FALLBACK_URL=${VITE_BACKEND_FALLBACK_URL}
 
 RUN npm run build
 
