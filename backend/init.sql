@@ -93,32 +93,32 @@ CREATE TABLE reviews (
 
 -- Вставка тестовых данных
 INSERT INTO users (name, email, address, coord_0, coord_1, password_hash, is_business, role)
-VALUES ('Администратор KindPlate', 'admin@kindplate.ru', 'Санкт-Петербург, Россия', 59.9311, 30.3609, '$2b$10$l3mE4KN9iGuNJMVEi0gHgOOKdB7Y38rlzBB/SmtLdeZ8HGPqhrlfe', false, 'admin')
+VALUES ('Администратор KindPlate', 'admin@kindplate.ru', 'Санкт-Петербург, Россия', 59.9311, 30.3609, '$2b$10$AsvTHZMAlqFMwabDma4H5.z4sEH4jrsOmHC4bRZsfjD9SXSvKUNC2', false, 'admin')
 ON CONFLICT (email) DO NOTHING;
 
 INSERT INTO users (name, email, address, coord_0, coord_1, password_hash, is_business, role)
-VALUES ('Тестовый Бизнес', 'business@kindplate.ru', 'Санкт-Петербург, Невский пр., 1', 59.935, 30.32, '$2b$10$l3mE4KN9iGuNJMVEi0gHgOOKdB7Y38rlzBB/SmtLdeZ8HGPqhrlfe', true, 'business')
+VALUES ('Тестовый Бизнес', 'business@kindplate.ru', 'Санкт-Петербург, Невский пр., 1', 59.935, 30.32, '$2b$10$AsvTHZMAlqFMwabDma4H5.z4sEH4jrsOmHC4bRZsfjD9SXSvKUNC2', true, 'business')
 ON CONFLICT (email) DO NOTHING;
 
 INSERT INTO users (name, email, address, coord_0, coord_1, password_hash, is_business, role)
-VALUES ('Тестовый Пользователь', 'user@kindplate.ru', 'Санкт-Петербург, ул. Пушкина, 10', 59.94, 30.35, '$2b$10$l3mE4KN9iGuNJMVEi0gHgOOKdB7Y38rlzBB/SmtLdeZ8HGPqhrlfe', false, 'customer')
+VALUES ('Тестовый Пользователь', 'user@kindplate.ru', 'Санкт-Петербург, ул. Пушкина, 10', 59.94, 30.35, '$2b$10$AsvTHZMAlqFMwabDma4H5.z4sEH4jrsOmHC4bRZsfjD9SXSvKUNC2', false, 'customer')
 ON CONFLICT (email) DO NOTHING;
 
 -- Дополнительные тестовые бизнесы для отображения на карте
 INSERT INTO users (name, email, address, coord_0, coord_1, password_hash, is_business, role, rating)
-VALUES ('Кофейня "Утро"', 'coffee@kindplate.ru', 'Санкт-Петербург, Невский пр., 78', 59.9322, 30.3489, '$2b$10$l3mE4KN9iGuNJMVEi0gHgOOKdB7Y38rlzBB/SmtLdeZ8HGPqhrlfe', true, 'business', 4.8)
+VALUES ('Кофейня "Утро"', 'coffee@kindplate.ru', 'Санкт-Петербург, Невский пр., 78', 59.9322, 30.3489, '$2b$10$AsvTHZMAlqFMwabDma4H5.z4sEH4jrsOmHC4bRZsfjD9SXSvKUNC2', true, 'business', 4.8)
 ON CONFLICT (email) DO NOTHING;
 
 INSERT INTO users (name, email, address, coord_0, coord_1, password_hash, is_business, role, rating)
-VALUES ('Пекарня "Хлеб & Ко"', 'bakery@kindplate.ru', 'Санкт-Петербург, ул. Рубинштейна, 15', 59.9286, 30.3456, '$2b$10$l3mE4KN9iGuNJMVEi0gHgOOKdB7Y38rlzBB/SmtLdeZ8HGPqhrlfe', true, 'business', 4.6)
+VALUES ('Пекарня "Хлеб & Ко"', 'bakery@kindplate.ru', 'Санкт-Петербург, ул. Рубинштейна, 15', 59.9286, 30.3456, '$2b$10$AsvTHZMAlqFMwabDma4H5.z4sEH4jrsOmHC4bRZsfjD9SXSvKUNC2', true, 'business', 4.6)
 ON CONFLICT (email) DO NOTHING;
 
 INSERT INTO users (name, email, address, coord_0, coord_1, password_hash, is_business, role, rating)
-VALUES ('Суши "Токио"', 'sushi@kindplate.ru', 'Санкт-Петербург, Лиговский пр., 30', 59.9198, 30.3548, '$2b$10$l3mE4KN9iGuNJMVEi0gHgOOKdB7Y38rlzBB/SmtLdeZ8HGPqhrlfe', true, 'business', 4.5)
+VALUES ('Суши "Токио"', 'sushi@kindplate.ru', 'Санкт-Петербург, Лиговский пр., 30', 59.9198, 30.3548, '$2b$10$AsvTHZMAlqFMwabDma4H5.z4sEH4jrsOmHC4bRZsfjD9SXSvKUNC2', true, 'business', 4.5)
 ON CONFLICT (email) DO NOTHING;
 
 INSERT INTO users (name, email, address, coord_0, coord_1, password_hash, is_business, role, rating)
-VALUES ('Пиццерия "Манхэттен"', 'pizza@kindplate.ru', 'Санкт-Петербург, Садовая ул., 42', 59.9256, 30.3167, '$2b$10$l3mE4KN9iGuNJMVEi0gHgOOKdB7Y38rlzBB/SmtLdeZ8HGPqhrlfe', true, 'business', 4.7)
+VALUES ('Пиццерия "Манхэттен"', 'pizza@kindplate.ru', 'Санкт-Петербург, Садовая ул., 42', 59.9256, 30.3167, '$2b$10$AsvTHZMAlqFMwabDma4H5.z4sEH4jrsOmHC4bRZsfjD9SXSvKUNC2', true, 'business', 4.7)
 ON CONFLICT (email) DO NOTHING;
 
 -- Вставляем предложения для тестового бизнеса
@@ -132,7 +132,7 @@ VALUES (
     10,
     '18:00:00',
     '20:00:00',
-    '/uploads/offers/1761334761092-911158504.jpg',
+    NULL,
     TRUE
 )
 ON CONFLICT DO NOTHING;
@@ -147,7 +147,7 @@ VALUES (
     5,
     '19:00:00',
     '21:00:00',
-    '/uploads/offers/1761334778332-98632195.jpg',
+    NULL,
     TRUE
 )
 ON CONFLICT DO NOTHING;
@@ -162,7 +162,7 @@ VALUES (
     8,
     '17:00:00',
     '22:00:00',
-    '/uploads/offers/1761334761092-911158504.jpg',
+    NULL,
     TRUE
 )
 ON CONFLICT DO NOTHING;

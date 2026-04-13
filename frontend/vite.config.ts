@@ -1,13 +1,28 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 import { VitePWA } from 'vite-plugin-pwa'
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 
+const DEFAULT_YMAPS_KEY = '1f4f3bd3-66fd-4301-ab9d-7727aa0154c3'
+
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, path.resolve(__dirname, '.'), '')
+  const ymapsApiKey =
+    env.VITE_YMAPS_API_KEY ||
+    process.env.VITE_YMAPS_API_KEY ||
+    DEFAULT_YMAPS_KEY
+
+  return {
   plugins: [
+    {
+      name: 'inject-ymaps-api-key',
+      transformIndexHtml(html) {
+        return html.replace(/__VITE_YMAPS_API_KEY__/g, ymapsApiKey)
+      },
+    },
     TanStackRouterVite({ 
       autoCodeSplitting: true,
       enableRouteGeneration: true
@@ -238,4 +253,5 @@ export default defineConfig({
       plugins: [],
     },
   },
+  }
 })

@@ -323,7 +323,7 @@ adminRouter.post('/seed-test-places', asyncHandler(async (req, res) => {
         throw new AppError('Этот endpoint доступен только в режиме разработки', 403);
     }
 
-    const passwordHash = '$2b$10$l3mE4KN9iGuNJMVEi0gHgOOKdB7Y38rlzBB/SmtLdeZ8HGPqhrlfe'; // пароль: password
+    const passwordHash = '$2b$10$AsvTHZMAlqFMwabDma4H5.z4sEH4jrsOmHC4bRZsfjD9SXSvKUNC2'; // пароль: password
 
     const businesses = [
         {

@@ -4,8 +4,9 @@ declare global {
     }
 }
 
-// API key for geocoding requests
-const YMAPS_API_KEY = 'ec005f34-13ad-4e25-a2b8-45429d60556b';
+// Тот же ключ, что в index.html (JavaScript API + при необходимости Geocoder HTTP в кабинете Яндекса)
+const YMAPS_API_KEY =
+    import.meta.env.VITE_YMAPS_API_KEY || 'ec005f34-13ad-4e25-a2b8-45429d60556b';
 
 // Singleton promise for waiting for ymaps3
 let ymapsReadyPromise: Promise<boolean> | null = null;

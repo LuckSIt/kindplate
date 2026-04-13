@@ -7,6 +7,8 @@ services:
       POSTGRES_PASSWORD: plate
     volumes:
       - db:/var/lib/postgresql/data
+      # Схема и тестовые пользователи при первом создании тома (пустой data directory)
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     restart: unless-stopped
 
   redis:
@@ -68,6 +70,8 @@ services:
         VITE_VAPID_PUBLIC_KEY: ${VITE_VAPID_PUBLIC_KEY:-}
         # Редкий фолбэк в axios: тот же origin + /api (отдельный поддомен API не используем)
         VITE_BACKEND_FALLBACK_URL: ${VITE_BACKEND_FALLBACK_URL:-https://sommeal.ru/api}
+        # Ключ JavaScript API Карт; в Яндексе разрешите Referer https://sommeal.ru/*
+        VITE_YMAPS_API_KEY: ${VITE_YMAPS_API_KEY:-1f4f3bd3-66fd-4301-ab9d-7727aa0154c3}
     depends_on:
       - backend
     restart: unless-stopped
